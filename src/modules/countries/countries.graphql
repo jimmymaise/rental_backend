@@ -1,9 +1,0 @@
-type Query {
-  getCountries: [Country]
-}
-
-type Country {
-  id: String
-  name: String
-  slug: String
-}

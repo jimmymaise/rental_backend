@@ -1,9 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Province } from '../provinces/province.entity'
-
-@Entity('countries')
-export class Country {
+@Entity('areas')
+export class Area {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -13,12 +11,12 @@ export class Country {
   @Column({ type: "varchar", length: 200, unique: true })
   slug: string;
 
+  @Column({ type: "uuid", nullable: true })
+  parentAreaId: string;
+
   @Column({ default: false })
   isDisabled: boolean;
 
   @Column({ default: false })
   isDeleted: boolean;
-
-  @OneToMany(() => Province, (province: Province) => province.country)
-  provinces: Province[]
 }

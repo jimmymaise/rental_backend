@@ -1,9 +1,9 @@
 import { join } from 'path'
 import { ConnectionOptions } from 'typeorm'
 
-import { Country } from './modules/countries/country.entity'
-import { Province } from './modules/provinces/province.entity'
-import { City } from './modules/cities/city.entity'
+import { Area } from './modules/areas/area.entity'
+import { Category } from './modules/categories/category.entity'
+import { Item } from './modules/items/item.entity'
 
 const PROD_ENV = 'production'
 
@@ -28,11 +28,11 @@ const connectionOptions: ConnectionOptions = {
   port: 5432,
   username: config.user || 'postgres',
   password: config.password || '123456789',
-  database: config.database || 'vivubook-dev',
+  database: config.database || 'thuedo-dev',
   entities: [
-    Country,
-    Province,
-    City
+    Area,
+    Category,
+    Item
   ],
   // We are using migrations, synchronize should be set to false.
   synchronize: false,
