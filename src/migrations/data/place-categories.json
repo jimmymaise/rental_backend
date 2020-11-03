@@ -1,0 +1,334 @@
+[
+  {
+    "id": "7942fec4-6ce8-42a5-99c8-2fc8ef18d934",
+    "name": "Điểm thu hút khách tham quan & thắng cảnh"
+  },
+  {
+    "id": "2b351e58-c89c-482b-93c4-74ef1ff43d1c",
+    "name": "Núi"
+  },
+  {
+    "id": "3e01e04e-e8e6-434f-9c3c-04997d4e0504",
+    "name": "Khu lân cận"
+  },
+  {
+    "id": "857bc700-5ab7-4804-8b0f-adbe5ebcf1e4",
+    "name": "Công viên giải trí"
+  },
+  {
+    "id": "94d445ac-5e25-48ae-99b3-c21710df6c85",
+    "name": "Vùng nước"
+  },
+  {
+    "id": "0a9ae78c-7550-46c8-a23a-f61cc633437a",
+    "name": "Địa điểm lịch sử"
+  },
+  {
+    "id": "c4b01892-08f8-4580-914c-5c9cecab7cb3",
+    "name": "Khu vực tự nhiên & động vật hoang dã"
+  },
+  {
+    "id": "e7ae670f-9b2b-47ed-8910-4ff7a0785f4c",
+    "name": "Thác nước"
+  },
+  {
+    "id": "253f4bd6-2835-4873-9ac0-0cb699f79543",
+    "name": "Viện bảo tàng lịch sử"
+  },
+  {
+    "id": "86d1ef75-28f0-4f8b-88fe-0e7ec289c020",
+    "name": "Công viên quốc gia"
+  },
+  {
+    "id": "775c20b1-d92a-492a-b340-2a955f13c9a5",
+    "name": "Địa điểm linh thiêng & tôn giáo"
+  },
+  {
+    "id": "c047132d-3166-4ca4-b4c3-5e680f7e3e34",
+    "name": "Hang lớn & động"
+  },
+  {
+    "id": "27565c73-f0fb-46ac-991f-ba9903903302",
+    "name": "Suối nước nóng & mạch nước phun"
+  },
+  {
+    "id": "0b5dcad2-c84c-45db-b774-653eb89feb70",
+    "name": "Chợ trời & chợ đường phố"
+  },
+  {
+    "id": "d10192d0-bf15-4a44-9cc7-92d98a55ce4e",
+    "name": "Đài kỷ niệm & tượng"
+  },
+  {
+    "id": "37e108b2-a234-47b6-b3fb-3f39970c0506",
+    "name": "Bãi biển"
+  },
+  {
+    "id": "9c8d8ac2-3262-4607-b2c5-70fd693d0fc0",
+    "name": "Chợ nông sản"
+  },
+  {
+    "id": "2b4782dc-13fe-4a17-b92f-da242febaa0a",
+    "name": "Trung tâm du lịch"
+  },
+  {
+    "id": "2aac3e11-cb04-4447-a55f-b55e6a905c0f",
+    "name": "Cáp treo"
+  },
+  {
+    "id": "5025852b-971e-4e87-a906-6792bf3fa341",
+    "name": "Hình thái địa chất"
+  },
+  {
+    "id": "6c7a0016-dbd9-43e6-9400-80112a26b40e",
+    "name": "Nông trại"
+  },
+  {
+    "id": "ebbea591-03ee-4782-9f68-4c1697a1aae1",
+    "name": "Phà"
+  },
+  {
+    "id": "97505965-5a6a-4350-a61b-c4a287e68790",
+    "name": "Hệ thống giao thông công cộng"
+  },
+  {
+    "id": "12ba4f21-a2f5-4012-85ca-4e2f122e4272",
+    "name": "Viện bảo tàng chuyên ngành"
+  },
+  {
+    "id": "0b343042-1f23-4010-b493-12af7f6c8ddd",
+    "name": "Viện bảo tàng nghệ thuật"
+  },
+  {
+    "id": "42d4bca9-98be-422c-99a7-7cdecf1e8ad9",
+    "name": "Vườn"
+  },
+  {
+    "id": "8d2cc9b4-bc27-4220-99f3-20d2958418eb",
+    "name": "Thung lũng"
+  },
+  {
+    "id": "73207f2e-174c-4439-aebd-528c2b49e5c6",
+    "name": "Cầu"
+  },
+  {
+    "id": "3a76e82b-56f7-4683-a770-d3c20080832d",
+    "name": "Rạp hát"
+  },
+  {
+    "id": "a7af98c0-af52-432e-98ed-f19443cf24d2",
+    "name": "Phòng trưng bày nghệ thuật"
+  },
+  {
+    "id": "9ba798e3-8bd1-4c58-b851-15bd47a1a0b9",
+    "name": "Đi xe ngắm cảnh"
+  },
+  {
+    "id": "99bd6fe7-5f38-4011-9d95-005d2c2eff15",
+    "name": "Opera"
+  },
+  {
+    "id": "5a4cc054-1f5f-4a44-b91a-5a02606fce00",
+    "name": "Nhà thờ & nhà thờ lớn"
+  },
+  {
+    "id": "a7f5b239-dab7-403e-9bbc-105d219d7c9f",
+    "name": "Quần đảo"
+  },
+  {
+    "id": "6beb1456-9206-4bc9-a30b-9bb700920593",
+    "name": "Di tích cổ"
+  },
+  {
+    "id": "1ce4f859-b9d9-408d-94f1-4438c3394196",
+    "name": "Lâu đài"
+  },
+  {
+    "id": "7e5c4859-8e1b-4e83-a226-76a63e1d5678",
+    "name": "Ngọn hải đăng"
+  },
+  {
+    "id": "677c82c4-5c25-4c16-abb4-cefb3364b526",
+    "name": "Đài & tháp quan sát"
+  },
+  {
+    "id": "fc697993-1471-4513-a1ec-703b62289789",
+    "name": "Đường đi bộ"
+  },
+  {
+    "id": "fba7c330-a7e6-47fd-8db3-7a68bf6309d3",
+    "name": "Hẻm núi"
+  },
+  {
+    "id": "f3f9c39c-63b5-45c0-8123-43b5ae0e2156",
+    "name": "Cửa hàng bách hóa"
+  },
+  {
+    "id": "19f6c4eb-03cd-4c19-8b79-b745191afd7b",
+    "name": "Bãi biển & câu lạc bộ bể bơi"
+  },
+  {
+    "id": "192cf260-79b6-422a-b0f7-9215b473a7dd",
+    "name": "Trung tâm mua sắm"
+  },
+  {
+    "id": "cc1dfb81-4bc6-40c9-8d90-15a86cfa19cf",
+    "name": "Công viên"
+  },
+  {
+    "id": "9721d892-ac98-4380-855b-00df9c142ed2",
+    "name": "Tòa nhà kiến trúc"
+  },
+  {
+    "id": "cf428e65-5ee7-4606-a78c-e95ad0552249",
+    "name": "Viện bảo tàng quân đội"
+  },
+  {
+    "id": "7c7ab415-7bb5-4bf0-82e4-d48eab5f71b5",
+    "name": "Trung tâm & trại thể thao"
+  },
+  {
+    "id": "21b675b2-d6a4-4ccf-8029-15f7bcb51f25",
+    "name": "Khu vực đi dạo ngắm cảnh"
+  },
+  {
+    "id": "79c90805-a9b2-4a49-bf15-949658fa3239",
+    "name": "Bến du thuyền"
+  },
+  {
+    "id": "8b2a3d63-8f61-415f-a641-c4aa52cd3f2a",
+    "name": "Đài quan sát"
+  },
+  {
+    "id": "e9d10574-7400-4778-b023-fd929f795977",
+    "name": "Cầu cảng & lối đi có lót ván"
+  },
+  {
+    "id": "67337334-a34e-4085-8700-ff6f8f4b29d3",
+    "name": "Sở thú"
+  },
+  {
+    "id": "deefc4b1-fffc-47cc-b0fd-5d2db7910a4d",
+    "name": "Rừng"
+  },
+  {
+    "id": "7468028e-cc13-4c6f-9e6a-2d777685aa0f",
+    "name": "Chiến trường"
+  },
+  {
+    "id": "a4896d4f-9a02-4feb-9fee-4ee247ecc7f5",
+    "name": "Cửa hàng của nhà máy"
+  },
+  {
+    "id": "60b4cf26-16e8-4520-b27a-0948547096f8",
+    "name": "Sòng bạc"
+  },
+  {
+    "id": "7098840f-0325-42d6-a0a9-4177c18a3533",
+    "name": "Đấu trường & sân vận động"
+  },
+  {
+    "id": "245bb6e7-9b0e-40fb-af36-8cf883579c2e",
+    "name": "Địa điểm giáo dục"
+  },
+  {
+    "id": "98dfc355-1461-4f02-8589-e13075ea7d87",
+    "name": "Công viên nước"
+  },
+  {
+    "id": "f5a5a768-2899-4f1e-9d38-a58ae920a1f2",
+    "name": "Viện hải dương học"
+  },
+  {
+    "id": "974fc4de-1750-4ae7-927e-d964dbf17d26",
+    "name": "Núi lửa"
+  },
+  {
+    "id": "647b9961-6b14-4e6b-a7e7-00a548a2eaa7",
+    "name": "Đường đua chó"
+  },
+  {
+    "id": "2c0e993b-d0c3-4537-8b6e-a8e2b84c5192",
+    "name": "Nghĩa trang"
+  },
+  {
+    "id": "93af368f-f16d-4c99-bd7a-856c7f29f0a1",
+    "name": "Khu vực đi dạo tham quan di tích lịch sử"
+  },
+  {
+    "id": "be7ea614-1b41-4c02-9a8f-7e06daf98ac2",
+    "name": "Quán ăn biểu diễn tạp kỹ"
+  },
+  {
+    "id": "d13596e7-f24e-4966-bd48-e052ee3e216f",
+    "name": "Sự kiện văn hóa"
+  },
+  {
+    "id": "911d7a95-f181-4553-9899-29c7bceed364",
+    "name": "Sa mạc"
+  },
+  {
+    "id": "9eef8ba1-3c7e-4e80-9f47-5085b3637174",
+    "name": "Công viên bảo tồn quốc gia"
+  },
+  {
+    "id": "88dfe9cb-5323-444f-85ec-f8bae3d53b7e",
+    "name": "Sân chơi"
+  },
+  {
+    "id": "a6761970-13e1-4500-bb4e-d06a85529758",
+    "name": "Trung tâm hội thảo & hội nghị"
+  },
+  {
+    "id": "892fcc21-f396-428f-881f-a8e7ecdbab35",
+    "name": "Khu liên hợp thể thao"
+  },
+  {
+    "id": "4fa69341-0bbb-44de-a52a-ffa0e9e9e8c8",
+    "name": "Cửa hàng đồ cổ"
+  },
+  {
+    "id": "2b456e57-c48e-4be8-ab1c-57428ce60213",
+    "name": "Tòa nhà chính phủ"
+  },
+  {
+    "id": "10de3edf-0db4-4988-89f6-e5a31197a72c",
+    "name": "Đồ ăn & đồ uống khác"
+  },
+  {
+    "id": "3f379f5e-e11e-4ea4-b1ad-8915e3eaef04",
+    "name": "Thư viện"
+  },
+  {
+    "id": "2219ff6b-b5a4-43d0-829a-88c68d0fbcc1",
+    "name": "Phòng chờ sân bay"
+  },
+  {
+    "id": "ed38aee8-b6f3-4095-9fa2-93b350b68a2a",
+    "name": "Viện bảo tàng khoa học"
+  },
+  {
+    "id": "8945a5fb-ebd8-4679-8a02-8574fb38a0e9",
+    "name": "Trung tâm hành chính"
+  },
+  {
+    "id": "03e672e5-49b4-42a1-ae45-bb329d66cc20",
+    "name": "Trường đại học & trường học"
+  },
+  {
+    "id": "3759a2a2-cf11-473d-949a-ded546f79ee9",
+    "name": "Căn cứ & doanh trại quân đội"
+  },
+  {
+    "id": "54ab468c-0008-41ed-a424-f14115ccc683",
+    "name": "Sự kiện thể thao"
+  },
+  {
+    "id": "9de17a96-302f-4dbd-b4c1-f0cfdcfda950",
+    "name": "Bảo tàng dành cho trẻ em"
+  },
+  {
+    "id": "475e1c22-c327-45e2-8dab-909c7f33eeff",
+    "name": "Nhà máy rượu vang & vườn nho"
+  }
+]
