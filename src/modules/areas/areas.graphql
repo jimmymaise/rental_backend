@@ -1,0 +1,13 @@
+type Area {
+  id: String!
+  name: String!
+  slug: String!
+  parentAreaId: String
+  latitude: Float
+  longitude: Float
+  isDisabled: Boolean
+}
+
+type Query {
+  getAllAreas(isDisabled: Boolean): [Area]
+}

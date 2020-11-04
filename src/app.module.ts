@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { GraphQLModule } from '@nestjs/graphql';
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { GraphQLModule } from '@nestjs/graphql'
 
-import * as connectionOptions from './ormconfig';
+import { AreasModule } from './modules'
+import * as connectionOptions from './ormconfig'
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { AppService } from './app.service';
       typePaths: ['./**/*.graphql'],
       debug: true,
       playground: true
-    })
+    }),
+    AreasModule
   ],
   controllers: [AppController],
   providers: [
