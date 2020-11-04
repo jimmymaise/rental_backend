@@ -28,10 +28,13 @@ export class Item {
   @Column("bigint", { array: true })
   unavailableForRentDays: bigint[]
 
+  @Column("bigint", { array: true })
+  bookedRentingDays: bigint[]
+
   @Column("bigint", { nullable: true })
   currentOriginalPrice: bigint
 
-  @Column("bigint", { nullable: false })
+  @Column("bigint", { nullable: true })
   pricePerDay: bigint
 
   @Column("bigint", { nullable: true })

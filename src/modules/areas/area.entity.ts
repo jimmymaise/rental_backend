@@ -14,6 +14,12 @@ export class Area {
   @Column({ type: "uuid", nullable: true })
   parentAreaId: string;
 
+  @Column({ type: "decimal" })
+  latitude: number;
+
+  @Column({ type: "decimal" })
+  longitude: number;
+
   @Column({ default: false })
   isDisabled: boolean;
 
