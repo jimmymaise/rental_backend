@@ -1,4 +1,4 @@
-export interface ImageItemModel {
+export interface FileItemModel {
   id: string;
   url: string;
 }

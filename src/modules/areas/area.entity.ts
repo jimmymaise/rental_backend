@@ -5,6 +5,9 @@ export class Area {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ type: "varchar", length: 50 })
+  region: string;
+
   @Column({ type: "varchar", length: 200 })
   name: string;
 
@@ -19,6 +22,9 @@ export class Area {
 
   @Column({ type: "decimal" })
   longitude: number;
+
+  @Column({ type: "integer" })
+  order: number;
 
   @Column({ default: false })
   isDisabled: boolean;

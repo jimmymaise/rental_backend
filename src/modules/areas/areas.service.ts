@@ -13,6 +13,6 @@ export class AreasService {
   ) {}
 
   findAll(isDisabled: boolean = false): Promise<Area[]> {
-    return this.areasRepository.find({ isDisabled });
+    return this.areasRepository.find({ isDisabled, isDeleted: false });
   }
 }

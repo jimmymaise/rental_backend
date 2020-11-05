@@ -1,5 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
+import { FileItemModel } from '../images/image-item.model'
+
 export enum RentingItemRequestStatus {
   Declined = 'declined',
   Approved = 'approved',
@@ -16,7 +18,7 @@ export class RentingItemRequest {
   itemIds: string[]
 
   @Column({ type: "uuid", nullable: false })
-  ownerUserProfileId: string
+  renterUserProfileId: string
 
   @Column({ type: "uuid", nullable: false })
   lenderUserProfileId: string
@@ -52,10 +54,22 @@ export class RentingItemRequest {
   actualRentEndDate: bigint
 
   @Column("decimal", { nullable: true })
-  estimateAmount: number;
+  estimateTotalAmount: number;
 
   @Column("decimal", { nullable: true })
-  totalAmount: number;
+  actualTotalAmount: number;
+
+  @Column({ type: "varchar", nullable: true })
+  renterNote: string
+
+  @Column("simple-json", { array: true })
+  renterAttachFiles: FileItemModel[];
+
+  @Column({ type: "varchar", nullable: true })
+  lenderNote: string
+
+  @Column("simple-json", { array: true })
+  lenderAttachFiles: FileItemModel[];
 
   @Column({ default: false })
   isDisabled: boolean

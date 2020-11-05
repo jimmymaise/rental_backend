@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
-import { ImageItemModel } from '../images/image-item.model'
+import { FileItemModel } from '../images/image-item.model'
 
 @Entity('items')
 export class Item {
@@ -23,7 +23,7 @@ export class Item {
   locationAreaIds: string[]
 
   @Column("simple-json", { array: true })
-  images: ImageItemModel[];
+  images: FileItemModel[];
 
   @Column("bigint", { array: true })
   unavailableForRentDays: bigint[]
