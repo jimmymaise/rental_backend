@@ -1,5 +1,5 @@
 type AuthPayload {
-  token: String
+  accessToken: String
   user: User
 }
 
@@ -12,4 +12,9 @@ type User {
 type Mutation {
   signUpByEmail(email: String!, password: String!): AuthPayload
   loginByEmail(email: String!, password: String!): AuthPayload
+}
+
+
+type Query {
+  whoAmI: User
 }

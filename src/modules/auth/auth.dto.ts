@@ -1,5 +1,5 @@
 export interface AuthDTO {
-  token: string
+  accessToken: string
   user: {
     id: string
     email: string

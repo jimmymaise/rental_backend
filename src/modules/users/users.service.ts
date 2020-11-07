@@ -13,6 +13,10 @@ export class UsersService {
     private prismaService: PrismaService
   ) {}
 
+  async getUserById(userId: string): Promise<User> {
+    return this.prismaService.user.findOne({ where: { id: userId } })
+  }
+
   async createUserByEmailPassword(email: string, password: string): Promise<User> {
     const passwordHash = await bcrypt.hash(password, 10) 
     return this.prismaService.user.create({ data: { email, passwordHash, role: [ UserRole.User ] } })

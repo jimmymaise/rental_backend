@@ -8,6 +8,7 @@ import {
   PrismaModule
 } from './modules'
 
+import { rootContants } from './constants'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 
@@ -19,8 +20,9 @@ import { AppService } from './app.service'
     PrismaModule, // Global Module
     GraphQLModule.forRoot({
       typePaths: ['./**/*.graphql'],
-      debug: true,
-      playground: true
+      context: ({ req }) => ({ req }), // Pass the context for Auth
+      debug: !rootContants.isProduction,
+      playground: !rootContants.isProduction
     }),
     AuthModule,
     AreasModule
