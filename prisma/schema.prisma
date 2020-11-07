@@ -16,8 +16,8 @@ model Area {
   name          String
   slug          String      @unique
   parentAreaId  String?
-  latitude      Decimal
-  longitude     Decimal
+  latitude      Float
+  longitude     Float
   order         Int?        @default(0)
   isDisabled    Boolean?    @default(false)
   isDeleted     Boolean?    @default(false)

@@ -1,7 +1,9 @@
 import { Args, Query, Resolver } from '@nestjs/graphql'
 
 import { AreasService } from './areas.service'
-import { Area } from './area.entity'
+import {
+  Area,
+} from '@prisma/client';
 
 @Resolver('Area')
 export class AreasResolvers {

@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Area } from './area.entity';
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
 
-// https://github.com/typeorm/typeorm/blob/master/docs/find-options.md
-// https://blog.codinghorror.com/a-visual-explanation-of-sql-joins/
+import { PrismaService } from '../prisma/prisma.service'
+import {
+  Area,
+} from '@prisma/client';
+
 @Injectable()
 export class AreasService {
   constructor(
-    @InjectRepository(Area)
-    private areasRepository: Repository<Area>,
+    private prismaService: PrismaService
   ) {}
 
   findAll(isDisabled: boolean = false): Promise<Area[]> {
-    return this.areasRepository.find({ isDisabled, isDeleted: false });
+    return this.prismaService.area.findMany({ where: { isDeleted: false, isDisabled } })
   }
 }
