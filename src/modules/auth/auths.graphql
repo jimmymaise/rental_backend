@@ -1,0 +1,15 @@
+type AuthPayload {
+  token: String
+  user: User
+}
+
+type User {
+  id: ID!
+  name: String
+  email: String!
+}
+
+type Mutation {
+  signUpByEmail(email: String!, password: String!): AuthPayload
+  loginByEmail(email: String!, password: String!): AuthPayload
+}

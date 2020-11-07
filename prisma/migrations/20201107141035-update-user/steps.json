@@ -1,0 +1,50 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "passwordHash",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "avatarImage",
+      "type": "Json",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "coverImage",
+      "type": "Json",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "User",
+      "field": "bio",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "FileStorage",
+      "field": "thumbnailMap",
+      "type": "Json",
+      "arity": "Optional"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "FileStorage",
+      "field": "thumbnail"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Item",
+      "field": "images",
+      "type": "Json"
+    }
+  ]
+}
