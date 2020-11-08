@@ -6,7 +6,7 @@ import {
 } from '@prisma/client';
 
 @Resolver('Category')
-export class CategoriessResolvers {
+export class CategoriesResolvers {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Query()

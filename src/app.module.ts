@@ -6,6 +6,7 @@ import {
   AuthModule,
   AreasModule,
   CategoriesModule,
+  StoragesModule,
   PrismaModule
 } from './modules'
 
@@ -29,7 +30,8 @@ import { AppService } from './app.service'
     }),
     AuthModule,
     AreasModule,
-    CategoriesModule
+    CategoriesModule,
+    StoragesModule
   ],
   controllers: [AppController],
   providers: [
