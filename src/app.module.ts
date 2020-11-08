@@ -16,9 +16,6 @@ import { AppService } from './app.service'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true
-    }),
     PrismaModule, // Global Module
     GraphQLModule.forRoot({
       typePaths: ['./**/*.graphql'],

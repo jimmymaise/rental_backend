@@ -27,7 +27,7 @@ export class StoragesResolvers {
     @Args('file') file: any
   ): Promise<boolean> {
     console.log('aaa', file)
-    const result = await this.storagesService.uploadItemImage(file.createReadStream(), file.name)
+    const result = await this.storagesService.uploadItemImage(file.createReadStream(), file)
     console.log('ooo', result)
     return false;
   }

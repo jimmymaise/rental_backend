@@ -4,7 +4,7 @@ import { GoogleCloudStorageService } from './google-cloud-storage.service'
 
 @Injectable()
 export class StoragesService {
-  public uploadItemImage(stream: any, fileName: any): Promise<any> {
-    return GoogleCloudStorageService.sendFileToGCSByStream(stream, fileName)
+  public uploadItemImage(stream: any, fileData: any): Promise<any> {
+    return GoogleCloudStorageService.sendFileToGCSByStream(stream, fileData)
   }
 }
