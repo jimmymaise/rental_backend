@@ -106,3 +106,21 @@ https://medium.com/@anjith_p/typeorm-database-migrations-in-nestjs-apps-ace923ed
 npm run migration
 npm run migration:create ProvinceTable
 ```
+
+## Upload file Graphql PostMan
+```
+curl --location --request POST 'http://localhost:3000/graphql' \
+--header 'Connection: keep-alive' \
+--header 'accept: */*' \
+--header 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36' \
+--header 'content-type: application/json' \
+--header 'Origin: http://localhost:3000' \
+--header 'Sec-Fetch-Site: same-origin' \
+--header 'Sec-Fetch-Mode: cors' \
+--header 'Sec-Fetch-Dest: empty' \
+--header 'Referer: http://localhost:3000/graphql' \
+--header 'Accept-Language: en-US,en;q=0.9' \
+--form 'operations={"query":"mutation uploadItemImage($file:Upload!) {\n  uploadItemImage(file: $file)\n}"}' \
+--form 'map={ "0": ["variables.file"] }' \
+--form '0=@/C:/Users/trank/Desktop/_home_black_bib-server_data_2020_VJM2020_On Course_lmk (1475).jpg'
+```

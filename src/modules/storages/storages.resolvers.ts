@@ -1,18 +1,34 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { GraphQLUpload, FileUpload } from 'graphql-upload';
+
+import { StoragesService } from './storages.service'
 
 @Resolver('Storage')
 export class StoragesResolvers {
-  @Mutation()
-  // async uploadItemImage(@Args({name: 'file', type: () => GraphQLUpload}): Promise<any> {
-  //   console.log('dddd', file)
-  //   const { stream, filename, mimetype, encoding } = await file;
-  //   return { filename, mimetype, encoding };
+  constructor(private readonly storagesService: StoragesService) {}
+
+  // @Mutation(() => Boolean)
+  // async uploadItemImage(
+  //   @Args({ name: 'file', type: () => GraphQLUpload })
+  //   fileUploadData: FileUpload,
+  // ): Promise<boolean> {
+  //   console.log('aaa', fileUploadData)
+  //   return new Promise(async (resolve, reject) =>
+  //     {
+  //       return fileUploadData.createReadStream()
+  //       .pipe(createWriteStream(`./uploads/${fileUploadData.filename}`))
+  //       .on('finish', () => resolve(true))
+  //       .on('error', () => reject(false))
+  //     }
+  //   );
   // }
+
+  @Mutation(() => Boolean)
   async uploadItemImage(
-    @Args({ name: 'file', type: () => GraphQLUpload })
-    { createReadStream, filename }: FileUpload,
-  ): Promise<any> {
-    return { filename };
+    @Args('file') file: any
+  ): Promise<boolean> {
+    console.log('aaa', file)
+    const result = await this.storagesService.uploadItemImage(file.createReadStream(), file.name)
+    console.log('ooo', result)
+    return false;
   }
 }

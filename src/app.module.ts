@@ -26,7 +26,11 @@ import { AppService } from './app.service'
         return ({ req: request });
       },
       debug: !rootContants.isProduction,
-      playground: !rootContants.isProduction
+      playground: !rootContants.isProduction,
+      uploads: {
+        maxFileSize: 10000000, // 20 MB
+        maxFiles: 5
+      }
     }),
     AuthModule,
     AreasModule,

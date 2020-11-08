@@ -53,6 +53,28 @@ export class GoogleCloudStorageService {
       stream.end(file.buffer);
     });
   }
+
+  public static sendFileToGCSByStream = (stream: any, fileName: string, bucketName: string = DEFAULT_BUCKET_NAME): Promise<any> => {
+    const bucket = storage.bucket(bucketName);
+    const gcsFileName = `${Date.now()}-${fileName}`;
+    const bucketFile: any = bucket.file(gcsFileName);
+
+    return new Promise((resolve, reject) => {
+      stream.on('error', (err: any) => {
+        bucketFile.cloudStorageError = err;
+        reject(err);
+      });
+    
+      stream.on('finish', () => {
+        bucketFile.cloudStorageObject = gcsFileName;
+    
+        return bucketFile.makePublic()
+          .then(() => {
+            resolve(GoogleCloudStorageService.getPublicUrl(bucketName, gcsFileName));
+          });
+      });
+    });
+  }
 }
 
 export default GoogleCloudStorageService;
