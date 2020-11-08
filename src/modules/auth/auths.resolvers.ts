@@ -8,7 +8,8 @@ import { AuthService } from './auth.service'
 import {
   AuthDTO
 } from './auth.dto';
-import { GqlAuthGuard, CurrentUser } from './gpl-auth.guard'
+import { GqlAuthGuard } from './gpl-auth.guard'
+import { CurrentUser } from './current-user.decorator'
 import { UsersService } from '../users/users.service'
 
 @Resolver('Auth')
@@ -36,8 +37,8 @@ export class AuthsResolvers {
   
   @Query()
   @UseGuards(GqlAuthGuard)
-  whoAmI(@CurrentUser() user: User) {
-    return this.usersService.getUserById(user.id);
+  whoAmI(@CurrentUser() user: any) {
+    return this.usersService.getUserById(user.userId);
   }
 }
 

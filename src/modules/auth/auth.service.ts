@@ -14,7 +14,7 @@ export class AuthService {
 
   async signUpByEmail(email: string, password: string): Promise<AuthDTO> {
     const user = await this.usersService.createUserByEmailPassword(email, password)
-    const accessToken = this.jwtService.sign({ userId: user.id })
+    const accessToken = this.jwtService.sign({ userId: user.id, email })
 
     return {
       accessToken,
@@ -28,7 +28,7 @@ export class AuthService {
 
   async loginByEmail(email: string, password: string): Promise<AuthDTO> {
     const user = await this.usersService.getUserByEmailPassword(email, password)
-    const accessToken = this.jwtService.sign({ userId: user.id })
+    const accessToken = this.jwtService.sign({ userId: user.id, email })
 
     return {
       accessToken,

@@ -20,7 +20,9 @@ import { AppService } from './app.service'
     PrismaModule, // Global Module
     GraphQLModule.forRoot({
       typePaths: ['./**/*.graphql'],
-      context: ({ req }) => ({ req }), // Pass the context for Auth
+      context: ({ request }) => {
+        return ({ req: request });
+      },
       debug: !rootContants.isProduction,
       playground: !rootContants.isProduction
     }),
