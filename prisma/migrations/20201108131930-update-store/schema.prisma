@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -69,6 +69,7 @@ model FileStorage {
   contentType       String
   usingLocate       FileUsingLocate?
   createdBy         String
+  ownerUserId       String
   createdDate       DateTime      @default(now())
   isDeleted         Boolean?      @default(false)
 }

@@ -1,0 +1,17 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "FileStorage",
+      "field": "ownerUserId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "FileStorage",
+      "field": "thumbnailUrl"
+    }
+  ]
+}

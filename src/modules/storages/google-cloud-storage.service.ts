@@ -54,7 +54,7 @@ export class GoogleCloudStorageService {
     });
   }
 
-  public static sendFileToGCSByStream = (stream: any, fileData: any, bucketName: string = DEFAULT_BUCKET_NAME): Promise<any> => {
+  public static sendFileToGCSByStream = (stream: any, fileData: any, bucketName: string = DEFAULT_BUCKET_NAME): Promise<string> => {
     return new Promise((resolve, reject) => {
       const bucket = storage.bucket(bucketName);
       const gcsFileName = `${Date.now()}-${fileData.filename}`;

@@ -1,0 +1,33 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateEnum",
+      "enum": "FileUsingLocate",
+      "values": [
+        "ItemPreviewImage",
+        "UserAvatarImage",
+        "UserCoverImage"
+      ]
+    },
+    {
+      "tag": "CreateField",
+      "model": "FileStorage",
+      "field": "usingLocate",
+      "type": "FileUsingLocate",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "FileStorage",
+      "field": "thumbnailUrl",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "FileStorage",
+      "field": "thumbnailMap"
+    }
+  ]
+}

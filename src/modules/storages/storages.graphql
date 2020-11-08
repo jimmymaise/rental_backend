@@ -1,10 +1,14 @@
 scalar Upload
 
-type File {
-  filename: String!
-  mimetype: String!
-  encoding: String!
+type StorageFile {
+  id: String!
+  url: String!
+  name: String
+  bucketName: String
+  folderName: String
+  contentType: String
 }
+
 type Mutation {
-  uploadItemImage(file: Upload!): Boolean!
+  uploadItemImage(file: Upload!): StorageFile!
 }
