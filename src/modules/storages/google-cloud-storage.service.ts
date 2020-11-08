@@ -54,15 +54,15 @@ export class GoogleCloudStorageService {
     });
   }
 
-  public static sendFileToGCSByStream = (stream: any, fileData: any, bucketName: string = DEFAULT_BUCKET_NAME): Promise<string> => {
+  public static sendFileToGCSByStream = (stream: any, filename: string, mimetype: string, bucketName: string = DEFAULT_BUCKET_NAME): Promise<string> => {
     return new Promise((resolve, reject) => {
       const bucket = storage.bucket(bucketName);
-      const gcsFileName = `${Date.now()}-${fileData.filename}`;
+      const gcsFileName = filename;
       const bucketFile: any = bucket.file(gcsFileName);
 
       stream.pipe(bucketFile.createWriteStream({
         metadata: {
-          contentType: fileData.mimetype,
+          contentType: mimetype,
         }
       }))
         .on('error', function(err) {

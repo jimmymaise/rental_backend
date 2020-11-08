@@ -11,10 +11,11 @@ const BUCKET_ITEM_IMAGE_NAME =
 export class StoragesService {
   constructor(private prismaService: PrismaService) {}
 
-  public uploadItemImage(stream: any, fileData: any): Promise<string> {
+  public uploadItemImage(stream: any, filename: string, mimetype: string): Promise<string> {
     return GoogleCloudStorageService.sendFileToGCSByStream(
       stream,
-      fileData,
+      filename,
+      mimetype,
       BUCKET_ITEM_IMAGE_NAME,
     );
   }

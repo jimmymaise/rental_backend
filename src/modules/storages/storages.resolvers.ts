@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import * as sharp from 'sharp'
 
 import { StoragesService } from './storages.service'
 import { GqlAuthGuard, CurrentUser, GuardUserPayload } from '../auth'
@@ -31,7 +32,14 @@ export class StoragesResolvers {
     @CurrentUser() user: GuardUserPayload,
     @Args('file') file: any
   ): Promise<StorageDTO> {
-    const fileFullUrl = await this.storagesService.uploadItemImage(file.createReadStream(), file)
+    const filename = Date.now() + '-' + file.filename
+    const fileFullUrl = await this.storagesService.uploadItemImage(file.createReadStream(), filename, file.mimetype)
+    const resizeOption = {
+      fit: sharp.fit.inside,
+      withoutEnlargement: true
+    }
+    await this.storagesService.uploadItemImage(file.createReadStream().pipe(sharp().resize(400, 400, resizeOption)), `small-${filename}`, file.mimetype)
+    await this.storagesService.uploadItemImage(file.createReadStream().pipe(sharp().resize(700, 700, resizeOption)), `medium-${filename}`, file.mimetype)
     const storageInfo = await this.storagesService.saveItemImageStorageInfo(file.filename, fileFullUrl, file.mimetype, user.userId)
 
     return {

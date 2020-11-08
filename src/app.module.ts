@@ -25,7 +25,7 @@ import { AppService } from './app.service'
       debug: !rootContants.isProduction,
       playground: !rootContants.isProduction,
       uploads: {
-        maxFileSize: 10000000, // 20 MB
+        maxFileSize: 5000000, // 5 MB
         maxFiles: 5
       }
     }),
