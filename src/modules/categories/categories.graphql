@@ -1,0 +1,16 @@
+type Category {
+  id: ID!
+  name: String
+  slug: String
+  imageUrl: String
+  thumbnailImageUrl: String
+  coverImageUrl: String
+  parentCategoryId: String
+  order: Int
+  isDisabled: Boolean
+}
+
+type Query {
+  getAllAvailableCategories: [Category]
+  getAllAvailableCategoriesInCategory(categoryId: String): [Category]
+}

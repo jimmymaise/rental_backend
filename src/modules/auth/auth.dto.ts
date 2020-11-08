@@ -6,3 +6,8 @@ export interface AuthDTO {
     name: string
   }
 }
+
+export interface GuardUserPayload {
+  userId: string
+  email: string
+}

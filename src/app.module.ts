@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import {
   AuthModule,
   AreasModule,
+  CategoriesModule,
   PrismaModule
 } from './modules'
 
@@ -27,7 +28,8 @@ import { AppService } from './app.service'
       playground: !rootContants.isProduction
     }),
     AuthModule,
-    AreasModule
+    AreasModule,
+    CategoriesModule
   ],
   controllers: [AppController],
   providers: [

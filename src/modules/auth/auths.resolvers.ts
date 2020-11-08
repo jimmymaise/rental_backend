@@ -6,7 +6,8 @@ import {
 
 import { AuthService } from './auth.service'
 import {
-  AuthDTO
+  AuthDTO,
+  GuardUserPayload
 } from './auth.dto';
 import { GqlAuthGuard } from './gpl-auth.guard'
 import { CurrentUser } from './current-user.decorator'
@@ -34,10 +35,10 @@ export class AuthsResolvers {
   ): Promise<AuthDTO> {
     return this.authService.loginByEmail(email, password)
   }
-  
+
   @Query()
   @UseGuards(GqlAuthGuard)
-  whoAmI(@CurrentUser() user: any) {
+  whoAmI(@CurrentUser() user: GuardUserPayload) {
     return this.usersService.getUserById(user.userId);
   }
 }

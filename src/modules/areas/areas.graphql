@@ -9,5 +9,5 @@ type Area {
 }
 
 type Query {
-  getAllAreas(isDisabled: Boolean): [Area]
+  getAllAvailableAreas(isDisabled: Boolean): [Area]
 }

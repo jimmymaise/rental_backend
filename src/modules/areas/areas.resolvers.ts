@@ -10,7 +10,7 @@ export class AreasResolvers {
   constructor(private readonly areasService: AreasService) {}
 
   @Query()
-  async getAllAreas(
+  async getAllAvailableAreas(
     @Args('isDisabled')
     isDisabled: boolean
   ): Promise<Area[]> {
