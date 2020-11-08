@@ -85,26 +85,36 @@ https://github.com/apollographql/apollo-server/issues/4463
 upgrade to apollo-server-fastify@3.0.0-alpha.3
 ```
 
-#
+# GraphQL Query
 ```
-{
-  getCountries {
+query {
+  whoAmI {
     id,
     name,
-    slug
+    email
+  }
+}
+
+mutation {
+  loginByEmail(
+    email: "alice@prisma.io"
+    password: "graphql"
+  ) {
+    accessToken
+    user {
+      id,
+      name,
+      email
+    }
   }
 }
 ```
 
-https://typeorm.io/#/relations
-
-https://github.com/typeorm/typeorm/blob/master/src/driver/types/ColumnTypes.ts
-
-## Migration
-https://medium.com/@anjith_p/typeorm-database-migrations-in-nestjs-apps-ace923edf1bf
+## Update Table Changed
 ```
-npm run migration
-npm run migration:create ProvinceTable
+npm run prisma:mirgation-save
+npm run prisma:mirgation-up
+npm run prisma:generate
 ```
 
 ## Upload file Graphql PostMan
@@ -120,7 +130,7 @@ curl --location --request POST 'http://localhost:3000/graphql' \
 --header 'Sec-Fetch-Dest: empty' \
 --header 'Referer: http://localhost:3000/graphql' \
 --header 'Accept-Language: en-US,en;q=0.9' \
---form 'operations={"query":"mutation uploadItemImage($file:Upload!) {\n  uploadItemImage(file: $file)\n}"}' \
+--form 'operations={"query":"mutation uploadItemImage($file:Upload!) {\n uploadItemImage(file:$file)\n}", "variables": { "file": null }}' \
 --form 'map={ "0": ["variables.file"] }' \
 --form '0=@/C:/Users/trank/Desktop/_home_black_bib-server_data_2020_VJM2020_On Course_lmk (1475).jpg'
 ```
