@@ -10,8 +10,8 @@ export class CategoriesResolvers {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Query()
-  async getAllAvailableCategories(): Promise<Category[]> {
-    return this.categoriesService.findAllAvailable()
+  async getAllAvailableCategories(@Args('isFeatured') isFeatured?: boolean): Promise<Category[]> {
+    return this.categoriesService.findAllAvailable(isFeatured)
   }
 
   @Query()

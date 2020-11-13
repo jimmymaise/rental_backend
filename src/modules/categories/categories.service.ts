@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import * as bcrypt from 'bcrypt'
 
 import { PrismaService } from '../prisma/prisma.service'
 import {
@@ -12,7 +11,11 @@ export class CategoriesService {
     private prismaService: PrismaService
   ) {}
 
-  findAllAvailable(): Promise<Category[]> {
+  findAllAvailable(isFeatured: boolean): Promise<Category[]> {
+    if (isFeatured !== null) {
+      return this.prismaService.category.findMany({ where: { isDeleted: false, isDisabled: false, isFeatured } })
+    }
+
     return this.prismaService.category.findMany({ where: { isDeleted: false, isDisabled: false } })
   }
 

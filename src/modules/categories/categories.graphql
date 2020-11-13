@@ -3,14 +3,14 @@ type Category {
   name: String
   slug: String
   imageUrl: String
-  thumbnailImageUrl: String
   coverImageUrl: String
   parentCategoryId: String
   order: Int
   isDisabled: Boolean
+  isFeatured: Boolean
 }
 
 type Query {
-  getAllAvailableCategories: [Category]
+  getAllAvailableCategories(isFeatured: Boolean): [Category]
   getAllAvailableCategoriesInCategory(categoryId: String): [Category]
 }
