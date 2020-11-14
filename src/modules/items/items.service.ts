@@ -7,6 +7,7 @@ import {
 } from '@prisma/client';
 import { ItemUserInputDTO } from './item-user-input.dto'
 import { stringToSlug } from '../../helpers'
+import { PaginationDTO } from '../../models'
 
 @Injectable()
 export class ItemsService {
@@ -40,8 +41,6 @@ export class ItemsService {
     } = itemData
     const nowToString = Date.now().toString()
 
-    // console.log('aaaa', images[0])
-
     return this.prismaService.item.create({
       data: {
         name,
@@ -68,5 +67,41 @@ export class ItemsService {
         updatedBy: userId
       }
     })
+  }
+
+  async findAllAvailablesItem(searchValue: string = '', offset = 0, limit = 10): Promise<PaginationDTO<Item>> {
+    const mandatoryWhere = {
+      isDeleted: false,
+      isVerified: true,
+      status: ItemStatus.Published
+    }
+
+    const where = searchValue
+    ? {
+      AND: [
+        {
+          ...mandatoryWhere
+        },
+        {
+          OR: [
+            { name: { contains: searchValue } },
+            { description: { contains: searchValue } },
+          ],
+        }
+      ]
+    }
+    : mandatoryWhere
+
+    const items = await this.prismaService.item.findMany({
+      where,
+      skip: offset,
+      take: limit
+    })
+    const count = await this.prismaService.item.count({ where })
+
+    return {
+      items,
+      total: count
+    }
   }
 }

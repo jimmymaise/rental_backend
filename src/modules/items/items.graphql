@@ -27,6 +27,11 @@ type Item {
   updatedDate: Float
 }
 
+type ItemPagination {
+  items: [Item]
+  total: Int
+}
+
 input ItemUserInput {
   name: String!
   description: String
@@ -47,4 +52,8 @@ input ItemUserInput {
 
 type Mutation {
   listingNewItem(itemData: ItemUserInput!): Item
+}
+
+type Query {
+  feed(search: String, offset: Int, limit: Int): ItemPagination
 }
