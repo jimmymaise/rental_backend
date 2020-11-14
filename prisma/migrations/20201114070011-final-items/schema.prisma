@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -21,8 +21,8 @@ model User {
   passwordHash  String
   name          String?
   bio           String?
-  avatarImage   String? // { id, url }
-  coverImage    String? // { id, url }
+  avatarImage   Json? // { id, url }
+  coverImage    Json? // { id, url }
   role          UserRole[]
 }
 
@@ -88,10 +88,10 @@ model Item {
   description             String?
   categories              Category[]      @relation(references: [id])
   areas                   Area[]          @relation(references: [id])
-  images                  String?
+  images                  Json[]
   roughAddress            String?
-  checkBeforeRentDocuments         String?
-  keepWhileRentingDocuments        String?
+  checkBeforeRentDocuments         Json[]
+  keepWhileRentingDocuments        Json[]
   unavailableForRentDays  DateTime[]
   currentOriginalPrice    Float?
   sellPrice               Float?
@@ -204,7 +204,7 @@ model RentingItemRequestComment {
   rentingItem           Item @relation(fields: [itemId], references: [id])
   itemId                String
   content             String?
-  files                 String? // JSON
+  files                 Json[]
   isLocked              Boolean?        @default(false)
   lockedBy               String
   isDisabled              Boolean?        @default(false)
@@ -240,7 +240,7 @@ model UserNotification {
   forUserId             String
   title             String
   content             String
-  images            String? // JSON
+  images            Json[]
   type              UserNotificationType
   isRead          Boolean?        @default(false)
 }

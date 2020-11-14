@@ -1,0 +1,13 @@
+input PublicRentingMandatoryVerifyDocumentInput {
+  id: ID!
+  name: String
+  dataType: String
+  value: String
+}
+
+type PublicRentingMandatoryVerifyDocument {
+  id: ID!
+  name: String
+  dataType: String
+  value: String
+}

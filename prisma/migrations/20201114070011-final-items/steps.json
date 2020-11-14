@@ -1,0 +1,30 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "DeleteField",
+      "model": "Item",
+      "field": "isDisabled"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Item",
+          "arguments": [
+            {
+              "name": "fields",
+              "value": "[name, slug, status, ownerUserId, isDeleted]"
+            },
+            {
+              "name": "name",
+              "value": "\"item_main_index\""
+            }
+          ]
+        },
+        "directive": "index"
+      }
+    }
+  ]
+}

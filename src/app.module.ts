@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
-import { ConfigModule } from '@nestjs/config';
 
 import {
   AuthModule,
   AreasModule,
   CategoriesModule,
   StoragesModule,
-  PrismaModule
+  PrismaModule,
+  ItemsModule
 } from './modules'
 
 import { rootContants } from './constants'
@@ -32,7 +32,8 @@ import { AppService } from './app.service'
     AuthModule,
     AreasModule,
     CategoriesModule,
-    StoragesModule
+    StoragesModule,
+    ItemsModule
   ],
   controllers: [AppController],
   providers: [

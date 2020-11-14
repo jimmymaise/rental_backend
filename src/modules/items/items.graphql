@@ -1,0 +1,50 @@
+type Item {
+  id: ID!
+  name: String!
+  slug: String!
+  description: String
+  categories: [Category]
+  areas: [Area]
+  images: [PublicStorageFile]
+  roughtAddress: String
+  checkBeforeRentDocuments: [PublicRentingMandatoryVerifyDocument]
+  keepWhileRentingDocuments: [PublicRentingMandatoryVerifyDocument]
+  unavailableForRentDays: [Float]
+  currentOriginalPrice: Float
+  sellPrice: Float
+  rentPricePerDay: Float
+  rentPricePerWeek: Float
+  rentPricePerMonth: Float
+  currencyCode: String
+  summaryReviewCore: Float
+  summaryReviewCount: Float
+  availableQuantity: Int
+  totalQuantity: Int
+  isVerified: Boolean
+  status: String
+  note: String
+  createdDate: Float
+  updatedDate: Float
+}
+
+input ItemUserInput {
+  name: String!
+  description: String
+  categoryIds: [String]
+  areaIds: [String]
+  images: [PublicStorageFileInput]
+  roughtAddress: String
+  checkBeforeRentDocuments: [PublicRentingMandatoryVerifyDocumentInput]
+  keepWhileRentingDocuments: [PublicRentingMandatoryVerifyDocumentInput]
+  unavailableForRentDays: [Float]
+  currentOriginalPrice: Float
+  sellPrice: Float
+  rentPricePerDay: Float
+  rentPricePerWeek: Float
+  rentPricePerMonth: Float
+  note: String
+}
+
+type Mutation {
+  listingNewItem(itemData: ItemUserInput!): Item
+}

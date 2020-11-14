@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -204,7 +204,7 @@ model RentingItemRequestComment {
   rentingItem           Item @relation(fields: [itemId], references: [id])
   itemId                String
   content             String?
-  files                 String? // JSON
+  files                 String[]
   isLocked              Boolean?        @default(false)
   lockedBy               String
   isDisabled              Boolean?        @default(false)
@@ -240,7 +240,7 @@ model UserNotification {
   forUserId             String
   title             String
   content             String
-  images            String? // JSON
+  images            Json[]
   type              UserNotificationType
   isRead          Boolean?        @default(false)
 }

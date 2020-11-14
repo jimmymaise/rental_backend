@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import * as jwt from 'jsonwebtoken'
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from '../users/users.service'

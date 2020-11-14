@@ -1,0 +1,44 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateField",
+      "model": "User",
+      "field": "avatarImage",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "User",
+      "field": "coverImage",
+      "type": "String"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Item",
+      "field": "images",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Item",
+      "field": "checkBeforeRentDocuments",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Item",
+      "field": "keepWhileRentingDocuments",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "RentingItemRequestComment",
+      "field": "files",
+      "type": "String"
+    }
+  ]
+}

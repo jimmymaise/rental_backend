@@ -1,5 +1,15 @@
 scalar Upload
 
+input PublicStorageFileInput {
+  id: String!
+  url: String!
+}
+
+type PublicStorageFile {
+  id: String!
+  url: String!
+}
+
 type StorageFile {
   id: String!
   url: String!
