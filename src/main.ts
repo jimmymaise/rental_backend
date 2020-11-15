@@ -19,10 +19,20 @@
 
 
 import { NestFactory } from '@nestjs/core';
+import * as helmet from 'helmet'
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(helmet());
+  // app.use(function(req, res, next) {
+  //   res.header("Access-Control-Allow-Origin", "*");
+  //   res.header("Access-Control-Allow-Headers", "*");
+  //   next();
+  // });
+
   await app.listen(Number(process.env.PORT) || 3000, '0.0.0.0');
 }
 
