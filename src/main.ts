@@ -27,11 +27,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(helmet());
-  // app.use(function(req, res, next) {
-  //   res.header("Access-Control-Allow-Origin", "*");
-  //   res.header("Access-Control-Allow-Headers", "*");
-  //   next();
-  // });
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3500, https://*.thuedo.vn, https://thuedo.vn");
+    res.header("Access-Control-Allow-Headers", "Authorization");
+    res.header('Access-Control-Allow-Credentials', true)
+    next();
+  });
 
   await app.listen(Number(process.env.PORT) || 3000, '0.0.0.0');
 }
