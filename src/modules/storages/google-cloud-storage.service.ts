@@ -10,7 +10,7 @@ const storage = new googleStorage.Storage({
 });
 
 export class GoogleCloudStorageService {
-  public static getPublicUrl = (bucketName: string, fileName: string) => `https://storage.googleapis.com/${bucketName}/${fileName}`;
+  public static getPublicUrl = (bucketName: string, fileName: string) => process.env.NODE_ENV === 'production' ? `https://${bucketName}/${fileName}` : `https://storage.googleapis.com/${bucketName}/${fileName}`;
 
   // public static copyFileToGCS = (localFilePath: string, bucketName: string, options: any) => {
   //   options = options || {};
