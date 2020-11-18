@@ -47,12 +47,25 @@ export class ItemsResolvers {
   @Query()
   @UseGuards(GqlAuthGuard)
   async feed(
-    @Args('search') search: string,
-    @Args('offset') offset: number,
-    @Args('limit') limit: number
+    @Args('query') query: {
+      search: string,
+      offset: number,
+      limit: number,
+      areaId: string,
+      categoryId: string,
+      includes: string[]
+    }
   ): Promise<PaginationDTO<ItemDTO>> {
+    const { search, offset, limit, areaId, categoryId, includes } = query
     const actualLimit = limit && limit > 100 ? 100 : limit
-    const result = await this.itemService.findAllAvailablesItem(search, offset, actualLimit)
+    const result = await this.itemService.findAllAvailablesItem({
+      searchValue: search,
+      offset,
+      limit: actualLimit,
+      areaId,
+      categoryId,
+      includes
+    })
 
     return {
       items: result.items.map(toItemDTO),

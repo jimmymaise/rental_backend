@@ -1,3 +1,8 @@
+import {
+  Category,
+  Area
+} from '@prisma/client';
+
 import { StoragePublicDTO } from '../storages/storage-public.dto'
 import { RentingMandatoryVerifyDocumentPublicDTO } from '../renting-mandatory-verify-documents/renting-mandatory-verify-document-public.dto'
 
@@ -6,8 +11,8 @@ export interface ItemDTO {
   name: string
   slug: string
   description?: string
-  categoryIds?: string[]
-  areas?: any[]
+  categories?: Category[]
+  areas?: Area[]
   images?: StoragePublicDTO[]
   roughAddress?: string
   checkBeforeRentDocuments?: RentingMandatoryVerifyDocumentPublicDTO[]

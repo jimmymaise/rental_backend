@@ -30,6 +30,8 @@ type Item {
 type ItemPagination {
   items: [Item]
   total: Int
+  limit: Int
+  offset: Int
 }
 
 input ItemUserInput {
@@ -50,10 +52,19 @@ input ItemUserInput {
   note: String
 }
 
+input ItemQuery {
+  search: String
+  offset: Int
+  limit: Int
+  categoryId: String
+  areaId: String
+  includes: [String]
+}
+
 type Mutation {
   listingNewItem(itemData: ItemUserInput!): Item
 }
 
 type Query {
-  feed(search: String, offset: Int, limit: Int): ItemPagination
+  feed(query: ItemQuery): ItemPagination
 }
