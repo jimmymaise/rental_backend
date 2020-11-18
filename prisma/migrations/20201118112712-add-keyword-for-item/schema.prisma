@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -112,7 +112,7 @@ model Item {
   updatedDate             DateTime        @default(now())
   updatedBy               String
   itemRentingDates        ItemRentingDate[]
-  keyword                 String?
+  keywork                 String?
 
   @@index(fields: [name, slug, status, ownerUserId, isDeleted], name: "item_main_index")
 }
