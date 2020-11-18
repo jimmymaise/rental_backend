@@ -56,7 +56,7 @@ export class ItemsResolvers {
       includes: string[]
     }
   ): Promise<PaginationDTO<ItemDTO>> {
-    const { search, offset, limit, areaId, categoryId, includes } = query
+    const { search, offset, limit, areaId, categoryId, includes } = query || {}
     const actualLimit = limit && limit > 100 ? 100 : limit
     const result = await this.itemService.findAllAvailablesItem({
       searchValue: search,

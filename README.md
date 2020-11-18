@@ -163,3 +163,27 @@ mutation {
   "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmZWI5NDFmNi1hM2UyLTQzMTAtYmRhMC1mM2VkNTk5MjlmYjEiLCJlbWFpbCI6ImFsaWNlQHByaXNtYS5pbyIsImlhdCI6MTYwNTM0OTg0OCwiZXhwIjoxNjA1MzUzNDQ4fQ.0FAICaz5IUeGICSzU4p1uyarGTY0BOv5G47acTNJdC4"
 }
 ```
+
+## query items 
+```
+query {
+  feed(query: { search: "kho khan", areaId: "d261e703-55af-4823-a059-afca6a551b80", includes: ["categories"] }) {
+    items {
+      id,
+      name,
+      description,
+      status,
+      categories {
+        id,
+        name,
+        imageUrl
+      },
+      areas {
+        id,
+        name
+      }
+    },
+    total
+  }
+}
+```
