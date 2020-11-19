@@ -45,7 +45,6 @@ export class ItemsResolvers {
   }
 
   @Query()
-  @UseGuards(GqlAuthGuard)
   async feed(
     @Args('query') query: {
       search: string,
@@ -69,7 +68,9 @@ export class ItemsResolvers {
 
     return {
       items: result.items.map(toItemDTO),
-      total: result.total
+      total: result.total,
+      offset: offset || 0,
+      limit: actualLimit
     }
   }
 }

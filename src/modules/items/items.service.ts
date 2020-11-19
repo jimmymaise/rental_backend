@@ -155,6 +155,8 @@ export class ItemsService {
     return {
       items,
       total: count,
+      offset,
+      limit
     };
   }
 }
