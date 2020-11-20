@@ -67,4 +67,5 @@ type Mutation {
 
 type Query {
   feed(query: ItemQuery): ItemPagination
+  feedDetailBySlug(slug: String!, includes: [String]): Item
 }

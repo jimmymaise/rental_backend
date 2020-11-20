@@ -159,4 +159,38 @@ export class ItemsService {
       limit
     };
   }
+
+  async findOneAvailableBySlug(slug: string, includes?: string[]): Promise<Item> {
+    const validIncludeMap = {
+      categories: true,
+      areas: true,
+    };
+
+    const include = (includes || []).reduce((result, cur) => {
+      if (validIncludeMap[cur]) {
+        result[cur] = true;
+      }
+      return result;
+    }, {});
+
+    const where = {
+      slug
+    }
+
+    const findCondition: any = {
+      where
+    };
+
+    if (Object.keys(include).length) {
+      findCondition.include = include;
+    }
+
+    const item = await this.prismaService.item.findOne(findCondition);
+
+    if (!item || item.isDeleted || !item.isVerified || item.status !== ItemStatus.Published) {
+      return null
+    }
+
+    return item
+  }
 }

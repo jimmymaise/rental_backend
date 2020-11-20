@@ -15,6 +15,10 @@ import {
 import { PaginationDTO } from '../../models'
 
 function toItemDTO(item: Item): ItemDTO {
+  if (!item) {
+    return null
+  }
+
   return {
     ...item,
     createdDate: item.createdDate.getTime(),
@@ -72,5 +76,15 @@ export class ItemsResolvers {
       offset: offset || 0,
       limit: actualLimit
     }
+  }
+
+  @Query()
+  async feedDetailBySlug(
+    @Args('slug') slug: string,
+    @Args('includes') includes: string[],
+  ): Promise<ItemDTO> {
+    const item = await this.itemService.findOneAvailableBySlug(slug, includes)
+
+    return toItemDTO(item)
   }
 }
