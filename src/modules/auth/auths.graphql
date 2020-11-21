@@ -12,6 +12,7 @@ type User {
 type Mutation {
   signUpByEmail(email: String!, password: String!): AuthPayload
   loginByEmail(email: String!, password: String!): AuthPayload
+  logout: Boolean
 }
 
 type Query {

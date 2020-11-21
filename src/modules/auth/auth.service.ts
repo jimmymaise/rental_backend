@@ -52,4 +52,8 @@ export class AuthService {
     return rootContants.isProduction ? `Authentication=${accessToken}; HttpOnly; Secure; Path=/; Max-Age=${this.configService.get('JWT_EXPIRATION_TIME')}; SameSite=None;`
       : `Authentication=${accessToken}; HttpOnly; Path=/; Max-Age=${this.configService.get('JWT_EXPIRATION_TIME')}; SameSite=Lax;`
   }
+
+  getAuthCookieHeaderForLogout(): string {
+    return `Authentication=; HttpOnly; Path=/; Max-Age=0`
+  }
 }

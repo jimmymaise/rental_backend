@@ -56,5 +56,14 @@ export class AuthsResolvers {
   whoAmI(@CurrentUser() user: GuardUserPayload) {
     return this.usersService.getUserById(user.userId);
   }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  logout(@Context() context: any) {
+    const tokenHeaderCookie = this.authService.getAuthCookieHeaderForLogout()
+    context.res.setHeader('Set-Cookie', tokenHeaderCookie);
+
+    return true
+  }
 }
 
