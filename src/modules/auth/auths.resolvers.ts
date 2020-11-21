@@ -1,8 +1,5 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Resolver, Mutation, Query } from '@nestjs/graphql'
-import {
-  User
-} from '@prisma/client';
+import { Args, Resolver, Mutation, Query, Context } from '@nestjs/graphql'
 
 import { AuthService } from './auth.service'
 import {
@@ -22,18 +19,36 @@ export class AuthsResolvers {
 
   @Mutation()
   async signUpByEmail(
+    @Context() context: any, // GraphQLExecutionContext
     @Args('email') email: string,
     @Args('password') password: string
   ): Promise<AuthDTO> {
-    return this.authService.signUpByEmail(email, password)
+    const { accessToken, ...restProps } = await this.authService.signUpByEmail(email, password)
+
+    const tokenHeaderCookie = this.authService.getAuthCookieHeader(accessToken)
+    context.res.setHeader('Set-Cookie', tokenHeaderCookie);
+
+    return {
+      ...restProps,
+      accessToken
+    }
   }
 
   @Mutation()
   async loginByEmail(
+    @Context() context: any, // GraphQLExecutionContext
     @Args('email') email: string,
     @Args('password') password: string
   ): Promise<AuthDTO> {
-    return this.authService.loginByEmail(email, password)
+    const { accessToken, ...restProps } = await this.authService.loginByEmail(email, password)
+
+    const tokenHeaderCookie = this.authService.getAuthCookieHeader(accessToken)
+    context.res.setHeader('Set-Cookie', tokenHeaderCookie);
+
+    return {
+      ...restProps,
+      accessToken
+    }
   }
 
   @Query()

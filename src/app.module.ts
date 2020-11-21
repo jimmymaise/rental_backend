@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
+import { createPlaygroundOptions } from 'apollo-server-core'
+import { ConfigModule } from '@nestjs/config';
+import * as Joi from '@hapi/joi';
 
 import {
   AuthModule,
@@ -19,15 +22,25 @@ import { AppService } from './app.service'
     PrismaModule, // Global Module
     GraphQLModule.forRoot({
       typePaths: ['./**/*.graphql'],
-      context: ({ request }) => {
-        return ({ req: request });
+      context: ({ request, res }) => {
+        return ({ req: request, res });
       },
       debug: !rootContants.isProduction,
-      playground: !rootContants.isProduction,
+      playground: !rootContants.isProduction ? {
+        settings: {
+          "request.credentials": "include"
+        }
+      } : undefined,
       uploads: {
         maxFileSize: 5000000, // 5 MB
         maxFiles: 5
       }
+    }),
+    ConfigModule.forRoot({
+      validationSchema: Joi.object({
+        JWT_SECRET: Joi.string().required(),
+        JWT_EXPIRATION_TIME: Joi.number().required(),
+      })
     }),
     AuthModule,
     AreasModule,

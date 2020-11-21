@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
+import { rootContants } from '../../constants'
 import { UsersService } from '../users/users.service'
 import { AuthDTO } from './auth.dto'
 
@@ -8,7 +10,8 @@ import { AuthDTO } from './auth.dto'
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private configService: ConfigService
   ) {}
 
   async signUpByEmail(email: string, password: string): Promise<AuthDTO> {
@@ -37,5 +40,16 @@ export class AuthService {
         name: user.name
       }
     }
+  }
+
+  getAuthCookieHeader(accessToken: string): string {
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+    // https://stackoverflow.com/questions/60131986/why-chrome-can-t-set-cookie
+
+    // Check the Info in Cookies Tab
+    // With Credential = True
+    return rootContants.isProduction ? `Authentication=${accessToken}; HttpOnly; Secure; Path=/; Max-Age=${this.configService.get('JWT_EXPIRATION_TIME')}; SameSite=None;`
+      : `Authentication=${accessToken}; HttpOnly; Path=/; Max-Age=${this.configService.get('JWT_EXPIRATION_TIME')}; SameSite=Lax;`
   }
 }
