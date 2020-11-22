@@ -9,6 +9,7 @@ import { AuthsResolvers } from './auths.resolvers'
 
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
+import { JwtRefreshTokenStrategy } from './jwt-refresh-token.strategy'
 
 @Module({
   imports: [
@@ -19,9 +20,9 @@ import { JwtStrategy } from './jwt.strategy';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'),
+        secret: configService.get('JWT_ACCESS_TOKEN_SECRET'),
         signOptions: {
-          expiresIn: `${configService.get('JWT_EXPIRATION_TIME')}s`,
+          expiresIn: `${configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')}s`,
         },
       }),
     })
@@ -30,7 +31,8 @@ import { JwtStrategy } from './jwt.strategy';
     AuthService,
     AuthsResolvers,
     LocalStrategy,
-    JwtStrategy
+    JwtStrategy,
+    JwtRefreshTokenStrategy
   ]
 })
 export class AuthModule {}

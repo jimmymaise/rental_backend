@@ -1,5 +1,6 @@
 export interface AuthDTO {
-  accessToken: string
+  accessToken?: string
+  refreshToken?: string
   user: {
     id: string
     email: string
@@ -8,6 +9,6 @@ export interface AuthDTO {
 }
 
 export interface GuardUserPayload {
-  userId: string
+  id: string
   email: string
 }

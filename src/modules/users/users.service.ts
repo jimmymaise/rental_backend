@@ -15,6 +15,7 @@ export class UsersService {
 
   async getUserById(userId: string): Promise<User> {
     return this.prismaService.user.findOne({ where: { id: userId } })
+    // throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);
   }
 
   async createUserByEmailPassword(email: string, password: string): Promise<User> {
@@ -35,4 +36,41 @@ export class UsersService {
 
     return user
   }
+
+  async removeCurrentRefreshToken(userId: string) {
+    await this.prismaService.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        currentHashedRefreshToken: null
+      }
+    })
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, userId: string) {
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.prismaService.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        currentHashedRefreshToken
+      }
+    })
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    const user = await this.getUserById(userId)
+ 
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      user.currentHashedRefreshToken
+    );
+ 
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+  }
+  
 }

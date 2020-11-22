@@ -40,7 +40,7 @@ export class ItemsResolvers {
     @Args('itemData') itemData: ItemUserInputDTO,
   ): Promise<ItemDTO> {
     return new Promise((resolve, reject) => {
-      this.itemService.createItemForUser(itemData, user.userId)
+      this.itemService.createItemForUser(itemData, user.id)
         .then((item) => {
           resolve(toItemDTO(item))
         })

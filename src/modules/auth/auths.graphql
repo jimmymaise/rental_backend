@@ -1,5 +1,6 @@
 type AuthPayload {
   accessToken: String
+  refreshToken: String
   user: User
 }
 
@@ -13,6 +14,7 @@ type Mutation {
   signUpByEmail(email: String!, password: String!): AuthPayload
   loginByEmail(email: String!, password: String!): AuthPayload
   logout: Boolean
+  refreshUserAccessToken(refresh: String): AuthPayload
 }
 
 type Query {

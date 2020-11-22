@@ -7,6 +7,7 @@ import {
   GuardUserPayload
 } from './auth.dto';
 import { GqlAuthGuard } from './gpl-auth.guard'
+import { GqlRefreshGuard } from './gpl-request.guard'
 import { CurrentUser } from './current-user.decorator'
 import { UsersService } from '../users/users.service'
 
@@ -23,14 +24,19 @@ export class AuthsResolvers {
     @Args('email') email: string,
     @Args('password') password: string
   ): Promise<AuthDTO> {
-    const { accessToken, ...restProps } = await this.authService.signUpByEmail(email, password)
+    const { accessToken, refreshToken, ...restProps } = await this.authService.signUpByEmail(email, password)
 
-    const tokenHeaderCookie = this.authService.getAuthCookieHeader(accessToken)
-    context.res.setHeader('Set-Cookie', tokenHeaderCookie);
+    await this.usersService.setCurrentRefreshToken(refreshToken, restProps.user.id)
+
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(accessToken)
+    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(refreshToken)
+
+    context.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
 
     return {
       ...restProps,
-      accessToken
+      accessToken,
+      refreshToken
     }
   }
 
@@ -40,27 +46,59 @@ export class AuthsResolvers {
     @Args('email') email: string,
     @Args('password') password: string
   ): Promise<AuthDTO> {
-    const { accessToken, ...restProps } = await this.authService.loginByEmail(email, password)
+    const { accessToken, refreshToken, ...restProps } = await this.authService.loginByEmail(email, password)
 
-    const tokenHeaderCookie = this.authService.getAuthCookieHeader(accessToken)
-    context.res.setHeader('Set-Cookie', tokenHeaderCookie);
+    await this.usersService.setCurrentRefreshToken(refreshToken, restProps.user.id)
+
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(accessToken)
+    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(refreshToken)
+    context.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
 
     return {
       ...restProps,
-      accessToken
+      accessToken,
+      refreshToken
     }
   }
 
   @Query()
   @UseGuards(GqlAuthGuard)
   whoAmI(@CurrentUser() user: GuardUserPayload) {
-    return this.usersService.getUserById(user.userId);
+    return this.usersService.getUserById(user.id);
+  }
+
+  @Mutation()
+  @UseGuards(GqlRefreshGuard)
+  async refreshUserAccessToken(
+    @Context() context: any, // GraphQLExecutionContext
+    @CurrentUser() currentUser: GuardUserPayload,
+    @Args('refresh') refresh: string,
+  ): Promise<AuthDTO> {
+    const user = await this.usersService.getUserById(currentUser.id)
+
+    const accessToken = this.authService.getAccessToken({
+      userId: user.id,
+      email: user.email
+    })
+
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(accessToken)
+    context.res.setHeader('Set-Cookie', accessTokenCookie);
+
+    return {
+      accessToken,
+      user
+    }
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  logout(@Context() context: any) {
-    const tokenHeaderCookie = this.authService.getAuthCookieHeaderForLogout()
+  async logout(
+    @Context() context: any,
+    @CurrentUser() currentUser: GuardUserPayload,
+  ) {
+    await this.authService.removeRefreshToken(currentUser.id)
+
+    const tokenHeaderCookie = this.authService.getCookieForLogout()
     context.res.setHeader('Set-Cookie', tokenHeaderCookie);
 
     return true

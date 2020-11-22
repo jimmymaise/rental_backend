@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -23,7 +23,7 @@ model User {
   bio           String?
   avatarImage   String? // { id, url }
   coverImage    String? // { id, url }
-  currentHashedRefreshToken String? @unique
+  currentHashedRefreshToken String?
   role          UserRole[]
 }
 
