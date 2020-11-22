@@ -31,11 +31,24 @@ async function bootstrap() {
     { contentSecurityPolicy: (process.env.NODE_ENV === 'production') ? undefined : false }
   ));
   app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3500, https://*.thuedo.vn, https://thuedo.vn");
-    res.header("Access-Control-Allow-Headers", "Authorization, set-cookie");
-    res.header("Access-Control-Expose-Headers", "Authorization, set-cookie");
+    const allowedOrigins = ["http://localhost:3500", "https://*.thuedo.vn", "https://thuedo.vn"]
+
+    const origin = req.headers.origin
+    if (allowedOrigins.includes(origin)) {
+      res.header("Access-Control-Allow-Origin", origin);
+    }
+
+    res.header("Access-Control-Allow-Headers", "Authorization, Content-Type");
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    // res.header("Access-Control-Expose-Headers", "Authorization, set-cookie");
     res.header('Access-Control-Allow-Credentials', true)
-    next();
+
+    if ('OPTIONS' == req.method) {
+      res.sendStatus(200);
+    }
+    else {
+      next();
+    }
   });
   app.use(cookieParser());
 

@@ -20,6 +20,10 @@ import { AppService } from './app.service'
   imports: [
     PrismaModule, // Global Module
     GraphQLModule.forRoot({
+      cors: {
+        origin: ["http://localhost:3500", "https://*.thuedo.vn", "https://thuedo.vn"],
+        credentials: true,
+      },
       typePaths: ['./**/*.graphql'],
       context: ({ request, res }) => {
         return ({ req: request, res });
