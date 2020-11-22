@@ -1,0 +1,25 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "RentingItemRequest",
+          "arguments": [
+            {
+              "name": "fields",
+              "value": "[itemId, ownerUserId, lenderUserId, isDeleted]"
+            },
+            {
+              "name": "name",
+              "value": "\"renting_item_request_main_index\""
+            }
+          ]
+        },
+        "directive": "index"
+      }
+    }
+  ]
+}
