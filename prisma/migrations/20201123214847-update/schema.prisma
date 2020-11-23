@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -140,7 +140,6 @@ model RentingItemRequest {
   id                      String          @id @default(uuid())
   rentingItem           Item @relation(fields: [itemId], references: [id])
   itemId                String
-  rentingItemCachedInfo       String
   totalAmount             Float?           @default(0)
   actualTotalAmount            Float?           @default(0)
   rentTotalQuantity       Int?             @default(1)
