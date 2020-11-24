@@ -134,6 +134,7 @@ enum RentingItemRequestStatus {
   Approved
   InProgress
   Completed
+  Cancelled
 }
 
 model RentingItemRequest {

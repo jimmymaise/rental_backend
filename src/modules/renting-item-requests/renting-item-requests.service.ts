@@ -2,22 +2,45 @@ import { Injectable } from '@nestjs/common'
 import * as moment from 'moment'
 
 import { PrismaService } from '../prisma/prisma.service'
-import { Item, RentingItemRequest, RentingItemRequestStatus } from '@prisma/client'
+import { Item, RentingItemRequest, RentingItemRequestStatus, User } from '@prisma/client'
 import { RentingItemRequestInputDTO } from './renting-item-request-input.dto'
+import { RentingItemRequestDTO } from './renting-item-request.dto'
 import { PaginationDTO } from '../../models'
+import { UsersService } from '../users/users.service'
+import { Permission } from './permission.enum'
 
 const WEEK_DAY = 7
 const MONTH_DAY = 30
 
-export enum RentingItemRequestUserType {
+enum RentingItemRequestUserType {
   Owner = 'owner',
   Lender = 'lender'
+}
+
+function toRentingItemRequestDTO(
+  rentingItemRequest: RentingItemRequest,
+  permissions: Permission[],
+  ownerUserDetail?: User,
+  lenderUserDetail?: User
+): RentingItemRequestDTO {
+  return {
+    ...rentingItemRequest,
+    fromDate: rentingItemRequest.fromDate.getTime(),
+    toDate: rentingItemRequest.toDate.getTime(),
+    createdDate: rentingItemRequest.createdDate.getTime(),
+    updatedDate: rentingItemRequest.updatedDate.getTime(),
+    rentingItemCachedInfo: JSON.parse(rentingItemRequest.rentingItemCachedInfo),
+    ownerUserDetail,
+    lenderUserDetail,
+    permissions
+  }
 }
 
 @Injectable()
 export class RentingItemRequetsService {
   constructor(
     private prismaService: PrismaService,
+    private userService: UsersService
   ) {}
 
   calcTotalAmount(item: Item, fromDate: number, toDate: number, quantity: number): number {
@@ -84,7 +107,7 @@ export class RentingItemRequetsService {
     limit = 10,
     ownerUserId,
     includes,
-    sortBy,
+    sortByFields,
     userType = RentingItemRequestUserType.Owner
   }): Promise<PaginationDTO<RentingItemRequest>> {
     const mandatoryWhere: any = {
@@ -126,8 +149,20 @@ export class RentingItemRequetsService {
       status: true
     };
     
-    if (validSortBy[sortBy]) {
-      findCondition.sortBy = sortBy
+    if (sortByFields && sortByFields.length) {
+      sortByFields.forEach((sortBy) => {
+        const sortByChunk = sortBy.split(':')
+        if (validSortBy[sortByChunk[0]]) {
+          findCondition.sortBy = {
+            [sortByChunk[0]]: sortByChunk[1] || 'asc'
+          }
+        }
+      })
+    } else {
+      findCondition.sortBy = {
+        createdDate: 'desc',
+        updatedDate: 'desc'
+      }
     }
 
     const items = await this.prismaService.rentingItemRequest.findMany(findCondition);
@@ -141,5 +176,115 @@ export class RentingItemRequetsService {
       offset,
       limit
     };
+  }
+
+  async findAllRequestFromOwner({
+    offset = 0,
+    limit = 10,
+    ownerUserId,
+    includes,
+    sortByFields,
+  }): Promise<PaginationDTO<RentingItemRequestDTO>> {
+    const dbResults = await this.findAllRequestFromUser({
+      offset,
+      limit,
+      ownerUserId,
+      includes,
+      sortByFields,
+      userType: RentingItemRequestUserType.Owner
+    });
+    const finalItems: RentingItemRequestDTO[] = []
+
+    for (let i = 0; i < dbResults.items.length; i++) {
+      const item = dbResults[i] as RentingItemRequest
+      const permissions = this.getPermissions(item, ownerUserId)
+      const newItem = toRentingItemRequestDTO(item, permissions)
+
+      if (includes.includes('lenderUserDetail') && permissions.includes(Permission.VIEW_LENDER_INFO)) {
+        newItem.lenderUserDetail = await this.userService.getUserById(item.lenderUserId)
+      }
+
+      finalItems.push(newItem)
+    }
+
+    return {
+      ...dbResults,
+      items: finalItems
+    }
+  }
+
+  async findAllRequestToLender({
+    offset = 0,
+    limit = 10,
+    lenderUserId,
+    includes,
+    sortByFields,
+  }): Promise<PaginationDTO<RentingItemRequestDTO>> {
+    const dbResults = await this.findAllRequestFromUser({
+      offset,
+      limit,
+      ownerUserId: lenderUserId,
+      includes,
+      sortByFields,
+      userType: RentingItemRequestUserType.Lender
+    });
+    const finalItems: RentingItemRequestDTO[] = []
+
+    for (let i = 0; i < dbResults.items.length; i++) {
+      const item = dbResults[i] as RentingItemRequest
+      const permissions = this.getPermissions(item, lenderUserId)
+      const newItem = toRentingItemRequestDTO(item, permissions)
+
+      if (includes.includes('ownerUserDetail') && permissions.includes(Permission.VIEW_REQUEST_RENT_OWNER_INFO)) {
+        newItem.ownerUserDetail = await this.userService.getUserById(item.ownerUserId)
+      }
+
+      finalItems.push(newItem)
+    }
+
+    return {
+      ...dbResults,
+      items: finalItems
+    }
+  }
+
+  private getPermissions(rentingItemRequest: RentingItemRequest, userId: string): Permission[] {
+    const permissions = []
+
+    const isCurrentUserIsOwnerOfThisRequest = rentingItemRequest.ownerUserId === userId
+    if (isCurrentUserIsOwnerOfThisRequest) {
+      if (
+        rentingItemRequest.status === RentingItemRequestStatus.New
+      ) {
+        permissions.push(Permission.CANCEL)
+      }
+  
+      if (rentingItemRequest.status === RentingItemRequestStatus.Approved) {
+        permissions.push(Permission.START)
+        permissions.push(Permission.VIEW_LENDER_INFO)
+      }
+    }
+
+    const isCurrentUserIsLenderOfThisRequest = rentingItemRequest.lenderUserId === userId
+    if (isCurrentUserIsLenderOfThisRequest) {
+      permissions.push(Permission.VIEW_REQUEST_RENT_OWNER_INFO)
+
+      if (
+        rentingItemRequest.status === RentingItemRequestStatus.New
+      ) {
+        permissions.push(Permission.DECLINE)
+        permissions.push(Permission.APPROVE)
+      }
+  
+      if (rentingItemRequest.status === RentingItemRequestStatus.InProgress) {
+        permissions.push(Permission.COMPLETE)
+      }
+    }
+
+    if (isCurrentUserIsLenderOfThisRequest || isCurrentUserIsOwnerOfThisRequest) {
+      permissions.push(Permission.ADD_COMMENT)
+    }
+
+    return permissions
   }
 }
