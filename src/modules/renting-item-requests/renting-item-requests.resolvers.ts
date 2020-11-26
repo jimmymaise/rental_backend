@@ -49,43 +49,25 @@ export class RentingItemRequestsResolvers {
     })
   }
 
-  // @Query()
-  // async feed(
-  //   @Args('query') query: {
-  //     search: string,
-  //     offset: number,
-  //     limit: number,
-  //     areaId: string,
-  //     categoryId: string,
-  //     includes: string[]
-  //   }
-  // ): Promise<PaginationDTO<ItemDTO>> {
-  //   const { search, offset, limit, areaId, categoryId, includes } = query || {}
-  //   const actualLimit = limit && limit > 100 ? 100 : limit
-  //   const result = await this.itemService.findAllAvailablesItem({
-  //     searchValue: search,
-  //     offset,
-  //     limit: actualLimit,
-  //     areaId,
-  //     categoryId,
-  //     includes
-  //   })
+  @Query()
+  @UseGuards(GqlAuthGuard)
+  async findAllRequestToMe(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('query') query: {
+      offset: number,
+      limit: number,
+      includes: string[],
+      sortByFields: string[]
+    },
+  ): Promise<PaginationDTO<RentingItemRequestDTO>> {
+    const { offset, limit, includes, sortByFields } = query || {};
 
-  //   return {
-  //     items: result.items.map(toItemDTO),
-  //     total: result.total,
-  //     offset: offset || 0,
-  //     limit: actualLimit
-  //   }
-  // }
-
-  // @Query()
-  // async feedDetailBySlug(
-  //   @Args('slug') slug: string,
-  //   @Args('includes') includes: string[],
-  // ): Promise<ItemDTO> {
-  //   const item = await this.itemService.findOneAvailableBySlug(slug, includes)
-
-  //   return toItemDTO(item)
-  // }
+    return this.rentingItemRequestService.findAllRequestToLender({
+      offset,
+      limit,
+      lenderUserId: user.id,
+      includes,
+      sortByFields
+    })
+  }
 }

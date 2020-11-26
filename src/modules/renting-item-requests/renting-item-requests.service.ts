@@ -268,12 +268,12 @@ export class RentingItemRequetsService {
     const finalItems: RentingItemRequestDTO[] = [];
 
     for (let i = 0; i < dbResults.items.length; i++) {
-      const item = dbResults[i] as RentingItemRequest;
+      const item = dbResults.items[i] as RentingItemRequest;
       const permissions = this.getPermissions(item, lenderUserId);
       const newItem = toRentingItemRequestDTO(item, permissions);
 
       if (
-        includes.includes('ownerUserDetail') &&
+        includes?.includes('ownerUserDetail') &&
         permissions.includes(Permission.VIEW_REQUEST_RENT_OWNER_INFO)
       ) {
         newItem.ownerUserDetail = await this.userService.getUserById(

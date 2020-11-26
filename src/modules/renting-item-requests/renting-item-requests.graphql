@@ -52,4 +52,5 @@ type RentingItemRequestPagination {
 
 type Query {
   findAllRequestFromMe(query: RentingItemRequestQuery): RentingItemRequestPagination
+  findAllRequestToMe(query: RentingItemRequestQuery): RentingItemRequestPagination
 }
