@@ -9,7 +9,8 @@ import {
   CategoriesModule,
   StoragesModule,
   PrismaModule,
-  ItemsModule
+  ItemsModule,
+  RentingItemRequestsModule
 } from './modules'
 
 import { rootContants } from './constants'
@@ -51,7 +52,8 @@ import { AppService } from './app.service'
     AreasModule,
     CategoriesModule,
     StoragesModule,
-    ItemsModule
+    ItemsModule,
+    RentingItemRequestsModule
   ],
   controllers: [AppController],
   providers: [

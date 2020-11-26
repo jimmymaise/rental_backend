@@ -1,0 +1,55 @@
+input RentingItemRequestInput {
+  itemId: String!
+  fromDate: Float!
+  toDate: Float!
+}
+
+type RentingItemCachedInfo {
+  name: String
+  images: [PublicStorageFile]
+  rentPricePerDay: Float
+  rentPricePerWeek: Float
+  rentPricePerMonth: Float
+}
+
+type RentingItemRequest {
+  id: String
+  rentingItem: Item
+  rentingItemCachedInfo: RentingItemCachedInfo
+  itemId: String
+  totalAmount: Float
+  actualTotalAmount: Float
+  rentTotalQuantity: Int
+  fromDate: Float
+  toDate: Float
+  status: String
+  ownerUserId: String
+  ownerUserDetail: User
+  lenderUserId: String
+  lenderUserDetail: User
+  createdDate: Float
+  updatedDate: Float
+  permissions: [String]
+}
+
+input RentingItemRequestQuery {
+  offset: Int
+  limit: Int
+  includes: [String]
+  sortByFields: [String]
+}
+
+type Mutation {
+  newRequest(requestData: RentingItemRequestInput!): RentingItemRequest
+}
+
+type RentingItemRequestPagination {
+  items: [RentingItemRequest]
+  total: Int
+  limit: Int
+  offset: Int
+}
+
+type Query {
+  findAllRequestFromMe(query: RentingItemRequestQuery): RentingItemRequestPagination
+}
