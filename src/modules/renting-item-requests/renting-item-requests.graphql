@@ -39,15 +39,20 @@ input RentingItemRequestQuery {
   sortByFields: [String]
 }
 
-type Mutation {
-  newRequest(requestData: RentingItemRequestInput!): RentingItemRequest
-}
-
 type RentingItemRequestPagination {
   items: [RentingItemRequest]
   total: Int
   limit: Int
   offset: Int
+}
+
+type Mutation {
+  newRequest(requestData: RentingItemRequestInput!): RentingItemRequest
+  cancelRequest(id: String): RentingItemRequest
+  approveRequest(id: String): RentingItemRequest
+  declineRequest(id: String): RentingItemRequest
+  startRequest(id: String): RentingItemRequest
+  completeRequest(id: String): RentingItemRequest
 }
 
 type Query {

@@ -290,6 +290,77 @@ export class RentingItemRequetsService {
     };
   }
 
+  public async cancelRequest(id: string, byUserId: string): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id } })
+    const permissions = this.getPermissions(requestItem, byUserId)
+
+    if (permissions.includes(Permission.CANCEL)) {
+      return this.changeRentingItemRequestStatus(id, RentingItemRequestStatus.Cancelled, byUserId)
+    }
+
+    throw new Error('Not Authorize')
+  }
+
+  public async approveRequest(id: string, byUserId: string): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id } })
+    const permissions = this.getPermissions(requestItem, byUserId)
+
+    if (permissions.includes(Permission.APPROVE)) {
+      return this.changeRentingItemRequestStatus(id, RentingItemRequestStatus.Approved, byUserId)
+    }
+
+    throw new Error('Not Authorize')
+  }
+
+  public async declineRequest(id: string, byUserId: string): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id } })
+    const permissions = this.getPermissions(requestItem, byUserId)
+
+    if (permissions.includes(Permission.DECLINE)) {
+      return this.changeRentingItemRequestStatus(id, RentingItemRequestStatus.Declined, byUserId)
+    }
+
+    throw new Error('Not Authorize')
+  }
+
+  public async startRequest(id: string, byUserId: string): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id } })
+    const permissions = this.getPermissions(requestItem, byUserId)
+
+    if (permissions.includes(Permission.START)) {
+      return this.changeRentingItemRequestStatus(id, RentingItemRequestStatus.InProgress, byUserId)
+    }
+
+    throw new Error('Not Authorize')
+  }
+
+  public async completeRequest(id: string, byUserId: string): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id } })
+    const permissions = this.getPermissions(requestItem, byUserId)
+
+    if (permissions.includes(Permission.COMPLETE)) {
+      return this.changeRentingItemRequestStatus(id, RentingItemRequestStatus.Completed, byUserId)
+    }
+
+    throw new Error('Not Authorize')
+  }
+
+  private async changeRentingItemRequestStatus(id: string, status: RentingItemRequestStatus, updatedBy: string): Promise<RentingItemRequestDTO> {
+    const rentingRequest = await this.prismaService.rentingItemRequest.update({
+      where: {
+        id
+      },
+      data: {
+        status,
+        updatedBy,
+        updatedDate: new Date()
+      }
+    })
+
+    const permissions = this.getPermissions(rentingRequest, updatedBy);
+    return toRentingItemRequestDTO(rentingRequest, permissions)
+  }
+
   private getPermissions(
     rentingItemRequest: RentingItemRequest,
     userId: string,

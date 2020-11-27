@@ -1,9 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
 
-import {
-  Item
-} from '@prisma/client';
 import { RentingItemRequetsService } from './renting-item-requests.service'
 import { RentingItemRequestInputDTO } from './renting-item-request-input.dto'
 import { RentingItemRequestDTO } from './renting-item-request.dto'
@@ -69,5 +66,50 @@ export class RentingItemRequestsResolvers {
       includes,
       sortByFields
     })
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async cancelRequest(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string
+  ): Promise<RentingItemRequestDTO> {
+    return this.rentingItemRequestService.cancelRequest(id, user.id)
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async approveRequest(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string
+  ): Promise<RentingItemRequestDTO> {
+    return this.rentingItemRequestService.approveRequest(id, user.id)
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async declineRequest(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string
+  ): Promise<RentingItemRequestDTO> {
+    return this.rentingItemRequestService.declineRequest(id, user.id)
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async startRequest(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string
+  ): Promise<RentingItemRequestDTO> {
+    return this.rentingItemRequestService.startRequest(id, user.id)
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async completeRequest(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string
+  ): Promise<RentingItemRequestDTO> {
+    return this.rentingItemRequestService.completeRequest(id, user.id)
   }
 }
