@@ -12,6 +12,6 @@ export class AreasService {
   ) {}
 
   findAll(isDisabled: boolean = false): Promise<Area[]> {
-    return this.prismaService.area.findMany({ where: { isDeleted: false, isDisabled } })
+    return this.prismaService.area.findMany({ where: { isDeleted: false, isDisabled }, orderBy: { order: 'asc' } })
   }
 }

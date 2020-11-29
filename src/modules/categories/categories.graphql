@@ -8,6 +8,7 @@ type Category {
   order: Int
   isDisabled: Boolean
   isFeatured: Boolean
+  isDefault: Boolean
 }
 
 type Query {

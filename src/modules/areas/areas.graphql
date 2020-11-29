@@ -6,6 +6,7 @@ type Area {
   latitude: Float
   longitude: Float
   isDisabled: Boolean
+  isDefault: Boolean
 }
 
 type Query {
