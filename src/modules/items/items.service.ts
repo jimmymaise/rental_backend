@@ -135,7 +135,10 @@ export class ItemsService {
             },
           ],
         }
-      : mandatoryWhere;
+      : {
+        ...mandatoryWhere,
+        ...areaCategoryWhere,
+      }
 
     const findCondition: any = {
       where,
