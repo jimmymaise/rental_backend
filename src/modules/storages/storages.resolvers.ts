@@ -1,10 +1,19 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import * as sharp from 'sharp'
+import * as mime from 'mime-types'
 
 import { StoragesService } from './storages.service'
 import { GqlAuthGuard, CurrentUser, GuardUserPayload } from '../auth'
 import { StorageDTO } from './storage.dto'
+
+interface PreSignedImageUrlData {
+  id: string
+  preSignedUrl: string
+  mediumPreSignedUrl: string
+  smallPreSignedUrl: string
+  imageUrl: string
+}
 
 @Resolver('Storage')
 export class StoragesResolvers {
@@ -53,11 +62,44 @@ export class StoragesResolvers {
     };
   }
 
+  // Pre Generation Image File Signed URL for upload
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async generateUploadImageSignedUrl(
+  async generateImageFile(
     @CurrentUser() user: GuardUserPayload,
-  ): Promise<String> {
-    return this.storagesService.generateUploadImageSignedUrl()
+    @Args('imageData') imageData: {
+      name: string,
+      contentType: string,
+      includes: string[] // medium, small
+    }
+  ): Promise<PreSignedImageUrlData> {
+    let smallPreSignedUrl
+    let mediumPreSignedUrl
+
+    const contentType = imageData.contentType
+    
+    const fileExtension = mime.extension(contentType)
+
+    const fileName = `${user.id}/${Date.now()}-${Buffer.from(imageData.name.slice(0, 10)).toString('base64').toLowerCase()}-thue-do-vn.${fileExtension}`
+    const fileFullUrl = this.storagesService.getImagePublicUrl(fileName)
+    const storageInfo = await this.storagesService.saveItemImageStorageInfo(fileName, fileFullUrl, contentType, user.id)
+
+    if (imageData.includes.includes('small')) {
+      smallPreSignedUrl = await this.storagesService.generateUploadImageSignedUrl(`small-${fileName}`, contentType)
+    }
+
+    if (imageData.includes.includes('medium')) {
+      mediumPreSignedUrl = await this.storagesService.generateUploadImageSignedUrl(`medium-${fileName}`, contentType)
+    }
+
+    const preSignedUrl = await this.storagesService.generateUploadImageSignedUrl(fileName, contentType)
+
+    return {
+      id: storageInfo.id,
+      preSignedUrl,
+      mediumPreSignedUrl,
+      smallPreSignedUrl,
+      imageUrl: fileFullUrl
+    }
   }
 }

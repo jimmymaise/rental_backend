@@ -5,6 +5,20 @@ input PublicStorageFileInput {
   url: String!
 }
 
+input PreSignedUrlFileInput {
+  name: String!
+  contentType: String!
+  includes: [String]
+}
+
+type PreSignedUrlImageData {
+  id: String!
+  preSignedUrl: String!
+  mediumPreSignedUrl: String
+  smallPreSignedUrl: String
+  imageUrl: String
+}
+
 type PublicStorageFile {
   id: String!
   url: String!
@@ -21,5 +35,5 @@ type StorageFile {
 
 type Mutation {
   uploadItemImage(file: Upload!): StorageFile!
-  generateUploadImageSignedUrl: String!
+  generateImageFile(imageData: PreSignedUrlFileInput!): PreSignedUrlImageData!
 }

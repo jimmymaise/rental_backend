@@ -16,6 +16,7 @@ export class GoogleCloudStorageService {
 
   public getPublicUrl = (bucketName: string, fileName: string) => process.env.NODE_ENV === 'production' ? `https://${bucketName}/${fileName}` : `https://storage.googleapis.com/${bucketName}/${fileName}`;
 
+  private maskSignedUrl = (orginalUrl: string, bucketName: string) => process.env.NODE_ENV === 'production' ? orginalUrl.replace(`https://storage.googleapis.com/${bucketName}`, `https://${bucketName}`) : orginalUrl
   // public static copyFileToGCS = (localFilePath: string, bucketName: string, options: any) => {
   //   options = options || {};
   
@@ -29,16 +30,25 @@ export class GoogleCloudStorageService {
   // };
 
   // https://www.codota.com/code/javascript/functions/%40google-cloud%2Fstorage/File/getSignedUrl
-  public async getPreSignedUrlForUpload(bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME')): Promise<string> {
+  public async getPreSignedUrlForUpload(fileName: string, contentType: string, bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME')): Promise<string> {
     const bucket = this.storage.bucket(bucketName)
-    const file = bucket.file(`abc.txt`);
+    const file = bucket.file(fileName);
+
     const response = await file.getSignedUrl({
       action: 'write',
-      contentType: 'text/plain',
-      expires: Date.now() + 60 * 1000 // 1 minutes
+      contentType,
+      expires: Date.now() + 60 * 1000 // 1 minute
     })
 
-    return response[0]
+    const signedUrl = this.maskSignedUrl(response[0], bucketName)
+    return signedUrl
+  }
+
+  public async makePublic(fileName: string, bucketName: string): Promise<void> {
+    const bucket = this.storage.bucket(bucketName)
+    const file = bucket.file(fileName);
+
+    await file.makePublic()
   }
   
   public sendFileToGCS = (file: any, bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME')): Promise<any> => {
