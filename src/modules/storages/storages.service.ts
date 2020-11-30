@@ -9,10 +9,17 @@ const BUCKET_ITEM_IMAGE_NAME =
 
 @Injectable()
 export class StoragesService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private googleStorageService: GoogleCloudStorageService
+  ) {}
+
+  public generateUploadImageSignedUrl(): Promise<string> {
+    return this.googleStorageService.getPreSignedUrlForUpload(BUCKET_ITEM_IMAGE_NAME)
+  }
 
   public uploadItemImage(stream: any, filename: string, mimetype: string): Promise<string> {
-    return GoogleCloudStorageService.sendFileToGCSByStream(
+    return this.googleStorageService.sendFileToGCSByStream(
       stream,
       filename,
       mimetype,

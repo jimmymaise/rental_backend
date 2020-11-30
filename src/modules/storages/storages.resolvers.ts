@@ -52,4 +52,12 @@ export class StoragesResolvers {
       createdBy: storageInfo.createdBy
     };
   }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async generateUploadImageSignedUrl(
+    @CurrentUser() user: GuardUserPayload,
+  ): Promise<String> {
+    return this.storagesService.generateUploadImageSignedUrl()
+  }
 }

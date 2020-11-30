@@ -21,4 +21,5 @@ type StorageFile {
 
 type Mutation {
   uploadItemImage(file: Upload!): StorageFile!
+  generateUploadImageSignedUrl: String!
 }

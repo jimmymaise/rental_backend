@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common'
+import { ConfigService  } from '@nestjs/config';
 
 import { StoragesService } from './storages.service'
+import { GoogleCloudStorageService } from './google-cloud-storage.service'
 import { StoragesResolvers } from './storages.resolvers'
 
 @Module({
-  providers: [StoragesService, StoragesResolvers]
+  providers: [GoogleCloudStorageService, ConfigService, StoragesService, StoragesResolvers]
 })
 export class StoragesModule {}
