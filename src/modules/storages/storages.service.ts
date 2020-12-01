@@ -24,6 +24,47 @@ export class StoragesService {
     return this.googleStorageService.getPreSignedUrlForUpload(fileName, contentType, BUCKET_ITEM_IMAGE_NAME)
   }
 
+  public async handleUploadImageBySignedUrlComplete(fileId: string, includes: string[] = []): Promise<FileStorage> {
+    const fileDb = await this.prismaService.fileStorage.findOne({
+      where: {
+        id: fileId
+      }
+    })
+
+    if (fileDb.isUploadSuccess) {
+      return fileDb
+    }
+
+    if (fileDb) {
+      try {
+        await this.googleStorageService.makePublic(fileDb.name, fileDb.bucketName)
+      } catch (err) {}
+
+      if (includes.includes('small')) {
+        try {
+          await this.googleStorageService.makePublic(`small-${fileDb.name}`, fileDb.bucketName)
+        } catch (err) {}
+      }
+
+      if (includes.includes('medium')) {
+        try {
+          await this.googleStorageService.makePublic(`medium-${fileDb.name}`, fileDb.bucketName)
+        } catch (err) {}
+      }
+    }
+
+    const updatedFileDb = await this.prismaService.fileStorage.update({
+      where: {
+        id: fileId
+      },
+      data: {
+        isUploadSuccess: true
+      }
+    })
+
+    return updatedFileDb
+  }
+
   public uploadItemImage(stream: any, filename: string, mimetype: string): Promise<string> {
     return this.googleStorageService.sendFileToGCSByStream(
       stream,

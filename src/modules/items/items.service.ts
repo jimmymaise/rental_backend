@@ -5,10 +5,14 @@ import { Item, ItemStatus } from '@prisma/client';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers';
 import { PaginationDTO } from '../../models';
+import { StoragesService } from '../storages/storages.service'
 
 @Injectable()
 export class ItemsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private storageService: StoragesService
+  ) {}
 
   // findAllAvailable(isFeatured: boolean): Promise<Item[]> {
   //   if (isFeatured !== null) {
@@ -44,6 +48,10 @@ export class ItemsService {
       note,
     } = itemData;
     const nowToString = Date.now().toString();
+
+    images.forEach((image) => {
+      this.storageService.handleUploadImageBySignedUrlComplete(image.id, ['small', 'medium'])
+    })
 
     return this.prismaService.item.create({
       data: {

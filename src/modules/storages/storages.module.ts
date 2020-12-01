@@ -6,6 +6,7 @@ import { GoogleCloudStorageService } from './google-cloud-storage.service'
 import { StoragesResolvers } from './storages.resolvers'
 
 @Module({
-  providers: [GoogleCloudStorageService, ConfigService, StoragesService, StoragesResolvers]
+  providers: [GoogleCloudStorageService, ConfigService, StoragesService, StoragesResolvers],
+  exports: [StoragesService]
 })
 export class StoragesModule {}
