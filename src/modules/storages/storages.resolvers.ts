@@ -125,9 +125,17 @@ export class StoragesResolvers {
     }
 
     this.storagesService.hardDeleteFile(fileId)
-    this.googleStorageService.deleteFile(fileData.folderName, fileData.name, fileData.bucketName)
-    this.googleStorageService.deleteFile(fileData.folderName, `small-${fileData.name}`, fileData.bucketName)
-    this.googleStorageService.deleteFile(fileData.folderName, `medium-${fileData.name}`, fileData.bucketName)
+    try {
+      this.googleStorageService.deleteFile(fileData.folderName, fileData.name, fileData.bucketName)
+    } catch {}
+
+    try {
+      this.googleStorageService.deleteFile(fileData.folderName, `small-${fileData.name}`, fileData.bucketName)
+    } catch {}
+
+    try {
+      this.googleStorageService.deleteFile(fileData.folderName, `medium-${fileData.name}`, fileData.bucketName)
+    } catch {}
 
     return fileId
   }
