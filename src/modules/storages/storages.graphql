@@ -33,7 +33,8 @@ type StorageFile {
   contentType: String
 }
 
+# uploadItemImage(file: Upload!): StorageFile!
 type Mutation {
-  uploadItemImage(file: Upload!): StorageFile!
   generateImageFile(imageData: PreSignedUrlFileInput!): PreSignedUrlImageData!
+  deleteFileForListingItem(fileId: String!): String!
 }

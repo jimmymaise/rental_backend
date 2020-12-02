@@ -44,11 +44,18 @@ export class GoogleCloudStorageService {
     return signedUrl
   }
 
-  public async makePublic(fileName: string, bucketName: string): Promise<void> {
+  public async makePublic(folderName: string, fileName: string, bucketName: string): Promise<void> {
     const bucket = this.storage.bucket(bucketName)
-    const file = bucket.file(fileName);
+    const file = bucket.file(`${folderName}/${fileName}`);
 
     await file.makePublic()
+  }
+
+  public async deleteFile(folderName: string, fileName: string, bucketName: string): Promise<void> {
+    const bucket = this.storage.bucket(bucketName)
+    const file = bucket.file(`${folderName}/${fileName}`);
+
+    await file.delete()
   }
   
   public sendFileToGCS = (file: any, bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME')): Promise<any> => {

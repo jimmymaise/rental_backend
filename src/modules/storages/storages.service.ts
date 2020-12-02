@@ -37,18 +37,18 @@ export class StoragesService {
 
     if (fileDb) {
       try {
-        await this.googleStorageService.makePublic(fileDb.name, fileDb.bucketName)
+        await this.googleStorageService.makePublic(fileDb.folderName, fileDb.name, fileDb.bucketName)
       } catch (err) {}
 
       if (includes.includes('small')) {
         try {
-          await this.googleStorageService.makePublic(`small-${fileDb.name}`, fileDb.bucketName)
+          await this.googleStorageService.makePublic(fileDb.folderName, `small-${fileDb.name}`, fileDb.bucketName)
         } catch (err) {}
       }
 
       if (includes.includes('medium')) {
         try {
-          await this.googleStorageService.makePublic(`medium-${fileDb.name}`, fileDb.bucketName)
+          await this.googleStorageService.makePublic(fileDb.folderName, `medium-${fileDb.name}`, fileDb.bucketName)
         } catch (err) {}
       }
     }
@@ -74,7 +74,26 @@ export class StoragesService {
     );
   }
 
+  async getFileDataById(
+    fileId: string
+  ): Promise<FileStorage> {
+    return this.prismaService.fileStorage.findOne({ where: { id: fileId } })
+  }
+
+  async hardDeleteFile(
+    fileId: string
+  ): Promise<FileStorage> {
+    return this.prismaService.fileStorage.delete({ where: { id: fileId } })
+  }
+
+  async softDeleteFile(
+    fileId: string
+  ): Promise<FileStorage> {
+    return this.prismaService.fileStorage.update({ where: { id: fileId }, data: { isDeleted: true } })
+  }
+
   async saveItemImageStorageInfo(
+    folderName: string,
     name: string,
     url: string,
     contentType: string,
@@ -86,7 +105,7 @@ export class StoragesService {
         name,
         contentType,
         bucketName: BUCKET_ITEM_IMAGE_NAME,
-        folderName: '',
+        folderName,
         createdBy,
         usingLocate: FileUsingLocate.ItemPreviewImage
       },
