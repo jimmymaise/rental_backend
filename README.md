@@ -109,3 +109,13 @@ curl --location --request POST 'http://localhost:3000/graphql' \
 --form 'map={ "0": ["variables.file"] }' \
 --form '0=@/C:/Users/trank/Desktop/_home_black_bib-server_data_2020_VJM2020_On Course_lmk (1475).jpg'
 ```
+
+## TODO:
+[] Request Activities
+[] Item Review
+[] Lender Review
+[] Renter Review
+[] Log Search Keyword
+[] Wishing Item List
+[] User Contact List
+[] User Notification
