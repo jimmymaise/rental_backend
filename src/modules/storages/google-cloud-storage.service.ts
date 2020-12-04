@@ -58,7 +58,7 @@ export class GoogleCloudStorageService {
     await file.delete()
   }
   
-  public sendFileToGCS = (file: any, bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME')): Promise<any> => {
+  public sendFileToGCS = (file: any, folderName: string = 'custom-folder', bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME')): Promise<any> => {
     return new Promise((resolve, reject) => {
       const bucket = this.storage.bucket(bucketName);
       const gcsFileName = `${Date.now()}-${file.originalname}`;
@@ -80,7 +80,7 @@ export class GoogleCloudStorageService {
     
         return bucketFile.makePublic()
           .then(() => {
-            resolve(this.getPublicUrl(bucketName, gcsFileName));
+            resolve(this.getPublicUrl(bucketName, folderName, gcsFileName));
           });
       });
     
