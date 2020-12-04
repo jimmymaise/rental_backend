@@ -14,10 +14,10 @@ export class StoragesService {
     private googleStorageService: GoogleCloudStorageService
   ) {}
 
-  public getPublicUrl = (bucketName: string, fileName: string) => this.googleStorageService.getPublicUrl(bucketName, fileName)
+  public getPublicUrl = (bucketName: string, folderName: string, fileName: string) => this.googleStorageService.getPublicUrl(bucketName, folderName, fileName)
 
-  public getImagePublicUrl(fileName: string): string {
-    return this.getPublicUrl(BUCKET_ITEM_IMAGE_NAME, fileName)
+  public getImagePublicUrl(folderName: string, fileName: string): string {
+    return this.getPublicUrl(BUCKET_ITEM_IMAGE_NAME, folderName, fileName)
   }
 
   public generateUploadImageSignedUrl(fileName: string, contentType: string): Promise<string> {

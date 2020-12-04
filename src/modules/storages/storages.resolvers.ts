@@ -87,7 +87,7 @@ export class StoragesResolvers {
 
     const folderName = user.id
     const fileName = `${Date.now()}-${Buffer.from(imageData.name.slice(0, 10)).toString('base64').toLowerCase()}-thue-do-vn.${fileExtension}`
-    const fileFullUrl = this.storagesService.getImagePublicUrl(fileName)
+    const fileFullUrl = this.storagesService.getImagePublicUrl(folderName, fileName)
     const storageInfo = await this.storagesService.saveItemImageStorageInfo(folderName, fileName, fileFullUrl, contentType, user.id)
 
     if (imageData.includes.includes('small')) {

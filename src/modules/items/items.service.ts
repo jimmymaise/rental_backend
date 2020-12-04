@@ -78,7 +78,7 @@ export class ItemsService {
         rentPricePerWeek,
         rentPricePerMonth,
         note,
-        status: ItemStatus.Draft,
+        status: ItemStatus.Published,
         ownerUserId: userId,
         updatedBy: userId,
       },
@@ -198,7 +198,7 @@ export class ItemsService {
 
     const item = await this.prismaService.item.findOne(findCondition);
 
-    if (!item || item.isDeleted || !item.isVerified || item.status !== ItemStatus.Published) {
+    if (!item || item.isDeleted || item.status !== ItemStatus.Published) {
       return null
     }
 

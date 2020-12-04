@@ -14,7 +14,7 @@ export class GoogleCloudStorageService {
     })
   }
 
-  public getPublicUrl = (bucketName: string, fileName: string) => process.env.NODE_ENV === 'production' ? `https://${bucketName}/${fileName}` : `https://storage.googleapis.com/${bucketName}/${fileName}`;
+  public getPublicUrl = (bucketName: string, folderName: string, fileName: string) => process.env.NODE_ENV === 'production' ? `https://${bucketName}/${folderName}/${fileName}` : `https://storage.googleapis.com/${bucketName}/${folderName}/${fileName}`;
 
   private maskSignedUrl = (orginalUrl: string, bucketName: string) => process.env.NODE_ENV === 'production' ? orginalUrl.replace(`https://storage.googleapis.com/${bucketName}`, `https://${bucketName}`) : orginalUrl
   // public static copyFileToGCS = (localFilePath: string, bucketName: string, options: any) => {
