@@ -82,7 +82,6 @@ model FileStorage {
 enum ItemStatus {
   Draft
   Blocked
-  Rejected
   Published
 }
 

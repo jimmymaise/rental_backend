@@ -35,10 +35,16 @@ import { AppService } from './app.service'
           "request.credentials": "include"
         }
       } : undefined,
-      uploads: {
-        maxFileSize: 5000000, // 5 MB
-        maxFiles: 5
+      formatError: (err: any) => {
+        return err.statusCode ? { 
+          message: err.message,
+          statusCode: err.statusCode
+         } : err // Format return error here
       }
+      // uploads: {
+      //   maxFileSize: 5000000,
+      //   maxFiles: 5
+      // }
     }),
     ConfigModule.forRoot({
       validationSchema: Joi.object({

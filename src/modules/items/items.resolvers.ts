@@ -5,6 +5,7 @@ import {
   Item
 } from '@prisma/client';
 import { ItemsService } from './items.service'
+import { UserItemsService } from './user-items.service'
 import { ItemUserInputDTO } from './item-user-input.dto'
 import { ItemDTO } from './item.dto'
 import {
@@ -31,7 +32,10 @@ function toItemDTO(item: Item): ItemDTO {
 
 @Resolver('Item')
 export class ItemsResolvers {
-  constructor(private readonly itemService: ItemsService) {}
+  constructor(
+    private readonly itemService: ItemsService,
+    private readonly userItemService: UserItemsService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -86,5 +90,83 @@ export class ItemsResolvers {
     const item = await this.itemService.findOneAvailableBySlug(slug, includes)
 
     return toItemDTO(item)
+  }
+
+  // #### For Me
+
+  @Query()
+  @UseGuards(GqlAuthGuard)
+  async feedMyItems(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('query') query: {
+      search: string,
+      offset: number,
+      limit: number,
+      includes: string[]
+    }
+  ): Promise<PaginationDTO<ItemDTO>> {
+    const { search, offset, limit, includes } = query || {}
+    const actualLimit = limit && limit > 100 ? 100 : limit
+    const result = await this.userItemService.findAllItemsCreatedByUser({
+      createdBy: user.id,
+      searchValue: search,
+      offset,
+      limit: actualLimit,
+      includes
+    })
+
+    return {
+      items: result.items.map(toItemDTO),
+      total: result.total,
+      offset: offset || 0,
+      limit: actualLimit
+    }
+  }
+
+  @Query()
+  @UseGuards(GqlAuthGuard)
+  async feedMyItemDetail(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+    @Args('includes') includes: string[],
+  ): Promise<ItemDTO> {
+    const item = await this.userItemService.findOneDetailForEdit(id, user.id, includes)
+
+    return toItemDTO(item)
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async updateMyItem(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+    @Args('itemData') itemData: ItemUserInputDTO,
+  ): Promise<ItemDTO> {
+    return new Promise((resolve, reject) => {
+      this.userItemService.updateMyItem(id, user.id, itemData)
+        .then((item) => {
+          resolve(toItemDTO(item))
+        })
+        .catch(reject)
+    })
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async deleteMyItem(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+  ): Promise<ItemDTO> {
+    return new Promise((resolve, reject) => {
+      this.userItemService.softDeleteMyItem(id, user.id)
+        .then((item) => {
+          if (!item) {
+            throw new Error('Item is not existing!')
+          }
+
+          resolve(toItemDTO(item))
+        })
+        .catch(reject)
+    })
   }
 }

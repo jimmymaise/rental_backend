@@ -17,4 +17,5 @@ export interface ItemUserInputDTO {
   rentPricePerWeek?: number
   rentPricePerMonth?: number
   note?: string
+  status?: string
 }

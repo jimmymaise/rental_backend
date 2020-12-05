@@ -50,6 +50,7 @@ input ItemUserInput {
   rentPricePerWeek: Float
   rentPricePerMonth: Float
   note: String
+  status: String
 }
 
 input ItemQuery {
@@ -61,11 +62,22 @@ input ItemQuery {
   includes: [String]
 }
 
+input MyItemQuery {
+  search: String
+  offset: Int
+  limit: Int
+  includes: [String]
+}
+
 type Mutation {
   listingNewItem(itemData: ItemUserInput!): Item
+  updateMyItem(id: String!, itemData: ItemUserInput!): Item
+  deleteMyItem(id: String!): Item
 }
 
 type Query {
   feed(query: ItemQuery): ItemPagination
   feedDetailBySlug(slug: String!, includes: [String]): Item
+  feedMyItems(query: MyItemQuery): ItemPagination
+  feedMyItemDetail(id: String!, includes: [String]): Item
 }
