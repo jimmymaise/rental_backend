@@ -5,6 +5,7 @@ import { Item, ItemStatus } from '@prisma/client';
 import { PaginationDTO } from '../../models';
 import { StoragesService } from '../storages/storages.service'
 import { ItemUserInputDTO } from './item-user-input.dto';
+import { stringToSlug } from '../../helpers';
 
 @Injectable()
 export class UserItemsService {
@@ -146,6 +147,10 @@ export class UserItemsService {
         case 'name':
           if (data[field] && data[field].length) {
             updateData[field] = data[field]
+            const nowToString = Date.now().toString();
+            updateData['slug'] = `${stringToSlug(data[field])}-${nowToString.substr(
+              nowToString.length - 5,
+            )}`
           }
           break
         case 'description':
