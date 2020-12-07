@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -239,8 +239,6 @@ model WishingItem {
   item           Item @relation(fields: [itemId], references: [id])
   itemId          String
   createdDate             DateTime        @default(now())
-
-  @@index(fields: [ownerUserId], name: "wishing_item_main_index")
 }
 
 model MyUserContactItem {
@@ -249,8 +247,6 @@ model MyUserContactItem {
   user           User @relation(fields: [userId], references: [id])
   userId                  String
   createdDate             DateTime        @default(now())
-
-  @@index(fields: [ownerUserId], name: "my_user_contact_main_index")
 }
 
 // Item Reviews?

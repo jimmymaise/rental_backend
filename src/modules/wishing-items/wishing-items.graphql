@@ -1,0 +1,29 @@
+type WishingItem {
+  id: String!
+  name: String!
+  slug: String!
+  categories: [Category]
+  areas: [Area]
+  images: [PublicStorageFile]
+}
+
+type WishingItemPagination {
+  items: [WishingItem]
+  total: Int
+  limit: Int
+  offset: Int
+}
+
+input WishingItemQuery {
+  offset: Int
+  limit: Int
+}
+
+type Mutation {
+  addItemToMyWishlist(itemId: String!): WishingItem
+  deleteItemFromMyWishlist(itemId: String!): WishingItem
+}
+
+type Query {
+  feedMyWishlist(WishingItemQuery: ItemQuery): WishingItemPagination
+}
