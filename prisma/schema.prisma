@@ -19,12 +19,30 @@ model User {
   id            String      @id @default(uuid())
   email         String      @unique
   passwordHash  String
-  name          String?
+  currentHashedRefreshToken String? @unique
+  role          UserRole[]
+}
+
+model UserInfo {
+  id            String      @id
+  displayName          String?
   bio           String?
   avatarImage   String? // { id, url }
   coverImage    String? // { id, url }
-  currentHashedRefreshToken String? @unique
-  role          UserRole[]
+}
+
+enum UserVerifyDocumentType {
+  Facebook
+  Email
+  PhoneNumber
+}
+
+model UserIdentifyDocument {
+  id            String      @id @default(uuid())
+  userId        String
+  type          UserVerifyDocumentType
+  value         String
+  isVerfied     Boolean?
 }
 
 model Area {
@@ -167,7 +185,8 @@ model ItemReview {
   rentingItem           Item @relation(fields: [itemId], references: [id])
   itemId                String
   reviewScore           Int
-  reviewComment         String
+  reviewComment         String?
+  images                  String?
   ownerUserId             String
   isDeleted               Boolean?        @default(false)
   createdDate             DateTime        @default(now())
@@ -175,11 +194,12 @@ model ItemReview {
   updatedBy               String
 }
 
-model LenderReview {
+model UserReview {
   id                      String          @id @default(uuid())
-  lenderId              String
+  toUserId              String
+  rentingRequestId      String
   reviewScore           Int
-  reviewComment         String
+  reviewComment         String?
   ownerUserId             String
   isDeleted               Boolean?        @default(false)
   createdDate             DateTime        @default(now())
@@ -187,11 +207,21 @@ model LenderReview {
   updatedBy               String
 }
 
-model RentingItemRequestComment {
+enum RentingItemRequestActivityType {
+  Comment
+  Declined
+  Approved
+  InProgress
+  Completed
+  Cancelled
+}
+
+model RentingItemRequestActivity {
   id                      String          @id @default(uuid())
   rentingItem           Item @relation(fields: [itemId], references: [id])
   itemId                String
-  content             String?
+  data             String?
+  type              RentingItemRequestActivityType
   files                 String? // JSON
   isLocked              Boolean?        @default(false)
   lockedBy               String
@@ -199,8 +229,8 @@ model RentingItemRequestComment {
   isDeleted               Boolean?        @default(false)
   createdDate             DateTime        @default(now())
   updatedDate             DateTime        @default(now())
+  createdBy               String
   updatedBy               String
-  isSystem              Boolean?        @default(false)
 }
 
 // Log Systems

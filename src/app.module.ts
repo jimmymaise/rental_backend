@@ -55,7 +55,9 @@ import { AppService } from './app.service'
         JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
         GOOGLE_CLOUD_PROJECT_ID: Joi.string().required(),
         GOOGLE_CLOUD_STORAGE_CREDENTIAL: Joi.string().required(),
-        DEFAULT_BUCKET_NAME: Joi.string().required()
+        DEFAULT_BUCKET_NAME: Joi.string().required(),
+        FACEBOOK_APP_ID: Joi.string().required(),
+        FACEBOOK_APP_SECRET: Joi.string().required()
       })
     }),
     AuthModule,
