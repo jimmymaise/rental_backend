@@ -57,7 +57,11 @@ import { AppService } from './app.service'
         GOOGLE_CLOUD_STORAGE_CREDENTIAL: Joi.string().required(),
         DEFAULT_BUCKET_NAME: Joi.string().required(),
         FACEBOOK_APP_ID: Joi.string().required(),
-        FACEBOOK_APP_SECRET: Joi.string().required()
+        FACEBOOK_APP_SECRET: Joi.string().required(),
+        FACEBOOK_LOGIN_CALLBACK_URL: Joi.string().required(),
+        GOOGLE_CLIENT_ID: Joi.string().required(),
+        GOOGLE_CLIENT_SECRET: Joi.string().required(),
+        GOOGLE_LOGIN_CALLBACK_URL: Joi.string().required()
       })
     }),
     AuthModule,
