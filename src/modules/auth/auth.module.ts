@@ -11,6 +11,7 @@ import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtRefreshTokenStrategy } from './jwt-refresh-token.strategy'
 import { FacebookStrategy } from './facebook.strategy'
+import { AuthController } from './auth.controller'
 
 // https://dev.to/elishaking/how-to-implement-facebook-login-with-nestjs-90h
 @Module({
@@ -36,6 +37,9 @@ import { FacebookStrategy } from './facebook.strategy'
     JwtStrategy,
     JwtRefreshTokenStrategy,
     FacebookStrategy
+  ],
+  controllers: [
+    AuthController
   ]
 })
 export class AuthModule {}
