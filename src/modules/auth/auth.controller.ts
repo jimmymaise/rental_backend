@@ -28,9 +28,9 @@ export class AuthController {
   async facebookLoginRedirect(@Req() req: any, @Res() res: any): Promise<any> {
     const facebookData = req.user
     const authDTO = await this.authService.signInByFacebookId(facebookData.user.facebookId, facebookData.accessToken, {
-      displayName: facebookData.user.displayName
+      displayName: facebookData.user.displayName,
+      email: facebookData.user.email
     })
-    // const code = Buffer.from(JSON.stringify(authDTO)).toString('base64')
 
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(authDTO.accessToken)
     const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(authDTO.refreshToken)
@@ -49,11 +49,11 @@ export class AuthController {
   @Get("/google/redirect")
   @UseGuards(AuthGuard("google"))
   async googleLoginRedirect(@Req() req: any, @Res() res: any): Promise<any> {
-    const googleDate = req.user
-    const authDTO = await this.authService.signInByGoogleId(googleDate.user.googleId, googleDate.accessToken, {
-      displayName: googleDate.user.displayName
+    const googleData = req.user
+    const authDTO = await this.authService.signInByGoogleId(googleData.user.googleId, googleData.accessToken, {
+      displayName: googleData.user.displayName,
+      email: googleData.user.email
     })
-    // const code = Buffer.from(JSON.stringify(authDTO)).toString('base64')
     
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(authDTO.accessToken)
     const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(authDTO.refreshToken)

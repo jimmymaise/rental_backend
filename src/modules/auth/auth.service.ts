@@ -10,6 +10,11 @@ import { UsersService } from '../users/users.service'
 import { AuthDTO } from './auth.dto'
 import { TokenPayload } from './token-payload'
 
+interface SignInUserSSOInfo {
+  email?: string
+  displayName?: string
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -32,12 +37,18 @@ export class AuthService {
     })
   }
 
-  async signInByFacebookId(facebookId: string, fbAccessToken: string, userInfo: Partial<UserInfo>): Promise<AuthDTO> {
+  async signInByFacebookId(facebookId: string, fbAccessToken: string, userInfo: SignInUserSSOInfo): Promise<AuthDTO> {
     let user = await this.usersService.getUserByFacebookId(facebookId)
+
+    if (!user && userInfo.email) {
+      user = await this.usersService.getUserByEmail(userInfo.email)
+    }
     
     if (!user) {
-      user = await this.usersService.createUserByFacebookAccount(facebookId, fbAccessToken)
+      user = await this.usersService.createUserByFacebookAccount(facebookId, fbAccessToken, null)
       await this.usersService.createTheProfileForUser(user.id, userInfo as any)
+    } else if (!user.facebookId) {
+      // await this.usersService.connectWithFacebookAccount(user.id, facebookId, fbAccessToken)
     }
 
     const tokenPayload = { userId: user.id, facebookId }
@@ -54,12 +65,18 @@ export class AuthService {
     }
   }
 
-  async signInByGoogleId(googleId: string, googleAccessToken: string, userInfo: Partial<UserInfo>): Promise<AuthDTO> {
+  async signInByGoogleId(googleId: string, googleAccessToken: string, userInfo: SignInUserSSOInfo): Promise<AuthDTO> {
     let user = await this.usersService.getUserByGoogleId(googleId)
+
+    if (!user && userInfo.email) {
+      user = await this.usersService.getUserByEmail(userInfo.email)
+    }
     
     if (!user) {
-      user = await this.usersService.createUserByGoogleAccount(googleId, googleAccessToken)
+      user = await this.usersService.createUserByGoogleAccount(googleId, googleAccessToken, null)
       await this.usersService.createTheProfileForUser(user.id, userInfo as any)
+    } else if (!user.googleId) {
+      // await this.usersService.connectWithGoogleAccount(user.id, googleId, googleAccessToken)
     }
 
     const tokenPayload = { userId: user.id, googleId }
@@ -77,6 +94,11 @@ export class AuthService {
   }
 
   async signUpByEmail(email: string, password: string): Promise<AuthDTO> {
+    const isEmailExisted = this.usersService.getUserByEmail(email)
+    if (isEmailExisted) {
+      throw new Error('This email is existed!')
+    }
+
     const user = await this.usersService.createUserByEmailPassword(email, password)
 
     const tokenPayload = { userId: user.id, email }

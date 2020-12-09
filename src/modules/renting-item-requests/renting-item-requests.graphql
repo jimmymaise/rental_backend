@@ -24,9 +24,9 @@ type RentingItemRequest {
   toDate: Float
   status: String
   ownerUserId: String
-  ownerUserDetail: User
+  ownerUserDetail: UserInfo
   lenderUserId: String
-  lenderUserDetail: User
+  lenderUserDetail: UserInfo
   createdDate: Float
   updatedDate: Float
   permissions: [String]

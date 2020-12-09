@@ -6,7 +6,9 @@ import { FileUsingLocate } from '@prisma/client';
 
 import { StoragesService } from './storages.service'
 import { GoogleCloudStorageService } from './google-cloud-storage.service';
-import { GqlAuthGuard, CurrentUser, GuardUserPayload } from '../auth'
+import { GqlAuthGuard } from '../auth/gpl-auth.guard'
+import { GuardUserPayload } from '../auth/auth.dto'
+import { CurrentUser } from '../auth/current-user.decorator'
 import { StorageDTO } from './storage.dto'
 
 interface PreSignedImageUrlData {

@@ -1,10 +1,10 @@
 type AuthPayload {
   accessToken: String
   refreshToken: String
-  user: User
+  user: UserAuth
 }
 
-type User {
+type UserAuth {
   id: ID!
   email: String!
 }

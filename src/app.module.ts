@@ -11,7 +11,8 @@ import {
   PrismaModule,
   ItemsModule,
   RentingItemRequestsModule,
-  WishingItemsModule
+  WishingItemsModule,
+  UsersModule
 } from './modules'
 
 import { rootContants } from './constants'
@@ -66,6 +67,7 @@ import { AppService } from './app.service'
       })
     }),
     AuthModule,
+    UsersModule,
     AreasModule,
     CategoriesModule,
     StoragesModule,

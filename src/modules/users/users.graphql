@@ -1,9 +1,24 @@
-type User {
+type UserInfo {
   id: ID!
-  name: String
-  email: String!
+  displayName: String
+  bio: String
+  avatarImage: PublicStorageFile
+  coverImage: PublicStorageFile
+  email: String
+}
+
+input UserInfoInput {
+  displayName: String
+  bio: String
+  avatarImage: PublicStorageFileInput
+  coverImage: PublicStorageFileInput
+  email: String
 }
 
 type Query {
-  whoAmI: User
+  whoAmI: UserInfo
+}
+
+type Mutation {
+  updateUserInfoData(userInfoData: UserInfoInput!): UserInfo
 }
