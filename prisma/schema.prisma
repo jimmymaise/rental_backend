@@ -100,7 +100,7 @@ model FileStorage {
   createdDate       DateTime      @default(now())
   isDeleted         Boolean?      @default(false)
 
-  @@index(fields: [bucketName, isUploadSuccess, isDeleted, createdBy], name: "file_storage_main_index")
+  @@index(fields: [bucketName, folderName], name: "file_storage_main_index")
 }
 
 enum ItemStatus {
@@ -141,7 +141,7 @@ model Item {
   updatedBy               String
   keyword                 String?
 
-  @@index(fields: [name, slug, keyword, status, ownerUserId, isDeleted], name: "item_main_index")
+  @@index(fields: [slug, keyword, status, ownerUserId, isDeleted], name: "item_main_index")
 }
 
 enum RentingMandatoryVerifyDocumentDataType {
