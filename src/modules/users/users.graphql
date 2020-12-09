@@ -3,3 +3,7 @@ type User {
   name: String
   email: String!
 }
+
+type Query {
+  whoAmI: User
+}

@@ -15,7 +15,3 @@ type Mutation {
   logout: Boolean
   refreshUserAccessToken(refresh: String): AuthPayload
 }
-
-type Query {
-  whoAmI: User
-}

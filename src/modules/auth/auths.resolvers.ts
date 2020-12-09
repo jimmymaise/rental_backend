@@ -61,12 +61,6 @@ export class AuthsResolvers {
     }
   }
 
-  @Query()
-  @UseGuards(GqlAuthGuard)
-  whoAmI(@CurrentUser() user: GuardUserPayload) {
-    return this.usersService.getUserById(user.id);
-  }
-
   @Mutation()
   @UseGuards(GqlRefreshGuard)
   async refreshUserAccessToken(

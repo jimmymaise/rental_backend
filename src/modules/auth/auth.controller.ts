@@ -30,9 +30,14 @@ export class AuthController {
     const authDTO = await this.authService.signInByFacebookId(facebookData.user.facebookId, facebookData.accessToken, {
       displayName: facebookData.user.displayName
     })
-    const code = Buffer.from(JSON.stringify(authDTO)).toString('base64')
+    // const code = Buffer.from(JSON.stringify(authDTO)).toString('base64')
 
-    return res.redirect(`${this.configService.get('WEB_UI_SIGN_IN_SUCCESSFULLY_REDIRECT_URL')}?code=${code}`);
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(authDTO.accessToken)
+    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(authDTO.refreshToken)
+
+    res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+
+    return res.redirect(this.configService.get('WEB_UI_SIGN_IN_SUCCESSFULLY_REDIRECT_URL'));
   }
 
   @Get("/google")
@@ -45,11 +50,16 @@ export class AuthController {
   @UseGuards(AuthGuard("google"))
   async googleLoginRedirect(@Req() req: any, @Res() res: any): Promise<any> {
     const googleDate = req.user
-    const authDTO = await this.authService.signInByGoogleId(googleDate.user.facebookId, googleDate.accessToken, {
+    const authDTO = await this.authService.signInByGoogleId(googleDate.user.googleId, googleDate.accessToken, {
       displayName: googleDate.user.displayName
     })
-    const code = Buffer.from(JSON.stringify(authDTO)).toString('base64')
+    // const code = Buffer.from(JSON.stringify(authDTO)).toString('base64')
+    
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(authDTO.accessToken)
+    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(authDTO.refreshToken)
 
-    return res.redirect(`${this.configService.get('WEB_UI_SIGN_IN_SUCCESSFULLY_REDIRECT_URL')}?code=${code}`);
+    res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+
+    return res.redirect(this.configService.get('WEB_UI_SIGN_IN_SUCCESSFULLY_REDIRECT_URL'));
   }
 }
