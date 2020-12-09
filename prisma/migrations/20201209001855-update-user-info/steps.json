@@ -1,0 +1,735 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateEnum",
+      "enum": "UserVerifyDocumentType",
+      "values": [
+        "Facebook",
+        "Email",
+        "PhoneNumber"
+      ]
+    },
+    {
+      "tag": "CreateEnum",
+      "enum": "RentingItemRequestActivityType",
+      "values": [
+        "Comment",
+        "Declined",
+        "Approved",
+        "InProgress",
+        "Completed",
+        "Cancelled"
+      ]
+    },
+    {
+      "tag": "CreateModel",
+      "model": "UserInfo"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserInfo",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "UserInfo",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserInfo",
+      "field": "displayName",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserInfo",
+      "field": "bio",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserInfo",
+      "field": "avatarImage",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserInfo",
+      "field": "coverImage",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateModel",
+      "model": "UserIdentifyDocument"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserIdentifyDocument",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "UserIdentifyDocument",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "UserIdentifyDocument",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "UserIdentifyDocument",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "uuid()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserIdentifyDocument",
+      "field": "userId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserIdentifyDocument",
+      "field": "type",
+      "type": "UserVerifyDocumentType",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserIdentifyDocument",
+      "field": "value",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserIdentifyDocument",
+      "field": "isVerfied",
+      "type": "Boolean",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateModel",
+      "model": "UserReview"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserReview",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "UserReview",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "UserReview",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "UserReview",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "uuid()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserReview",
+      "field": "toUserId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserReview",
+      "field": "rentingRequestId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserReview",
+      "field": "reviewScore",
+      "type": "Int",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserReview",
+      "field": "reviewComment",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserReview",
+      "field": "ownerUserId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserReview",
+      "field": "isDeleted",
+      "type": "Boolean",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "UserReview",
+          "field": "isDeleted"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "UserReview",
+          "field": "isDeleted"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "false"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserReview",
+      "field": "createdDate",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "UserReview",
+          "field": "createdDate"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "UserReview",
+          "field": "createdDate"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserReview",
+      "field": "updatedDate",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "UserReview",
+          "field": "updatedDate"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "UserReview",
+          "field": "updatedDate"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "UserReview",
+      "field": "updatedBy",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateModel",
+      "model": "RentingItemRequestActivity"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "uuid()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "rentingItem",
+      "type": "Item",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "rentingItem"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "rentingItem"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[itemId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "rentingItem"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "itemId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "data",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "type",
+      "type": "RentingItemRequestActivityType",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "files",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "isLocked",
+      "type": "Boolean",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "isLocked"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "isLocked"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "false"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "lockedBy",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "isDisabled",
+      "type": "Boolean",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "isDisabled"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "isDisabled"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "false"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "isDeleted",
+      "type": "Boolean",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "isDeleted"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "isDeleted"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "false"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "createdDate",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "createdDate"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "createdDate"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "updatedDate",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "updatedDate"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "updatedDate"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "createdBy",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "updatedBy",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "DeleteModel",
+      "model": "LenderReview"
+    },
+    {
+      "tag": "DeleteModel",
+      "model": "RentingItemRequestComment"
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "facebookId",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "facebookId"
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "facebookAccessToken",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "googleId",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "googleId"
+        },
+        "directive": "unique"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "googleAccessToken",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "User",
+      "field": "name"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "User",
+      "field": "bio"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "User",
+      "field": "avatarImage"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "User",
+      "field": "coverImage"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "User",
+      "field": "email",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "ItemReview",
+      "field": "images",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "ItemReview",
+      "field": "reviewComment",
+      "arity": "Optional"
+    }
+  ]
+}

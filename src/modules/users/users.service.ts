@@ -23,6 +23,32 @@ export class UsersService {
     return this.prismaService.user.create({ data: { email, passwordHash, role: [ UserRole.User ] } })
   }
 
+  async createUserByFacebookAccount(facebookId: string, facebookAccessToken: string): Promise<User> {
+    return this.prismaService.user.create({ data: { facebookId, facebookAccessToken, role: [ UserRole.User ] } })
+  }
+
+  async createUserByGoogleAccount(googleId: string, googleAccessToken: string): Promise<User> {
+    return this.prismaService.user.create({ data: { googleId, googleAccessToken, role: [ UserRole.User ] } })
+  }
+
+  async getUserByFacebookId(facebookId: string): Promise<User> {
+    const user = await this.prismaService.user.findOne({ where: { facebookId } })
+    if (!user) {
+      throw new Error('No such user found')
+    }
+
+    return user
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User> {
+    const user = await this.prismaService.user.findOne({ where: { googleId } })
+    if (!user) {
+      throw new Error('No such user found')
+    }
+
+    return user
+  }
+
   async getUserByEmailPassword(email: string, password: string): Promise<User> {
     const user = await this.prismaService.user.findOne({ where: { email } })
     if (!user) {
