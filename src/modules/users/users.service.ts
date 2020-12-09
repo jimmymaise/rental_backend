@@ -4,7 +4,8 @@ import * as bcrypt from 'bcrypt'
 import { PrismaService } from '../prisma/prisma.service'
 import {
   User,
-  UserRole
+  UserRole,
+  UserInfo
 } from '@prisma/client';
 
 @Injectable()
@@ -33,18 +34,12 @@ export class UsersService {
 
   async getUserByFacebookId(facebookId: string): Promise<User> {
     const user = await this.prismaService.user.findOne({ where: { facebookId } })
-    if (!user) {
-      throw new Error('No such user found')
-    }
 
     return user
   }
 
   async getUserByGoogleId(googleId: string): Promise<User> {
     const user = await this.prismaService.user.findOne({ where: { googleId } })
-    if (!user) {
-      throw new Error('No such user found')
-    }
 
     return user
   }
@@ -99,4 +94,12 @@ export class UsersService {
     }
   }
   
+  async createTheProfileForUser(userId: string, info: UserInfo): Promise<UserInfo> {
+    return await this.prismaService.userInfo.create({
+      data: {
+        ...info,
+        id: userId
+      }
+    })
+  }
 }

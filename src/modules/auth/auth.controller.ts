@@ -1,10 +1,21 @@
-import { Controller, Get, UseGuards, HttpStatus, Req } from "@nestjs/common";
+import { Controller, Get, UseGuards, HttpStatus, Req, Res } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { ConfigService } from '@nestjs/config';
+
+import { AuthService } from './auth.service'
 
 // https://dev.to/elishaking/how-to-implement-facebook-login-with-nestjs-90h
 // http://www.passportjs.org/docs/google/
+
+// To check the user access_token from the Mobile App
+// https://www.npmjs.com/package/passport-facebook-token
+// https://www.npmjs.com/package/passport-google-oauth20
 @Controller('auth')
 export class AuthController {
+  constructor(
+    private authService: AuthService,
+    private configService: ConfigService
+  ) {}
 
   @Get("/facebook")
   @UseGuards(AuthGuard("facebook"))
@@ -14,11 +25,14 @@ export class AuthController {
 
   @Get("/facebook/redirect")
   @UseGuards(AuthGuard("facebook"))
-  async facebookLoginRedirect(@Req() req: any): Promise<any> {
-    return {
-      statusCode: HttpStatus.OK,
-      data: req.user,
-    };
+  async facebookLoginRedirect(@Req() req: any, @Res() res: any): Promise<any> {
+    const facebookData = req.user
+    const authDTO = await this.authService.signInByFacebookId(facebookData.user.facebookId, facebookData.accessToken, {
+      displayName: facebookData.user.displayName
+    })
+    const code = Buffer.from(JSON.stringify(authDTO)).toString('base64')
+
+    return res.redirect(`${this.configService.get('WEB_UI_SIGN_IN_SUCCESSFULLY_REDIRECT_URL')}?code=${code}`);
   }
 
   @Get("/google")
@@ -29,10 +43,13 @@ export class AuthController {
 
   @Get("/google/redirect")
   @UseGuards(AuthGuard("google"))
-  async googleLoginRedirect(@Req() req: any): Promise<any> {
-    return {
-      statusCode: HttpStatus.OK,
-      data: req.user,
-    };
+  async googleLoginRedirect(@Req() req: any, @Res() res: any): Promise<any> {
+    const googleDate = req.user
+    const authDTO = await this.authService.signInByGoogleId(googleDate.user.facebookId, googleDate.accessToken, {
+      displayName: googleDate.user.displayName
+    })
+    const code = Buffer.from(JSON.stringify(authDTO)).toString('base64')
+
+    return res.redirect(`${this.configService.get('WEB_UI_SIGN_IN_SUCCESSFULLY_REDIRECT_URL')}?code=${code}`);
   }
 }

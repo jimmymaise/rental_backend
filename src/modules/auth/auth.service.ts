@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import {
+  UserInfo
+} from '@prisma/client';
 
 import { rootContants } from '../../constants'
 import { UsersService } from '../users/users.service'
@@ -27,6 +30,50 @@ export class AuthService {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
       expiresIn: `${this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')}s`
     })
+  }
+
+  async signInByFacebookId(facebookId: string, fbAccessToken: string, userInfo: Partial<UserInfo>): Promise<AuthDTO> {
+    let user = await this.usersService.getUserByFacebookId(facebookId)
+    
+    if (!user) {
+      user = await this.usersService.createUserByFacebookAccount(facebookId, fbAccessToken)
+      await this.usersService.createTheProfileForUser(user.id, userInfo as any)
+    }
+
+    const tokenPayload = { userId: user.id, facebookId }
+    const accessToken = this.getAccessToken(tokenPayload)
+    const refreshToken = this.getRefreshToken(tokenPayload)
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email
+      }
+    }
+  }
+
+  async signInByGoogleId(googleId: string, googleAccessToken: string, userInfo: Partial<UserInfo>): Promise<AuthDTO> {
+    let user = await this.usersService.getUserByGoogleId(googleId)
+    
+    if (!user) {
+      user = await this.usersService.createUserByGoogleAccount(googleId, googleAccessToken)
+      await this.usersService.createTheProfileForUser(user.id, userInfo as any)
+    }
+
+    const tokenPayload = { userId: user.id, googleId }
+    const accessToken = this.getAccessToken(tokenPayload)
+    const refreshToken = this.getRefreshToken(tokenPayload)
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email
+      }
+    }
   }
 
   async signUpByEmail(email: string, password: string): Promise<AuthDTO> {

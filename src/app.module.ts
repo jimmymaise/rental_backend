@@ -61,7 +61,8 @@ import { AppService } from './app.service'
         FACEBOOK_LOGIN_CALLBACK_URL: Joi.string().required(),
         GOOGLE_CLIENT_ID: Joi.string().required(),
         GOOGLE_CLIENT_SECRET: Joi.string().required(),
-        GOOGLE_LOGIN_CALLBACK_URL: Joi.string().required()
+        GOOGLE_LOGIN_CALLBACK_URL: Joi.string().required(),
+        WEB_UI_SIGN_IN_SUCCESSFULLY_REDIRECT_URL: Joi.string().required()
       })
     }),
     AuthModule,
