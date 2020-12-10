@@ -195,11 +195,17 @@ export class UsersService {
       }
     }
 
-    return await this.prismaService.userInfo.update({
+    const cacheKey = getUserCacheKey(userId)
+    const userDetailCache = await this.redisCacheService.get(cacheKey)
+
+    const updatedUserInfo = await this.prismaService.userInfo.update({
       where: {
         id: userId
       },
       data: updateData
     })
+    this.redisCacheService.set(cacheKey, toUserInfoDTO(userDetailCache as any, updatedUserInfo), 3600)
+
+    return updatedUserInfo
   }
 }
