@@ -8,6 +8,5 @@ services:
       - 'redis_data:/data'
 
 volumes:
-  rabbitmq_data:
   redis_data:
 

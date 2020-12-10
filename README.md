@@ -110,6 +110,11 @@ curl --location --request POST 'http://localhost:3000/graphql' \
 --form '0=@/C:/Users/trank/Desktop/_home_black_bib-server_data_2020_VJM2020_On Course_lmk (1475).jpg'
 ```
 
+```
+cd scripts
+docker-compose up -d
+```
+
 ## TODO:
 [] Request Activities
 [] Item Review

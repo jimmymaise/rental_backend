@@ -8,14 +8,49 @@ import {
   UserInfo
 } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service'
-import { UserInfoInputDTO } from './user-info.dto'
+import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto'
+import { RedisCacheService } from '../redis-cache/redis-cache.service'
+
+function toUserInfoDTO(user: User, userInfo: UserInfo): UserInfoDTO {
+  return {
+    ...userInfo,
+    id: user.id,
+    createdDate: userInfo?.createdDate.getTime(),
+    avatarImage: userInfo?.avatarImage && userInfo.avatarImage.length ? JSON.parse(userInfo.avatarImage) : [],
+    coverImage: userInfo?.coverImage && userInfo.coverImage.length ? JSON.parse(userInfo.coverImage) : [],
+    email: user?.email
+  }
+}
+
+function getUserCacheKey(userId: string) {
+  return `USER_INFO_${userId}`
+}
 
 @Injectable()
 export class UsersService {
   constructor(
     private prismaService: PrismaService,
-    private storageService: StoragesService
+    private storageService: StoragesService,
+    private redisCacheService: RedisCacheService
   ) {}
+
+  async getUserDetailData(userId: string): Promise<UserInfoDTO> {
+    const cacheKey = getUserCacheKey(userId)
+    let userDetail = await this.redisCacheService.get(cacheKey)
+
+    if (userDetail) {
+      return userDetail
+    }
+
+    const userData = await this.getUserById(userId);
+    const userInfoData = await this.getUserInfoById(userId);
+
+    userDetail = toUserInfoDTO(userData, userInfoData)
+
+    this.redisCacheService.set(cacheKey, userDetail, 3600)
+
+    return userDetail
+  }
 
   async getUserById(userId: string): Promise<User> {
     return this.prismaService.user.findOne({ where: { id: userId } })
