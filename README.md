@@ -121,6 +121,6 @@ docker-compose up -d
 [] Lender Review
 [] Renter Review
 [] Log Search Keyword
-[] Wishing Item List
-[] User Contact List
+[x] Wishing Item List
+[x] User Contact List
 [] User Notification

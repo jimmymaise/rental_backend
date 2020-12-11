@@ -189,6 +189,7 @@ model RentingItemRequest {
 model ItemReview {
   id                      String          @id @default(uuid())
   rentingItem           Item @relation(fields: [itemId], references: [id])
+  rentingRequestId      String?
   itemId                String
   reviewScore           Int
   reviewComment         String?
@@ -203,7 +204,7 @@ model ItemReview {
 model UserReview {
   id                      String          @id @default(uuid())
   toUserId              String
-  rentingRequestId      String
+  rentingRequestId      String?
   reviewScore           Int
   reviewComment         String?
   ownerUserId             String
