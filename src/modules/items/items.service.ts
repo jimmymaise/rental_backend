@@ -81,6 +81,7 @@ export class ItemsService {
         status: ItemStatus.Published,
         ownerUserId: userId,
         updatedBy: userId,
+        isVerified: process.env.NODE_ENV === 'production' ? false : true
       },
     });
   }
