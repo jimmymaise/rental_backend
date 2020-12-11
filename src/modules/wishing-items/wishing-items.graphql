@@ -25,5 +25,5 @@ type Mutation {
 }
 
 type Query {
-  feedMyWishlist(WishingItemQuery: ItemQuery): WishingItemPagination
+  feedMyWishlist(query: WishingItemQuery): WishingItemPagination
 }

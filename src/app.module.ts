@@ -12,7 +12,8 @@ import {
   ItemsModule,
   RentingItemRequestsModule,
   WishingItemsModule,
-  UsersModule
+  UsersModule,
+  MyUserContactsModule
 } from './modules'
 
 import { rootContants } from './constants'
@@ -73,7 +74,8 @@ import { AppService } from './app.service'
     StoragesModule,
     ItemsModule,
     RentingItemRequestsModule,
-    WishingItemsModule
+    WishingItemsModule,
+    MyUserContactsModule
   ],
   controllers: [AppController],
   providers: [

@@ -25,20 +25,21 @@ export class WishingItemsService {
     })
   }
 
-  async deleteItemFromMyWishlist(id: string, userId: string): Promise<WishingItem> {
-    const item = await this.prismaService.wishingItem.findOne({
+  async deleteItemFromMyWishlist(userId: string, itemId: string): Promise<WishingItem> {
+    const item = await this.prismaService.wishingItem.findFirst({
       where: {
-        id
+        ownerUserId: userId,
+        itemId
       }
     })
 
-    if (item.ownerUserId !== userId) {
+    if (!item) {
       throw new Error('Wishing Item not existing')
     }
 
     return this.prismaService.wishingItem.delete({
       where: {
-        id
+        id: item.id
       }
     })
   }
