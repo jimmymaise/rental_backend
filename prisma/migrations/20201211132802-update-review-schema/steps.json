@@ -1,0 +1,18 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "ItemReview",
+      "field": "rentingRequestId",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "UserReview",
+      "field": "rentingRequestId",
+      "arity": "Optional"
+    }
+  ]
+}

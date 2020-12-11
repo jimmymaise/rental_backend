@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -225,11 +225,13 @@ enum RentingItemRequestActivityType {
 
 model RentingItemRequestActivity {
   id                      String          @id @default(uuid())
-  rentingItemRequest           RentingItemRequest @relation(fields: [rentingItemRequestId], references: [id])
-  rentingItemRequestId                String
-  comment             String?
+  rentingItem           Item @relation(fields: [itemId], references: [id])
+  itemId                String
+  data             String?
   type              RentingItemRequestActivityType
   files                 String? // JSON
+  isLocked              Boolean?        @default(false)
+  lockedBy               String
   isDisabled              Boolean?        @default(false)
   isDeleted               Boolean?        @default(false)
   createdDate             DateTime        @default(now())

@@ -1,6 +1,9 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
 
+import {
+  RentingItemRequestActivity
+} from '@prisma/client'
 import { RentingItemRequetsService } from './renting-item-requests.service'
 import { RentingItemRequestInputDTO } from './renting-item-request-input.dto'
 import { RentingItemRequestDTO } from './renting-item-request.dto'
@@ -10,6 +13,14 @@ import {
   GqlAuthGuard
 } from '../auth'
 import { PaginationDTO } from '../../models'
+import { StoragePublicDTO } from '../storages/storage-public.dto'
+import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto'
+
+interface UpdateItemRequestStatusModel {
+  rentingRequestId: string
+  comment?: string
+  files?: StoragePublicDTO[]
+}
 
 @Resolver('RentingItemRequest')
 export class RentingItemRequestsResolvers {
@@ -72,44 +83,83 @@ export class RentingItemRequestsResolvers {
   @UseGuards(GqlAuthGuard)
   async cancelRequest(
     @CurrentUser() user: GuardUserPayload,
-    @Args('id') id: string
+    @Args('data') data: UpdateItemRequestStatusModel
   ): Promise<RentingItemRequestDTO> {
-    return this.rentingItemRequestService.cancelRequest(id, user.id)
+    return this.rentingItemRequestService.cancelRequest({
+      id: data.rentingRequestId,
+      comment: data.comment,
+      files: data.files,
+      updatedBy: user.id
+    })
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async approveRequest(
     @CurrentUser() user: GuardUserPayload,
-    @Args('id') id: string
+    @Args('data') data: UpdateItemRequestStatusModel
   ): Promise<RentingItemRequestDTO> {
-    return this.rentingItemRequestService.approveRequest(id, user.id)
+    return this.rentingItemRequestService.approveRequest({
+      id: data.rentingRequestId,
+      comment: data.comment,
+      files: data.files,
+      updatedBy: user.id
+    })
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async declineRequest(
     @CurrentUser() user: GuardUserPayload,
-    @Args('id') id: string
+    @Args('data') data: UpdateItemRequestStatusModel
   ): Promise<RentingItemRequestDTO> {
-    return this.rentingItemRequestService.declineRequest(id, user.id)
+    return this.rentingItemRequestService.declineRequest({
+      id: data.rentingRequestId,
+      comment: data.comment,
+      files: data.files,
+      updatedBy: user.id
+    })
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async startRequest(
     @CurrentUser() user: GuardUserPayload,
-    @Args('id') id: string
+    @Args('data') data: UpdateItemRequestStatusModel
   ): Promise<RentingItemRequestDTO> {
-    return this.rentingItemRequestService.startRequest(id, user.id)
+    return this.rentingItemRequestService.startRequest({
+      id: data.rentingRequestId,
+      comment: data.comment,
+      files: data.files,
+      updatedBy: user.id
+    })
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async completeRequest(
     @CurrentUser() user: GuardUserPayload,
-    @Args('id') id: string
+    @Args('data') data: UpdateItemRequestStatusModel
   ): Promise<RentingItemRequestDTO> {
-    return this.rentingItemRequestService.completeRequest(id, user.id)
+    return this.rentingItemRequestService.completeRequest({
+      id: data.rentingRequestId,
+      comment: data.comment,
+      files: data.files,
+      updatedBy: user.id
+    })
+  }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async commentOnRequest(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: UpdateItemRequestStatusModel
+  ): Promise<RentingItemRequestActivityDTO> {
+    return this.rentingItemRequestService.comment({
+      id: data.rentingRequestId,
+      comment: data.comment,
+      files: data.files,
+      updatedBy: user.id
+    })
   }
 }

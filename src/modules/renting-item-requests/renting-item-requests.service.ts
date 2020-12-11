@@ -1,18 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import * as moment from 'moment';
+import { Injectable } from '@nestjs/common'
+import * as moment from 'moment'
 
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service'
 import {
   Item,
   RentingItemRequest,
+  RentingItemRequestActivity,
   RentingItemRequestStatus,
+  RentingItemRequestActivityType,
   User,
-} from '@prisma/client';
-import { RentingItemRequestInputDTO } from './renting-item-request-input.dto';
-import { RentingItemRequestDTO } from './renting-item-request.dto';
-import { PaginationDTO } from '../../models';
-import { UsersService } from '../users/users.service';
-import { Permission } from './permission.enum';
+} from '@prisma/client'
+import { RentingItemRequestInputDTO } from './renting-item-request-input.dto'
+import { RentingItemRequestDTO } from './renting-item-request.dto'
+import { PaginationDTO } from '../../models'
+import { UsersService } from '../users/users.service'
+import { Permission } from './permission.enum'
+import { StoragePublicDTO } from '../storages/storage-public.dto'
+import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto'
 
 const WEEK_DAY = 7;
 const MONTH_DAY = 30;
@@ -22,11 +26,25 @@ enum RentingItemRequestUserType {
   Lender = 'lender',
 }
 
+interface ChangeItemRequestStatusModel {
+  id: string
+  status?: RentingItemRequestStatus
+  updatedBy: string
+  comment?: string
+  files?: StoragePublicDTO[]
+}
+
+const RequestActivityTypeMap = {
+  [RentingItemRequestStatus.Declined]: RentingItemRequestActivityType.Declined,
+  [RentingItemRequestStatus.Approved]: RentingItemRequestActivityType.Approved,
+  [RentingItemRequestStatus.Completed]: RentingItemRequestActivityType.Completed,
+  [RentingItemRequestStatus.Cancelled]: RentingItemRequestActivityType.Cancelled,
+  [RentingItemRequestStatus.InProgress]: RentingItemRequestActivityType.InProgress
+}
+
 function toRentingItemRequestDTO(
   rentingItemRequest: RentingItemRequest,
-  permissions: Permission[],
-  ownerUserDetail?: User,
-  lenderUserDetail?: User,
+  permissions: Permission[]
 ): RentingItemRequestDTO {
   const cachedInfo = JSON.parse(rentingItemRequest.rentingItemCachedInfo);
   if (cachedInfo?.images) {
@@ -40,10 +58,20 @@ function toRentingItemRequestDTO(
     createdDate: rentingItemRequest.createdDate.getTime(),
     updatedDate: rentingItemRequest.updatedDate.getTime(),
     rentingItemCachedInfo: cachedInfo,
-    ownerUserDetail,
-    lenderUserDetail,
     permissions,
   };
+}
+
+function toRentingItemRequestActivityDTO(data: RentingItemRequestActivity): RentingItemRequestActivityDTO {
+  return {
+    id: data.id,
+    rentingItemRequestId: data.rentingItemRequestId,
+    comment: data.comment,
+    type: data.type,
+    files: JSON.parse(data.files),
+    createdDate: data.createdDate.getTime(),
+    updatedDate: data.updatedDate.getTime()
+  }
 }
 
 @Injectable()
@@ -123,7 +151,11 @@ export class RentingItemRequetsService {
     });
     const permissions = this.getPermissions(newItem, ownerUserId);
 
-    return toRentingItemRequestDTO(newItem, permissions);
+    const result = toRentingItemRequestDTO(newItem, permissions);
+    result.ownerUserDetail = await this.userService.getUserDetailData(newItem.ownerUserId)
+    // result.lenderUserDetail = await this.userService.getUserDetailData(newItem.lenderUserId)
+
+    return result
   }
 
   async findAllRequestFromUser({
@@ -236,9 +268,7 @@ export class RentingItemRequetsService {
         includes?.includes('lenderUserDetail') &&
         permissions.includes(Permission.VIEW_LENDER_INFO)
       ) {
-        newItem.lenderUserDetail = await this.userService.getUserById(
-          item.lenderUserId,
-        );
+        newItem.lenderUserDetail = await this.userService.getUserDetailData(item.lenderUserId)
       }
 
       finalItems.push(newItem);
@@ -276,9 +306,7 @@ export class RentingItemRequetsService {
         includes?.includes('ownerUserDetail') &&
         permissions.includes(Permission.VIEW_REQUEST_RENT_OWNER_INFO)
       ) {
-        newItem.ownerUserDetail = await this.userService.getUserById(
-          item.ownerUserId,
-        );
+        newItem.ownerUserDetail = await this.userService.getUserDetailData(item.ownerUserId)
       }
 
       finalItems.push(newItem);
@@ -290,62 +318,62 @@ export class RentingItemRequetsService {
     };
   }
 
-  public async cancelRequest(id: string, byUserId: string): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id } })
-    const permissions = this.getPermissions(requestItem, byUserId)
+  public async cancelRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })
+    const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.CANCEL)) {
-      return this.changeRentingItemRequestStatus(id, RentingItemRequestStatus.Cancelled, byUserId)
+      return this.changeRentingItemRequestStatus(data)
     }
 
     throw new Error('Not Authorize')
   }
 
-  public async approveRequest(id: string, byUserId: string): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id } })
-    const permissions = this.getPermissions(requestItem, byUserId)
+  public async approveRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })
+    const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.APPROVE)) {
-      return this.changeRentingItemRequestStatus(id, RentingItemRequestStatus.Approved, byUserId)
+      return this.changeRentingItemRequestStatus(data)
     }
 
     throw new Error('Not Authorize')
   }
 
-  public async declineRequest(id: string, byUserId: string): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id } })
-    const permissions = this.getPermissions(requestItem, byUserId)
+  public async declineRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })
+    const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.DECLINE)) {
-      return this.changeRentingItemRequestStatus(id, RentingItemRequestStatus.Declined, byUserId)
+      return this.changeRentingItemRequestStatus(data)
     }
 
     throw new Error('Not Authorize')
   }
 
-  public async startRequest(id: string, byUserId: string): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id } })
-    const permissions = this.getPermissions(requestItem, byUserId)
+  public async startRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })
+    const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.START)) {
-      return this.changeRentingItemRequestStatus(id, RentingItemRequestStatus.InProgress, byUserId)
+      return this.changeRentingItemRequestStatus(data)
     }
 
     throw new Error('Not Authorize')
   }
 
-  public async completeRequest(id: string, byUserId: string): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id } })
-    const permissions = this.getPermissions(requestItem, byUserId)
+  public async completeRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })
+    const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.COMPLETE)) {
-      return this.changeRentingItemRequestStatus(id, RentingItemRequestStatus.Completed, byUserId)
+      return this.changeRentingItemRequestStatus(data)
     }
 
     throw new Error('Not Authorize')
   }
 
-  private async changeRentingItemRequestStatus(id: string, status: RentingItemRequestStatus, updatedBy: string): Promise<RentingItemRequestDTO> {
+  private async changeRentingItemRequestStatus({ id, status, updatedBy, comment, files }: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
     const rentingRequest = await this.prismaService.rentingItemRequest.update({
       where: {
         id
@@ -356,9 +384,46 @@ export class RentingItemRequetsService {
         updatedDate: new Date()
       }
     })
+    await this.prismaService.rentingItemRequestActivity.create({
+      data: {
+        rentingItemRequest: {
+          connect: {
+            id
+          }
+        },
+        comment,
+        files: files && files.length ? JSON.stringify(files) : JSON.stringify('[]'),
+        type: RequestActivityTypeMap[status],
+        createdBy: updatedBy,
+        updatedBy
+      }
+    })
 
     const permissions = this.getPermissions(rentingRequest, updatedBy);
     return toRentingItemRequestDTO(rentingRequest, permissions)
+  }
+
+  public async comment({ id, updatedBy, comment, files }: ChangeItemRequestStatusModel): Promise<RentingItemRequestActivityDTO> {
+    const newActivity = await this.prismaService.rentingItemRequestActivity.create({
+      data: {
+        rentingItemRequest: {
+          connect: {
+            id
+          }
+        },
+        comment,
+        files: files && files.length ? JSON.stringify(files) : JSON.stringify('[]'),
+        type: RentingItemRequestActivityType.Comment,
+        createdBy: updatedBy,
+        updatedBy
+      }
+    })
+
+    const result = toRentingItemRequestActivityDTO(newActivity)
+    result.createdBy = await this.userService.getUserDetailData(updatedBy)
+    result.updatedBy = await this.userService.getUserDetailData(updatedBy)
+
+    return result
   }
 
   private getPermissions(

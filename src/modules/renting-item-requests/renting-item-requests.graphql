@@ -4,6 +4,12 @@ input RentingItemRequestInput {
   toDate: Float!
 }
 
+input UpdateItemRequestStatusInput {
+  rentingRequestId: String!
+  comment: String
+  files: [PublicStorageFileInput]
+}
+
 type RentingItemCachedInfo {
   name: String
   images: [PublicStorageFile]
@@ -32,6 +38,18 @@ type RentingItemRequest {
   permissions: [String]
 }
 
+type RentingItemRequestActivity {
+  id: String
+  rentingItemRequestId: String
+  comment: String
+  type: String
+  files: [PublicStorageFile]
+  createdDate: Float
+  updatedDate: Float
+  createdBy: UserInfo
+  updatedBy: UserInfo
+}
+
 input RentingItemRequestQuery {
   offset: Int
   limit: Int
@@ -48,11 +66,12 @@ type RentingItemRequestPagination {
 
 type Mutation {
   newRequest(requestData: RentingItemRequestInput!): RentingItemRequest
-  cancelRequest(id: String): RentingItemRequest
-  approveRequest(id: String): RentingItemRequest
-  declineRequest(id: String): RentingItemRequest
-  startRequest(id: String): RentingItemRequest
-  completeRequest(id: String): RentingItemRequest
+  cancelRequest(data: UpdateItemRequestStatusInput!): RentingItemRequest
+  approveRequest(data: UpdateItemRequestStatusInput!): RentingItemRequest
+  declineRequest(data: UpdateItemRequestStatusInput!): RentingItemRequest
+  startRequest(data: UpdateItemRequestStatusInput!): RentingItemRequest
+  completeRequest(data: UpdateItemRequestStatusInput!): RentingItemRequest
+  commentOnRequest(data: UpdateItemRequestStatusInput!): RentingItemRequestActivity
 }
 
 type Query {

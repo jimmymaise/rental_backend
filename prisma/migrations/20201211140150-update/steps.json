@@ -1,0 +1,73 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "rentingItemRequest",
+      "type": "RentingItemRequest",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "rentingItemRequest"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "rentingItemRequest"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[rentingItemRequestId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "RentingItemRequestActivity",
+          "field": "rentingItemRequest"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "RentingItemRequestActivity",
+      "field": "rentingItemRequestId",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "RentingItemRequestActivity",
+      "field": "rentingItem"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "RentingItemRequestActivity",
+      "field": "itemId"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "RentingItemRequestActivity",
+      "field": "status"
+    }
+  ]
+}

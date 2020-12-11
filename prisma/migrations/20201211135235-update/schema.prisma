@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -225,9 +225,10 @@ enum RentingItemRequestActivityType {
 
 model RentingItemRequestActivity {
   id                      String          @id @default(uuid())
-  rentingItemRequest           RentingItemRequest @relation(fields: [rentingItemRequestId], references: [id])
-  rentingItemRequestId                String
+  rentingItem           Item @relation(fields: [itemId], references: [id])
+  itemId                String
   comment             String?
+  status                  RentingItemRequestStatus?
   type              RentingItemRequestActivityType
   files                 String? // JSON
   isDisabled              Boolean?        @default(false)

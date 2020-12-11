@@ -1,5 +1,5 @@
 import { ItemDTO } from '../items/item.dto'
-import { User } from '@prisma/client';
+import { UserInfoDTO } from '../users/user-info.dto'
 
 export interface RentingItemRequestDTO {
   id: string
@@ -23,9 +23,9 @@ export interface RentingItemRequestDTO {
   toDate: number
   status?: string
   ownerUserId: string
-  ownerUserDetail?: User
+  ownerUserDetail?: UserInfoDTO
   lenderUserId: string
-  lenderUserDetail?: User
+  lenderUserDetail?: UserInfoDTO
   createdDate: number
   updatedDate: number
   permissions?: string[]
