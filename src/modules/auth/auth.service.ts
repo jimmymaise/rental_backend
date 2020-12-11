@@ -100,6 +100,7 @@ export class AuthService {
     }
 
     const user = await this.usersService.createUserByEmailPassword(email, password)
+    await this.usersService.createTheProfileForUser(user.id, { displayName: email.substr(0, email.indexOf('@')) } as any)
 
     const tokenPayload = { userId: user.id, email }
     const accessToken = this.getAccessToken(tokenPayload)

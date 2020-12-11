@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
+import sample from 'lodash/sample'
 
 import { PrismaService } from '../prisma/prisma.service'
 import {
@@ -10,6 +11,18 @@ import {
 import { StoragesService } from '../storages/storages.service'
 import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto'
 import { RedisCacheService } from '../redis-cache/redis-cache.service'
+
+const DEFAULT_AVATARS = [
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-1.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-2.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-3.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-4.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-5.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-6.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-7.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-8.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-9.jpg',
+]
 
 function toUserInfoDTO(user: User, userInfo: UserInfo): UserInfoDTO {
   return {
@@ -158,6 +171,12 @@ export class UsersService {
     return await this.prismaService.userInfo.create({
       data: {
         ...info,
+        avatarImage: JSON.stringify({
+          url: sample(DEFAULT_AVATARS)
+        }),
+        coverImage: JSON.stringify({
+          url: sample('https://asia-fast-storage.thuedo.vn/default-avatars/default-cover.jpg')
+        }),
         id: userId
       }
     })
