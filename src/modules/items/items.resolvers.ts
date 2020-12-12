@@ -14,6 +14,7 @@ import {
   GqlAuthGuard
 } from '../auth'
 import { PaginationDTO } from '../../models'
+import { UsersService } from '../users/users.service'
 
 function toItemDTO(item: Item): ItemDTO {
   if (!item) {
@@ -33,8 +34,9 @@ function toItemDTO(item: Item): ItemDTO {
 @Resolver('Item')
 export class ItemsResolvers {
   constructor(
-    private readonly itemService: ItemsService,
-    private readonly userItemService: UserItemsService
+    private itemService: ItemsService,
+    private userItemService: UserItemsService,
+    private usersService: UsersService
   ) {}
 
   @Mutation()
@@ -60,10 +62,11 @@ export class ItemsResolvers {
       limit: number,
       areaId: string,
       categoryId: string,
-      includes: string[]
+      includes: string[],
+      sortByFields: string[]
     }
   ): Promise<PaginationDTO<ItemDTO>> {
-    const { search, offset, limit, areaId, categoryId, includes } = query || {}
+    const { search, offset, limit, areaId, categoryId, includes, sortByFields } = query || {}
     const actualLimit = limit && limit > 100 ? 100 : limit
     const result = await this.itemService.findAllAvailablesItem({
       searchValue: search,
@@ -71,11 +74,23 @@ export class ItemsResolvers {
       limit: actualLimit,
       areaId,
       categoryId,
-      includes
+      includes,
+      sortByFields
     })
 
+    const items = []
+    for (let i = 0; i < result.items.length; i++) {
+      const newItem = toItemDTO(result.items[i])
+
+      if (result.items[i].ownerUserId) {
+        newItem.createdBy = await this.usersService.getUserDetailData(result.items[i].ownerUserId)
+      }
+
+      items.push(newItem)
+    }
+
     return {
-      items: result.items.map(toItemDTO),
+      items,
       total: result.total,
       offset: offset || 0,
       limit: actualLimit

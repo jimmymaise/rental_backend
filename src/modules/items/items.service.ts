@@ -93,6 +93,7 @@ export class ItemsService {
     areaId,
     categoryId,
     includes,
+    sortByFields
   }): Promise<PaginationDTO<Item>> {
     const mandatoryWhere = {
       isDeleted: false,
@@ -154,6 +155,34 @@ export class ItemsService {
       skip: offset,
       take: limit,
     };
+
+    const validSortBy = {
+      rentPricePerDay: true,
+      createdDate: true,
+      updatedDate: true
+    };
+
+    if (sortByFields && sortByFields.length) {
+      sortByFields.forEach((sortBy) => {
+        const sortByChunk = sortBy.split(':');
+        if (validSortBy[sortByChunk[0]]) {
+          findCondition.orderBy = [
+            {
+              [sortByChunk[0]]: sortByChunk[1] || 'asc',
+            }
+          ];
+        }
+      });
+    } else {
+      findCondition.orderBy = [
+        {
+          createdDate: 'desc',
+        },
+        {
+          updatedDate: 'desc',
+        },
+      ];
+    }
 
     if (Object.keys(include).length) {
       findCondition.include = include;

@@ -201,7 +201,7 @@ export class RentingItemRequetsService {
       fromDate: true,
       toDate: true,
       createdDate: true,
-      updatedDated: true,
+      updatedDate: true,
       status: true,
     };
 

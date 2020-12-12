@@ -25,6 +25,7 @@ type Item {
   note: String
   createdDate: Float
   updatedDate: Float
+  createdBy: UserInfo
 }
 
 type ItemPagination {
@@ -60,6 +61,7 @@ input ItemQuery {
   categoryId: String
   areaId: String
   includes: [String]
+  sortByFields: [String]
 }
 
 input MyItemQuery {

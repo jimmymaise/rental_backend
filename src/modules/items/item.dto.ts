@@ -5,6 +5,7 @@ import {
 
 import { StoragePublicDTO } from '../storages/storage-public.dto'
 import { RentingMandatoryVerifyDocumentPublicDTO } from '../renting-mandatory-verify-documents/renting-mandatory-verify-document-public.dto'
+import { UserInfoDTO } from '../users/user-info.dto'
 
 export interface ItemDTO {
   id: string
@@ -32,4 +33,5 @@ export interface ItemDTO {
   isVerified?: boolean
   status: string
   createdDate: number
+  createdBy?: UserInfoDTO
 }

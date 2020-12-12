@@ -4,9 +4,10 @@ import { ItemsService } from './items.service'
 import { UserItemsService } from './user-items.service'
 import { ItemsResolvers } from './items.resolvers'
 import { StoragesModule } from '../storages/storages.module'
+import { UsersModule } from '../users/users.module'
 
 @Module({
-  imports: [StoragesModule],
+  imports: [StoragesModule, UsersModule],
   providers: [ItemsService, UserItemsService, ItemsResolvers]
 })
 export class ItemsModule {}

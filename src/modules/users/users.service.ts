@@ -13,18 +13,22 @@ import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto'
 import { RedisCacheService } from '../redis-cache/redis-cache.service'
 
 const DEFAULT_AVATARS = [
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-1.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-2.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-3.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-4.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-5.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-6.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-7.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0008_avatar-1.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0007_avatar-2.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0006_avatar-3.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0005_avatar-4.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0004_avatar-5.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0003_avatar-6.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0002_avatar-7.jpg',
   'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-8.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-9.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0000_avatar-9.jpg',
 ]
 
 function toUserInfoDTO(user: User, userInfo: UserInfo): UserInfoDTO {
+  if (!user) {
+    return null
+  }
+
   return {
     ...userInfo,
     id: user.id,
@@ -60,7 +64,7 @@ export class UsersService {
 
     userDetail = toUserInfoDTO(userData, userInfoData)
 
-    this.redisCacheService.set(cacheKey, userDetail, 3600)
+    this.redisCacheService.set(cacheKey, userDetail || {}, 3600)
 
     return userDetail
   }
