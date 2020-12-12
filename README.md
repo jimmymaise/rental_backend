@@ -115,6 +115,14 @@ cd scripts
 docker-compose up -d
 ```
 
+## NOTE
+```
+tsconfig.json esModuleInterop -> import default and don't need to * as
+
+set all file in folder public GCP
+gsutil acl -r ch -u AllUsers:R gs://asia-fast-storage.thuedo.vn/default-avatars/*
+```
+
 ## TODO:
 [] Request Activities
 [] Item Review

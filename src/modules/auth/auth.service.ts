@@ -94,7 +94,7 @@ export class AuthService {
   }
 
   async signUpByEmail(email: string, password: string): Promise<AuthDTO> {
-    const isEmailExisted = this.usersService.getUserByEmail(email)
+    const isEmailExisted = await this.usersService.getUserByEmail(email)
     if (isEmailExisted) {
       throw new Error('This email is existed!')
     }
