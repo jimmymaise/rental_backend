@@ -30,7 +30,7 @@ export class ItemsService {
     return this.prismaService.item.create({ data: item });
   }
 
-  createItemForUser(itemData: ItemUserInputDTO, userId: string): Promise<Item> {
+  async createItemForUser(itemData: ItemUserInputDTO, userId: string): Promise<Item> {
     const {
       name,
       description,
@@ -49,9 +49,10 @@ export class ItemsService {
     } = itemData;
     const nowToString = Date.now().toString();
 
-    images.forEach((image) => {
-      this.storageService.handleUploadImageBySignedUrlComplete(image.id, ['small', 'medium'])
-    })
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i]
+      await this.storageService.handleUploadImageBySignedUrlComplete(image.id, ['small', 'medium'])
+    }
 
     return this.prismaService.item.create({
       data: {

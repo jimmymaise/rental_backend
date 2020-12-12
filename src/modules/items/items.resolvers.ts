@@ -15,6 +15,7 @@ import {
 } from '../auth'
 import { PaginationDTO } from '../../models'
 import { UsersService } from '../users/users.service'
+import { SearchKeywordService } from '../search-keyword/search-keyword.service'
 
 function toItemDTO(item: Item): ItemDTO {
   if (!item) {
@@ -36,7 +37,8 @@ export class ItemsResolvers {
   constructor(
     private itemService: ItemsService,
     private userItemService: UserItemsService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private searchKeywordService: SearchKeywordService
   ) {}
 
   @Mutation()
@@ -68,6 +70,11 @@ export class ItemsResolvers {
   ): Promise<PaginationDTO<ItemDTO>> {
     const { search, offset, limit, areaId, categoryId, includes, sortByFields } = query || {}
     const actualLimit = limit && limit > 100 ? 100 : limit
+
+    if (search && search.length) {
+      await this.searchKeywordService.increaseKeywordCount(search)
+    }
+
     const result = await this.itemService.findAllAvailablesItem({
       searchValue: search,
       offset,

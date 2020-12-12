@@ -1,0 +1,27 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "DeleteField",
+      "model": "SearchKeywork",
+      "field": "id"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "SearchKeywork",
+      "field": "keywork",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "SearchKeywork",
+          "field": "keywork"
+        },
+        "directive": "id"
+      }
+    }
+  ]
+}

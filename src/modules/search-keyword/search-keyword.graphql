@@ -1,0 +1,7 @@
+type SearchKeyword {
+  keyword: String!
+}
+
+type Query {
+  getTopKeywords: [SearchKeyword]
+}
