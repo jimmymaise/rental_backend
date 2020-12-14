@@ -4,11 +4,13 @@ import { PrismaService } from '../prisma/prisma.service'
 import {
   SearchKeyword,
 } from '@prisma/client';
+import { RedisCacheService } from '../redis-cache/redis-cache.service'
 
 @Injectable()
 export class SearchKeywordService {
   constructor(
-    private prismaService: PrismaService
+    private prismaService: PrismaService,
+    private redisCacheService: RedisCacheService
   ) {}
 
   increaseKeywordCount(keyword: string): Promise<SearchKeyword> {
@@ -29,7 +31,18 @@ export class SearchKeywordService {
     })
   }
 
-  findTopKeywords(): Promise<SearchKeyword[]> {
-    return this.prismaService.searchKeyword.findMany({ skip: 0, take: 45, orderBy: { count: 'desc' } })
+  async findTopKeywords(): Promise<SearchKeyword[]> {
+    const TOP_KEYWORD_CACHE_KEY = 'TOP_KEYWORD'
+    const cachedKeywords = await this.redisCacheService.get(TOP_KEYWORD_CACHE_KEY)
+
+    if (cachedKeywords) {
+      return cachedKeywords
+    }
+
+    const keywords = await this.prismaService.searchKeyword.findMany({ skip: 0, take: 45, orderBy: { count: 'desc' } })
+
+    await this.redisCacheService.set(TOP_KEYWORD_CACHE_KEY, keywords, 86400)
+
+    return keywords
   }
 }
