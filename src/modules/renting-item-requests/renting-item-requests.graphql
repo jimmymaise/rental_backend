@@ -75,6 +75,7 @@ type Mutation {
 }
 
 type Query {
-  findAllRequestFromMe(query: RentingItemRequestQuery): RentingItemRequestPagination
-  findAllRequestToMe(query: RentingItemRequestQuery): RentingItemRequestPagination
+  # findAllRequestFromMe(query: RentingItemRequestQuery): RentingItemRequestPagination
+  # findAllRequestToMe(query: RentingItemRequestQuery): RentingItemRequestPagination
+  findAllRequest(query: RentingItemRequestQuery): RentingItemRequestPagination
 }

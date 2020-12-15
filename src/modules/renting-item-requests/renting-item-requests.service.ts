@@ -164,17 +164,27 @@ export class RentingItemRequetsService {
     ownerUserId,
     includes,
     sortByFields,
-    userType = RentingItemRequestUserType.Owner,
-  }): Promise<PaginationDTO<RentingItemRequest>> {
+    // userType = RentingItemRequestUserType.Owner,
+  }): Promise<PaginationDTO<RentingItemRequestDTO>> {
     const mandatoryWhere: any = {
-      isDeleted: false,
+      AND: [
+        {
+          isDeleted: false
+        },
+        {
+          OR: [
+            { ownerUserId },
+            { lenderUserId: ownerUserId },
+          ]
+        }
+      ]
     };
 
-    if (userType === RentingItemRequestUserType.Owner) {
-      mandatoryWhere.ownerUserId = ownerUserId;
-    } else {
-      mandatoryWhere.lenderUserId = ownerUserId;
-    }
+    // if (userType === RentingItemRequestUserType.Owner) {
+    //   mandatoryWhere.ownerUserId = ownerUserId;
+    // } else {
+    //   mandatoryWhere.lenderUserId = ownerUserId;
+    // }
 
     const validIncludeMap = {
       rentingItem: true,
@@ -234,89 +244,107 @@ export class RentingItemRequetsService {
       where: findCondition.where,
     });
 
+    const finalItems: RentingItemRequestDTO[] = [];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i] as RentingItemRequest;
+      const permissions = this.getPermissions(item, ownerUserId);
+      const newItem = toRentingItemRequestDTO(item, permissions);
+
+      // if (
+      //   includes?.includes('lenderUserDetail') &&
+      //   permissions.includes(Permission.VIEW_LENDER_INFO)
+      // ) {
+      //   newItem.lenderUserDetail = await this.userService.getUserDetailData(item.lenderUserId)
+      // }
+      newItem.ownerUserDetail = await this.userService.getUserDetailData(item.ownerUserId)
+      newItem.lenderUserDetail = await this.userService.getUserDetailData(item.lenderUserId)
+
+      finalItems.push(newItem);
+    }
+
     return {
-      items,
+      items: finalItems,
       total: count,
       offset,
       limit,
     };
   }
 
-  async findAllRequestFromOwner({
-    offset = 0,
-    limit = 10,
-    ownerUserId,
-    includes,
-    sortByFields,
-  }): Promise<PaginationDTO<RentingItemRequestDTO>> {
-    const dbResults = await this.findAllRequestFromUser({
-      offset,
-      limit,
-      ownerUserId,
-      includes,
-      sortByFields,
-      userType: RentingItemRequestUserType.Owner,
-    });
-    const finalItems: RentingItemRequestDTO[] = [];
+  // async findAllRequestFromOwner({
+  //   offset = 0,
+  //   limit = 10,
+  //   ownerUserId,
+  //   includes,
+  //   sortByFields,
+  // }): Promise<PaginationDTO<RentingItemRequestDTO>> {
+  //   const dbResults = await this.findAllRequestFromUser({
+  //     offset,
+  //     limit,
+  //     ownerUserId,
+  //     includes,
+  //     sortByFields,
+  //     userType: RentingItemRequestUserType.Owner,
+  //   });
+  //   const finalItems: RentingItemRequestDTO[] = [];
 
-    for (let i = 0; i < dbResults.items.length; i++) {
-      const item = dbResults.items[i] as RentingItemRequest;
-      const permissions = this.getPermissions(item, ownerUserId);
-      const newItem = toRentingItemRequestDTO(item, permissions);
+  //   for (let i = 0; i < dbResults.items.length; i++) {
+  //     const item = dbResults.items[i] as RentingItemRequest;
+  //     const permissions = this.getPermissions(item, ownerUserId);
+  //     const newItem = toRentingItemRequestDTO(item, permissions);
 
-      if (
-        includes?.includes('lenderUserDetail') &&
-        permissions.includes(Permission.VIEW_LENDER_INFO)
-      ) {
-        newItem.lenderUserDetail = await this.userService.getUserDetailData(item.lenderUserId)
-      }
+  //     if (
+  //       includes?.includes('lenderUserDetail') &&
+  //       permissions.includes(Permission.VIEW_LENDER_INFO)
+  //     ) {
+  //       newItem.lenderUserDetail = await this.userService.getUserDetailData(item.lenderUserId)
+  //     }
 
-      finalItems.push(newItem);
-    }
+  //     finalItems.push(newItem);
+  //   }
 
-    return {
-      ...dbResults,
-      items: finalItems,
-    };
-  }
+  //   return {
+  //     ...dbResults,
+  //     items: finalItems,
+  //   };
+  // }
 
-  async findAllRequestToLender({
-    offset = 0,
-    limit = 10,
-    lenderUserId,
-    includes,
-    sortByFields,
-  }): Promise<PaginationDTO<RentingItemRequestDTO>> {
-    const dbResults = await this.findAllRequestFromUser({
-      offset,
-      limit,
-      ownerUserId: lenderUserId,
-      includes,
-      sortByFields,
-      userType: RentingItemRequestUserType.Lender,
-    });
-    const finalItems: RentingItemRequestDTO[] = [];
+  // async findAllRequestToLender({
+  //   offset = 0,
+  //   limit = 10,
+  //   lenderUserId,
+  //   includes,
+  //   sortByFields,
+  // }): Promise<PaginationDTO<RentingItemRequestDTO>> {
+  //   const dbResults = await this.findAllRequestFromUser({
+  //     offset,
+  //     limit,
+  //     ownerUserId: lenderUserId,
+  //     includes,
+  //     sortByFields,
+  //     userType: RentingItemRequestUserType.Lender,
+  //   });
+  //   const finalItems: RentingItemRequestDTO[] = [];
 
-    for (let i = 0; i < dbResults.items.length; i++) {
-      const item = dbResults.items[i] as RentingItemRequest;
-      const permissions = this.getPermissions(item, lenderUserId);
-      const newItem = toRentingItemRequestDTO(item, permissions);
+  //   for (let i = 0; i < dbResults.items.length; i++) {
+  //     const item = dbResults.items[i] as RentingItemRequest;
+  //     const permissions = this.getPermissions(item, lenderUserId);
+  //     const newItem = toRentingItemRequestDTO(item, permissions);
 
-      if (
-        includes?.includes('ownerUserDetail') &&
-        permissions.includes(Permission.VIEW_REQUEST_RENT_OWNER_INFO)
-      ) {
-        newItem.ownerUserDetail = await this.userService.getUserDetailData(item.ownerUserId)
-      }
+  //     if (
+  //       includes?.includes('ownerUserDetail') &&
+  //       permissions.includes(Permission.VIEW_REQUEST_RENT_OWNER_INFO)
+  //     ) {
+  //       newItem.ownerUserDetail = await this.userService.getUserDetailData(item.ownerUserId)
+  //     }
 
-      finalItems.push(newItem);
-    }
+  //     finalItems.push(newItem);
+  //   }
 
-    return {
-      ...dbResults,
-      items: finalItems,
-    };
-  }
+  //   return {
+  //     ...dbResults,
+  //     items: finalItems,
+  //   };
+  // }
 
   public async cancelRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
     const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })

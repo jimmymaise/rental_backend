@@ -3,20 +3,19 @@
 query {
   whoAmI {
     id,
-    name,
+    displayName,
     email
   }
 }
 
 mutation {
   loginByEmail(
-    email: "alice@prisma.io"
-    password: "graphql"
+    email: "user2@thuedo.vn"
+    password: "123456789"
   ) {
     accessToken
     user {
       id,
-      name,
       email
     }
   }
@@ -147,6 +146,53 @@ mutation {
       images {
         url
       }
+    }
+  }
+}
+```
+
+## Find all requests
+```
+query {
+  findAllRequest (
+    query: {
+  
+    }
+  ) {
+    total,
+    limit
+    offset
+    items {
+      id,
+      rentingItemCachedInfo {
+        name,
+        images {
+          id,
+          url
+        },
+        rentPricePerDay,
+        rentPricePerWeek,
+        rentPricePerMonth
+      },
+      fromDate,
+      toDate,
+      status,
+      ownerUserDetail {
+        id,
+        displayName,
+        avatarImage {
+          url
+        }
+      },
+      lenderUserDetail {
+        id,
+        displayName,
+        avatarImage {
+          url
+        }
+      },
+      updatedDate,
+      permissions
     }
   }
 }
