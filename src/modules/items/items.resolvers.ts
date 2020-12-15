@@ -110,8 +110,13 @@ export class ItemsResolvers {
     @Args('includes') includes: string[],
   ): Promise<ItemDTO> {
     const item = await this.itemService.findOneAvailableBySlug(slug, includes)
+    const enhancedItem = toItemDTO(item)
 
-    return toItemDTO(item)
+    if (item.ownerUserId) {
+      enhancedItem.createdBy = await this.usersService.getUserDetailData(item.ownerUserId)
+    }
+
+    return enhancedItem
   }
 
   // #### For Me
