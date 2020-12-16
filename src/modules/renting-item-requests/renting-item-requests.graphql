@@ -21,7 +21,6 @@ type RentingItemCachedInfo {
 type RentingItemRequest {
   id: String
   rentingItem: Item
-  rentingItemCachedInfo: RentingItemCachedInfo
   itemId: String
   totalAmount: Float
   actualTotalAmount: Float

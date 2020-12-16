@@ -46,18 +46,12 @@ function toRentingItemRequestDTO(
   rentingItemRequest: RentingItemRequest,
   permissions: Permission[]
 ): RentingItemRequestDTO {
-  const cachedInfo = JSON.parse(rentingItemRequest.rentingItemCachedInfo);
-  if (cachedInfo?.images) {
-    cachedInfo.images = JSON.parse(cachedInfo.images);
-  }
-
   return {
     ...rentingItemRequest,
     fromDate: rentingItemRequest.fromDate.getTime(),
     toDate: rentingItemRequest.toDate.getTime(),
     createdDate: rentingItemRequest.createdDate.getTime(),
     updatedDate: rentingItemRequest.updatedDate.getTime(),
-    rentingItemCachedInfo: cachedInfo,
     permissions,
   };
 }
@@ -129,14 +123,6 @@ export class RentingItemRequetsService {
             id: itemId,
           },
         },
-        rentingItemCachedInfo: JSON.stringify({
-          name: item.name,
-          images: item.images,
-          rentPricePerDay: item.rentPricePerDay,
-          rentPricePerWeek: item.rentPricePerWeek,
-          rentPricePerMonth: item.rentPricePerMonth,
-          currencyCode: item.currencyCode,
-        }),
         totalAmount,
         actualTotalAmount: 0,
         rentTotalQuantity: 1,

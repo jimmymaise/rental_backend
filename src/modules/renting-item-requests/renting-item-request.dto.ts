@@ -4,17 +4,6 @@ import { UserInfoDTO } from '../users/user-info.dto'
 export interface RentingItemRequestDTO {
   id: string
   rentingItem?: ItemDTO
-  rentingItemCachedInfo: {
-    name: string
-    images: {
-      id: string
-      url: string
-    }[],
-    rentPricePerDay: number
-    rentPricePerWeek: number
-    rentPricePerMonth: number
-    currencyCode: string
-  },
   itemId: string
   totalAmount?: number
   actualTotalAmount?: number

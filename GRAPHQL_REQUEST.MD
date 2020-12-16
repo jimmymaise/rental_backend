@@ -141,12 +141,6 @@ mutation {
     }
   ) {
     itemId
-    rentingItemCachedInfo {
-      name,
-      images {
-        url
-      }
-    }
   }
 }
 ```
@@ -164,16 +158,6 @@ query {
     offset
     items {
       id,
-      rentingItemCachedInfo {
-        name,
-        images {
-          id,
-          url
-        },
-        rentPricePerDay,
-        rentPricePerWeek,
-        rentPricePerMonth
-      },
       fromDate,
       toDate,
       status,
