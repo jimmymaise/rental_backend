@@ -17,6 +17,7 @@ import { UsersService } from '../users/users.service'
 import { Permission } from './permission.enum'
 import { StoragePublicDTO } from '../storages/storage-public.dto'
 import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto'
+import { ItemDTO } from '../items/item.dto'
 
 const WEEK_DAY = 7;
 const MONTH_DAY = 30;
@@ -42,12 +43,28 @@ const RequestActivityTypeMap = {
   [RentingItemRequestStatus.InProgress]: RentingItemRequestActivityType.InProgress
 }
 
+function toItemDTO(item: Item): ItemDTO {
+  if (!item) {
+    return null
+  }
+
+  return {
+    ...item,
+    createdDate: item.createdDate.getTime(),
+    unavailableForRentDays: item.unavailableForRentDays.map((data) => data.getTime()),
+    images: item.images && item.images.length ? JSON.parse(item.images) : [],
+    checkBeforeRentDocuments: item.checkBeforeRentDocuments && item.checkBeforeRentDocuments.length ? JSON.parse(item.checkBeforeRentDocuments) : [],
+    keepWhileRentingDocuments: item.keepWhileRentingDocuments && item.keepWhileRentingDocuments.length ? JSON.parse(item.keepWhileRentingDocuments) : []
+  }
+}
+
 function toRentingItemRequestDTO(
   rentingItemRequest: RentingItemRequest,
   permissions: Permission[]
 ): RentingItemRequestDTO {
   return {
     ...rentingItemRequest,
+    rentingItem: (rentingItemRequest as any).rentingItem ? toItemDTO((rentingItemRequest as any).rentingItem) : null,
     fromDate: rentingItemRequest.fromDate.getTime(),
     toDate: rentingItemRequest.toDate.getTime(),
     createdDate: rentingItemRequest.createdDate.getTime(),
