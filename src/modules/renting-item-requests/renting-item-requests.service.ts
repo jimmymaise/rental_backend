@@ -354,7 +354,10 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.CANCEL)) {
-      return this.changeRentingItemRequestStatus(data)
+      return this.changeRentingItemRequestStatus({
+        ...data,
+        status: RentingItemRequestStatus.Cancelled
+      })
     }
 
     throw new Error('Not Authorize')
@@ -365,7 +368,10 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.APPROVE)) {
-      return this.changeRentingItemRequestStatus(data)
+      return this.changeRentingItemRequestStatus({
+        ...data,
+        status: RentingItemRequestStatus.Approved
+      })
     }
 
     throw new Error('Not Authorize')
@@ -376,7 +382,10 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.DECLINE)) {
-      return this.changeRentingItemRequestStatus(data)
+      return this.changeRentingItemRequestStatus({
+        ...data,
+        status: RentingItemRequestStatus.Declined
+      })
     }
 
     throw new Error('Not Authorize')
@@ -387,7 +396,10 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.START)) {
-      return this.changeRentingItemRequestStatus(data)
+      return this.changeRentingItemRequestStatus({
+        ...data,
+        status: RentingItemRequestStatus.InProgress
+      })
     }
 
     throw new Error('Not Authorize')
@@ -398,7 +410,10 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.COMPLETE)) {
-      return this.changeRentingItemRequestStatus(data)
+      return this.changeRentingItemRequestStatus({
+        ...data,
+        status: RentingItemRequestStatus.Completed
+      })
     }
 
     throw new Error('Not Authorize')
