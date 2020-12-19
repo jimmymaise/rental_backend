@@ -19,9 +19,16 @@ type PreSignedUrlImageData {
   imageUrl: String
 }
 
+type PublicStorageFileSignedUrl {
+  url: String
+  smallUrl: String
+  mediumUrl: String
+}
+
 type PublicStorageFile {
   id: String!
   url: String!
+  signedUrl: PublicStorageFileSignedUrl
 }
 
 type StorageFile {

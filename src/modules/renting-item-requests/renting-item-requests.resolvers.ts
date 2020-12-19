@@ -188,6 +188,7 @@ export class RentingItemRequestsResolvers {
   @Query()
   @UseGuards(GqlAuthGuard)
   async findAllActivityRequest(
+    @CurrentUser() user: GuardUserPayload,
     @Args('requestId') requestId: string,
     @Args('query') query: {
       offset: number,
@@ -196,6 +197,7 @@ export class RentingItemRequestsResolvers {
   ): Promise<PaginationDTO<RentingItemRequestActivityDTO>> {
     const { offset, limit } = query || {};
     return this.rentingItemRequestActivityService.findAllActivityFromRequest({
+      userId: user.id,
       offset,
       limit,
       rentingRequestId: requestId

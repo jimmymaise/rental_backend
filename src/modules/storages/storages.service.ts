@@ -20,8 +20,46 @@ export class StoragesService {
     return this.getPublicUrl(BUCKET_ITEM_IMAGE_NAME, folderName, fileName)
   }
 
+  public async generateReadSignedUrl(fileName: string): Promise<string> {
+    return await this.googleStorageService.generateV4ReadSignedUrl(fileName, BUCKET_ITEM_IMAGE_NAME)
+  }
+
   public generateUploadImageSignedUrl(fileName: string, contentType: string): Promise<string> {
     return this.googleStorageService.getPreSignedUrlForUpload(fileName, contentType, BUCKET_ITEM_IMAGE_NAME)
+  }
+
+  public async getReadSignedUrlForUrl(originalUrl: string, includes: string[] = []) {
+    // Extract, get signed url cho tung file
+    const splitedUrl = originalUrl.split('/')
+    const bucketName = BUCKET_ITEM_IMAGE_NAME
+    const fileName = splitedUrl[splitedUrl.length - 1]
+    const folderName = splitedUrl[splitedUrl.length - 2]
+
+    let url
+    let smallUrl
+    let mediumUrl
+
+    try {
+      url = await this.googleStorageService.generateV4ReadSignedUrl(`${folderName}/${fileName}`, bucketName)
+    } catch (err) {}
+
+    if (includes.includes('small')) {
+      try {
+        smallUrl = await this.googleStorageService.generateV4ReadSignedUrl(`${folderName}/small-${fileName}`, bucketName)
+      } catch (err) {}
+    }
+
+    if (includes.includes('medium')) {
+      try {
+        mediumUrl = await this.googleStorageService.generateV4ReadSignedUrl(`${folderName}/medium-${fileName}`, bucketName)
+      } catch (err) {}
+    }
+
+    return {
+      url,
+      smallUrl,
+      mediumUrl
+    }
   }
 
   public async handleUploadImageBySignedUrlComplete(fileId: string, includes: string[] = []): Promise<FileStorage> {

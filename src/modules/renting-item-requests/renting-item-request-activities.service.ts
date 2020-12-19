@@ -5,6 +5,7 @@ import {
   RentingItemRequestActivity,
 } from '@prisma/client'
 import { UsersService } from '../users/users.service'
+import { StoragesService } from '../storages/storages.service'
 import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto'
 import { PaginationDTO } from '../../models'
 
@@ -26,10 +27,12 @@ export class RentingItemRequestActivitiesService {
   constructor(
     private prismaService: PrismaService,
     private userService: UsersService,
+    private storageService: StoragesService
   ) {}
 
   // TODO: check user owner of this activitiy
   async findAllActivityFromRequest({
+    userId,
     offset = 0,
     limit = 10,
     rentingRequestId
@@ -58,6 +61,10 @@ export class RentingItemRequestActivitiesService {
 
       newItem.createdBy = await this.userService.getUserDetailData(item.createdBy)
       newItem.updatedBy = await this.userService.getUserDetailData(item.updatedBy)
+      
+      for(let j = 0; j < newItem.files.length; j++) {
+        newItem.files[j].signedUrl = await this.storageService.getReadSignedUrlForUrl(newItem.files[j].url, ['small', 'medium'])
+      }
 
       finalItems.push(newItem);
     }

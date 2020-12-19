@@ -29,6 +29,23 @@ export class GoogleCloudStorageService {
   //     .then(() => exports.getPublicUrl(bucketName, gcsName));
   // };
 
+  public async generateV4ReadSignedUrl(fileName: string, bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME')): Promise<string> {
+    // These options will allow temporary read access to the file
+    const options: any = {
+      version: 'v4',
+      action: 'read',
+      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+    };
+  
+    // Get a v4 signed URL for reading the file
+    const [url] = await this.storage
+      .bucket(bucketName)
+      .file(fileName)
+      .getSignedUrl(options);
+  
+    return url
+  }
+
   // https://www.codota.com/code/javascript/functions/%40google-cloud%2Fstorage/File/getSignedUrl
   public async getPreSignedUrlForUpload(fileName: string, contentType: string, bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME')): Promise<string> {
     const bucket = this.storage.bucket(bucketName)
