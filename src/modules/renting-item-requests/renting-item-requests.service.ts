@@ -438,7 +438,7 @@ export class RentingItemRequetsService {
           }
         },
         comment,
-        files: files && files.length ? JSON.stringify(files) : JSON.stringify('[]'),
+        files: files && files.length ? JSON.stringify(files) : JSON.stringify([]),
         type: RequestActivityTypeMap[status],
         createdBy: updatedBy,
         updatedBy

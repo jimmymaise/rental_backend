@@ -63,6 +63,18 @@ type RentingItemRequestPagination {
   offset: Int
 }
 
+input RentingItemRequestActivityQuery {
+  offset: Int
+  limit: Int
+}
+
+type RentingItemRequestActivityPagination {
+  items: [RentingItemRequestActivity]
+  total: Int
+  limit: Int
+  offset: Int
+}
+
 type Mutation {
   newRequest(requestData: RentingItemRequestInput!): RentingItemRequest
   cancelRequest(data: UpdateItemRequestStatusInput!): RentingItemRequest
@@ -77,4 +89,5 @@ type Query {
   # findAllRequestFromMe(query: RentingItemRequestQuery): RentingItemRequestPagination
   # findAllRequestToMe(query: RentingItemRequestQuery): RentingItemRequestPagination
   findAllRequest(query: RentingItemRequestQuery): RentingItemRequestPagination
+  findAllActivityRequest(requestId: String!, query: RentingItemRequestActivityQuery): RentingItemRequestActivityPagination
 }

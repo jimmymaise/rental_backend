@@ -1,10 +1,8 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql'
 
-import {
-  RentingItemRequestActivity
-} from '@prisma/client'
 import { RentingItemRequetsService } from './renting-item-requests.service'
+import { RentingItemRequestActivitiesService } from './renting-item-request-activities.service'
 import { RentingItemRequestInputDTO } from './renting-item-request-input.dto'
 import { RentingItemRequestDTO } from './renting-item-request.dto'
 import {
@@ -24,7 +22,10 @@ interface UpdateItemRequestStatusModel {
 
 @Resolver('RentingItemRequest')
 export class RentingItemRequestsResolvers {
-  constructor(private readonly rentingItemRequestService: RentingItemRequetsService) {}
+  constructor(
+    private rentingItemRequestService: RentingItemRequetsService,
+    private rentingItemRequestActivityService: RentingItemRequestActivitiesService
+  ) {}
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
@@ -181,6 +182,23 @@ export class RentingItemRequestsResolvers {
       comment: data.comment,
       files: data.files,
       updatedBy: user.id
+    })
+  }
+
+  @Query()
+  @UseGuards(GqlAuthGuard)
+  async findAllActivityRequest(
+    @Args('requestId') requestId: string,
+    @Args('query') query: {
+      offset: number,
+      limit: number
+    }
+  ): Promise<PaginationDTO<RentingItemRequestActivityDTO>> {
+    const { offset, limit } = query || {};
+    return this.rentingItemRequestActivityService.findAllActivityFromRequest({
+      offset,
+      limit,
+      rentingRequestId: requestId
     })
   }
 }
