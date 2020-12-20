@@ -81,5 +81,6 @@ type Query {
   feed(query: ItemQuery): ItemPagination
   feedDetailBySlug(slug: String!, includes: [String]): Item
   feedMyItems(query: MyItemQuery): ItemPagination
+  feedUserPublicItems(userId: String!, query: ItemQuery): ItemPagination
   feedMyItemDetail(id: String!, includes: [String]): Item
 }

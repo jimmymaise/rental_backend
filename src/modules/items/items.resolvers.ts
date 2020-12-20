@@ -151,6 +151,46 @@ export class ItemsResolvers {
   }
 
   @Query()
+  async feedUserPublicItems(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('userId') userId: string,
+    @Args('query') query: {
+      search: string,
+      offset: number,
+      limit: number,
+      includes: string[]
+    }
+  ): Promise<PaginationDTO<ItemDTO>> {
+    const { search, offset, limit, includes } = query || {}
+    const actualLimit = limit && limit > 100 ? 100 : limit
+    const result = await this.userItemService.findAllPublicItemsCreatedByUser({
+      createdBy: userId,
+      searchValue: search,
+      offset,
+      limit: actualLimit,
+      includes
+    })
+
+    const items = []
+    for (let i = 0; i < result.items.length; i++) {
+      const newItem = toItemDTO(result.items[i])
+
+      if (result.items[i].ownerUserId) {
+        newItem.createdBy = await this.usersService.getUserDetailData(result.items[i].ownerUserId)
+      }
+
+      items.push(newItem)
+    }
+
+    return {
+      items,
+      total: result.total,
+      offset: offset || 0,
+      limit: actualLimit
+    }
+  }
+
+  @Query()
   @UseGuards(GqlAuthGuard)
   async feedMyItemDetail(
     @CurrentUser() user: GuardUserPayload,

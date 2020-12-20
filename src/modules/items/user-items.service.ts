@@ -82,6 +82,72 @@ export class UserItemsService {
     };
   }
 
+  async findAllPublicItemsCreatedByUser({
+    createdBy,
+    searchValue = '',
+    offset = 0,
+    limit = 10,
+    includes,
+  }): Promise<PaginationDTO<Item>> {
+    const mandatoryWhere = {
+      isDeleted: false,
+      status: ItemStatus.Published,
+      ownerUserId: createdBy,
+    };
+
+    const validIncludeMap = {
+      categories: true,
+      areas: true,
+    };
+
+    const include = (includes || []).reduce((result, cur) => {
+      if (validIncludeMap[cur]) {
+        result[cur] = true;
+      }
+      return result;
+    }, {});
+
+    const where = searchValue
+      ? {
+          AND: [
+            {
+              ...mandatoryWhere,
+            },
+            {
+              OR: [
+                { name: { contains: searchValue } },
+                { keyword: { contains: searchValue } },
+              ],
+            },
+          ],
+        }
+      : {
+          ...mandatoryWhere,
+        };
+
+    const findCondition: any = {
+      where,
+      skip: offset,
+      take: limit,
+    };
+
+    if (Object.keys(include).length) {
+      findCondition.include = include;
+    }
+
+    const items = await this.prismaService.item.findMany(findCondition);
+    const count = await this.prismaService.item.count({
+      where: findCondition.where,
+    });
+
+    return {
+      items,
+      total: count,
+      offset,
+      limit,
+    };
+  }
+
   async findOneDetailForEdit(
     id: string,
     createdBy: string,
