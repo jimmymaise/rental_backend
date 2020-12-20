@@ -11,7 +11,8 @@ import {
 } from '../auth/auth.dto';
 import { GqlAuthGuard } from '../auth/gpl-auth.guard'
 import { CurrentUser } from '../auth/current-user.decorator'
-import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto'
+import { UserInfoInputDTO, UserInfoDTO, PublicUserInfoDTO } from './user-info.dto'
+import { Permission } from './permission.enum'
 
 @Resolver('User')
 export class UsersResolvers {
@@ -21,6 +22,33 @@ export class UsersResolvers {
   @UseGuards(GqlAuthGuard)
   async whoAmI(@CurrentUser() user: GuardUserPayload): Promise<UserInfoDTO> {
     return this.userService.getUserDetailData(user.id)
+  }
+
+  @Query()
+  async userPublicProfile(@CurrentUser() user: GuardUserPayload, @Args('userId') userId: string): Promise<PublicUserInfoDTO> {
+    const allData = await this.userService.getUserDetailData(userId)
+    const permissions: Permission[] = []
+
+    if (user) {
+      if (user.id !== allData.id) {
+        permissions.push(Permission.CONNECT)
+        permissions.push(Permission.SEND_MESSAGE)
+      }
+
+      if (user.id === allData.id) {
+        permissions.push(Permission.EDIT_PROFILE)
+      }
+    }
+
+    return {
+      id: allData.id,
+      displayName: allData.displayName,
+      bio: allData.bio,
+      avatarImage: allData.avatarImage,
+      coverImage: allData.coverImage,
+      createdDate: allData.createdDate,
+      permissions
+    }
   }
 
   @Mutation()

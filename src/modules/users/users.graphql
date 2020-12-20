@@ -7,6 +7,15 @@ type UserInfo {
   email: String
 }
 
+type PublicUserInfo {
+  id: ID!
+  displayName: String
+  bio: String
+  avatarImage: PublicStorageFile
+  coverImage: PublicStorageFile
+  permissions: [String]
+}
+
 input UserInfoInput {
   displayName: String
   bio: String
@@ -17,6 +26,7 @@ input UserInfoInput {
 
 type Query {
   whoAmI: UserInfo
+  userPublicProfile(userId: String!): PublicUserInfo
 }
 
 type Mutation {
