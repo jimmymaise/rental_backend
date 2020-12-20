@@ -179,7 +179,7 @@ export class UsersService {
           url: sample(DEFAULT_AVATARS)
         }),
         coverImage: JSON.stringify({
-          url: sample('https://asia-fast-storage.thuedo.vn/default-avatars/default-cover.jpg')
+          url: 'https://asia-fast-storage.thuedo.vn/default-avatars/default-cover.jpg'
         }),
         id: userId
       }
@@ -213,7 +213,9 @@ export class UsersService {
           }
           break
         default:
-          updateData[field] = data[field]
+          if (data[field]) {
+            updateData[field] = data[field]
+          }
           break
       }
     }

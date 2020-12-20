@@ -25,7 +25,7 @@ export class UsersResolvers {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async updateMyItem(
+  async updateUserInfoData(
     @CurrentUser() user: GuardUserPayload,
     @Args('userInfoData') userInfoData: UserInfoInputDTO,
   ): Promise<UserInfo> {
