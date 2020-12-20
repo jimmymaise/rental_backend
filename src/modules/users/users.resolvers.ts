@@ -11,7 +11,7 @@ import {
 } from '../auth/auth.dto';
 import { GqlAuthGuard } from '../auth/gpl-auth.guard'
 import { CurrentUser } from '../auth/current-user.decorator'
-import { UserInfoInputDTO } from './user-info.dto'
+import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto'
 
 @Resolver('User')
 export class UsersResolvers {
@@ -19,7 +19,7 @@ export class UsersResolvers {
 
   @Query()
   @UseGuards(GqlAuthGuard)
-  async whoAmI(@CurrentUser() user: GuardUserPayload) {
+  async whoAmI(@CurrentUser() user: GuardUserPayload): Promise<UserInfoDTO> {
     return this.userService.getUserDetailData(user.id)
   }
 
@@ -28,7 +28,7 @@ export class UsersResolvers {
   async updateUserInfoData(
     @CurrentUser() user: GuardUserPayload,
     @Args('userInfoData') userInfoData: UserInfoInputDTO,
-  ): Promise<UserInfo> {
+  ): Promise<UserInfoDTO> {
     return this.userService.updateUserProfile(user.id, userInfoData)
   }
 }

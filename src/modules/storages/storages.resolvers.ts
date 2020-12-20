@@ -77,7 +77,7 @@ export class StoragesResolvers {
     @Args('imageData') imageData: {
       name: string,
       contentType: string,
-      includes: string[] // medium, small
+      includes?: string[] // medium, small
     }
   ): Promise<PreSignedImageUrlData> {
     let smallPreSignedUrl
@@ -92,11 +92,11 @@ export class StoragesResolvers {
     const fileFullUrl = this.storagesService.getImagePublicUrl(folderName, fileName)
     const storageInfo = await this.storagesService.saveItemImageStorageInfo(folderName, fileName, fileFullUrl, contentType, user.id)
 
-    if (imageData.includes.includes('small')) {
+    if (imageData?.includes?.includes('small')) {
       smallPreSignedUrl = await this.storagesService.generateUploadImageSignedUrl(`${folderName}/small-${fileName}`, contentType)
     }
 
-    if (imageData.includes.includes('medium')) {
+    if (imageData?.includes?.includes('medium')) {
       mediumPreSignedUrl = await this.storagesService.generateUploadImageSignedUrl(`${folderName}/medium-${fileName}`, contentType)
     }
 
