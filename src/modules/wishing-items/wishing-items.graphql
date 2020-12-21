@@ -1,10 +1,6 @@
 type WishingItem {
-  id: String!
-  name: String!
-  slug: String!
-  categories: [Category]
-  areas: [Area]
-  images: [PublicStorageFile]
+  itemId: String!
+  item: Item
 }
 
 type WishingItemPagination {

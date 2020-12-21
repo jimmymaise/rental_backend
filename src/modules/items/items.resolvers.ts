@@ -16,6 +16,7 @@ import {
 import { PaginationDTO } from '../../models'
 import { UsersService } from '../users/users.service'
 import { SearchKeywordService } from '../search-keyword/search-keyword.service'
+import { WishingItemsService } from '../wishing-items/wishing-items.service'
 
 function toItemDTO(item: Item): ItemDTO {
   if (!item) {
@@ -38,7 +39,8 @@ export class ItemsResolvers {
     private itemService: ItemsService,
     private userItemService: UserItemsService,
     private usersService: UsersService,
-    private searchKeywordService: SearchKeywordService
+    private searchKeywordService: SearchKeywordService,
+    private wishingItemService: WishingItemsService
   ) {}
 
   @Mutation()
@@ -58,6 +60,7 @@ export class ItemsResolvers {
 
   @Query()
   async feed(
+    @CurrentUser() user: GuardUserPayload,
     @Args('query') query: {
       search: string,
       offset: number,
@@ -66,9 +69,10 @@ export class ItemsResolvers {
       categoryId: string,
       includes: string[],
       sortByFields: string[]
+      checkWishlist?: boolean
     }
   ): Promise<PaginationDTO<ItemDTO>> {
-    const { search, offset, limit, areaId, categoryId, includes, sortByFields } = query || {}
+    const { search, offset, limit, areaId, categoryId, includes, sortByFields, checkWishlist } = query || {}
     const actualLimit = limit && limit > 100 ? 100 : limit
 
     if (search && search.length) {
@@ -91,6 +95,10 @@ export class ItemsResolvers {
 
       if (result.items[i].ownerUserId) {
         newItem.createdBy = await this.usersService.getUserDetailData(result.items[i].ownerUserId)
+      }
+
+      if (user && checkWishlist) {
+        newItem.isInMyWishList = this.wishingItemService.findUnique(user.id, newItem.id) !== null
       }
 
       items.push(newItem)

@@ -5,5 +5,6 @@ import { WishingItemsResolvers } from './wishing-items.resolvers';
 
 @Module({
   providers: [WishingItemsService, WishingItemsResolvers],
+  exports: [WishingItemsService]
 })
 export class WishingItemsModule {}

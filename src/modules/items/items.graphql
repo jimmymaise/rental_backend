@@ -23,6 +23,7 @@ type Item {
   isVerified: Boolean
   status: String
   note: String
+  isInMyWishlist: Boolean
   createdDate: Float
   updatedDate: Float
   createdBy: UserInfo

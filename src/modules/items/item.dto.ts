@@ -32,6 +32,7 @@ export interface ItemDTO {
   totalQuantity?: number
   isVerified?: boolean
   status: string
+  isInMyWishList?: boolean
   createdDate: number
   createdBy?: UserInfoDTO
 }

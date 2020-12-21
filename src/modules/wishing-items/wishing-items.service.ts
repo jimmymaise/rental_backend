@@ -12,6 +12,17 @@ export class WishingItemsService {
     private prismaService: PrismaService
   ) {}
 
+  findUnique(userId: string, itemId: string): Promise<WishingItem> {
+    return this.prismaService.wishingItem.findUnique({
+      where: {
+        ownerUserId_itemId: {
+          ownerUserId: userId,
+          itemId
+        }
+      }
+    })
+  }
+
   addNewItemToMyWishlist(userId: string, itemId: string): Promise<WishingItem> {
     return this.prismaService.wishingItem.create({
       data: {
@@ -26,17 +37,6 @@ export class WishingItemsService {
   }
 
   async deleteItemFromMyWishlist(userId: string, itemId: string): Promise<WishingItem> {
-    const item = await this.prismaService.wishingItem.findFirst({
-      where: {
-        ownerUserId: userId,
-        itemId
-      }
-    })
-
-    if (!item) {
-      throw new Error('Wishing Item not existing')
-    }
-
     return this.prismaService.wishingItem.delete({
       where: {
         ownerUserId_itemId: {
@@ -50,15 +50,17 @@ export class WishingItemsService {
   async findAllMyItemWishlist({
     userId,
     offset = 0,
-    limit = 10
+    limit = 10,
+    includes = []
   }): Promise<PaginationDTO<WishingItem>> {
     const where = {
       ownerUserId: userId
     }
 
-    const items = await this.prismaService.wishingItem.findMany({
-      where,
-      include: {
+    let include = {}
+
+    if (includes.includes('item')) {
+      include = {
         item: {
           include: {
             categories: true,
@@ -66,9 +68,18 @@ export class WishingItemsService {
           }
         }
       }
+    }
+
+    const items = await this.prismaService.wishingItem.findMany({
+      where,
+      skip: offset,
+      take: limit,
+      include
     });
     const count = await this.prismaService.item.count({
-      where
+      where,
+      skip: offset,
+      take: limit
     });
 
     return {

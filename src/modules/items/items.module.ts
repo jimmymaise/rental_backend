@@ -6,9 +6,10 @@ import { ItemsResolvers } from './items.resolvers'
 import { StoragesModule } from '../storages/storages.module'
 import { UsersModule } from '../users/users.module'
 import { SearchKeywordModule } from '../search-keyword/search-keyword.module'
+import { WishingItemsModule } from '../wishing-items/wishing-items.module'
 
 @Module({
-  imports: [StoragesModule, UsersModule, SearchKeywordModule],
+  imports: [StoragesModule, UsersModule, SearchKeywordModule, WishingItemsModule],
   providers: [ItemsService, UserItemsService, ItemsResolvers]
 })
 export class ItemsModule {}
