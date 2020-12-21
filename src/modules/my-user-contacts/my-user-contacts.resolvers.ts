@@ -60,7 +60,6 @@ export class WishingItemsResolvers {
     for (let i = 0; i < result.items.length; i++) {
       const item = result.items[i]
       transformItems.push({
-        id: item.id,
         createdDate: item.createdDate.getTime(),
         userInfo: await this.userService.getUserDetailData(item.userId)
       })

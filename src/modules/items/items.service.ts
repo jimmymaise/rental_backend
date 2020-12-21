@@ -227,7 +227,7 @@ export class ItemsService {
       findCondition.include = include;
     }
 
-    const item = await this.prismaService.item.findOne(findCondition);
+    const item = await this.prismaService.item.findUnique(findCondition);
 
     if (!item || item.isDeleted || item.status !== ItemStatus.Published) {
       return null

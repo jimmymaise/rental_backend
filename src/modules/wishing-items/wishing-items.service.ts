@@ -39,7 +39,10 @@ export class WishingItemsService {
 
     return this.prismaService.wishingItem.delete({
       where: {
-        id: item.id
+        ownerUserId_itemId: {
+          ownerUserId: userId,
+          itemId
+        }
       }
     })
   }

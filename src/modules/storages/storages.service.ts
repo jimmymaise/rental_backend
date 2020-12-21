@@ -63,7 +63,7 @@ export class StoragesService {
   }
 
   public async handleUploadImageBySignedUrlComplete(fileId: string, includes: string[] = []): Promise<FileStorage> {
-    const fileDb = await this.prismaService.fileStorage.findOne({
+    const fileDb = await this.prismaService.fileStorage.findUnique({
       where: {
         id: fileId
       }
@@ -115,7 +115,7 @@ export class StoragesService {
   async getFileDataById(
     fileId: string
   ): Promise<FileStorage> {
-    return this.prismaService.fileStorage.findOne({ where: { id: fileId } })
+    return this.prismaService.fileStorage.findUnique({ where: { id: fileId } })
   }
 
   async hardDeleteFile(

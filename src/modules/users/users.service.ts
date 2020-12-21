@@ -72,12 +72,12 @@ export class UsersService {
   }
 
   async getUserById(userId: string): Promise<User> {
-    return this.prismaService.user.findOne({ where: { id: userId } });
+    return this.prismaService.user.findUnique({ where: { id: userId } });
     // throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);
   }
 
   async getUserInfoById(userId: string): Promise<UserInfo> {
-    return this.prismaService.userInfo.findOne({ where: { id: userId } });
+    return this.prismaService.userInfo.findUnique({ where: { id: userId } });
   }
 
   async createUserByEmailPassword(
@@ -111,7 +111,7 @@ export class UsersService {
   }
 
   async getUserByFacebookId(facebookId: string): Promise<User> {
-    const user = await this.prismaService.user.findOne({
+    const user = await this.prismaService.user.findUnique({
       where: { facebookId },
     });
 
@@ -119,13 +119,13 @@ export class UsersService {
   }
 
   async getUserByGoogleId(googleId: string): Promise<User> {
-    const user = await this.prismaService.user.findOne({ where: { googleId } });
+    const user = await this.prismaService.user.findUnique({ where: { googleId } });
 
     return user;
   }
 
   async getUserByEmail(email: string): Promise<User> {
-    const user = await this.prismaService.user.findOne({ where: { email } });
+    const user = await this.prismaService.user.findUnique({ where: { email } });
 
     return user;
   }
@@ -157,7 +157,7 @@ export class UsersService {
   }
 
   async getUserByEmailPassword(email: string, password: string): Promise<User> {
-    const user = await this.prismaService.user.findOne({ where: { email } });
+    const user = await this.prismaService.user.findUnique({ where: { email } });
     if (!user) {
       throw new Error('No such user found');
     }

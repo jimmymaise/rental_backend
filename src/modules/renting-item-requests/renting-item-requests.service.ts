@@ -128,7 +128,7 @@ export class RentingItemRequetsService {
     ownerUserId: string,
   ): Promise<RentingItemRequestDTO> {
     const { itemId, fromDate, toDate } = data;
-    const item = await this.prismaService.item.findOne({
+    const item = await this.prismaService.item.findUnique({
       where: { id: itemId },
     });
     const totalAmount = await this.calcTotalAmount(item, fromDate, toDate, 1);
@@ -350,7 +350,7 @@ export class RentingItemRequetsService {
   // }
 
   public async cancelRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })
+    const requestItem = await this.prismaService.rentingItemRequest.findUnique({ where: { id: data.id } })
     const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.CANCEL)) {
@@ -364,7 +364,7 @@ export class RentingItemRequetsService {
   }
 
   public async approveRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })
+    const requestItem = await this.prismaService.rentingItemRequest.findUnique({ where: { id: data.id } })
     const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.APPROVE)) {
@@ -378,7 +378,7 @@ export class RentingItemRequetsService {
   }
 
   public async declineRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })
+    const requestItem = await this.prismaService.rentingItemRequest.findUnique({ where: { id: data.id } })
     const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.DECLINE)) {
@@ -392,7 +392,7 @@ export class RentingItemRequetsService {
   }
 
   public async startRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })
+    const requestItem = await this.prismaService.rentingItemRequest.findUnique({ where: { id: data.id } })
     const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.START)) {
@@ -406,7 +406,7 @@ export class RentingItemRequetsService {
   }
 
   public async completeRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findOne({ where: { id: data.id } })
+    const requestItem = await this.prismaService.rentingItemRequest.findUnique({ where: { id: data.id } })
     const permissions = this.getPermissions(requestItem, data.updatedBy)
 
     if (permissions.includes(Permission.COMPLETE)) {

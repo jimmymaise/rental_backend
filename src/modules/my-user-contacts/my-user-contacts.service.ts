@@ -26,10 +26,12 @@ export class MyUserContactsService {
   }
 
   async deleteUserFromMyContactList(myUserId: string, removeUserIdFromMyList: string): Promise<MyUserContact> {
-    const item = await this.prismaService.myUserContact.findFirst({
+    const item = await this.prismaService.myUserContact.findUnique({
       where: {
-        ownerUserId: myUserId,
-        userId: removeUserIdFromMyList
+        ownerUserId_userId: {
+          ownerUserId: myUserId,
+          userId: removeUserIdFromMyList
+        }
       }
     })
 
@@ -39,7 +41,10 @@ export class MyUserContactsService {
 
     return this.prismaService.myUserContact.delete({
       where: {
-        id: item.id
+        ownerUserId_userId: {
+          ownerUserId: myUserId,
+          userId: removeUserIdFromMyList
+        }
       }
     })
   }

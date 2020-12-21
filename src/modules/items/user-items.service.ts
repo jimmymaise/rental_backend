@@ -177,7 +177,7 @@ export class UserItemsService {
       findCondition.include = include;
     }
 
-    const item = await this.prismaService.item.findOne(findCondition);
+    const item = await this.prismaService.item.findUnique(findCondition);
 
     if (item && (item.isDeleted || item.status === ItemStatus.Blocked || item.ownerUserId !== createdBy)) {
       return null
@@ -258,7 +258,7 @@ export class UserItemsService {
     const where = {
       id
     }
-    const foundItem = await this.prismaService.item.findOne({ where })
+    const foundItem = await this.prismaService.item.findUnique({ where })
     if (foundItem && (foundItem.isDeleted || foundItem.status === ItemStatus.Blocked || foundItem.ownerUserId !== createdBy)) {
       return null
     }
@@ -273,7 +273,7 @@ export class UserItemsService {
     const where = {
       id
     }
-    const foundItem = await this.prismaService.item.findOne({ where })
+    const foundItem = await this.prismaService.item.findUnique({ where })
     if (foundItem && (foundItem.isDeleted || foundItem.status === ItemStatus.Blocked || foundItem.ownerUserId !== createdBy)) {
       return null
     }

@@ -267,23 +267,21 @@ model UserNotification {
 }
 
 model WishingItem {
-  id      String          @id @default(uuid())
   ownerUserId             String
   item           Item @relation(fields: [itemId], references: [id])
   itemId          String
   createdDate             DateTime        @default(now())
 
-  @@index(fields: [ownerUserId], name: "wishing_item_main_index")
+  @@id([ownerUserId, itemId])
 }
 
 model MyUserContact {
-  id      String          @id @default(uuid())
   ownerUserId             String
   user           User @relation(fields: [userId], references: [id])
   userId                  String
   createdDate             DateTime        @default(now())
 
-  @@index(fields: [ownerUserId], name: "my_user_contact_main_index")
+  @@id([ownerUserId, userId])
 }
 
 // Item Reviews?
