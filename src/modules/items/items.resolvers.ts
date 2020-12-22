@@ -59,6 +59,7 @@ export class ItemsResolvers {
   }
 
   @Query()
+  @UseGuards(GqlAuthGuard)
   async feed(
     @CurrentUser() user: GuardUserPayload,
     @Args('query') query: {
@@ -90,6 +91,7 @@ export class ItemsResolvers {
     })
 
     const items = []
+
     for (let i = 0; i < result.items.length; i++) {
       const newItem = toItemDTO(result.items[i])
 
@@ -98,7 +100,7 @@ export class ItemsResolvers {
       }
 
       if (user && checkWishlist) {
-        newItem.isInMyWishList = this.wishingItemService.findUnique(user.id, newItem.id) !== null
+        newItem.isInMyWishList = await this.wishingItemService.findUnique(user.id, newItem.id) !== null
       }
 
       items.push(newItem)

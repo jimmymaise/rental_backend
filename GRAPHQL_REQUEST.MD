@@ -68,7 +68,8 @@ query {
       areas {
         id,
         name
-      }
+      },
+      isInMyWishlist
     },
     total
   }

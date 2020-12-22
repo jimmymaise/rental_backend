@@ -23,7 +23,7 @@ type Item {
   isVerified: Boolean
   status: String
   note: String
-  isInMyWishlist: Boolean
+  isInMyWishList: Boolean
   createdDate: Float
   updatedDate: Float
   createdBy: UserInfo
@@ -63,6 +63,7 @@ input ItemQuery {
   areaId: String
   includes: [String]
   sortByFields: [String]
+  checkWishlist: Boolean
 }
 
 input MyItemQuery {
