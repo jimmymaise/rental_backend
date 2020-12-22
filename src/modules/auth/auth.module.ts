@@ -12,6 +12,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { JwtRefreshTokenStrategy } from './jwt-refresh-token.strategy'
 import { FacebookStrategy } from './facebook.strategy'
 import { GoogleStrategy } from './google.strategy'
+import { AnonymousStrategy } from './anoymous.strategy'
 import { AuthController } from './auth.controller'
 
 
@@ -38,7 +39,8 @@ import { AuthController } from './auth.controller'
     JwtStrategy,
     JwtRefreshTokenStrategy,
     FacebookStrategy,
-    GoogleStrategy
+    GoogleStrategy,
+    AnonymousStrategy
   ],
   controllers: [
     AuthController

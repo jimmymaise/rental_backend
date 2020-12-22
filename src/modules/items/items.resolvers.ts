@@ -11,7 +11,8 @@ import { ItemDTO } from './item.dto'
 import {
   GuardUserPayload,
   CurrentUser,
-  GqlAuthGuard
+  GqlAuthGuard,
+  EveryoneGqlAuthGuard
 } from '../auth'
 import { PaginationDTO } from '../../models'
 import { UsersService } from '../users/users.service'
@@ -59,7 +60,7 @@ export class ItemsResolvers {
   }
 
   @Query()
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(EveryoneGqlAuthGuard)
   async feed(
     @CurrentUser() user: GuardUserPayload,
     @Args('query') query: {
