@@ -63,7 +63,7 @@ input ItemQuery {
   areaId: String
   includes: [String]
   sortByFields: [String]
-  checkWishlist: Boolean
+  checkWishList: Boolean
 }
 
 input MyItemQuery {
@@ -71,6 +71,7 @@ input MyItemQuery {
   offset: Int
   limit: Int
   includes: [String]
+  checkWishList: Boolean
 }
 
 type Mutation {
@@ -81,8 +82,8 @@ type Mutation {
 
 type Query {
   feed(query: ItemQuery): ItemPagination
-  feedDetailBySlug(slug: String!, includes: [String]): Item
+  feedDetailBySlug(slug: String!, includes: [String], checkWishList: Boolean): Item
   feedMyItems(query: MyItemQuery): ItemPagination
   feedUserPublicItems(userId: String!, query: ItemQuery): ItemPagination
-  feedMyItemDetail(id: String!, includes: [String]): Item
+  feedMyItemDetail(id: String!, includes: [String], checkWishList: Boolean): Item
 }

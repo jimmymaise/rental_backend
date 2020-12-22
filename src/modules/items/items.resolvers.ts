@@ -71,10 +71,10 @@ export class ItemsResolvers {
       categoryId: string,
       includes: string[],
       sortByFields: string[]
-      checkWishlist?: boolean
+      checkWishList?: boolean
     }
   ): Promise<PaginationDTO<ItemDTO>> {
-    const { search, offset, limit, areaId, categoryId, includes, sortByFields, checkWishlist } = query || {}
+    const { search, offset, limit, areaId, categoryId, includes, sortByFields, checkWishList } = query || {}
     const actualLimit = limit && limit > 100 ? 100 : limit
 
     if (search && search.length) {
@@ -100,7 +100,7 @@ export class ItemsResolvers {
         newItem.createdBy = await this.usersService.getUserDetailData(result.items[i].ownerUserId)
       }
 
-      if (user && checkWishlist) {
+      if (user && checkWishList) {
         newItem.isInMyWishList = await this.wishingItemService.findUnique(user.id, newItem.id) !== null
       }
 
@@ -116,15 +116,22 @@ export class ItemsResolvers {
   }
 
   @Query()
+  @UseGuards(EveryoneGqlAuthGuard)
   async feedDetailBySlug(
+    @CurrentUser() user: GuardUserPayload,
     @Args('slug') slug: string,
     @Args('includes') includes: string[],
+    @Args('checkWishList') checkWishList: boolean
   ): Promise<ItemDTO> {
     const item = await this.itemService.findOneAvailableBySlug(slug, includes)
     const enhancedItem = toItemDTO(item)
 
     if (item.ownerUserId) {
       enhancedItem.createdBy = await this.usersService.getUserDetailData(item.ownerUserId)
+    }
+
+    if (user && checkWishList) {
+      enhancedItem.isInMyWishList = await this.wishingItemService.findUnique(user.id, enhancedItem.id) !== null
     }
 
     return enhancedItem
@@ -140,10 +147,11 @@ export class ItemsResolvers {
       search: string,
       offset: number,
       limit: number,
-      includes: string[]
+      includes: string[],
+      checkWishList?: boolean
     }
   ): Promise<PaginationDTO<ItemDTO>> {
-    const { search, offset, limit, includes } = query || {}
+    const { search, offset, limit, includes, checkWishList } = query || {}
     const actualLimit = limit && limit > 100 ? 100 : limit
     const result = await this.userItemService.findAllItemsCreatedByUser({
       createdBy: user.id,
@@ -153,8 +161,20 @@ export class ItemsResolvers {
       includes
     })
 
+    const items = []
+
+    for (let i = 0; i < result.items.length; i++) {
+      const newItem = toItemDTO(result.items[i])
+
+      if (checkWishList) {
+        newItem.isInMyWishList = await this.wishingItemService.findUnique(user.id, newItem.id) !== null
+      }
+
+      items.push(newItem)
+    }
+
     return {
-      items: result.items.map(toItemDTO),
+      items,
       total: result.total,
       offset: offset || 0,
       limit: actualLimit
@@ -162,6 +182,7 @@ export class ItemsResolvers {
   }
 
   @Query()
+  @UseGuards(EveryoneGqlAuthGuard)
   async feedUserPublicItems(
     @CurrentUser() user: GuardUserPayload,
     @Args('userId') userId: string,
@@ -169,10 +190,11 @@ export class ItemsResolvers {
       search: string,
       offset: number,
       limit: number,
-      includes: string[]
+      includes: string[],
+      checkWishList?: boolean
     }
   ): Promise<PaginationDTO<ItemDTO>> {
-    const { search, offset, limit, includes } = query || {}
+    const { search, offset, limit, includes, checkWishList } = query || {}
     const actualLimit = limit && limit > 100 ? 100 : limit
     const result = await this.userItemService.findAllPublicItemsCreatedByUser({
       createdBy: userId,
@@ -188,6 +210,10 @@ export class ItemsResolvers {
 
       if (result.items[i].ownerUserId) {
         newItem.createdBy = await this.usersService.getUserDetailData(result.items[i].ownerUserId)
+      }
+
+      if (user && checkWishList) {
+        newItem.isInMyWishList = await this.wishingItemService.findUnique(user.id, newItem.id) !== null
       }
 
       items.push(newItem)
@@ -207,10 +233,17 @@ export class ItemsResolvers {
     @CurrentUser() user: GuardUserPayload,
     @Args('id') id: string,
     @Args('includes') includes: string[],
+    @Args('checkWishList') checkWishList: boolean
   ): Promise<ItemDTO> {
     const item = await this.userItemService.findOneDetailForEdit(id, user.id, includes)
 
-    return toItemDTO(item)
+    const enhancedItem = toItemDTO(item)
+
+    if (checkWishList) {
+      enhancedItem.isInMyWishList = await this.wishingItemService.findUnique(user.id, enhancedItem.id) !== null
+    }
+
+    return enhancedItem
   }
 
   @Mutation()
