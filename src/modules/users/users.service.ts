@@ -7,6 +7,7 @@ import { User, UserRole, UserInfo } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
 import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
+import { userInfo } from 'os';
 
 const DEFAULT_AVATARS = [
   'https://asia-fast-storage.thuedo.vn/default-avatars/default_0008_avatar-1.jpg',
@@ -212,7 +213,8 @@ export class UsersService {
   ): Promise<UserInfo> {
     return await this.prismaService.userInfo.create({
       data: {
-        ...info,
+        displayName: info.displayName || '',
+        bio: info.bio,
         avatarImage: JSON.stringify({
           url: sample(DEFAULT_AVATARS),
         }),
