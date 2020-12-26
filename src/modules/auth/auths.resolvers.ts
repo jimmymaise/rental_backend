@@ -104,8 +104,19 @@ export class AuthsResolvers {
   async requestResetPassword(
     @Args('email') email: string,
   ): Promise<string> {
-    await this.emailService.sendResetPasswordEmail('Phat Trần', 'trankyphat@gmail.com', 'abcdefghijks')
+    const { token, displayName } = await this.authService.generateResetPasswordToken(email)
+    await this.emailService.sendResetPasswordEmail(displayName, email, token)
     return email
+  }
+
+  @Mutation()
+  async setPasswordByToken(
+    @Args('token') token: string,
+    @Args('password') password: string,
+  ): Promise<string> {
+    const user = await this.authService.updatePasswordByToken(token, password)
+
+    return user.email
   }
 }
 

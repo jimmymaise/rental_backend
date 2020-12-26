@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import {
-  UserInfo
-} from '@prisma/client';
+import { User } from '@prisma/client';
 
 import { rootContants } from '../../constants'
 import { UsersService } from '../users/users.service'
@@ -35,6 +33,49 @@ export class AuthService {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
       expiresIn: `${this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')}s`
     })
+  }
+
+  private async verifyResetPasswordToken(token: string): Promise<any> {
+    return this.jwtService.verifyAsync(token, {
+      secret: this.configService.get('RESET_PASSWORD_TOKEN_SECRET')
+    })
+  }
+
+  private getResetPasswordToken(userId: string, email: string): string {
+    return this.jwtService.sign({ userId, email }, {
+      secret: this.configService.get('RESET_PASSWORD_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get('RESET_PASSWORD_TOKEN_EXPIRATION_TIME')}s`
+    })
+  }
+
+  public async generateResetPasswordToken(email: string): Promise<{ email: string, displayName: string, token: string }> {
+    const user = await this.usersService.getUserByEmail(email)
+
+    if (!user) {
+      throw new Error('User not existing')
+    }
+
+    const refreshPasswordToken = this.getResetPasswordToken(user.id, email)
+
+    await this.usersService.setResetPasswordToken(refreshPasswordToken, user.id)
+    const userInfo = await this.usersService.getUserDetailData(user.id)
+
+    return {
+      email,
+      displayName: userInfo.displayName,
+      token: refreshPasswordToken
+    }
+  }
+
+  public async updatePasswordByToken(token: string, newPassword: string): Promise<User> {
+    const { userId } = await this.verifyResetPasswordToken(token)
+    const userInfo = await this.usersService.verifyResetPasswordToken(token, userId)
+
+    if (userInfo) {
+      return await this.usersService.setUserPassword(userId, newPassword, true)
+    } else {
+      throw new Error('Token not valid')
+    }
   }
 
   async signInByFacebookId(facebookId: string, fbAccessToken: string, userInfo: SignInUserSSOInfo): Promise<AuthDTO> {

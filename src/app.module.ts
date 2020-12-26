@@ -70,7 +70,9 @@ import { AppService } from './app.service'
         AWS_SES_REGION: Joi.string().required(),
         AWS_SES_ACCESS_KEY_ID: Joi.string().required(),
         AWS_SES_SECRET_ACCESS_KEY: Joi.string().required(),
-        WEB_UI_RECOVERY_PASSWORD_URL: Joi.string().required()
+        WEB_UI_RECOVERY_PASSWORD_URL: Joi.string().required(),
+        RESET_PASSWORD_TOKEN_SECRET: Joi.string().required(),
+        RESET_PASSWORD_TOKEN_EXPIRATION_TIME: Joi.string().required()
       })
     }),
     AuthModule,

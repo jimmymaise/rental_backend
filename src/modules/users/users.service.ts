@@ -7,7 +7,6 @@ import { User, UserRole, UserInfo } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
 import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
-import { userInfo } from 'os';
 
 const DEFAULT_AVATARS = [
   'https://asia-fast-storage.thuedo.vn/default-avatars/default_0008_avatar-1.jpg',
@@ -88,6 +87,24 @@ export class UsersService {
     const passwordHash = await bcrypt.hash(password, 10);
     return this.prismaService.user.create({
       data: { email, passwordHash, role: [UserRole.User] },
+    });
+  }
+
+  async setUserPassword(
+    userId: string,
+    password: string,
+    isClearResetPasswordToken?: boolean
+  ): Promise<User> {
+    const passwordHash = await bcrypt.hash(password, 10);
+    const data: any = { passwordHash }
+
+    if (isClearResetPasswordToken) {
+      data['resetPasswordToken'] = null
+    }
+
+    return this.prismaService.user.update({
+      where: { id: userId },
+      data,
     });
   }
 
@@ -192,6 +209,35 @@ export class UsersService {
         currentHashedRefreshToken,
       },
     });
+  }
+
+  async setResetPasswordToken(token: string, userId: string) {
+    const resetPasswordToken = await bcrypt.hash(token, 10);
+    await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        resetPasswordToken,
+      },
+    });
+  }
+
+  async verifyResetPasswordToken(token: string, userId: string) {
+    const user = await this.getUserById(userId);
+
+    if (!user.resetPasswordToken) {
+      throw new Error('Token not valid')
+    }
+
+    const tokenMatch = await bcrypt.compare(
+      token,
+      user.resetPasswordToken,
+    );
+
+    if (tokenMatch) {
+      return user;
+    }
   }
 
   async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {

@@ -18,6 +18,10 @@ export class AWSEmailService {
   }
 
   public async sendMail(data: MailData): Promise<any> {
+    const base64ToName = Buffer.from(data.senderName).toString('base64');
+    // Because the name not support UTF8
+    const finalToName = `=?UTF-8?B?${base64ToName}?= <${data.fromAddress}>`;
+
     const params = {
       Destination: {
         ToAddresses: [data.toAddress],
@@ -38,7 +42,7 @@ export class AWSEmailService {
           Data: data.subject,
         },
       },
-      Source: `${data.senderName} <${data.fromAddress}>`,
+      Source: finalToName,
       ReplyToAddresses: [],
     };
 
