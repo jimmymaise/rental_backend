@@ -31,4 +31,5 @@ type Query {
 
 type Mutation {
   updateUserInfoData(userInfoData: UserInfoInput!): UserInfo
+  requestResetPassword(email: String!): String
 }

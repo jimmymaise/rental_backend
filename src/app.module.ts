@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 
 import {
@@ -14,7 +14,8 @@ import {
   WishingItemsModule,
   UsersModule,
   MyUserContactsModule,
-  SearchKeywordModule
+  SearchKeywordModule,
+  MailModule
 } from './modules'
 
 import { rootContants } from './constants'
@@ -65,7 +66,10 @@ import { AppService } from './app.service'
         GOOGLE_CLIENT_ID: Joi.string().required(),
         GOOGLE_CLIENT_SECRET: Joi.string().required(),
         GOOGLE_LOGIN_CALLBACK_URL: Joi.string().required(),
-        WEB_UI_SIGN_IN_SUCCESSFULLY_REDIRECT_URL: Joi.string().required()
+        WEB_UI_SIGN_IN_SUCCESSFULLY_REDIRECT_URL: Joi.string().required(),
+        AWS_SES_REGION: Joi.string().required(),
+        AWS_SES_ACCESS_KEY_ID: Joi.string().required(),
+        AWS_SES_SECRET_ACCESS_KEY: Joi.string().required()
       })
     }),
     AuthModule,
@@ -77,7 +81,8 @@ import { AppService } from './app.service'
     RentingItemRequestsModule,
     WishingItemsModule,
     MyUserContactsModule,
-    SearchKeywordModule
+    SearchKeywordModule,
+    MailModule
   ],
   controllers: [AppController],
   providers: [
