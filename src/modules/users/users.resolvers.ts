@@ -59,12 +59,5 @@ export class UsersResolvers {
   ): Promise<UserInfoDTO> {
     return this.userService.updateUserProfile(user.id, userInfoData)
   }
-
-  @Mutation()
-  async requestResetPassword(
-    @Args('email') email: string,
-  ): Promise<string> {
-    return email
-  }
 }
 

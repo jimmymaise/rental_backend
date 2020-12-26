@@ -1,0 +1,57 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-text line-height="22px" font-family="Ubuntu, Helvetica, Arial, sans-serif" font-size="14px"></mj-text>
+    </mj-attributes>
+    <mj-style inline="inline">
+      .body-section {
+      	-webkit-box-shadow: 0 3px 8px 0 rgba(0, 10, 18, 0.1);
+      	-moz-box-shadow: 0 3px 8px 0 rgba(0, 10, 18, 0.1);
+      	box-shadow: 0 3px 8px 0 rgba(0, 10, 18, 0.1);
+      }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#fbfbfb" width="600px">
+    <mj-section padding="0" padding-top="25px">
+      <mj-column width="100%">
+        <mj-image src="https://asia-fast-storage.thuedo.vn/mail-template/mail-header.png" width="600px" alt="Header image" padding="0" />
+      </mj-column>
+    </mj-section>
+    <mj-wrapper padding-top="0" padding-bottom="0" css-class="body-section" border-radius="4px">
+      <mj-section padding-bottom="0" padding-top="20px" background-color="#ffffff">
+        <mj-column width="100%">
+          <mj-text align="left" padding="10px 25px">Xin Chào <strong>{{display_name}}</strong>,</mj-text>
+        <mj-text align="left" font-family="Arial">ThueDO vừa nhận được yêu cầu khôi phục mật khẩu từ bạn. Hãy click vào nút nhấn bên dưới để tiến hành đổi mật khẩu cho tài khoản <strong>{{email}}</strong>. </mj-text>
+        <mj-button background-color="#746DF7" color="#ffffff" href="{{link}}" font-family="Arial, sans-serif" padding="20px 0 20px 0" font-weight="bold" font-size="16px">Thay Đổi Mật Khẩu</mj-button>
+        <mj-text align="center" font-family="Arial">Hãy bỏ qua email này nếu bạn không muốn đổi mật khẩu nữa. Chúc bạn có một ngày tốt lành.</mj-text>
+         
+          <mj-divider padding-left="0" padding-right="0" border-width="1px" border-style="solid" border-color="#ebeef2" />
+        </mj-column>
+      </mj-section>
+      <mj-section padding-left="15px" padding-right="15px" padding-top="0" padding-bottom="0" background-color="#ffffff">
+        <mj-column width="100%">
+           <mj-text align="center" font-family="Arial" color="#b7b7b7">ThueDO Team</mj-text>
+          <mj-text padding="0" font-size="11px" color="#b7b7b7" align="center">
+            Cần hỗ trợ? Hãy liên hệ với chúng tôi tại địa chỉ email <a href="mailto:hotro@thuedo.vn" style="color: #746DF7; text-decoration: none">hotro@thuedo.vn</a>
+          </mj-text>
+          <mj-text padding="0" font-size="11px" color="#b7b7b7" align="center">
+            Xem thêm thông tin tại Blog: <a href="https://blog.thuedo.vn" style="color: #746DF7; text-decoration: none">https://blog.thuedo.vn</a>
+          </mj-text>
+        </mj-column>
+        <mj-column width="100%">
+          <mj-text padding="0" font-size="11px" color="#b7b7b7" align="center">Theo dõi tại:</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section padding-left="15px" padding-right="15px" padding-top="0" padding-bottom="15px" background-color="#fff" border-radius="4px">
+        <mj-column vertical-align="middle">
+          <mj-text align="center">
+         <a href="https://www.facebook.com/Thue-Do-105363268055385" style="text-decoration: none; color: inherit;">
+            <img width="20px" src="https://asia-fast-storage.thuedo.vn/mail-template/facebook-icon.png" alt="Facebook icon" />
+          </a></mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <mj-section padding="25px">
+    </mj-section>
+  </mj-body>
+</mjml>

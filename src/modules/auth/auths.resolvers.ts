@@ -10,12 +10,14 @@ import { GqlAuthGuard } from './gpl-auth.guard'
 import { GqlRefreshGuard } from './gpl-request.guard'
 import { CurrentUser } from './current-user.decorator'
 import { UsersService } from '../users/users.service'
+import { EmailService } from '../mail'
 
 @Resolver('Auth')
 export class AuthsResolvers {
   constructor(
     private readonly authService: AuthService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private emailService: EmailService
   ) {}
 
   @Mutation()
@@ -96,6 +98,14 @@ export class AuthsResolvers {
     context.res.setHeader('Set-Cookie', tokenHeaderCookie);
 
     return true
+  }
+
+  @Mutation()
+  async requestResetPassword(
+    @Args('email') email: string,
+  ): Promise<string> {
+    await this.emailService.sendResetPasswordEmail('Phat Trần', 'trankyphat@gmail.com', 'abcdefghijks')
+    return email
   }
 }
 

@@ -14,12 +14,14 @@ import { FacebookStrategy } from './facebook.strategy'
 import { GoogleStrategy } from './google.strategy'
 import { AnonymousStrategy } from './anoymous.strategy'
 import { AuthController } from './auth.controller'
+import { MailModule } from '../mail/mail.module'
 
 
 @Module({
   imports: [
     ConfigModule,
     UsersModule,
+    MailModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

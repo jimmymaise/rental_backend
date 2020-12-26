@@ -1,14 +1,13 @@
-import { Module, CacheModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AWSEmailService } from './aws-email.service';
+import { EmailService } from './mail.service';
 
 @Module({
   imports: [
-    CacheModule.registerAsync({
-      imports: [ConfigModule]
-    }),
+    ConfigModule
   ],
-  providers: [AWSEmailService],
-  exports: [AWSEmailService]
+  providers: [AWSEmailService, EmailService],
+  exports: [EmailService]
 })
 export class MailModule {}

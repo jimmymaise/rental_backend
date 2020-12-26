@@ -2,14 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 
-export interface MailData {
-  fromAddress: string;
-  toAddress: string;
-  replyToAddress?: string;
-  bodyHtml: string;
-  bodyText: string;
-  subject: string;
-}
+import { MailData } from './mail-data.model'
 
 @Injectable()
 export class AWSEmailService {
@@ -24,7 +17,7 @@ export class AWSEmailService {
     };
   }
 
-  private async sendMail(data: MailData): Promise<any> {
+  public async sendMail(data: MailData): Promise<any> {
     const params = {
       Destination: {
         ToAddresses: [data.toAddress],
@@ -45,7 +38,7 @@ export class AWSEmailService {
           Data: data.subject,
         },
       },
-      Source: data.fromAddress,
+      Source: `${data.senderName} <${data.fromAddress}>`,
       ReplyToAddresses: [],
     };
 
