@@ -15,7 +15,8 @@ import {
   UsersModule,
   MyUserContactsModule,
   SearchKeywordModule,
-  MailModule
+  MailModule,
+  MessageModule
 } from './modules'
 
 import { rootContants } from './constants'
@@ -85,7 +86,8 @@ import { AppService } from './app.service'
     WishingItemsModule,
     MyUserContactsModule,
     SearchKeywordModule,
-    MailModule
+    MailModule,
+    MessageModule
   ],
   controllers: [AppController],
   providers: [

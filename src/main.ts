@@ -21,8 +21,10 @@
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser';
+import { ConfigService } from '@nestjs/config';
 
 import { AppModule } from './app.module';
+import { RedisIoAdapter } from './modules/message/redis.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,6 +32,9 @@ async function bootstrap() {
   app.use(helmet(
     { contentSecurityPolicy: (process.env.NODE_ENV === 'production') ? undefined : false }
   ));
+
+  const configService = app.get(ConfigService)
+  app.useWebSocketAdapter(new RedisIoAdapter(app, configService));
   app.use(function(req, res, next) {
     const allowedOrigins = ["http://localhost:3500", "https://*.thuedo.vn", "https://thuedo.vn"]
 

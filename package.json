@@ -34,6 +34,8 @@
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.6.4",
     "@nestjs/platform-fastify": "^7.6.4",
+    "@nestjs/platform-socket.io": "^7.6.4",
+    "@nestjs/websockets": "^7.6.4",
     "@prisma/client": "^2.13.1",
     "apollo-server-express": "^2.19.0",
     "apollo-server-fastify": "^3.0.0-alpha.3",
@@ -63,7 +65,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",
-    "sharp": "^0.26.3"
+    "sharp": "^0.26.3",
+    "socket.io-redis": "^5.4.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.4",
@@ -81,6 +84,7 @@
     "@types/passport-google-oauth20": "^2.0.5",
     "@types/passport-jwt": "^3.0.3",
     "@types/passport-local": "^1.0.33",
+    "@types/socket.io": "^2.1.12",
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "4.10.0",
     "@typescript-eslint/parser": "4.10.0",
