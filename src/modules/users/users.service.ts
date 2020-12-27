@@ -188,6 +188,22 @@ export class UsersService {
     return user;
   }
 
+  async changePassword (userId: string, currentPassword: string, newPassword: string): Promise<User> {
+    const user = await this.getUserById(userId)
+    if (!user) {
+      throw new Error('No such user found');
+    }
+
+    const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!valid) {
+      throw new Error('Invalid current password');
+    }
+
+    await this.setUserPassword(userId, newPassword)
+
+    return user
+  }
+
   async removeCurrentRefreshToken(userId: string) {
     await this.prismaService.user.update({
       where: {

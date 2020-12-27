@@ -118,5 +118,26 @@ export class AuthsResolvers {
 
     return user.email
   }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async changePassword(
+    @Context() context: any, // GraphQLExecutionContext
+    @CurrentUser() currentUser: GuardUserPayload,
+    @Args('currentPassword') currentPassword: string,
+    @Args('newPassword') newPassword: string,
+  ): Promise<AuthDTO> {
+    const { accessToken, refreshToken, ...restProps } = await this.authService.changeUserPassword(currentUser.id, currentPassword, newPassword)
+
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(accessToken)
+    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(refreshToken)
+    context.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+
+    return {
+      ...restProps,
+      accessToken,
+      refreshToken
+    }
+  }
 }
 

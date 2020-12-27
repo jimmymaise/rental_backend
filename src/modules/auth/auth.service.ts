@@ -174,6 +174,23 @@ export class AuthService {
     }
   }
 
+  async changeUserPassword(userId: string, currentPassword: string, newPassword: string): Promise<AuthDTO> {
+    const user = await this.usersService.changePassword(userId, currentPassword, newPassword)
+
+    const tokenPayload = { userId: user.id, email: user.email }
+    const accessToken = this.getAccessToken(tokenPayload)
+    const refreshToken = this.getRefreshToken(tokenPayload)
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email
+      }
+    }
+  }
+
   async removeRefreshToken(userId: string): Promise<void> {
     return this.usersService.removeCurrentRefreshToken(userId)
   }
