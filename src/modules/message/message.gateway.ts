@@ -11,11 +11,7 @@ import { Logger, UseGuards } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Server } from 'ws';
 
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'
-import {
-  GuardUserPayload
-} from '../auth/auth.dto';
-import { WebsocketCurrentUser } from '../auth/ws-current-user.decorator'
+import { WebsocketAuthGuard } from '../auth/ws-auth.guard'
 import { AuthService } from '../auth/auth.service'
 import { UsersService } from '../users/users.service'
 
@@ -57,10 +53,10 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     return (this.server as any).to(payload.room).emit('msgToClient', payload);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(WebsocketAuthGuard)
   @SubscribeMessage('joinRoom')
-  public joinRoom(client: Socket, room: string, @WebsocketCurrentUser() currentUser): void {
-    console.log('currentUser', currentUser)
+  public joinRoom(client: Socket, { room, user }): void {
+    console.log('currentUser', user)
     client.join(room);
     client.emit('joinedRoom', room);
   }
@@ -96,10 +92,13 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
       if (userData) {
         this.userService.addUserDetailMessengerSocketClientId(userData.userId, client.id)
+        return this.logger.log(`Client is connected: ${client.id}`);
       }
     } catch (err) {
 
     }
-    return this.logger.log(`Client connected: ${client.id}`);
+
+    client.disconnect(true);
+    return this.logger.log(`Client is auto disconnected because unauthorize: ${client.id}`);
   }
 }
