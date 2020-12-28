@@ -9,6 +9,7 @@ export interface UserInfoDTO {
   coverImage: StoragePublicDTO
   email: string
   createdDate: number
+  messengerSocketClientIdMap?: any
 }
 
 export interface PublicUserInfoDTO {

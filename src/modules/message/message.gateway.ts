@@ -7,9 +7,17 @@ import {
   OnGatewayDisconnect,
   WsResponse,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Server } from 'ws';
+
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'
+import {
+  GuardUserPayload
+} from '../auth/auth.dto';
+import { WebsocketCurrentUser } from '../auth/ws-current-user.decorator'
+import { AuthService } from '../auth/auth.service'
+import { UsersService } from '../users/users.service'
 
 // import { GatewayMetadata } from '@nestjs/websockets';
 // export interface GatewayMetadataExtended extends GatewayMetadata {
@@ -39,13 +47,20 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
   private logger: Logger = new Logger('MessageGateway');
 
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService
+  ) {}
+
   @SubscribeMessage('msgToServer')
   public handleMessage(client: Socket, payload: any): Promise<WsResponse<any>> {
     return (this.server as any).to(payload.room).emit('msgToClient', payload);
   }
 
+  @UseGuards(JwtAuthGuard)
   @SubscribeMessage('joinRoom')
-  public joinRoom(client: Socket, room: string): void {
+  public joinRoom(client: Socket, room: string, @WebsocketCurrentUser() currentUser): void {
+    console.log('currentUser', currentUser)
     client.join(room);
     client.emit('joinedRoom', room);
   }
@@ -61,10 +76,30 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   }
 
   public handleDisconnect(client: Socket): void {
+    try {
+      const userData = this.authService.validateTokenFromHeaders(client.handshake.headers)
+
+      if (userData) {
+        this.userService.removeUserDetailMessengerSocketClientId(userData.userId, client.id)
+      }
+    } catch (err) {
+
+    }
     return this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  public handleConnection(client: Socket): void {
+  public handleConnection(
+    client: Socket
+  ): void {
+    try {
+      const userData = this.authService.validateTokenFromHeaders(client.handshake.headers)
+
+      if (userData) {
+        this.userService.addUserDetailMessengerSocketClientId(userData.userId, client.id)
+      }
+    } catch (err) {
+
+    }
     return this.logger.log(`Client connected: ${client.id}`);
   }
 }

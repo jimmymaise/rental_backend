@@ -28,6 +28,38 @@ export class AuthService {
     })
   }
 
+  public validateTokenFromHeaders(headers: any): { userId: string, email: string } {
+    if (headers['Authentication']) {
+      const splitedToken = headers['Authentication'].split(' ')
+
+      if (splitedToken.length === 2) {
+        const token = splitedToken[1]
+
+        return this.jwtService.decode(token) as any
+      } else {
+        return null;
+      }
+    }
+
+    if (headers['cookie']) {
+      const cookieStr = headers['cookie']
+      const splittedCookies = cookieStr.split(';')
+
+      for (let i = 0; i < splittedCookies.length; i++) {
+        const cookieStr = splittedCookies[i].trim()
+        const moreSplited = cookieStr.split('=')
+
+        if (moreSplited[0] === 'Authentication') {
+          const token = moreSplited[1]
+
+          return this.jwtService.decode(token) as any
+        }
+      }
+    }
+
+    return null;
+  }
+
   private getRefreshToken(payload: TokenPayload): string {
     return this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
