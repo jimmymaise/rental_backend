@@ -36,6 +36,10 @@ import { UsersService } from '../users/users.service'
 //   },
 // } as GatewayMetadataExtended;
 
+function getUserRoom(userId: string) {
+  return `messenger-room-${userId}`
+}
+
 @WebSocketGateway({namespace: '/messenger'})
 export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
@@ -48,23 +52,28 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     private userService: UsersService
   ) {}
 
-  @SubscribeMessage('msgToServer')
-  public handleMessage(client: Socket, payload: any): Promise<WsResponse<any>> {
-    return (this.server as any).to(payload.room).emit('msgToClient', payload);
-  }
+  // @SubscribeMessage('msgToServer')
+  // public handleMessage(client: Socket, payload: any): Promise<WsResponse<any>> {
+  //   return (this.server as any).to(payload.room).emit('msgToClient', payload);
+  // }
 
+  // @UseGuards(WebsocketAuthGuard)
+  // @SubscribeMessage('joinRoom')
+  // public joinRoom(client: Socket, { room, user }): void {
+  //   console.log('currentUser', user)
+  //   client.join(room);
+  //   client.emit('joinedRoom', room);
+  // }
+
+  // @SubscribeMessage('leaveRoom')
+  // public leaveRoom(client: Socket, room: string): void {
+  //   client.leave(room);
+  //   client.emit('leftRoom', room);
+  // }
   @UseGuards(WebsocketAuthGuard)
-  @SubscribeMessage('joinRoom')
-  public joinRoom(client: Socket, { room, user }): void {
-    console.log('currentUser', user)
-    client.join(room);
-    client.emit('joinedRoom', room);
-  }
-
-  @SubscribeMessage('leaveRoom')
-  public leaveRoom(client: Socket, room: string): void {
-    client.leave(room);
-    client.emit('leftRoom', room);
+  @SubscribeMessage('sendMessageToOtherUser')
+  public joinRoom(client: Socket, { message, toUserId }): void {
+    return (this.server as any).to(getUserRoom(toUserId)).emit('msgToClient', { message });
   }
 
   public afterInit(server: Server): void {
@@ -76,7 +85,8 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const userData = this.authService.validateTokenFromHeaders(client.handshake.headers)
 
       if (userData) {
-        this.userService.removeUserDetailMessengerSocketClientId(userData.userId, client.id)
+        // this.userService.removeUserDetailMessengerSocketClientId(userData.userId, client.id)
+        client.leave(getUserRoom(userData.userId));
       }
     } catch (err) {
 
@@ -91,7 +101,8 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const userData = this.authService.validateTokenFromHeaders(client.handshake.headers)
 
       if (userData) {
-        this.userService.addUserDetailMessengerSocketClientId(userData.userId, client.id)
+        // this.userService.addUserDetailMessengerSocketClientId(userData.userId, client.id)
+        client.join(getUserRoom(userData.userId));
         return this.logger.log(`Client is connected: ${client.id}`);
       }
     } catch (err) {
