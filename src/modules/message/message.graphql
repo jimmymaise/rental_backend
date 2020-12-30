@@ -2,6 +2,27 @@ type ChatSession {
   id: ID!
 }
 
+type ConversationItem {
+  id: ID!
+  members: [UserInfo]
+}
+
+type ConversationPagination {
+  items: [ConversationItem]
+  total: Int
+  limit: Int
+  offset: Int
+}
+
+input ConversationQuery {
+  offset: Int
+  limit: Int
+}
+
 type Mutation {
   generateChatSessionWith(chatWithUserId: String!): ChatSession
+}
+
+type Query {
+  feedMyConversations(query: ConversationQuery): ConversationPagination
 }

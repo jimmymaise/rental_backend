@@ -1,18 +1,22 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Resolver, Mutation } from '@nestjs/graphql'
+import { Args, Resolver, Mutation, Query } from '@nestjs/graphql'
+import { ChatConversation } from '@prisma/client';
 
 import { MessageService } from './message.service'
 import {
-  ChatSessionDTO
-} from './chat-session.dto';
+  ChatConversationDTO
+} from './chat-conversation.dto';
+import { PaginationDTO } from '../../models'
 import { GqlAuthGuard } from '../auth/gpl-auth.guard'
 import { CurrentUser } from '../auth/current-user.decorator'
 import { GuardUserPayload } from '../auth/auth.dto'
+import { UsersService } from '../users/users.service'
 
 @Resolver('Message')
 export class MessageResolvers {
   constructor(
-    private messageService: MessageService
+    private messageService: MessageService,
+    private userService: UsersService
   ) {}
 
   @Mutation()
@@ -20,7 +24,7 @@ export class MessageResolvers {
   async generateChatSessionWith(
     @CurrentUser() user: GuardUserPayload,
     @Args('chatWithUserId') chatWithUserId: string,
-  ): Promise<ChatSessionDTO> {
+  ): Promise<ChatConversationDTO> {
     const members = [user.id, chatWithUserId]
     let existingSession = await this.messageService.findConversationUniqueByMembers(members)
 
@@ -28,8 +32,72 @@ export class MessageResolvers {
       existingSession = await this.messageService.createNewConversation(members)
     }
 
+    const memberDetails = []
+    for (let i = 0; i < members.length; i++) {
+      const userInfo = await this.userService.getUserDetailData(members[i])
+      memberDetails.push({
+        id: userInfo.id,
+        displayName: userInfo.displayName,
+        avatarImage: userInfo.avatarImage,
+        coverImage: userInfo.coverImage
+      })
+    }
+
     return {
-      id: existingSession.id
+      id: existingSession.id,
+      members: memberDetails
+    }
+  }
+
+  @Query()
+  @UseGuards(GqlAuthGuard)
+  async feedMyConversations(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('query') query: {
+      offset: number,
+      limit: number
+    }
+  ): Promise<PaginationDTO<ChatConversationDTO>> {
+    const { offset, limit } = query || {}
+    const actualLimit = limit && limit > 100 ? 100 : limit
+
+    const result = await this.messageService.findAllMyConversations({
+      offset,
+      limit,
+      userId: user.id
+    })
+    const items = []
+
+    for (let i = 0; i < result.items.length; i++) {
+      const currentItem: ChatConversation = result.items[i]
+
+      const newItem = {
+        id: currentItem.id,
+        members: []
+      }
+
+      const memberDetails = []
+      const conversationMembers = currentItem['chatConversationMembers']
+      for (let i = 0; i < conversationMembers.length; i++) {
+        const userInfo = await this.userService.getUserDetailData(conversationMembers[i])
+        memberDetails.push({
+          id: userInfo.id,
+          displayName: userInfo.displayName,
+          avatarImage: userInfo.avatarImage,
+          coverImage: userInfo.coverImage
+        })
+      }
+
+      newItem.members = memberDetails
+
+      items.push(newItem)
+    }
+
+    return {
+      items,
+      total: result.total,
+      offset: offset || 0,
+      limit: actualLimit
     }
   }
 

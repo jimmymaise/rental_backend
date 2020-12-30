@@ -51,7 +51,10 @@ export class MessageService {
           every: {
             OR: orConditional
           }
-        }
+        },
+      },
+      include: {
+        chatConversationMembers: true,
       }
     })
   }
@@ -64,7 +67,7 @@ export class MessageService {
     return this.prismaService.chatConversation.findUnique({ where: { id }, include: { chatConversationMembers: true } }).chatConversationMembers({})
   }
 
-  async findAllSessionIncludingMe({
+  async findAllMyConversations({
     offset = 0,
     limit = 10,
     userId
@@ -75,7 +78,17 @@ export class MessageService {
           some: {
             userId
           }
+        },
+        chatMessages: {
+          some: {
+            fromUserId: {
+              not: null
+            }
+          }
         }
+      },
+      include: {
+        chatConversationMembers: true
       },
       skip: offset,
       take: limit
@@ -85,6 +98,13 @@ export class MessageService {
         chatConversationMembers: {
           some: {
             userId
+          }
+        },
+        chatMessages: {
+          some: {
+            fromUserId: {
+              not: null
+            }
           }
         }
       }
