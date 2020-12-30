@@ -1,0 +1,7 @@
+type ChatSession {
+  id: ID!
+}
+
+type Mutation {
+  generateChatSessionWith(chatWithUserId: String!): ChatSession
+}

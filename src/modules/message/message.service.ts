@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { UserChatSession } from '@prisma/client';
+import { ChatConversation, ChatConversationMember } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginationDTO } from '../../models';
 
 interface AddMessageData {
+  id: string
   fromUserId: string
   replyToId?: string
-  userChatSessionId: string
+  chatConversationId: string
   content: string
 }
 
@@ -17,10 +18,10 @@ export class MessageService {
     private prismaService: PrismaService
   ) {}
 
-  createNewSession(memberIds: string[]): Promise<UserChatSession> {
-    return this.prismaService.userChatSession.create({
+  createNewConversation(memberIds: string[]): Promise<ChatConversation> {
+    return this.prismaService.chatConversation.create({
       data: {
-        userChatSessionMembers: {
+        chatConversationMembers: {
           create: memberIds.map((item) => ({
             userId: item
           }))
@@ -29,18 +30,48 @@ export class MessageService {
     })
   }
 
-  getSession(sessionId: string): Promise<UserChatSession> {
-    return this.prismaService.userChatSession.findUnique({ where: { id: sessionId } })
+  async isUserMemberInTheConversation(conversationId: string, memberId: string): Promise<boolean> {
+    return await this.prismaService.chatConversationMember.findUnique({
+      where: {
+        chatConversationId_userId: {
+          chatConversationId: conversationId,
+          userId: memberId
+        }
+      }
+    }) !== null
+  }
+
+  findConversationUniqueByMembers(memberIds: string[]): Promise<ChatConversation> {
+    const orConditional = memberIds.map((userId) => ({
+      userId
+    }))
+    return this.prismaService.chatConversation.findFirst({
+      where: {
+        chatConversationMembers: {
+          every: {
+            OR: orConditional
+          }
+        }
+      }
+    })
+  }
+
+  getConversation(id: string): Promise<ChatConversation> {
+    return this.prismaService.chatConversation.findUnique({ where: { id } })
+  }
+
+  getConversationMembers(id: string): Promise<ChatConversationMember[]> {
+    return this.prismaService.chatConversation.findUnique({ where: { id }, include: { chatConversationMembers: true } }).chatConversationMembers({})
   }
 
   async findAllSessionIncludingMe({
     offset = 0,
     limit = 10,
     userId
-  }): Promise<PaginationDTO<UserChatSession>> {
-    const items = await this.prismaService.userChatSession.findMany({
+  }): Promise<PaginationDTO<ChatConversation>> {
+    const items = await this.prismaService.chatConversation.findMany({
       where: {
-        userChatSessionMembers: {
+        chatConversationMembers: {
           some: {
             userId
           }
@@ -49,9 +80,9 @@ export class MessageService {
       skip: offset,
       take: limit
     });
-    const count = await this.prismaService.userChatSession.count({
+    const count = await this.prismaService.chatConversation.count({
       where: {
-        userChatSessionMembers: {
+        chatConversationMembers: {
           some: {
             userId
           }
@@ -67,9 +98,10 @@ export class MessageService {
     };
   }
 
-  addMessage({ fromUserId, replyToId, userChatSessionId, content }: AddMessageData): Promise<UserChatSession> {
-    return this.prismaService.userChatMessage.create({
+  addMessage({ id, fromUserId, replyToId, chatConversationId, content }: AddMessageData): Promise<ChatConversation> {
+    return this.prismaService.chatMessage.create({
       data: {
+        id,
         fromUserId,
         replyTo: {
           connect: {
@@ -77,9 +109,9 @@ export class MessageService {
           }
         },
         content,
-        userChatSession: {
+        chatConversation: {
           connect: {
-            id: userChatSessionId
+            id: chatConversationId
           }
         }
       }

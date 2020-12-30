@@ -302,34 +302,34 @@ model MyUserContact {
     // });
 //
 // https://github.com/prisma/prisma/issues/3475 -> contain in array
-model UserChatSession {
+model ChatConversation {
   id                      String          @id @default(uuid())
   createdDate             DateTime        @default(now())
 
-  userChatMessages        UserChatMessage[]
-  userChatSessionMembers    UserChatSessionMember[]
+  chatMessages        ChatMessage[]
+  chatConversationMembers    ChatConversationMember[]
 }
 
-model UserChatSessionMember {
-  userChatSession         UserChatSession  @relation(fields: [userChatSessionId], references: [id])
-  userChatSessionId       String
+model ChatConversationMember {
+  chatConversation         ChatConversation  @relation(fields: [chatConversationId], references: [id])
+  chatConversationId       String
   userId                  String
 
-  @@id([userChatSessionId, userId])
+  @@id([chatConversationId, userId])
 }
 
 // https://www.prisma.io/docs/concepts/components/prisma-schema/relations#self-relations
 // https://dba.stackexchange.com/questions/97963/how-to-build-a-table-for-a-private-messaging-system-that-supports-replies/167579#167579
-model UserChatMessage {
+model ChatMessage {
   id                      String          @id @default(uuid())
   content                 String
 
-  replyBy                 UserChatMessage?   @relation("UserChatMessageReplyRelation")
+  replyBy                 ChatMessage?   @relation("ChatMessageReplyRelation")
   replyToId               String?
-  replyTo                 UserChatMessage?   @relation("UserChatMessageReplyRelation", fields: [replyToId], references: [id])
+  replyTo                 ChatMessage?   @relation("ChatMessageReplyRelation", fields: [replyToId], references: [id])
 
-  userChatSession         UserChatSession  @relation(fields: [userChatSessionId], references: [id])
-  userChatSessionId       String
+  chatConversation         ChatConversation  @relation(fields: [chatConversationId], references: [id])
+  chatConversationId       String
 
   fromUserId              String
   isRead                  Boolean?        @default(false)
@@ -337,7 +337,6 @@ model UserChatMessage {
   createdDate             DateTime        @default(now())
 
   @@index(fields: [replyToId, id], name: "user_chat_message_index")
-  @@index(fields: [fromUserId], name: "owner_index")
 }
 
 // Item Reviews?

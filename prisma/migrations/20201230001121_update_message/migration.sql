@@ -1,22 +1,22 @@
 /*
   Warnings:
 
-  - You are about to drop the column `memberIds` on the `UserChatSession` table. All the data in the column will be lost.
+  - You are about to drop the column `memberIds` on the `ChatConversation` table. All the data in the column will be lost.
 
 */
 -- AlterTable
-ALTER TABLE "UserChatMessage" ADD COLUMN     "isRead" BOOLEAN DEFAULT false;
+ALTER TABLE "ChatMessage" ADD COLUMN     "isRead" BOOLEAN DEFAULT false;
 
 -- AlterTable
-ALTER TABLE "UserChatSession" DROP COLUMN "memberIds";
+ALTER TABLE "ChatConversation" DROP COLUMN "memberIds";
 
 -- CreateTable
-CREATE TABLE "UserChatSessionMember" (
-    "userChatSessionId" TEXT NOT NULL,
+CREATE TABLE "ChatConversationMember" (
+    "chatConversationId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
 
-    PRIMARY KEY ("userChatSessionId","userId")
+    PRIMARY KEY ("chatConversationId","userId")
 );
 
 -- AddForeignKey
-ALTER TABLE "UserChatSessionMember" ADD FOREIGN KEY("userChatSessionId")REFERENCES "UserChatSession"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ChatConversationMember" ADD FOREIGN KEY("chatConversationId")REFERENCES "ChatConversation"("id") ON DELETE CASCADE ON UPDATE CASCADE;

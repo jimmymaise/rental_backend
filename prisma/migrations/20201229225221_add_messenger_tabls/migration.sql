@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "UserChatSession" (
+CREATE TABLE "ChatConversation" (
     "id" TEXT NOT NULL,
     "memberIds" TEXT[],
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -8,11 +8,11 @@ CREATE TABLE "UserChatSession" (
 );
 
 -- CreateTable
-CREATE TABLE "UserChatMessage" (
+CREATE TABLE "ChatMessage" (
     "id" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "replyToId" TEXT,
-    "userChatSessionId" TEXT NOT NULL,
+    "chatConversationId" TEXT NOT NULL,
     "fromUserId" TEXT NOT NULL,
     "toUserId" TEXT NOT NULL,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -21,16 +21,16 @@ CREATE TABLE "UserChatMessage" (
 );
 
 -- CreateIndex
-CREATE INDEX "user_chat_message_index" ON "UserChatMessage"("replyToId", "id");
+CREATE INDEX "user_chat_message_index" ON "ChatMessage"("replyToId", "id");
 
 -- CreateIndex
-CREATE INDEX "owner_index" ON "UserChatMessage"("fromUserId", "toUserId");
+CREATE INDEX "owner_index" ON "ChatMessage"("fromUserId", "toUserId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "UserChatMessage_replyToId_unique" ON "UserChatMessage"("replyToId");
+CREATE UNIQUE INDEX "ChatMessage_replyToId_unique" ON "ChatMessage"("replyToId");
 
 -- AddForeignKey
-ALTER TABLE "UserChatMessage" ADD FOREIGN KEY("replyToId")REFERENCES "UserChatMessage"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "ChatMessage" ADD FOREIGN KEY("replyToId")REFERENCES "ChatMessage"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserChatMessage" ADD FOREIGN KEY("userChatSessionId")REFERENCES "UserChatSession"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ChatMessage" ADD FOREIGN KEY("chatConversationId")REFERENCES "ChatConversation"("id") ON DELETE CASCADE ON UPDATE CASCADE;

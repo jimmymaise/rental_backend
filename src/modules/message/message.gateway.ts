@@ -5,15 +5,17 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  WsResponse,
+  WsException,
 } from '@nestjs/websockets';
 import { Logger, UseGuards } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Server } from 'ws';
+import { v4 as uuidv4 } from 'uuid';
 
 import { WebsocketAuthGuard } from '../auth/ws-auth.guard'
 import { AuthService } from '../auth/auth.service'
 import { UsersService } from '../users/users.service'
+import { MessageService } from './message.service'
 
 // import { GatewayMetadata } from '@nestjs/websockets';
 // export interface GatewayMetadataExtended extends GatewayMetadata {
@@ -49,7 +51,8 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
   constructor(
     private authService: AuthService,
-    private userService: UsersService
+    private userService: UsersService,
+    private messageService: MessageService
   ) {}
 
   // @SubscribeMessage('msgToServer')
@@ -57,23 +60,60 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   //   return (this.server as any).to(payload.room).emit('msgToClient', payload);
   // }
 
-  // @UseGuards(WebsocketAuthGuard)
-  // @SubscribeMessage('joinRoom')
-  // public joinRoom(client: Socket, { room, user }): void {
-  //   console.log('currentUser', user)
-  //   client.join(room);
-  //   client.emit('joinedRoom', room);
-  // }
-
-  // @SubscribeMessage('leaveRoom')
-  // public leaveRoom(client: Socket, room: string): void {
-  //   client.leave(room);
-  //   client.emit('leftRoom', room);
-  // }
   @UseGuards(WebsocketAuthGuard)
-  @SubscribeMessage('sendMessageToOtherUser')
-  public joinRoom(client: Socket, { message, toUserId, user }): void {
-    return (this.server as any).to(getUserRoom(toUserId)).emit('msgToClient', { message, fromUser: user.userId });
+  @SubscribeMessage('joinConversation')
+  public async joinConversaation(client: Socket, { conversationId, user }): Promise<void> {
+    const members = await this.messageService.getConversationMembers(conversationId)
+
+    if (members || !members.length) {
+      throw new WsException({ errorMessage: "Conversation is not valid" })
+    }
+
+    if (!members.find((member) => member.userId === user.userId)) {
+      throw new WsException({ errorMessage: "You're not allow to join this conversation" })
+    }
+
+    const memberDetails = []
+    for (let i = 0; i < members.length; i++) {
+      const userInfo = await this.userService.getUserDetailData(members[i].userId)
+      memberDetails.push({
+        id: userInfo.id,
+        displayName: userInfo.displayName,
+        avatarImage: userInfo.avatarImage,
+        coverImage: userInfo.coverImage
+      })
+    }
+
+    client.join(conversationId);
+    client.emit('joinedConversation', { conversationId, members: memberDetails });
+  }
+
+  @UseGuards(WebsocketAuthGuard)
+  @SubscribeMessage('leaveConversation')
+  public leaveRoom(client: Socket, { conversationId }): void {
+    client.leave(conversationId);
+    client.emit('leftConversation', { conversationId });
+  }
+
+  @UseGuards(WebsocketAuthGuard)
+  @SubscribeMessage('sendMessageToConversation')
+  public async sendMessageToConversation(client: Socket, { conversationId, content, user, replyToId }): Promise<void> {
+    if (!client.rooms[conversationId]) {
+      throw new WsException({ errorMessage: "You're not allow to send message this conversation" })
+    }
+
+    const messageUUID = uuidv4()
+    this.messageService.addMessage({
+      id: messageUUID,
+      fromUserId: user.userId,
+      content,
+      chatConversationId: conversationId,
+      replyToId
+    })
+
+    const userInfo = await this.userService.getUserDetailData(user.userId)
+
+    return (this.server as any).to(conversationId).emit('messageToClient', { id: messageUUID, content, replyToId, fromUser: userInfo });
   }
 
   public afterInit(server: Server): void {
