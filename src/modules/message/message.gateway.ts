@@ -72,8 +72,8 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   // }
   @UseGuards(WebsocketAuthGuard)
   @SubscribeMessage('sendMessageToOtherUser')
-  public joinRoom(client: Socket, { message, toUserId }): void {
-    return (this.server as any).to(getUserRoom(toUserId)).emit('msgToClient', { message });
+  public joinRoom(client: Socket, { message, toUserId, user }): void {
+    return (this.server as any).to(getUserRoom(toUserId)).emit('msgToClient', { message, fromUser: user.userId });
   }
 
   public afterInit(server: Server): void {

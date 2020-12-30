@@ -288,6 +288,58 @@ model MyUserContact {
   @@id([ownerUserId, userId])
 }
 
+//
+// const notification1 = await photon.notifications.create({
+   //     data: {
+     //       mode: "email",
+       //     deliveryDate: new Date(),
+         //   destinationUserIDList: {
+           //     set: ["123", "456"]  -------> Array using set keyword
+           // },
+            // status: "pending",
+            // payload: '{"hello":"world"}'
+       // }
+    // });
+//
+// https://github.com/prisma/prisma/issues/3475 -> contain in array
+model UserChatSession {
+  id                      String          @id @default(uuid())
+  createdDate             DateTime        @default(now())
+
+  userChatMessages        UserChatMessage[]
+  userChatSessionMembers    UserChatSessionMember[]
+}
+
+model UserChatSessionMember {
+  userChatSession         UserChatSession  @relation(fields: [userChatSessionId], references: [id])
+  userChatSessionId       String
+  userId                  String
+
+  @@id([userChatSessionId, userId])
+}
+
+// https://www.prisma.io/docs/concepts/components/prisma-schema/relations#self-relations
+// https://dba.stackexchange.com/questions/97963/how-to-build-a-table-for-a-private-messaging-system-that-supports-replies/167579#167579
+model UserChatMessage {
+  id                      String          @id @default(uuid())
+  content                 String
+
+  replyBy                 UserChatMessage?   @relation("UserChatMessageReplyRelation")
+  replyToId               String?
+  replyTo                 UserChatMessage?   @relation("UserChatMessageReplyRelation", fields: [replyToId], references: [id])
+
+  userChatSession         UserChatSession  @relation(fields: [userChatSessionId], references: [id])
+  userChatSessionId       String
+
+  fromUserId              String
+  isRead                  Boolean?        @default(false)
+
+  createdDate             DateTime        @default(now())
+
+  @@index(fields: [replyToId, id], name: "user_chat_message_index")
+  @@index(fields: [fromUserId], name: "owner_index")
+}
+
 // Item Reviews?
 // Renting Request Comments? with attach files
 // Cho phep khoa comment, do chu shop khoa, thi comment ko the chinh sua hoac xoa nua
