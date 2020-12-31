@@ -309,6 +309,11 @@ export class UsersService {
           url:
             'https://asia-fast-storage.thuedo.vn/default-avatars/default-cover.jpg',
         }),
+        user: {
+          connect: {
+            id: userId
+          }
+        },
         id: userId,
       },
     });

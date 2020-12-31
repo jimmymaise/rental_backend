@@ -26,10 +26,6 @@ export class ItemsService {
   //   return this.prismaService.category.findMany({ where: { isDeleted: false, isDisabled: false, parentCategoryId } })
   // }
 
-  createItem(item: Item): Promise<Item> {
-    return this.prismaService.item.create({ data: item });
-  }
-
   async createItemForUser(itemData: ItemUserInputDTO, userId: string): Promise<Item> {
     const {
       name,
@@ -80,7 +76,11 @@ export class ItemsService {
         rentPricePerMonth,
         note,
         status: ItemStatus.Published,
-        ownerUserId: userId,
+        ownerUser: {
+          connect: {
+            id: userId
+          }
+        },
         updatedBy: userId,
         isVerified: process.env.NODE_ENV === 'production' ? false : true
       },

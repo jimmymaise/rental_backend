@@ -30,6 +30,7 @@ model User {
   resetPasswordToken String?
   verifyEmailToken String?
   verifyPhoneToken String?
+  userInfo   UserInfo?
 }
 
 model UserInfo {
@@ -39,6 +40,8 @@ model UserInfo {
   avatarImage   String? // { id, url }
   coverImage    String? // { id, url }
   createdDate       DateTime      @default(now())
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
 }
 
 enum UserVerifyDocumentType {
@@ -138,6 +141,7 @@ model Item {
   isVerified              Boolean?        @default(false)
   status                  ItemStatus
   note                    String?
+  ownerUser    User   @relation(fields: [ownerUserId], references: [id])
   ownerUserId             String
   isDeleted               Boolean?        @default(false)
   createdDate             DateTime        @default(now())
