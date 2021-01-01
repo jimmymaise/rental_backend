@@ -370,7 +370,12 @@ export class UsersService {
       update: updateData,
       create: {
         id: userId,
-        ...updateData
+        ...updateData,
+        user: {
+          connect: {
+            id: userId
+          }
+        }
       }
     });
 

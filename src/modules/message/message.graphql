@@ -20,7 +20,7 @@ input ConversationQuery {
 }
 
 type Mutation {
-  generateChatSessionWith(chatWithUserId: String!): ChatSession
+  generateChatConversationWith(chatWithUserId: String!): ChatSession
 }
 
 type Query {

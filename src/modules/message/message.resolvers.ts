@@ -21,7 +21,7 @@ export class MessageResolvers {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  async generateChatSessionWith(
+  async generateChatConversationWith(
     @CurrentUser() user: GuardUserPayload,
     @Args('chatWithUserId') chatWithUserId: string,
   ): Promise<ChatConversationDTO> {
