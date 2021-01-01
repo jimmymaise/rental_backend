@@ -71,31 +71,6 @@ export class UsersService {
     return userDetail;
   }
 
-  async addUserDetailMessengerSocketClientId(userId: string, socketId: string): Promise<UserInfoDTO> {
-    const cacheKey = getUserCacheKey(userId);
-    const currentData = await this.getUserDetailData(userId);
-
-    currentData.messengerSocketClientIdMap = currentData.messengerSocketClientIdMap || {}
-    currentData.messengerSocketClientIdMap[socketId] = true;
-
-    this.redisCacheService.set(cacheKey, currentData || {}, 3600);
-
-    return currentData
-  }
-
-  async removeUserDetailMessengerSocketClientId(userId: string, socketId: string): Promise<UserInfoDTO> {
-    const cacheKey = getUserCacheKey(userId);
-    const currentData = await this.getUserDetailData(userId);
-
-    if (currentData.messengerSocketClientIdMap && currentData.messengerSocketClientIdMap[socketId]) {
-      delete currentData.messengerSocketClientIdMap[socketId];
-    }
-
-    this.redisCacheService.set(cacheKey, currentData || {}, 3600);
-
-    return currentData
-  }
-
   async getUserById(userId: string): Promise<User> {
     return this.prismaService.user.findUnique({ where: { id: userId } });
     // throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);

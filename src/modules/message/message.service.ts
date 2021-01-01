@@ -4,6 +4,7 @@ import { ChatConversation, ChatConversationMember } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginationDTO } from '../../models';
 import { UserInfoDTO } from '../users/user-info.dto'
+import { UsersService } from '../users/users.service'
 
 interface MessageData {
   id: string
@@ -17,7 +18,8 @@ interface MessageData {
 @Injectable()
 export class MessageService {
   constructor(
-    private prismaService: PrismaService
+    private prismaService: PrismaService,
+    private userService: UsersService
   ) {}
 
   createNewConversation(memberIds: string[]): Promise<ChatConversation> {
@@ -147,7 +149,7 @@ export class MessageService {
 
   async findAllMyMessagesInConversation({
     conversationId
-  }): Promise<PaginationDTO<MessageData>> {
+  }): Promise<MessageData[]> {
     // TODO: HARD CODE 500 Messages
     const items = await this.prismaService.$queryRaw(
       `
@@ -167,7 +169,27 @@ export class MessageService {
         LIMIT 500
       `
     )
-   
-    return null
+
+    const result: MessageData[] = []
+    for (let i = 0; i < items.length; i++) {
+      const currentItem = items[i]
+      const fromUserInfo = await this.userService.getUserDetailData(currentItem['fromuserid'])
+
+      result.push({
+        id: currentItem['id'],
+        fromUserId: currentItem['fromuserid'],
+        fromUserInfo: {
+          id: fromUserInfo.id,
+          displayName: fromUserInfo.displayName,
+          avatarImage: fromUserInfo.avatarImage,
+          coverImage: fromUserInfo.coverImage
+        },
+        replyToId: currentItem['replytoid'],
+        chatConversationId: currentItem['chatconversationid'],
+        content: currentItem['content']
+      })
+    }
+
+    return result
   }
 }
