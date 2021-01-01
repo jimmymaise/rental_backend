@@ -1,10 +1,23 @@
-type ChatSession {
+type ChatConversation {
   id: ID!
+}
+
+type ChatMessage {
+  id: ID!
+  content: String
+  replyToId: String
+  chatConvsersationId: String
+  fromUserId: String
+  fromUserInfo: UserInfo
+  isRead: Boolean
+  createdDate: Float
 }
 
 type ConversationItem {
   id: ID!
+  lastMessages: [ChatMessage]
   members: [UserInfo]
+  isVisible: Boolean
 }
 
 type ConversationPagination {
@@ -20,7 +33,7 @@ input ConversationQuery {
 }
 
 type Mutation {
-  generateChatConversationWith(chatWithUserId: String!): ChatSession
+  generateChatConversationWith(chatWithUserId: String!): ChatConversation
 }
 
 type Query {

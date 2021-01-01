@@ -29,7 +29,7 @@ export class MessageResolvers {
     let existingSession = await this.messageService.findConversationUniqueByMembers(members)
 
     if (!existingSession) {
-      existingSession = await this.messageService.createNewConversation(members)
+      existingSession = await this.messageService.createNewConversation(members, user.id)
     }
 
     const memberDetails = []
@@ -69,17 +69,36 @@ export class MessageResolvers {
     const items = []
 
     for (let i = 0; i < result.items.length; i++) {
-      const currentItem: ChatConversation = result.items[i]
+      const currentItem: any = result.items[i]
 
+      const onlyVisibleWhenFromUserOrHaveMessageToAvoidSpamConversation = currentItem.createdBy === user.id || currentItem.chatMessages.length
       const newItem = {
         id: currentItem.id,
-        members: []
+        lastMessages: [],
+        members: [],
+        isVisible: onlyVisibleWhenFromUserOrHaveMessageToAvoidSpamConversation
       }
+
+      const lastMessages = []
+      for (let j = 0; j < currentItem.chatMessages.length; j++) {
+        const message = currentItem.chatMessages[j]
+        lastMessages.push({
+          id: message.id,
+          content: message.content,
+          replyToId: message.replyToId,
+          chatConversationId: message.chatConversationId,
+          fromUserId: message.fromUserId,
+          fromUserInfo: await this.userService.getUserDetailData(message.fromUserId),
+          isRead: message.isRead,
+          createdDate: message.createdDate.getTime()
+        })
+      }
+      newItem.lastMessages = lastMessages
 
       const memberDetails = []
       const conversationMembers = currentItem['chatConversationMembers']
       for (let i = 0; i < conversationMembers.length; i++) {
-        const userInfo = await this.userService.getUserDetailData(conversationMembers[i])
+        const userInfo = await this.userService.getUserDetailData(conversationMembers[i].userId)
         memberDetails.push({
           id: userInfo.id,
           displayName: userInfo.displayName,

@@ -310,6 +310,8 @@ model ChatConversation {
   id                      String          @id @default(uuid())
   createdDate             DateTime        @default(now())
 
+  createdBy               String
+
   chatMessages        ChatMessage[]
   chatConversationMembers    ChatConversationMember[]
 }

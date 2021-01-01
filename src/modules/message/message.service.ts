@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ChatConversation, ChatConversationMember } from '@prisma/client';
+import { ChatConversation, ChatConversationMember, ChatMessage } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginationDTO } from '../../models';
@@ -22,9 +22,10 @@ export class MessageService {
     private userService: UsersService
   ) {}
 
-  createNewConversation(memberIds: string[]): Promise<ChatConversation> {
+  createNewConversation(memberIds: string[], createdBy: string): Promise<ChatConversation> {
     return this.prismaService.chatConversation.create({
       data: {
+        createdBy,
         chatConversationMembers: {
           create: memberIds.map((item) => ({
             userId: item
@@ -83,16 +84,16 @@ export class MessageService {
             userId
           }
         },
+      },
+      include: {
+        chatConversationMembers: true,
         chatMessages: {
-          some: {
-            fromUserId: {
-              not: null
+          where: {
+            replyBy: {
+              is: null
             }
           }
         }
-      },
-      include: {
-        chatConversationMembers: true
       },
       skip: offset,
       take: limit
@@ -102,13 +103,6 @@ export class MessageService {
         chatConversationMembers: {
           some: {
             userId
-          }
-        },
-        chatMessages: {
-          some: {
-            fromUserId: {
-              not: null
-            }
           }
         }
       }
@@ -122,7 +116,7 @@ export class MessageService {
     };
   }
 
-  addMessage({ id, fromUserId, replyToId, chatConversationId, content }: MessageData): Promise<ChatConversation> {
+  addMessage({ id, fromUserId, replyToId, chatConversationId, content }: MessageData): Promise<ChatMessage> {
     const data: any = {
       id,
       fromUserId,
