@@ -62,10 +62,9 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
   @UseGuards(WebsocketAuthGuard)
   @SubscribeMessage('joinConversation')
-  public async joinConversaation(client: Socket, { conversationId, user }): Promise<void> {
+  public async joinConversation(client: Socket, { conversationId, user }): Promise<void> {
     const members = await this.messageService.getConversationMembers(conversationId)
-
-    if (members || !members.length) {
+    if (!members || !members.length) {
       throw new WsException({ errorMessage: "Conversation is not valid" })
     }
 
@@ -89,8 +88,8 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   }
 
   @UseGuards(WebsocketAuthGuard)
-  @SubscribeMessage('leaveConversation')
-  public leaveRoom(client: Socket, { conversationId }): void {
+  @SubscribeMessage('leftConversation')
+  public leftConversation(client: Socket, { conversationId }): void {
     client.leave(conversationId);
     client.emit('leftConversation', { conversationId });
   }
@@ -113,7 +112,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
     const userInfo = await this.userService.getUserDetailData(user.userId)
 
-    return (this.server as any).to(conversationId).emit('messageToClient', { id: messageUUID, content, replyToId, fromUser: userInfo });
+    return (this.server as any).to(conversationId).emit('messageToClientConversation', { id: messageUUID, content, replyToId, fromUser: userInfo });
   }
 
   public afterInit(server: Server): void {

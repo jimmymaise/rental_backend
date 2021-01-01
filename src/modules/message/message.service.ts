@@ -3,10 +3,12 @@ import { ChatConversation, ChatConversationMember } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginationDTO } from '../../models';
+import { UserInfoDTO } from '../users/user-info.dto'
 
-interface AddMessageData {
+interface MessageData {
   id: string
   fromUserId: string
+  fromUserInfo?: UserInfoDTO
   replyToId?: string
   chatConversationId: string
   content: string
@@ -64,7 +66,7 @@ export class MessageService {
   }
 
   getConversationMembers(id: string): Promise<ChatConversationMember[]> {
-    return this.prismaService.chatConversation.findUnique({ where: { id }, include: { chatConversationMembers: true } }).chatConversationMembers({})
+    return this.prismaService.chatConversation.findUnique({ where: { id } }).chatConversationMembers({})
   }
 
   async findAllMyConversations({
@@ -118,23 +120,54 @@ export class MessageService {
     };
   }
 
-  addMessage({ id, fromUserId, replyToId, chatConversationId, content }: AddMessageData): Promise<ChatConversation> {
-    return this.prismaService.chatMessage.create({
-      data: {
-        id,
-        fromUserId,
-        replyTo: {
-          connect: {
-            id: replyToId
-          }
-        },
-        content,
-        chatConversation: {
-          connect: {
-            id: chatConversationId
-          }
+  addMessage({ id, fromUserId, replyToId, chatConversationId, content }: MessageData): Promise<ChatConversation> {
+    const data: any = {
+      id,
+      fromUserId,
+      content,
+      chatConversation: {
+        connect: {
+          id: chatConversationId
         }
       }
+    }
+
+    if (replyToId) {
+      data.replyTo = {
+        connect: {
+          id: replyToId
+        }
+      }
+    }
+
+    return this.prismaService.chatMessage.create({
+      data
     })
+  }
+
+  async findAllMyMessagesInConversation({
+    conversationId
+  }): Promise<PaginationDTO<MessageData>> {
+    // TODO: HARD CODE 500 Messages
+    const items = await this.prismaService.$queryRaw(
+      `
+        WITH RECURSIVE recursive_message_query(chatConversationId, replyToId, id, content, fromUserId, createdDate, root, level)
+        AS (
+          SELECT "chatConversationId", "replyToId", "id", "content", "fromUserId", "createdDate", ARRAY["id"], 0
+          FROM public."ChatMessage"
+          WHERE  "chatConversationId"='${conversationId}' AND "replyToId" IS NULL
+          UNION ALL
+            SELECT childMessage."chatConversationId", childMessage."replyToId", childMessage."id", childMessage."content", childMessage."fromUserId", childMessage."createdDate", root || ARRAY[childMessage."id"], recursive_message_query."level" + 1
+            FROM recursive_message_query
+            JOIN public."ChatMessage" childMessage
+            ON (childMessage."replyToId" = recursive_message_query."id")
+        )
+        SELECT * FROM recursive_message_query
+        ORDER BY root desc
+        LIMIT 500
+      `
+    )
+   
+    return null
   }
 }
