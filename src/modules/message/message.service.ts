@@ -7,7 +7,7 @@ import { UserInfoDTO } from '../users/user-info.dto'
 import { UsersService } from '../users/users.service'
 
 interface MessageData {
-  id: string
+  id?: string
   fromUserId: string
   fromUserInfo?: UserInfoDTO
   replyToId?: string
@@ -116,9 +116,8 @@ export class MessageService {
     };
   }
 
-  addMessage({ id, fromUserId, replyToId, chatConversationId, content }: MessageData): Promise<ChatMessage> {
+  addMessage({ fromUserId, replyToId, chatConversationId, content }: MessageData): Promise<ChatMessage> {
     const data: any = {
-      id,
       fromUserId,
       content,
       chatConversation: {

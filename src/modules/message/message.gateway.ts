@@ -10,7 +10,6 @@ import {
 import { Logger, UseGuards } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Server } from 'ws';
-import { v4 as uuidv4 } from 'uuid';
 
 import { WebsocketAuthGuard } from '../auth/ws-auth.guard';
 import { AuthService } from '../auth/auth.service';
@@ -120,7 +119,7 @@ export class MessageGateway
   @SubscribeMessage('sendMessageToConversation')
   public async sendMessageToConversation(
     client: Socket,
-    { conversationId, content, user, replyToId },
+    { conversationId, content, user, replyToId, members },
   ): Promise<void> {
     if (!client.rooms[conversationId]) {
       throw new WsException({
@@ -128,9 +127,7 @@ export class MessageGateway
       });
     }
 
-    const messageUUID = uuidv4();
-    await this.messageService.addMessage({
-      id: messageUUID,
+    const newMessage = await this.messageService.addMessage({
       fromUserId: user.userId,
       content,
       chatConversationId: conversationId,
@@ -138,17 +135,25 @@ export class MessageGateway
     });
 
     const userInfo = await this.userService.getUserDetailData(user.userId);
+    const newMessageToClient = {
+      chatConversationId: conversationId,
+      id: newMessage.id,
+      content,
+      replyToId,
+      fromUserId: user.userId,
+      fromUserInfo: userInfo,
+      createdDate: newMessage.createdDate.getTime()
+    }
+
+    members.forEach((member) => {
+      (this.server as any)
+        .to(getUserRoom(member.id))
+        .emit('newMessageToClient', { ...newMessageToClient, members });
+    })
 
     return (this.server as any)
       .to(conversationId)
-      .emit('messageToClientConversation', {
-        chatConversationId: conversationId,
-        id: messageUUID,
-        content,
-        replyToId,
-        fromUserId: user.userId,
-        fromUserInfo: userInfo,
-      });
+      .emit('messageToClientConversation', newMessageToClient);
   }
 
   public afterInit(server: Server): void {
