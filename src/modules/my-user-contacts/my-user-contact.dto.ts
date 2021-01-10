@@ -1,7 +1,7 @@
-import { UserInfoDTO } from '../users/user-info.dto'
+import { UserInfoDTO } from '../users/user-info.dto';
 
 export interface MyUserContactDTO {
-  id: string
-  createdDate: number
-  userInfo: UserInfoDTO
+  userId: string;
+  createdDate: number;
+  userInfo: UserInfoDTO;
 }

@@ -1,5 +1,5 @@
 type MyUserContact {
-  id: String
+  userId: String
   createdDate: Float
   userInfo: UserInfo
 }

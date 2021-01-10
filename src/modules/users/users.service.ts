@@ -53,6 +53,22 @@ export class UsersService {
     private redisCacheService: RedisCacheService,
   ) {}
 
+  async isUserInMyContactList(
+    userId: string,
+    otherUserId: string,
+  ): Promise<boolean> {
+    return (
+      (await this.prismaService.myUserContact.findUnique({
+        where: {
+          ownerUserId_userId: {
+            userId: otherUserId,
+            ownerUserId: userId,
+          },
+        },
+      })) !== null
+    );
+  }
+
   async getUserDetailData(userId: string): Promise<UserInfoDTO> {
     const cacheKey = getUserCacheKey(userId);
     let userDetail = await this.redisCacheService.get(cacheKey);
@@ -93,13 +109,13 @@ export class UsersService {
   async setUserPassword(
     userId: string,
     password: string,
-    isClearResetPasswordToken?: boolean
+    isClearResetPasswordToken?: boolean,
   ): Promise<User> {
     const passwordHash = await bcrypt.hash(password, 10);
-    const data: any = { passwordHash }
+    const data: any = { passwordHash };
 
     if (isClearResetPasswordToken) {
-      data['resetPasswordToken'] = null
+      data['resetPasswordToken'] = null;
     }
 
     return this.prismaService.user.update({
@@ -137,7 +153,9 @@ export class UsersService {
   }
 
   async getUserByGoogleId(googleId: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({ where: { googleId } });
+    const user = await this.prismaService.user.findUnique({
+      where: { googleId },
+    });
 
     return user;
   }
@@ -188,8 +206,12 @@ export class UsersService {
     return user;
   }
 
-  async changePassword (userId: string, currentPassword: string, newPassword: string): Promise<User> {
-    const user = await this.getUserById(userId)
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<User> {
+    const user = await this.getUserById(userId);
     if (!user) {
       throw new Error('No such user found');
     }
@@ -199,9 +221,9 @@ export class UsersService {
       throw new Error('Invalid current password');
     }
 
-    await this.setUserPassword(userId, newPassword)
+    await this.setUserPassword(userId, newPassword);
 
-    return user
+    return user;
   }
 
   async removeCurrentRefreshToken(userId: string) {
@@ -243,13 +265,10 @@ export class UsersService {
     const user = await this.getUserById(userId);
 
     if (!user.resetPasswordToken) {
-      throw new Error('Token not valid')
+      throw new Error('Token not valid');
     }
 
-    const tokenMatch = await bcrypt.compare(
-      token,
-      user.resetPasswordToken,
-    );
+    const tokenMatch = await bcrypt.compare(token, user.resetPasswordToken);
 
     if (tokenMatch) {
       return user;
@@ -286,8 +305,8 @@ export class UsersService {
         }),
         user: {
           connect: {
-            id: userId
-          }
+            id: userId,
+          },
         },
         id: userId,
       },
@@ -348,19 +367,15 @@ export class UsersService {
         ...updateData,
         user: {
           connect: {
-            id: userId
-          }
-        }
-      }
+            id: userId,
+          },
+        },
+      },
     });
 
-    const userInfoData = toUserInfoDTO(userDetailCache as any, updatedUserInfo)
-    this.redisCacheService.set(
-      cacheKey,
-      userInfoData,
-      3600,
-    );
+    const userInfoData = toUserInfoDTO(userDetailCache as any, updatedUserInfo);
+    this.redisCacheService.set(cacheKey, userInfoData, 3600);
 
-    return userInfoData
+    return userInfoData;
   }
 }
