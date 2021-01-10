@@ -4,7 +4,7 @@ type WishingItem {
 }
 
 type WishingItemPagination {
-  items: [WishingItem]
+  items: [Item]
   total: Int
   limit: Int
   offset: Int
@@ -13,6 +13,7 @@ type WishingItemPagination {
 input WishingItemQuery {
   offset: Int
   limit: Int
+  includes: [String]
 }
 
 type Mutation {
