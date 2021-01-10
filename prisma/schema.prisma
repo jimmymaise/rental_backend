@@ -16,32 +16,38 @@ enum UserRole {
 }
 
 model User {
-  id            String      @id @default(uuid())
-  email         String?      @unique
-  PhoneNumber   String?      @unique
-  passwordHash  String?
-  currentHashedRefreshToken String? @unique
-  role          UserRole[]
-  facebookId    String?      @unique
-  facebookAccessToken String?
-  googleId      String?     @unique
-  googleAccessToken String?
-  isEmailVerified   Boolean  @default(false)
-  resetPasswordToken String?
-  verifyEmailToken String?
-  verifyPhoneToken String?
-  userInfo   UserInfo?
+  id                        String     @id @default(uuid())
+  email                     String?    @unique
+  PhoneNumber               String?    @unique
+  passwordHash              String?
+  currentHashedRefreshToken String?    @unique
+  role                      UserRole[]
+  facebookId                String?    @unique
+  facebookAccessToken       String?
+  googleId                  String?    @unique
+  googleAccessToken         String?
+  isEmailVerified           Boolean    @default(false)
+  resetPasswordToken        String?
+  verifyEmailToken          String?
+  verifyPhoneToken          String?
+  userInfo                  UserInfo?
+
+  ownerItemReview              ItemReview[] @relation("OwnerItemReview")
+  ownerUserRentingItemRequest  RentingItemRequest[] @relation("OwnerRequest")
+  lenderUserRentingItemRequest RentingItemRequest[] @relation("LenderOfRequest")
+  reviewFromUser               UserReview[] @relation("OwnerUserReview")
+  reviewToUser                 UserReview[] @relation("ToUserReview")
 }
 
 model UserInfo {
-  id            String      @id
-  displayName          String?
-  bio           String?
-  avatarImage   String? // { id, url }
-  coverImage    String? // { id, url }
-  createdDate       DateTime      @default(now())
-  user    User   @relation(fields: [userId], references: [id])
-  userId  String
+  id          String   @id
+  displayName String?
+  bio         String?
+  avatarImage String? // { id, url }
+  coverImage  String? // { id, url }
+  createdDate DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
 }
 
 enum UserVerifyDocumentType {
@@ -51,41 +57,41 @@ enum UserVerifyDocumentType {
 }
 
 model UserIdentifyDocument {
-  id            String      @id @default(uuid())
-  userId        String
-  type          UserVerifyDocumentType
-  value         String
-  isVerfied     Boolean?
+  id        String                 @id @default(uuid())
+  userId    String
+  type      UserVerifyDocumentType
+  value     String
+  isVerfied Boolean?
 }
 
 model Area {
-  id            String      @id @default(uuid())
-  region        String
-  name          String
-  slug          String      @unique
-  parentAreaId  String?
-  latitude      Float
-  longitude     Float
-  order         Int?        @default(0)
-  isDefault         Boolean?    @default(false)
-  isDisabled    Boolean?    @default(false)
-  isDeleted     Boolean?    @default(false)
-  items         Item[]      @relation(references: [id])
+  id           String   @id @default(uuid())
+  region       String
+  name         String
+  slug         String   @unique
+  parentAreaId String?
+  latitude     Float
+  longitude    Float
+  order        Int?     @default(0)
+  isDefault    Boolean? @default(false)
+  isDisabled   Boolean? @default(false)
+  isDeleted    Boolean? @default(false)
+  items        Item[]   @relation(references: [id])
 }
 
 model Category {
-  id                String      @id @default(uuid())
-  name              String
-  slug              String      @unique
-  imageUrl          String?
-  coverImageUrl     String?
-  parentCategoryId  String?
-  order             Int?        @default(0)
-  isDefault         Boolean?    @default(false)
-  isDisabled        Boolean?    @default(false)
-  isDeleted         Boolean?    @default(false)
-  items             Item[]      @relation(references: [id])
-  isFeatured        Boolean?    @default(false)
+  id               String   @id @default(uuid())
+  name             String
+  slug             String   @unique
+  imageUrl         String?
+  coverImageUrl    String?
+  parentCategoryId String?
+  order            Int?     @default(0)
+  isDefault        Boolean? @default(false)
+  isDisabled       Boolean? @default(false)
+  isDeleted        Boolean? @default(false)
+  items            Item[]   @relation(references: [id])
+  isFeatured       Boolean? @default(false)
 }
 
 enum FileUsingLocate {
@@ -95,19 +101,19 @@ enum FileUsingLocate {
 }
 
 model FileStorage {
-  id                String        @id @default(uuid())
-  url               String
-  name              String
-  bucketName        String
-  folderName        String
-  contentType       String
-  usingLocate       FileUsingLocate?
-  isUploadSuccess   Boolean?      @default(false)
-  createdBy         String
-  createdDate       DateTime      @default(now())
-  isDeleted         Boolean?      @default(false)
+  id              String           @id @default(uuid())
+  url             String
+  name            String
+  bucketName      String
+  folderName      String
+  contentType     String
+  usingLocate     FileUsingLocate?
+  isUploadSuccess Boolean?         @default(false)
+  createdBy       String
+  createdDate     DateTime         @default(now())
+  isDeleted       Boolean?         @default(false)
 
-  @@index(fields: [bucketName, folderName], name: "file_storage_main_index")
+  @@index(fields: [folderName, createdBy], name: "file_storage_main_index")
 }
 
 enum ItemStatus {
@@ -118,38 +124,38 @@ enum ItemStatus {
 
 // areas, FE will use the last area, it's smallest unit
 model Item {
-  id                      String          @id @default(uuid())
-  name                    String
-  slug                    String          @unique
-  description             String?
-  categories              Category[]      @relation(references: [id])
-  areas                   Area[]          @relation(references: [id])
-  rentingItemRequests                   RentingItemRequest[]
-  images                  String?
-  checkBeforeRentDocuments         String?
-  keepWhileRentingDocuments        String?
-  unavailableForRentDays  DateTime[]
-  currentOriginalPrice    Float?
-  sellPrice               Float?
-  rentPricePerDay         Float?
-  rentPricePerWeek        Float?
-  rentPricePerMonth       Float?
-  currencyCode            String?
-  summaryReviewCore       Float?
-  summaryReviewCount      Float?
-  totalQuantity             Int             @default(1)
-  isVerified              Boolean?        @default(false)
-  status                  ItemStatus
-  note                    String?
-  ownerUser    User   @relation(fields: [ownerUserId], references: [id])
-  ownerUserId             String
-  isDeleted               Boolean?        @default(false)
-  createdDate             DateTime        @default(now())
-  updatedDate             DateTime        @default(now())
-  updatedBy               String
-  keyword                 String?
+  id                        String               @id @default(uuid())
+  name                      String
+  slug                      String               @unique
+  description               String?
+  categories                Category[]           @relation(references: [id])
+  areas                     Area[]               @relation(references: [id])
+  rentingItemRequests       RentingItemRequest[]
+  images                    String?
+  checkBeforeRentDocuments  String?
+  keepWhileRentingDocuments String?
+  unavailableForRentDays    DateTime[]
+  currentOriginalPrice      Float?
+  sellPrice                 Float?
+  rentPricePerDay           Float?
+  rentPricePerWeek          Float?
+  rentPricePerMonth         Float?
+  currencyCode              String?
+  summaryReviewCore         Float?
+  summaryReviewCount        Float?
+  totalQuantity             Int                  @default(1)
+  isVerified                Boolean?             @default(false)
+  status                    ItemStatus
+  note                      String?
+  ownerUser                 User                 @relation(fields: [ownerUserId], references: [id])
+  ownerUserId               String
+  isDeleted                 Boolean?             @default(false)
+  createdDate               DateTime             @default(now())
+  updatedDate               DateTime             @default(now())
+  updatedBy                 String
+  keyword                   String?
 
-  @@index(fields: [slug, keyword, status, ownerUserId, isDeleted], name: "item_main_index")
+  @@index(fields: [keyword], name: "item_main_index")
 }
 
 enum RentingMandatoryVerifyDocumentDataType {
@@ -157,11 +163,11 @@ enum RentingMandatoryVerifyDocumentDataType {
   Currency
 }
 
-// tien coc, bang lai xe, 
+// tien coc, bang lai xe,
 model RentingMandatoryVerifyDocument {
-  id                      String          @id @default(uuid())
-  name                    String
-  dataType                RentingMandatoryVerifyDocumentDataType
+  id       String                                 @id @default(uuid())
+  name     String
+  dataType RentingMandatoryVerifyDocumentDataType
 }
 
 enum RentingItemRequestStatus {
@@ -174,51 +180,54 @@ enum RentingItemRequestStatus {
 }
 
 model RentingItemRequest {
-  id                      String          @id @default(uuid())
-  rentingItem           Item @relation(fields: [itemId], references: [id])
-  itemId                String
-  totalAmount             Float?           @default(0)
-  actualTotalAmount            Float?           @default(0)
-  rentTotalQuantity       Int?             @default(1)
-  fromDate                DateTime
-  toDate                  DateTime
-  status                  RentingItemRequestStatus?
-  ownerUserId             String
-  lenderUserId            String
-  isDeleted               Boolean?        @default(false)
-  createdDate             DateTime        @default(now())
-  updatedDate             DateTime        @default(now())
-  updatedBy               String
-
-  @@index(fields: [itemId, ownerUserId, lenderUserId, isDeleted], name: "renting_item_request_main_index")
+  id                String                    @id @default(uuid())
+  rentingItem       Item                      @relation(fields: [itemId], references: [id])
+  itemId            String
+  totalAmount       Float?                    @default(0)
+  actualTotalAmount Float?                    @default(0)
+  rentTotalQuantity Int?                      @default(1)
+  fromDate          DateTime
+  toDate            DateTime
+  status            RentingItemRequestStatus?
+  ownerUser         User                      @relation("OwnerRequest", fields: [ownerUserId], references: [id])
+  ownerUserId       String
+  lenderUser        User                      @relation("LenderOfRequest", fields: [lenderUserId], references: [id])
+  lenderUserId      String
+  isDeleted         Boolean?                  @default(false)
+  createdDate       DateTime                  @default(now())
+  updatedDate       DateTime                  @default(now())
+  updatedBy         String
 }
 
 model ItemReview {
-  id                      String          @id @default(uuid())
-  rentingItem           Item @relation(fields: [itemId], references: [id])
-  rentingRequestId      String?
-  itemId                String
-  reviewScore           Int
-  reviewComment         String?
-  images                  String?
-  ownerUserId             String
-  isDeleted               Boolean?        @default(false)
-  createdDate             DateTime        @default(now())
-  updatedDate             DateTime        @default(now())
-  updatedBy               String
+  id               String   @id @default(uuid())
+  rentingItem      Item     @relation(fields: [itemId], references: [id])
+  itemId           String
+  rentingRequestId String?
+  reviewScore      Int
+  reviewComment    String?
+  images           String?
+  ownerUser        User     @relation("OwnerItemReview", fields: [ownerUserId], references: [id])
+  ownerUserId      String
+  isDeleted        Boolean? @default(false)
+  createdDate      DateTime @default(now())
+  updatedDate      DateTime @default(now())
+  updatedBy        String
 }
 
 model UserReview {
-  id                      String          @id @default(uuid())
-  toUserId              String
-  rentingRequestId      String?
-  reviewScore           Int
-  reviewComment         String?
-  ownerUserId             String
-  isDeleted               Boolean?        @default(false)
-  createdDate             DateTime        @default(now())
-  updatedDate             DateTime        @default(now())
-  updatedBy               String
+  id               String   @id @default(uuid())
+  toUser           User     @relation("ToUserReview", fields: [toUserId], references: [id])
+  toUserId         String
+  rentingRequestId String?
+  reviewScore      Int
+  reviewComment    String?
+  ownerUser        User     @relation("OwnerUserReview", fields: [ownerUserId], references: [id])
+  ownerUserId      String
+  isDeleted        Boolean? @default(false)
+  createdDate      DateTime @default(now())
+  updatedDate      DateTime @default(now())
+  updatedBy        String
 }
 
 enum RentingItemRequestActivityType {
@@ -231,95 +240,100 @@ enum RentingItemRequestActivityType {
 }
 
 model RentingItemRequestActivity {
-  id                      String          @id @default(uuid())
-  rentingItemRequest           RentingItemRequest @relation(fields: [rentingItemRequestId], references: [id])
-  rentingItemRequestId                String
-  comment             String?
-  type              RentingItemRequestActivityType
-  files                 String? // JSON
-  isDisabled              Boolean?        @default(false)
-  isDeleted               Boolean?        @default(false)
-  createdDate             DateTime        @default(now())
-  updatedDate             DateTime        @default(now())
-  createdBy               String
-  updatedBy               String
+  id                   String                         @id @default(uuid())
+  rentingItemRequest   RentingItemRequest             @relation(fields: [rentingItemRequestId], references: [id])
+  rentingItemRequestId String
+  comment              String?
+  type                 RentingItemRequestActivityType
+  files                String? // JSON
+  isDisabled           Boolean?                       @default(false)
+  isDeleted            Boolean?                       @default(false)
+  createdDate          DateTime                       @default(now())
+  updatedDate          DateTime                       @default(now())
+  createdBy            String
+  updatedBy            String
 }
 
 // Log Systems
 model SearchKeyword {
-  keyword             String @id
-  count               Int?  @default(0)
+  keyword String @id
+  count   Int?   @default(0)
 }
 
 model UserLoginLog {
-   id                      String          @id @default(uuid())
-   ownerUserId             String
-   ipAddress               String
-   signedInDate             DateTime        @default(now())
+  id           String   @id @default(uuid())
+  ownerUserId  String
+  ipAddress    String
+  signedInDate DateTime @default(now())
 }
 
 enum UserNotificationType {
-  NewRequestRenting
-  RequestRentingIsApproved
-  NewCommentInRequestRenting
+  RentingRequestIsCreated
+  RentingRequestIsDeclined
+  RentingRequestIsApproved
+  RentingRequestIsInProgress
+  RentingRequestIsCompleted
+  RentingRequestIsCancelled
 }
 
 model UserNotification {
-  id      String          @id @default(uuid())
-  forUserId             String
-  title             String
-  content             String
-  images            String? // JSON
-  type              UserNotificationType
-  isRead          Boolean?        @default(false)
+  id          String               @id @default(uuid())
+  forUserId   String
+  data        String? // JSON
+  images      String? // JSON
+  type        UserNotificationType
+  isRead      Boolean?             @default(false)
+  createdDate DateTime             @default(now())
+
+  @@index(fields: [forUserId], name: "user_notification_index")
 }
 
 model WishingItem {
-  ownerUserId             String
-  item           Item @relation(fields: [itemId], references: [id])
-  itemId          String
-  createdDate             DateTime        @default(now())
+  ownerUserId String
+  item        Item     @relation(fields: [itemId], references: [id])
+  itemId      String
+  createdDate DateTime @default(now())
 
   @@id([ownerUserId, itemId])
 }
 
 model MyUserContact {
-  ownerUserId             String
-  user           User @relation(fields: [userId], references: [id])
-  userId                  String
-  createdDate             DateTime        @default(now())
+  ownerUserId String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  createdDate DateTime @default(now())
 
   @@id([ownerUserId, userId])
 }
 
 //
 // const notification1 = await photon.notifications.create({
-   //     data: {
-     //       mode: "email",
-       //     deliveryDate: new Date(),
-         //   destinationUserIDList: {
-           //     set: ["123", "456"]  -------> Array using set keyword
-           // },
-            // status: "pending",
-            // payload: '{"hello":"world"}'
-       // }
-    // });
+//     data: {
+//       mode: "email",
+//     deliveryDate: new Date(),
+//   destinationUserIDList: {
+//     set: ["123", "456"]  -------> Array using set keyword
+// },
+// status: "pending",
+// payload: '{"hello":"world"}'
+// }
+// });
 //
 // https://github.com/prisma/prisma/issues/3475 -> contain in array
 model ChatConversation {
-  id                      String          @id @default(uuid())
-  createdDate             DateTime        @default(now())
+  id          String   @id @default(uuid())
+  createdDate DateTime @default(now())
 
-  createdBy               String
+  createdBy String
 
-  chatMessages        ChatMessage[]
-  chatConversationMembers    ChatConversationMember[]
+  chatMessages            ChatMessage[]
+  chatConversationMembers ChatConversationMember[]
 }
 
 model ChatConversationMember {
-  chatConversation         ChatConversation  @relation(fields: [chatConversationId], references: [id])
-  chatConversationId       String
-  userId                  String
+  chatConversation   ChatConversation @relation(fields: [chatConversationId], references: [id])
+  chatConversationId String
+  userId             String
 
   @@id([chatConversationId, userId])
 }
@@ -327,20 +341,20 @@ model ChatConversationMember {
 // https://www.prisma.io/docs/concepts/components/prisma-schema/relations#self-relations
 // https://dba.stackexchange.com/questions/97963/how-to-build-a-table-for-a-private-messaging-system-that-supports-replies/167579#167579
 model ChatMessage {
-  id                      String          @id @default(uuid())
-  content                 String
+  id      String @id @default(uuid())
+  content String
 
-  replyBy                 ChatMessage?   @relation("ChatMessageReplyRelation")
-  replyToId               String?
-  replyTo                 ChatMessage?   @relation("ChatMessageReplyRelation", fields: [replyToId], references: [id])
+  replyBy   ChatMessage? @relation("ChatMessageReplyRelation")
+  replyToId String?
+  replyTo   ChatMessage? @relation("ChatMessageReplyRelation", fields: [replyToId], references: [id])
 
-  chatConversation         ChatConversation  @relation(fields: [chatConversationId], references: [id])
-  chatConversationId       String
+  chatConversation   ChatConversation @relation(fields: [chatConversationId], references: [id])
+  chatConversationId String
 
-  fromUserId              String
-  isRead                  Boolean?        @default(false)
+  fromUserId String
+  isRead     Boolean? @default(false)
 
-  createdDate             DateTime        @default(now())
+  createdDate DateTime @default(now())
 
   @@index(fields: [replyToId, id], name: "user_chat_message_index")
 }

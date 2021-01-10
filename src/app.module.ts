@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common'
-import { GraphQLModule } from '@nestjs/graphql'
+import { Module } from '@nestjs/common';
+import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 
@@ -16,37 +16,47 @@ import {
   MyUserContactsModule,
   SearchKeywordModule,
   MailModule,
-  MessageModule
-} from './modules'
+  MessageModule,
+  NotificationModule,
+  CommonModule,
+} from './modules';
 
-import { rootContants } from './constants'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
+import { rootContants } from './constants';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
     PrismaModule, // Global Module
     GraphQLModule.forRoot({
       cors: {
-        origin: ["http://localhost:3500", "https://*.thuedo.vn", "https://thuedo.vn"],
+        origin: [
+          'http://localhost:3500',
+          'https://*.thuedo.vn',
+          'https://thuedo.vn',
+        ],
         credentials: true,
       },
       typePaths: ['./**/*.graphql'],
       context: ({ request, res }) => {
-        return ({ req: request, res });
+        return { req: request, res };
       },
       debug: !rootContants.isProduction,
-      playground: !rootContants.isProduction ? {
-        settings: {
-          "request.credentials": "include"
-        }
-      } : undefined,
+      playground: !rootContants.isProduction
+        ? {
+            settings: {
+              'request.credentials': 'include',
+            },
+          }
+        : undefined,
       formatError: (err: any) => {
-        return err.statusCode ? { 
-          message: err.message,
-          statusCode: err.statusCode
-         } : err // Format return error here
-      }
+        return err.statusCode
+          ? {
+              message: err.message,
+              statusCode: err.statusCode,
+            }
+          : err; // Format return error here
+      },
       // uploads: {
       //   maxFileSize: 5000000,
       //   maxFiles: 5
@@ -73,9 +83,10 @@ import { AppService } from './app.service'
         AWS_SES_SECRET_ACCESS_KEY: Joi.string().required(),
         WEB_UI_RECOVERY_PASSWORD_URL: Joi.string().required(),
         RESET_PASSWORD_TOKEN_SECRET: Joi.string().required(),
-        RESET_PASSWORD_TOKEN_EXPIRATION_TIME: Joi.string().required()
-      })
+        RESET_PASSWORD_TOKEN_EXPIRATION_TIME: Joi.string().required(),
+      }),
     }),
+    CommonModule,
     AuthModule,
     UsersModule,
     AreasModule,
@@ -87,11 +98,10 @@ import { AppService } from './app.service'
     MyUserContactsModule,
     SearchKeywordModule,
     MailModule,
-    MessageModule
+    MessageModule,
+    NotificationModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService
-  ]
+  providers: [AppService],
 })
 export class AppModule {}

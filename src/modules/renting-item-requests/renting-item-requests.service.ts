@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common'
-import moment from 'moment'
+import { Injectable } from '@nestjs/common';
+import moment from 'moment';
 
-import { PrismaService } from '../prisma/prisma.service'
+import { PrismaService } from '../prisma/prisma.service';
 import {
   Item,
   RentingItemRequest,
@@ -9,15 +9,15 @@ import {
   RentingItemRequestStatus,
   RentingItemRequestActivityType,
   User,
-} from '@prisma/client'
-import { RentingItemRequestInputDTO } from './renting-item-request-input.dto'
-import { RentingItemRequestDTO } from './renting-item-request.dto'
-import { PaginationDTO } from '../../models'
-import { UsersService } from '../users/users.service'
-import { Permission } from './permission.enum'
-import { StoragePublicDTO } from '../storages/storage-public.dto'
-import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto'
-import { ItemDTO } from '../items/item.dto'
+} from '@prisma/client';
+import { RentingItemRequestInputDTO } from './renting-item-request-input.dto';
+import { RentingItemRequestDTO } from './renting-item-request.dto';
+import { PaginationDTO } from '../../models';
+import { UsersService } from '../users/users.service';
+import { Permission } from './permission.enum';
+import { StoragePublicDTO } from '../storages/storage-public.dto';
+import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto';
+import { ItemDTO } from '../items/item.dto';
 
 const WEEK_DAY = 7;
 const MONTH_DAY = 30;
@@ -28,43 +28,56 @@ enum RentingItemRequestUserType {
 }
 
 interface ChangeItemRequestStatusModel {
-  id: string
-  status?: RentingItemRequestStatus
-  updatedBy: string
-  comment?: string
-  files?: StoragePublicDTO[]
+  id: string;
+  status?: RentingItemRequestStatus;
+  updatedBy: string;
+  comment?: string;
+  files?: StoragePublicDTO[];
 }
 
 const RequestActivityTypeMap = {
   [RentingItemRequestStatus.Declined]: RentingItemRequestActivityType.Declined,
   [RentingItemRequestStatus.Approved]: RentingItemRequestActivityType.Approved,
-  [RentingItemRequestStatus.Completed]: RentingItemRequestActivityType.Completed,
-  [RentingItemRequestStatus.Cancelled]: RentingItemRequestActivityType.Cancelled,
-  [RentingItemRequestStatus.InProgress]: RentingItemRequestActivityType.InProgress
-}
+  [RentingItemRequestStatus.Completed]:
+    RentingItemRequestActivityType.Completed,
+  [RentingItemRequestStatus.Cancelled]:
+    RentingItemRequestActivityType.Cancelled,
+  [RentingItemRequestStatus.InProgress]:
+    RentingItemRequestActivityType.InProgress,
+};
 
 function toItemDTO(item: Item): ItemDTO {
   if (!item) {
-    return null
+    return null;
   }
 
   return {
     ...item,
     createdDate: item.createdDate.getTime(),
-    unavailableForRentDays: item.unavailableForRentDays.map((data) => data.getTime()),
+    unavailableForRentDays: item.unavailableForRentDays.map((data) =>
+      data.getTime(),
+    ),
     images: item.images && item.images.length ? JSON.parse(item.images) : [],
-    checkBeforeRentDocuments: item.checkBeforeRentDocuments && item.checkBeforeRentDocuments.length ? JSON.parse(item.checkBeforeRentDocuments) : [],
-    keepWhileRentingDocuments: item.keepWhileRentingDocuments && item.keepWhileRentingDocuments.length ? JSON.parse(item.keepWhileRentingDocuments) : []
-  }
+    checkBeforeRentDocuments:
+      item.checkBeforeRentDocuments && item.checkBeforeRentDocuments.length
+        ? JSON.parse(item.checkBeforeRentDocuments)
+        : [],
+    keepWhileRentingDocuments:
+      item.keepWhileRentingDocuments && item.keepWhileRentingDocuments.length
+        ? JSON.parse(item.keepWhileRentingDocuments)
+        : [],
+  };
 }
 
 function toRentingItemRequestDTO(
   rentingItemRequest: RentingItemRequest,
-  permissions: Permission[]
+  permissions: Permission[],
 ): RentingItemRequestDTO {
   return {
     ...rentingItemRequest,
-    rentingItem: (rentingItemRequest as any).rentingItem ? toItemDTO((rentingItemRequest as any).rentingItem) : null,
+    rentingItem: (rentingItemRequest as any).rentingItem
+      ? toItemDTO((rentingItemRequest as any).rentingItem)
+      : null,
     fromDate: rentingItemRequest.fromDate.getTime(),
     toDate: rentingItemRequest.toDate.getTime(),
     createdDate: rentingItemRequest.createdDate.getTime(),
@@ -73,7 +86,9 @@ function toRentingItemRequestDTO(
   };
 }
 
-function toRentingItemRequestActivityDTO(data: RentingItemRequestActivity): RentingItemRequestActivityDTO {
+function toRentingItemRequestActivityDTO(
+  data: RentingItemRequestActivity,
+): RentingItemRequestActivityDTO {
   return {
     id: data.id,
     rentingItemRequestId: data.rentingItemRequestId,
@@ -81,8 +96,8 @@ function toRentingItemRequestActivityDTO(data: RentingItemRequestActivity): Rent
     type: data.type,
     files: JSON.parse(data.files),
     createdDate: data.createdDate.getTime(),
-    updatedDate: data.updatedDate.getTime()
-  }
+    updatedDate: data.updatedDate.getTime(),
+  };
 }
 
 @Injectable()
@@ -146,8 +161,16 @@ export class RentingItemRequetsService {
         fromDate: new Date(fromDate),
         toDate: new Date(toDate),
         status: RentingItemRequestStatus.New,
-        ownerUserId,
-        lenderUserId: item.ownerUserId,
+        ownerUser: {
+          connect: {
+            id: ownerUserId,
+          },
+        },
+        lenderUser: {
+          connect: {
+            id: item.ownerUserId,
+          },
+        },
         isDeleted: false,
         updatedBy: item.ownerUserId,
       },
@@ -155,10 +178,12 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(newItem, ownerUserId);
 
     const result = toRentingItemRequestDTO(newItem, permissions);
-    result.ownerUserDetail = await this.userService.getUserDetailData(newItem.ownerUserId)
+    result.ownerUserDetail = await this.userService.getUserDetailData(
+      newItem.ownerUserId,
+    );
     // result.lenderUserDetail = await this.userService.getUserDetailData(newItem.lenderUserId)
 
-    return result
+    return result;
   }
 
   async findAllRequestFromUser({
@@ -172,15 +197,12 @@ export class RentingItemRequetsService {
     const mandatoryWhere: any = {
       AND: [
         {
-          isDeleted: false
+          isDeleted: false,
         },
         {
-          OR: [
-            { ownerUserId },
-            { lenderUserId: ownerUserId },
-          ]
-        }
-      ]
+          OR: [{ ownerUserId }, { lenderUserId: ownerUserId }],
+        },
+      ],
     };
 
     // if (userType === RentingItemRequestUserType.Owner) {
@@ -225,7 +247,7 @@ export class RentingItemRequetsService {
           findCondition.orderBy = [
             {
               [sortByChunk[0]]: sortByChunk[1] || 'asc',
-            }
+            },
           ];
         }
       });
@@ -259,8 +281,12 @@ export class RentingItemRequetsService {
       // ) {
       //   newItem.lenderUserDetail = await this.userService.getUserDetailData(item.lenderUserId)
       // }
-      newItem.ownerUserDetail = await this.userService.getUserDetailData(item.ownerUserId)
-      newItem.lenderUserDetail = await this.userService.getUserDetailData(item.lenderUserId)
+      newItem.ownerUserDetail = await this.userService.getUserDetailData(
+        item.ownerUserId,
+      );
+      newItem.lenderUserDetail = await this.userService.getUserDetailData(
+        item.lenderUserId,
+      );
 
       finalItems.push(newItem);
     }
@@ -349,127 +375,164 @@ export class RentingItemRequetsService {
   //   };
   // }
 
-  public async cancelRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findUnique({ where: { id: data.id } })
-    const permissions = this.getPermissions(requestItem, data.updatedBy)
+  public async cancelRequest(
+    data: ChangeItemRequestStatusModel,
+  ): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findUnique({
+      where: { id: data.id },
+    });
+    const permissions = this.getPermissions(requestItem, data.updatedBy);
 
     if (permissions.includes(Permission.CANCEL)) {
       return this.changeRentingItemRequestStatus({
         ...data,
-        status: RentingItemRequestStatus.Cancelled
-      })
+        status: RentingItemRequestStatus.Cancelled,
+      });
     }
 
-    throw new Error('Not Authorize')
+    throw new Error('Not Authorize');
   }
 
-  public async approveRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findUnique({ where: { id: data.id } })
-    const permissions = this.getPermissions(requestItem, data.updatedBy)
+  public async approveRequest(
+    data: ChangeItemRequestStatusModel,
+  ): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findUnique({
+      where: { id: data.id },
+    });
+    const permissions = this.getPermissions(requestItem, data.updatedBy);
 
     if (permissions.includes(Permission.APPROVE)) {
       return this.changeRentingItemRequestStatus({
         ...data,
-        status: RentingItemRequestStatus.Approved
-      })
+        status: RentingItemRequestStatus.Approved,
+      });
     }
 
-    throw new Error('Not Authorize')
+    throw new Error('Not Authorize');
   }
 
-  public async declineRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findUnique({ where: { id: data.id } })
-    const permissions = this.getPermissions(requestItem, data.updatedBy)
+  public async declineRequest(
+    data: ChangeItemRequestStatusModel,
+  ): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findUnique({
+      where: { id: data.id },
+    });
+    const permissions = this.getPermissions(requestItem, data.updatedBy);
 
     if (permissions.includes(Permission.DECLINE)) {
       return this.changeRentingItemRequestStatus({
         ...data,
-        status: RentingItemRequestStatus.Declined
-      })
+        status: RentingItemRequestStatus.Declined,
+      });
     }
 
-    throw new Error('Not Authorize')
+    throw new Error('Not Authorize');
   }
 
-  public async startRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findUnique({ where: { id: data.id } })
-    const permissions = this.getPermissions(requestItem, data.updatedBy)
+  public async startRequest(
+    data: ChangeItemRequestStatusModel,
+  ): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findUnique({
+      where: { id: data.id },
+    });
+    const permissions = this.getPermissions(requestItem, data.updatedBy);
 
     if (permissions.includes(Permission.START)) {
       return this.changeRentingItemRequestStatus({
         ...data,
-        status: RentingItemRequestStatus.InProgress
-      })
+        status: RentingItemRequestStatus.InProgress,
+      });
     }
 
-    throw new Error('Not Authorize')
+    throw new Error('Not Authorize');
   }
 
-  public async completeRequest(data: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
-    const requestItem = await this.prismaService.rentingItemRequest.findUnique({ where: { id: data.id } })
-    const permissions = this.getPermissions(requestItem, data.updatedBy)
+  public async completeRequest(
+    data: ChangeItemRequestStatusModel,
+  ): Promise<RentingItemRequestDTO> {
+    const requestItem = await this.prismaService.rentingItemRequest.findUnique({
+      where: { id: data.id },
+    });
+    const permissions = this.getPermissions(requestItem, data.updatedBy);
 
     if (permissions.includes(Permission.COMPLETE)) {
       return this.changeRentingItemRequestStatus({
         ...data,
-        status: RentingItemRequestStatus.Completed
-      })
+        status: RentingItemRequestStatus.Completed,
+      });
     }
 
-    throw new Error('Not Authorize')
+    throw new Error('Not Authorize');
   }
 
-  private async changeRentingItemRequestStatus({ id, status, updatedBy, comment, files }: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
+  private async changeRentingItemRequestStatus({
+    id,
+    status,
+    updatedBy,
+    comment,
+    files,
+  }: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
     const rentingRequest = await this.prismaService.rentingItemRequest.update({
       where: {
-        id
+        id,
       },
       data: {
         status,
         updatedBy,
-        updatedDate: new Date()
-      }
-    })
+        updatedDate: new Date(),
+      },
+    });
     await this.prismaService.rentingItemRequestActivity.create({
       data: {
         rentingItemRequest: {
           connect: {
-            id
-          }
+            id,
+          },
         },
         comment,
-        files: files && files.length ? JSON.stringify(files) : JSON.stringify([]),
+        files:
+          files && files.length ? JSON.stringify(files) : JSON.stringify([]),
         type: RequestActivityTypeMap[status],
         createdBy: updatedBy,
-        updatedBy
-      }
-    })
+        updatedBy,
+      },
+    });
 
     const permissions = this.getPermissions(rentingRequest, updatedBy);
-    return toRentingItemRequestDTO(rentingRequest, permissions)
+    return toRentingItemRequestDTO(rentingRequest, permissions);
   }
 
-  public async comment({ id, updatedBy, comment, files }: ChangeItemRequestStatusModel): Promise<RentingItemRequestActivityDTO> {
-    const newActivity = await this.prismaService.rentingItemRequestActivity.create({
-      data: {
-        rentingItemRequest: {
-          connect: {
-            id
-          }
+  public async comment({
+    id,
+    updatedBy,
+    comment,
+    files,
+  }: ChangeItemRequestStatusModel): Promise<RentingItemRequestActivityDTO> {
+    const newActivity = await this.prismaService.rentingItemRequestActivity.create(
+      {
+        data: {
+          rentingItemRequest: {
+            connect: {
+              id,
+            },
+          },
+          comment,
+          files:
+            files && files.length
+              ? JSON.stringify(files)
+              : JSON.stringify('[]'),
+          type: RentingItemRequestActivityType.Comment,
+          createdBy: updatedBy,
+          updatedBy,
         },
-        comment,
-        files: files && files.length ? JSON.stringify(files) : JSON.stringify('[]'),
-        type: RentingItemRequestActivityType.Comment,
-        createdBy: updatedBy,
-        updatedBy
-      }
-    })
+      },
+    );
 
-    const result = toRentingItemRequestActivityDTO(newActivity)
-    result.createdBy = await this.userService.getUserDetailData(updatedBy)
-    result.updatedBy = await this.userService.getUserDetailData(updatedBy)
+    const result = toRentingItemRequestActivityDTO(newActivity);
+    result.createdBy = await this.userService.getUserDetailData(updatedBy);
+    result.updatedBy = await this.userService.getUserDetailData(updatedBy);
 
-    return result
+    return result;
   }
 
   private getPermissions(
