@@ -32,11 +32,13 @@ model User {
   verifyPhoneToken          String?
   userInfo                  UserInfo?
 
-  ownerItemReview              ItemReview[] @relation("OwnerItemReview")
+  ownerItemReview              ItemReview[]         @relation("OwnerItemReview")
   ownerUserRentingItemRequest  RentingItemRequest[] @relation("OwnerRequest")
   lenderUserRentingItemRequest RentingItemRequest[] @relation("LenderOfRequest")
-  reviewFromUser               UserReview[] @relation("OwnerUserReview")
-  reviewToUser                 UserReview[] @relation("ToUserReview")
+  reviewFromUser               UserReview[]         @relation("OwnerUserReview")
+  reviewToUser                 UserReview[]         @relation("ToUserReview")
+  Item                         Item[]
+  MyUserContact                MyUserContact[]
 }
 
 model UserInfo {
@@ -151,11 +153,16 @@ model Item {
   ownerUserId               String
   isDeleted                 Boolean?             @default(false)
   createdDate               DateTime             @default(now())
-  updatedDate               DateTime             @default(now())
+  updatedDate               DateTime             @updatedAt
   updatedBy                 String
   keyword                   String?
 
-  @@index(fields: [keyword], name: "item_main_index")
+  ItemReview  ItemReview[]
+  WishingItem WishingItem[]
+
+  @@index(fields: [status, isDeleted, isVerified], name: "item_main_index")
+  @@index(fields: [createdDate], name: "item_created_date_index")
+  @@index(fields: [keyword], name: "item_keyword_index")
 }
 
 enum RentingMandatoryVerifyDocumentDataType {
@@ -180,23 +187,24 @@ enum RentingItemRequestStatus {
 }
 
 model RentingItemRequest {
-  id                String                    @id @default(uuid())
-  rentingItem       Item                      @relation(fields: [itemId], references: [id])
-  itemId            String
-  totalAmount       Float?                    @default(0)
-  actualTotalAmount Float?                    @default(0)
-  rentTotalQuantity Int?                      @default(1)
-  fromDate          DateTime
-  toDate            DateTime
-  status            RentingItemRequestStatus?
-  ownerUser         User                      @relation("OwnerRequest", fields: [ownerUserId], references: [id])
-  ownerUserId       String
-  lenderUser        User                      @relation("LenderOfRequest", fields: [lenderUserId], references: [id])
-  lenderUserId      String
-  isDeleted         Boolean?                  @default(false)
-  createdDate       DateTime                  @default(now())
-  updatedDate       DateTime                  @default(now())
-  updatedBy         String
+  id                         String                       @id @default(uuid())
+  rentingItem                Item                         @relation(fields: [itemId], references: [id])
+  itemId                     String
+  totalAmount                Float?                       @default(0)
+  actualTotalAmount          Float?                       @default(0)
+  rentTotalQuantity          Int?                         @default(1)
+  fromDate                   DateTime
+  toDate                     DateTime
+  status                     RentingItemRequestStatus?
+  ownerUser                  User                         @relation("OwnerRequest", fields: [ownerUserId], references: [id])
+  ownerUserId                String
+  lenderUser                 User                         @relation("LenderOfRequest", fields: [lenderUserId], references: [id])
+  lenderUserId               String
+  isDeleted                  Boolean?                     @default(false)
+  createdDate                DateTime                     @default(now())
+  updatedDate                DateTime                     @updatedAt
+  updatedBy                  String
+  RentingItemRequestActivity RentingItemRequestActivity[]
 }
 
 model ItemReview {
@@ -211,7 +219,7 @@ model ItemReview {
   ownerUserId      String
   isDeleted        Boolean? @default(false)
   createdDate      DateTime @default(now())
-  updatedDate      DateTime @default(now())
+  updatedDate      DateTime @updatedAt
   updatedBy        String
 }
 
@@ -226,7 +234,7 @@ model UserReview {
   ownerUserId      String
   isDeleted        Boolean? @default(false)
   createdDate      DateTime @default(now())
-  updatedDate      DateTime @default(now())
+  updatedDate      DateTime @updatedAt
   updatedBy        String
 }
 
@@ -249,7 +257,7 @@ model RentingItemRequestActivity {
   isDisabled           Boolean?                       @default(false)
   isDeleted            Boolean?                       @default(false)
   createdDate          DateTime                       @default(now())
-  updatedDate          DateTime                       @default(now())
+  updatedDate          DateTime                       @updatedAt
   createdBy            String
   updatedBy            String
 }

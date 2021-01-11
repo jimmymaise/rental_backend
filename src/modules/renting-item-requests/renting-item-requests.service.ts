@@ -479,7 +479,6 @@ export class RentingItemRequetsService {
       data: {
         status,
         updatedBy,
-        updatedDate: new Date(),
       },
     });
     await this.prismaService.rentingItemRequestActivity.create({
