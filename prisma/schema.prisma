@@ -39,6 +39,7 @@ model User {
   reviewToUser                 UserReview[]         @relation("ToUserReview")
   Item                         Item[]
   MyUserContact                MyUserContact[]
+  userNotifications            UserNotification[]   @relation("ForUserNotification")
 }
 
 model UserInfo {
@@ -286,14 +287,14 @@ enum UserNotificationType {
 
 model UserNotification {
   id          String               @id @default(uuid())
+  forUser     User                 @relation("ForUserNotification", fields: [forUserId], references: [id])
   forUserId   String
   data        String? // JSON
-  images      String? // JSON
   type        UserNotificationType
   isRead      Boolean?             @default(false)
   createdDate DateTime             @default(now())
 
-  @@index(fields: [forUserId], name: "user_notification_index")
+  @@index(fields: [createdDate], name: "user_notification_index")
 }
 
 model WishingItem {

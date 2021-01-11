@@ -1,0 +1,26 @@
+scalar JSON
+
+type NotificationItem {
+  id: ID!
+  forUserId: String
+  data: JSON
+  type: String
+  isRead: Boolean
+  createdDate: Float
+}
+
+type NotificationPagination {
+  items: [NotificationItem]
+  total: Int
+  limit: Int
+  offset: Int
+}
+
+input NotificationQuery {
+  offset: Int
+  limit: Int
+}
+
+type Query {
+  feedMyNotifications(query: NotificationQuery): NotificationPagination
+}
