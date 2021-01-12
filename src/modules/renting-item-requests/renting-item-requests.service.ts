@@ -18,6 +18,7 @@ import { Permission } from './permission.enum';
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto';
 import { ItemDTO } from '../items/item.dto';
+import { NotificationService } from '../notification/notification.service';
 
 const WEEK_DAY = 7;
 const MONTH_DAY = 30;
@@ -104,6 +105,7 @@ function toRentingItemRequestActivityDTO(
 export class RentingItemRequetsService {
   constructor(
     private prismaService: PrismaService,
+    private notificationService: NotificationService,
     private userService: UsersService,
   ) {}
 
@@ -174,6 +176,9 @@ export class RentingItemRequetsService {
         isDeleted: false,
         updatedBy: item.ownerUserId,
       },
+      include: {
+        rentingItem: true,
+      },
     });
     const permissions = this.getPermissions(newItem, ownerUserId);
 
@@ -182,6 +187,18 @@ export class RentingItemRequetsService {
       newItem.ownerUserId,
     );
     // result.lenderUserDetail = await this.userService.getUserDetailData(newItem.lenderUserId)
+
+    await this.notificationService.newRequestToUserNotification(
+      item.ownerUserId,
+      {
+        id: result.id,
+        itemName: result.rentingItem.name,
+        itemId: result.itemId,
+        fromDate,
+        toDate,
+        ownerRequestId: ownerUserId,
+      },
+    );
 
     return result;
   }
@@ -298,82 +315,6 @@ export class RentingItemRequetsService {
       limit,
     };
   }
-
-  // async findAllRequestFromOwner({
-  //   offset = 0,
-  //   limit = 10,
-  //   ownerUserId,
-  //   includes,
-  //   sortByFields,
-  // }): Promise<PaginationDTO<RentingItemRequestDTO>> {
-  //   const dbResults = await this.findAllRequestFromUser({
-  //     offset,
-  //     limit,
-  //     ownerUserId,
-  //     includes,
-  //     sortByFields,
-  //     userType: RentingItemRequestUserType.Owner,
-  //   });
-  //   const finalItems: RentingItemRequestDTO[] = [];
-
-  //   for (let i = 0; i < dbResults.items.length; i++) {
-  //     const item = dbResults.items[i] as RentingItemRequest;
-  //     const permissions = this.getPermissions(item, ownerUserId);
-  //     const newItem = toRentingItemRequestDTO(item, permissions);
-
-  //     if (
-  //       includes?.includes('lenderUserDetail') &&
-  //       permissions.includes(Permission.VIEW_LENDER_INFO)
-  //     ) {
-  //       newItem.lenderUserDetail = await this.userService.getUserDetailData(item.lenderUserId)
-  //     }
-
-  //     finalItems.push(newItem);
-  //   }
-
-  //   return {
-  //     ...dbResults,
-  //     items: finalItems,
-  //   };
-  // }
-
-  // async findAllRequestToLender({
-  //   offset = 0,
-  //   limit = 10,
-  //   lenderUserId,
-  //   includes,
-  //   sortByFields,
-  // }): Promise<PaginationDTO<RentingItemRequestDTO>> {
-  //   const dbResults = await this.findAllRequestFromUser({
-  //     offset,
-  //     limit,
-  //     ownerUserId: lenderUserId,
-  //     includes,
-  //     sortByFields,
-  //     userType: RentingItemRequestUserType.Lender,
-  //   });
-  //   const finalItems: RentingItemRequestDTO[] = [];
-
-  //   for (let i = 0; i < dbResults.items.length; i++) {
-  //     const item = dbResults.items[i] as RentingItemRequest;
-  //     const permissions = this.getPermissions(item, lenderUserId);
-  //     const newItem = toRentingItemRequestDTO(item, permissions);
-
-  //     if (
-  //       includes?.includes('ownerUserDetail') &&
-  //       permissions.includes(Permission.VIEW_REQUEST_RENT_OWNER_INFO)
-  //     ) {
-  //       newItem.ownerUserDetail = await this.userService.getUserDetailData(item.ownerUserId)
-  //     }
-
-  //     finalItems.push(newItem);
-  //   }
-
-  //   return {
-  //     ...dbResults,
-  //     items: finalItems,
-  //   };
-  // }
 
   public async cancelRequest(
     data: ChangeItemRequestStatusModel,

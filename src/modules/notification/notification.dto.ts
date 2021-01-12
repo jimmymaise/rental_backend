@@ -6,5 +6,5 @@ export interface NotificationDTO {
   data: any;
   type: UserNotificationType;
   isRead?: boolean;
-  createdDate: number;
+  createdDate?: number;
 }

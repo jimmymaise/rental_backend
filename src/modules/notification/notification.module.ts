@@ -10,5 +10,6 @@ import { NotificationResolvers } from './notification.resolvers';
   imports: [ConfigModule, AuthModule, UsersModule],
   controllers: [],
   providers: [NotificationService, NotificationResolvers],
+  exports: [NotificationService],
 })
 export class NotificationModule {}
