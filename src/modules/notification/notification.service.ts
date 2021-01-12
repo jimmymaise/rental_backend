@@ -6,6 +6,7 @@ import { PaginationDTO } from '../../models';
 import { NotificationDTO } from './notification.dto';
 import { RequestDataNotificationModel } from './models/request-data-notification.model';
 import { UsersService } from '../users/users.service';
+import { RENTING_REQUEST_TYPE_SET } from './constants';
 
 export function toNotificationDTO(data: UserNotification): NotificationDTO {
   return {
@@ -79,7 +80,7 @@ export class NotificationService {
       const item = items[i];
       const newItem = toNotificationDTO(item);
 
-      if (item.type === UserNotificationType.RentingRequestIsCreated) {
+      if (RENTING_REQUEST_TYPE_SET.has(item.type)) {
         const userInfo = await this.usersService.getUserDetailData(
           newItem.data.ownerRequestId,
         );
