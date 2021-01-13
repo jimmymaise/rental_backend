@@ -37,6 +37,61 @@ export class NotificationService {
     });
   }
 
+  cancelRequestToUserNotification(
+    forUserId: string,
+    data: RequestDataNotificationModel,
+  ): Promise<UserNotification> {
+    return this.createNewNotification({
+      forUserId,
+      data,
+      type: UserNotificationType.RentingRequestIsCancelled,
+    });
+  }
+
+  approveRequestToUserNotification(
+    forUserId: string,
+    data: RequestDataNotificationModel,
+  ): Promise<UserNotification> {
+    return this.createNewNotification({
+      forUserId,
+      data,
+      type: UserNotificationType.RentingRequestIsApproved,
+    });
+  }
+
+  declineRequestToUserNotification(
+    forUserId: string,
+    data: RequestDataNotificationModel,
+  ): Promise<UserNotification> {
+    return this.createNewNotification({
+      forUserId,
+      data,
+      type: UserNotificationType.RentingRequestIsDeclined,
+    });
+  }
+
+  startRequestToUserNotification(
+    forUserId: string,
+    data: RequestDataNotificationModel,
+  ): Promise<UserNotification> {
+    return this.createNewNotification({
+      forUserId,
+      data,
+      type: UserNotificationType.RentingRequestIsInProgress,
+    });
+  }
+
+  completeRequestToUserNotification(
+    forUserId: string,
+    data: RequestDataNotificationModel,
+  ): Promise<UserNotification> {
+    return this.createNewNotification({
+      forUserId,
+      data,
+      type: UserNotificationType.RentingRequestIsCompleted,
+    });
+  }
+
   private createNewNotification(
     data: NotificationDTO,
   ): Promise<UserNotification> {
@@ -84,12 +139,27 @@ export class NotificationService {
         const userInfo = await this.usersService.getUserDetailData(
           newItem.data.ownerRequestId,
         );
-        newItem.data.ownerRequestUserInfo = {
-          avatarImage: {
-            url: userInfo.avatarImage?.url,
-          },
-          displayName: userInfo.displayName,
-        };
+        const lenderUserInfo = await this.usersService.getUserDetailData(
+          newItem.data.lenderRequestId,
+        );
+
+        newItem.data.ownerRequestUserInfo = userInfo
+          ? {
+              avatarImage: {
+                url: userInfo.avatarImage?.url,
+              },
+              displayName: userInfo.displayName,
+            }
+          : null;
+
+        newItem.data.lenderRequestUserInfo = lenderUserInfo
+          ? {
+              avatarImage: {
+                url: lenderUserInfo.avatarImage?.url,
+              },
+              displayName: lenderUserInfo.displayName,
+            }
+          : null;
       }
 
       newItems.push(newItem);

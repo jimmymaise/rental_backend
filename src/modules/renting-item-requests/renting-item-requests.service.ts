@@ -196,7 +196,8 @@ export class RentingItemRequetsService {
         itemId: result.itemId,
         fromDate,
         toDate,
-        ownerRequestId: ownerUserId,
+        ownerRequestId: result.ownerUserId,
+        lenderRequestId: result.lenderUserId,
       },
     );
 
@@ -325,10 +326,25 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(requestItem, data.updatedBy);
 
     if (permissions.includes(Permission.CANCEL)) {
-      return this.changeRentingItemRequestStatus({
+      const result = await this.changeRentingItemRequestStatus({
         ...data,
         status: RentingItemRequestStatus.Cancelled,
       });
+
+      await this.notificationService.cancelRequestToUserNotification(
+        result.lenderUserId,
+        {
+          id: result.id,
+          itemName: result.rentingItem.name,
+          itemId: result.itemId,
+          fromDate: result.fromDate,
+          toDate: result.toDate,
+          ownerRequestId: result.ownerUserId,
+          lenderRequestId: result.lenderUserId,
+        },
+      );
+
+      return result;
     }
 
     throw new Error('Not Authorize');
@@ -343,10 +359,25 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(requestItem, data.updatedBy);
 
     if (permissions.includes(Permission.APPROVE)) {
-      return this.changeRentingItemRequestStatus({
+      const result = await this.changeRentingItemRequestStatus({
         ...data,
         status: RentingItemRequestStatus.Approved,
       });
+
+      await this.notificationService.approveRequestToUserNotification(
+        result.ownerUserId,
+        {
+          id: result.id,
+          itemName: result.rentingItem.name,
+          itemId: result.itemId,
+          fromDate: result.fromDate,
+          toDate: result.toDate,
+          ownerRequestId: result.ownerUserId,
+          lenderRequestId: result.lenderUserId,
+        },
+      );
+
+      return result;
     }
 
     throw new Error('Not Authorize');
@@ -361,10 +392,25 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(requestItem, data.updatedBy);
 
     if (permissions.includes(Permission.DECLINE)) {
-      return this.changeRentingItemRequestStatus({
+      const result = await this.changeRentingItemRequestStatus({
         ...data,
         status: RentingItemRequestStatus.Declined,
       });
+
+      await this.notificationService.declineRequestToUserNotification(
+        result.ownerUserId,
+        {
+          id: result.id,
+          itemName: result.rentingItem.name,
+          itemId: result.itemId,
+          fromDate: result.fromDate,
+          toDate: result.toDate,
+          ownerRequestId: result.ownerUserId,
+          lenderRequestId: result.lenderUserId,
+        },
+      );
+
+      return result;
     }
 
     throw new Error('Not Authorize');
@@ -379,10 +425,25 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(requestItem, data.updatedBy);
 
     if (permissions.includes(Permission.START)) {
-      return this.changeRentingItemRequestStatus({
+      const result = await this.changeRentingItemRequestStatus({
         ...data,
         status: RentingItemRequestStatus.InProgress,
       });
+
+      await this.notificationService.startRequestToUserNotification(
+        result.lenderUserId,
+        {
+          id: result.id,
+          itemName: result.rentingItem.name,
+          itemId: result.itemId,
+          fromDate: result.fromDate,
+          toDate: result.toDate,
+          ownerRequestId: result.ownerUserId,
+          lenderRequestId: result.lenderUserId,
+        },
+      );
+
+      return result;
     }
 
     throw new Error('Not Authorize');
@@ -397,10 +458,27 @@ export class RentingItemRequetsService {
     const permissions = this.getPermissions(requestItem, data.updatedBy);
 
     if (permissions.includes(Permission.COMPLETE)) {
-      return this.changeRentingItemRequestStatus({
+      const result = await this.changeRentingItemRequestStatus({
         ...data,
         status: RentingItemRequestStatus.Completed,
       });
+
+      await this.notificationService.completeRequestToUserNotification(
+        result.ownerUserId,
+        {
+          id: result.id,
+          itemName: result.rentingItem.name,
+          itemId: result.itemId,
+          fromDate: result.fromDate,
+          toDate: result.toDate,
+          ownerRequestId: result.ownerUserId,
+          lenderRequestId: result.lenderUserId,
+        },
+      );
+
+      return result;
+
+      return result;
     }
 
     throw new Error('Not Authorize');

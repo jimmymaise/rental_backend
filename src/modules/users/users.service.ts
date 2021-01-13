@@ -70,6 +70,10 @@ export class UsersService {
   }
 
   async getUserDetailData(userId: string): Promise<UserInfoDTO> {
+    if (!userId) {
+      return null;
+    }
+
     const cacheKey = getUserCacheKey(userId);
     let userDetail = await this.redisCacheService.get(cacheKey);
 

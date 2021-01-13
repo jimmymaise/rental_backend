@@ -3,6 +3,7 @@ export interface RequestDataNotificationModel {
   itemId: string;
   itemName: string;
   ownerRequestId: string;
+  lenderRequestId: string;
   fromDate?: number;
   toDate?: number;
 }
