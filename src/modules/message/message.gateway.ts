@@ -142,14 +142,14 @@ export class MessageGateway
       replyToId,
       fromUserId: user.userId,
       fromUserInfo: userInfo,
-      createdDate: newMessage.createdDate.getTime()
-    }
+      createdDate: newMessage.createdDate.getTime(),
+    };
 
     members.forEach((member) => {
       (this.server as any)
         .to(getUserRoom(member.id))
         .emit('newMessageToClient', { ...newMessageToClient, members });
-    })
+    });
 
     return (this.server as any)
       .to(conversationId)
@@ -191,5 +191,11 @@ export class MessageGateway
     return this.logger.log(
       `Client is auto disconnected because unauthorize: ${client.id}`,
     );
+  }
+
+  public sendNotificationMessage(toUserId: string, data: any): void {
+    (this.server as any)
+      .to(getUserRoom(toUserId))
+      .emit('newNotificationMessage', { data });
   }
 }

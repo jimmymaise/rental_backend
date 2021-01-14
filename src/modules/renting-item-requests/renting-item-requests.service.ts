@@ -499,6 +499,9 @@ export class RentingItemRequetsService {
         status,
         updatedBy,
       },
+      include: {
+        rentingItem: true,
+      },
     });
     await this.prismaService.rentingItemRequestActivity.create({
       data: {
