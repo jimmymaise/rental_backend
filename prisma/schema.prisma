@@ -131,6 +131,7 @@ model Item {
   name                      String
   slug                      String               @unique
   description               String?
+  termAndCondition          String?
   categories                Category[]           @relation(references: [id])
   areas                     Area[]               @relation(references: [id])
   rentingItemRequests       RentingItemRequest[]

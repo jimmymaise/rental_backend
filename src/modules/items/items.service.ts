@@ -33,6 +33,7 @@ export class ItemsService {
     const {
       name,
       description,
+      termAndCondition,
       categoryIds,
       areaIds,
       images,
@@ -63,6 +64,7 @@ export class ItemsService {
           nowToString.length - 5,
         )}`,
         description,
+        termAndCondition,
         categories: {
           connect: categoryIds.map((id) => ({ id })),
         },

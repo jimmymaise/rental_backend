@@ -3,6 +3,7 @@ type Item {
   name: String!
   slug: String!
   description: String
+  termAndCondition: String
   categories: [Category]
   areas: [Area]
   images: [PublicStorageFile]
@@ -39,6 +40,7 @@ type ItemPagination {
 input ItemUserInput {
   name: String!
   description: String
+  termAndCondition: String
   categoryIds: [String]
   areaIds: [String]
   images: [PublicStorageFileInput]
@@ -82,8 +84,16 @@ type Mutation {
 
 type Query {
   feed(query: ItemQuery): ItemPagination
-  feedDetailBySlug(slug: String!, includes: [String], checkWishList: Boolean): Item
+  feedDetailBySlug(
+    slug: String!
+    includes: [String]
+    checkWishList: Boolean
+  ): Item
   feedMyItems(query: MyItemQuery): ItemPagination
   feedUserPublicItems(userId: String!, query: ItemQuery): ItemPagination
-  feedMyItemDetail(id: String!, includes: [String], checkWishList: Boolean): Item
+  feedMyItemDetail(
+    id: String!
+    includes: [String]
+    checkWishList: Boolean
+  ): Item
 }

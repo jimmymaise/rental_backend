@@ -9,6 +9,7 @@ export interface ItemDTO {
   name: string;
   slug: string;
   description?: string;
+  termAndCondition?: string;
   categories?: Category[];
   areas?: Area[];
   images?: StoragePublicDTO[];
