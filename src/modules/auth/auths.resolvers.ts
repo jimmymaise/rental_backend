@@ -1,5 +1,5 @@
-import { UseGuards } from '@nestjs/common';
-import { Args, Resolver, Mutation, Query, Context } from '@nestjs/graphql';
+import { UseGuards, BadRequestException } from '@nestjs/common';
+import { Args, Resolver, Mutation, Context } from '@nestjs/graphql';
 
 import { AuthService } from './auth.service';
 import { AuthDTO, GuardUserPayload } from './auth.dto';
@@ -8,6 +8,7 @@ import { GqlRefreshGuard } from './gpl-request.guard';
 import { CurrentUser } from './current-user.decorator';
 import { UsersService } from '../users/users.service';
 import { EmailService } from '../mail';
+import { ErrorMap } from '@app/constants';
 
 @Resolver('Auth')
 export class AuthsResolvers {
@@ -23,11 +24,15 @@ export class AuthsResolvers {
     @Args('email') email: string,
     @Args('password') password: string,
   ): Promise<AuthDTO> {
-    const {
-      accessToken,
-      refreshToken,
-      ...restProps
-    } = await this.authService.signUpByEmail(email, password);
+    let result;
+
+    try {
+      result = await this.authService.signUpByEmail(email, password);
+    } catch (err) {
+      throw new BadRequestException(ErrorMap.EMAIL_EXISTED);
+    }
+
+    const { accessToken, refreshToken, ...restProps } = result;
 
     await this.usersService.setCurrentRefreshToken(
       refreshToken,
@@ -59,11 +64,15 @@ export class AuthsResolvers {
     @Args('email') email: string,
     @Args('password') password: string,
   ): Promise<AuthDTO> {
-    const {
-      accessToken,
-      refreshToken,
-      ...restProps
-    } = await this.authService.loginByEmail(email, password);
+    let result;
+
+    try {
+      result = await this.authService.loginByEmail(email, password);
+    } catch (err) {
+      throw new BadRequestException(ErrorMap.EMAIL_OR_PASSWORD_INVALID);
+    }
+
+    const { accessToken, refreshToken, ...restProps } = result;
 
     await this.usersService.setCurrentRefreshToken(
       refreshToken,
@@ -132,18 +141,24 @@ export class AuthsResolvers {
     @Args('email') email: string,
     @Args('recaptchaKey') recaptchaKey: string,
   ): Promise<string> {
-    const isRecaptchaKeyVerified = await this.authService.verifyRecaptchaResponse(recaptchaKey);
+    const isRecaptchaKeyVerified = await this.authService.verifyRecaptchaResponse(
+      recaptchaKey,
+    );
 
-    if (!recaptchaKey) {
-      throw Error('Recaptcha Key not valid');
+    if (!isRecaptchaKeyVerified) {
+      throw new BadRequestException(ErrorMap.RECAPTCHA_RESPONSE_KEY_INVALID);
     }
 
-    const {
-      token,
-      displayName,
-    } = await this.authService.generateResetPasswordToken(email);
-    await this.emailService.sendResetPasswordEmail(displayName, email, token);
-    return email;
+    try {
+      const {
+        token,
+        displayName,
+      } = await this.authService.generateResetPasswordToken(email);
+      await this.emailService.sendResetPasswordEmail(displayName, email, token);
+      return email;
+    } catch (err) {
+      return email;
+    }
   }
 
   @Mutation()

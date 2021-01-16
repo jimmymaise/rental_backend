@@ -12,6 +12,10 @@
     "baseUrl": "./",
     "incremental": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@app/*": ["src/*"],
+      "@modules/*": ["src/modules/*"]
+    }
   }
 }

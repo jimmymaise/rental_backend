@@ -315,12 +315,10 @@ export class AuthService {
       const response: any = await this.httpService
         .get(verificationUrl)
         .toPromise();
-      const data = await response.json();
 
-      if (!data.success) {
+      if (!response?.data?.success) {
         return false;
       }
-
       return true;
     } catch (err) {
       return false;
