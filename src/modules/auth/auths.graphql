@@ -14,7 +14,7 @@ type Mutation {
   loginByEmail(email: String!, password: String!): AuthPayload
   logout: Boolean
   refreshUserAccessToken(refresh: String): AuthPayload
-  requestResetPassword(email: String!): String
+  requestResetPassword(email: String!, recaptchaKey: String!): String
   setPasswordByToken(token: String!, password: String!): String
   changePassword(currentPassword: String!, newPassword: String!): AuthPayload
 }

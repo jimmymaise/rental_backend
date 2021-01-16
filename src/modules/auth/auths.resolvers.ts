@@ -1,66 +1,91 @@
-import { UseGuards } from '@nestjs/common'
-import { Args, Resolver, Mutation, Query, Context } from '@nestjs/graphql'
+import { UseGuards } from '@nestjs/common';
+import { Args, Resolver, Mutation, Query, Context } from '@nestjs/graphql';
 
-import { AuthService } from './auth.service'
-import {
-  AuthDTO,
-  GuardUserPayload
-} from './auth.dto';
-import { GqlAuthGuard } from './gpl-auth.guard'
-import { GqlRefreshGuard } from './gpl-request.guard'
-import { CurrentUser } from './current-user.decorator'
-import { UsersService } from '../users/users.service'
-import { EmailService } from '../mail'
+import { AuthService } from './auth.service';
+import { AuthDTO, GuardUserPayload } from './auth.dto';
+import { GqlAuthGuard } from './gpl-auth.guard';
+import { GqlRefreshGuard } from './gpl-request.guard';
+import { CurrentUser } from './current-user.decorator';
+import { UsersService } from '../users/users.service';
+import { EmailService } from '../mail';
 
 @Resolver('Auth')
 export class AuthsResolvers {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
-    private emailService: EmailService
+    private emailService: EmailService,
   ) {}
 
   @Mutation()
   async signUpByEmail(
     @Context() context: any, // GraphQLExecutionContext
     @Args('email') email: string,
-    @Args('password') password: string
+    @Args('password') password: string,
   ): Promise<AuthDTO> {
-    const { accessToken, refreshToken, ...restProps } = await this.authService.signUpByEmail(email, password)
+    const {
+      accessToken,
+      refreshToken,
+      ...restProps
+    } = await this.authService.signUpByEmail(email, password);
 
-    await this.usersService.setCurrentRefreshToken(refreshToken, restProps.user.id)
+    await this.usersService.setCurrentRefreshToken(
+      refreshToken,
+      restProps.user.id,
+    );
 
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(accessToken)
-    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(refreshToken)
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
+      accessToken,
+    );
+    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(
+      refreshToken,
+    );
 
-    context.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+    context.res.setHeader('Set-Cookie', [
+      accessTokenCookie,
+      refreshTokenCookie,
+    ]);
 
     return {
       ...restProps,
       accessToken,
-      refreshToken
-    }
+      refreshToken,
+    };
   }
 
   @Mutation()
   async loginByEmail(
     @Context() context: any, // GraphQLExecutionContext
     @Args('email') email: string,
-    @Args('password') password: string
+    @Args('password') password: string,
   ): Promise<AuthDTO> {
-    const { accessToken, refreshToken, ...restProps } = await this.authService.loginByEmail(email, password)
+    const {
+      accessToken,
+      refreshToken,
+      ...restProps
+    } = await this.authService.loginByEmail(email, password);
 
-    await this.usersService.setCurrentRefreshToken(refreshToken, restProps.user.id)
+    await this.usersService.setCurrentRefreshToken(
+      refreshToken,
+      restProps.user.id,
+    );
 
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(accessToken)
-    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(refreshToken)
-    context.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
+      accessToken,
+    );
+    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(
+      refreshToken,
+    );
+    context.res.setHeader('Set-Cookie', [
+      accessTokenCookie,
+      refreshTokenCookie,
+    ]);
 
     return {
       ...restProps,
       accessToken,
-      refreshToken
-    }
+      refreshToken,
+    };
   }
 
   @Mutation()
@@ -70,20 +95,22 @@ export class AuthsResolvers {
     @CurrentUser() currentUser: GuardUserPayload,
     @Args('refresh') refresh: string,
   ): Promise<AuthDTO> {
-    const user = await this.usersService.getUserById(currentUser.id)
+    const user = await this.usersService.getUserById(currentUser.id);
 
     const accessToken = this.authService.getAccessToken({
       userId: user.id,
-      email: user.email
-    })
+      email: user.email,
+    });
 
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(accessToken)
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
+      accessToken,
+    );
     context.res.setHeader('Set-Cookie', accessTokenCookie);
 
     return {
       accessToken,
-      user
-    }
+      user,
+    };
   }
 
   @Mutation()
@@ -92,21 +119,31 @@ export class AuthsResolvers {
     @Context() context: any,
     @CurrentUser() currentUser: GuardUserPayload,
   ) {
-    await this.authService.removeRefreshToken(currentUser.id)
+    await this.authService.removeRefreshToken(currentUser.id);
 
-    const tokenHeaderCookie = this.authService.getCookieForLogout()
+    const tokenHeaderCookie = this.authService.getCookieForLogout();
     context.res.setHeader('Set-Cookie', tokenHeaderCookie);
 
-    return true
+    return true;
   }
 
   @Mutation()
   async requestResetPassword(
     @Args('email') email: string,
+    @Args('recaptchaKey') recaptchaKey: string,
   ): Promise<string> {
-    const { token, displayName } = await this.authService.generateResetPasswordToken(email)
-    await this.emailService.sendResetPasswordEmail(displayName, email, token)
-    return email
+    const isRecaptchaKeyVerified = await this.authService.verifyRecaptchaResponse(recaptchaKey);
+
+    if (!recaptchaKey) {
+      throw Error('Recaptcha Key not valid');
+    }
+
+    const {
+      token,
+      displayName,
+    } = await this.authService.generateResetPasswordToken(email);
+    await this.emailService.sendResetPasswordEmail(displayName, email, token);
+    return email;
   }
 
   @Mutation()
@@ -114,9 +151,9 @@ export class AuthsResolvers {
     @Args('token') token: string,
     @Args('password') password: string,
   ): Promise<string> {
-    const user = await this.authService.updatePasswordByToken(token, password)
+    const user = await this.authService.updatePasswordByToken(token, password);
 
-    return user.email
+    return user.email;
   }
 
   @Mutation()
@@ -127,17 +164,31 @@ export class AuthsResolvers {
     @Args('currentPassword') currentPassword: string,
     @Args('newPassword') newPassword: string,
   ): Promise<AuthDTO> {
-    const { accessToken, refreshToken, ...restProps } = await this.authService.changeUserPassword(currentUser.id, currentPassword, newPassword)
+    const {
+      accessToken,
+      refreshToken,
+      ...restProps
+    } = await this.authService.changeUserPassword(
+      currentUser.id,
+      currentPassword,
+      newPassword,
+    );
 
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(accessToken)
-    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(refreshToken)
-    context.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
+      accessToken,
+    );
+    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(
+      refreshToken,
+    );
+    context.res.setHeader('Set-Cookie', [
+      accessTokenCookie,
+      refreshTokenCookie,
+    ]);
 
     return {
       ...restProps,
       accessToken,
-      refreshToken
-    }
+      refreshToken,
+    };
   }
 }
-

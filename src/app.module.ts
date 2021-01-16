@@ -84,6 +84,7 @@ import { AppService } from './app.service';
         WEB_UI_RECOVERY_PASSWORD_URL: Joi.string().required(),
         RESET_PASSWORD_TOKEN_SECRET: Joi.string().required(),
         RESET_PASSWORD_TOKEN_EXPIRATION_TIME: Joi.string().required(),
+        GOOGLE_RECAPTCHA_V3_SECRET_KEY: Joi.string().required(),
       }),
     }),
     CommonModule,
