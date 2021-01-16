@@ -15,4 +15,8 @@ export const ErrorMap = {
     code: 'EMAIL_EXISTED',
     message: 'Email is existed',
   },
+  REFRESH_PASSWORD_TOKEN_INVALID: {
+    code: 'REFRESH_PASSWORD_TOKEN_INVALID',
+    message: 'Refresh password token invalid',
+  },
 };

@@ -166,9 +166,16 @@ export class AuthsResolvers {
     @Args('token') token: string,
     @Args('password') password: string,
   ): Promise<string> {
-    const user = await this.authService.updatePasswordByToken(token, password);
+    try {
+      const user = await this.authService.updatePasswordByToken(
+        token,
+        password,
+      );
 
-    return user.email;
+      return user.email;
+    } catch (err) {
+      throw new BadRequestException(ErrorMap.REFRESH_PASSWORD_TOKEN_INVALID);
+    }
   }
 
   @Mutation()
