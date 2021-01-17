@@ -63,8 +63,10 @@ export class ItemsService {
         slug: `${stringToSlug(name)}-${nowToString.substr(
           nowToString.length - 5,
         )}`,
-        description,
-        termAndCondition,
+        description: description ? JSON.stringify(description) : '',
+        termAndCondition: termAndCondition
+          ? JSON.stringify(termAndCondition)
+          : '',
         categories: {
           connect: categoryIds.map((id) => ({ id })),
         },

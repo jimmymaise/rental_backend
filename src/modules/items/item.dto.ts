@@ -3,6 +3,7 @@ import { Category, Area, Item } from '@prisma/client';
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { RentingMandatoryVerifyDocumentPublicDTO } from '../renting-mandatory-verify-documents/renting-mandatory-verify-document-public.dto';
 import { UserInfoDTO } from '../users/user-info.dto';
+import { tryToParseJSON } from '@app/helpers';
 
 export interface ItemDTO {
   id: string;
@@ -46,14 +47,16 @@ export function toItemDTO(item: Item): ItemDTO {
     unavailableForRentDays: item.unavailableForRentDays.map((data) =>
       data.getTime(),
     ),
-    images: item.images && item.images.length ? JSON.parse(item.images) : [],
-    checkBeforeRentDocuments:
-      item.checkBeforeRentDocuments && item.checkBeforeRentDocuments.length
-        ? JSON.parse(item.checkBeforeRentDocuments)
-        : [],
-    keepWhileRentingDocuments:
-      item.keepWhileRentingDocuments && item.keepWhileRentingDocuments.length
-        ? JSON.parse(item.keepWhileRentingDocuments)
-        : [],
+    description: tryToParseJSON(item.description, item.description),
+    termAndCondition: tryToParseJSON(
+      item.termAndCondition,
+      item.termAndCondition,
+    ),
+    images: tryToParseJSON(item.images, []),
+    checkBeforeRentDocuments: tryToParseJSON(item.checkBeforeRentDocuments, []),
+    keepWhileRentingDocuments: tryToParseJSON(
+      item.keepWhileRentingDocuments,
+      [],
+    ),
   };
 }

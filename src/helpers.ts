@@ -24,3 +24,11 @@ export function stringToSlug(str): string {
     .replace(/[^a-z0-9\-]/g, '-')
     .replace(/-+/g, '-');
 }
+
+export function tryToParseJSON(str: string, defaultResult: any = ''): any {
+  try {
+    return JSON.parse(str);
+  } catch (err) {
+    return defaultResult;
+  }
+}
