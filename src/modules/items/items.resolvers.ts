@@ -31,10 +31,11 @@ export class ItemsResolvers {
   async listingNewItem(
     @CurrentUser() user: GuardUserPayload,
     @Args('itemData') itemData: ItemUserInputDTO,
+    @Args('includes') includes: string[]
   ): Promise<ItemDTO> {
     return new Promise((resolve, reject) => {
       this.itemService
-        .createItemForUser(itemData, user.id)
+        .createItemForUser(itemData, user.id, includes)
         .then((item) => {
           resolve(toItemDTO(item));
         })

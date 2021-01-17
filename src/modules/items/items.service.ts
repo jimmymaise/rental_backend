@@ -29,6 +29,7 @@ export class ItemsService {
   async createItemForUser(
     itemData: ItemUserInputDTO,
     userId: string,
+    includes: string[]
   ): Promise<Item> {
     const {
       name,
@@ -57,7 +58,19 @@ export class ItemsService {
       ]);
     }
 
-    return this.prismaService.item.create({
+    const validIncludeMap = {
+      categories: true,
+      areas: true,
+    };
+
+    const include = (includes || []).reduce((result, cur) => {
+      if (validIncludeMap[cur]) {
+        result[cur] = true;
+      }
+      return result;
+    }, {});
+
+    const createData: any = {
       data: {
         name,
         slug: `${stringToSlug(name)}-${nowToString.substr(
@@ -94,7 +107,13 @@ export class ItemsService {
         updatedBy: userId,
         isVerified: process.env.NODE_ENV === 'production' ? false : true,
       },
-    });
+    }
+
+    if (includes.length) {
+      createData.include = include
+    }
+
+    return this.prismaService.item.create(createData);
   }
 
   async findAllAvailablesItem({

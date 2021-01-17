@@ -79,7 +79,7 @@ input MyItemQuery {
 }
 
 type Mutation {
-  listingNewItem(itemData: ItemUserInput!): Item
+  listingNewItem(itemData: ItemUserInput!, includes: [String]): Item
   updateMyItem(id: String!, itemData: ItemUserInput!): Item
   deleteMyItem(id: String!): Item
 }
