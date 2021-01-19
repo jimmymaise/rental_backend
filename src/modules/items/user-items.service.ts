@@ -219,9 +219,14 @@ export class UserItemsService {
             )}`
           }
           break
+        case 'termAndCondition':
         case 'description':
-          if (data[field] && data[field].length) {
-            updateData[field] = data[field]
+          if (data[field]) {
+            if (typeof data[field] === 'string') {
+              updateData[field] = data[field]
+            } else {
+              updateData[field] = JSON.stringify(data[field])
+            }
           }
           break
         case 'images':
