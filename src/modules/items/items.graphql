@@ -86,11 +86,7 @@ type Mutation {
 
 type Query {
   feed(query: ItemQuery): ItemPagination
-  feedDetailBySlug(
-    slug: String!
-    includes: [String]
-    checkWishList: Boolean
-  ): Item
+  feedDetail(id: String!, includes: [String], checkWishList: Boolean): Item
   feedMyItems(query: MyItemQuery): ItemPagination
   feedUserPublicItems(userId: String!, query: ItemQuery): ItemPagination
   feedMyItemDetail(

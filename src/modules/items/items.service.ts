@@ -29,7 +29,7 @@ export class ItemsService {
   async createItemForUser(
     itemData: ItemUserInputDTO,
     userId: string,
-    includes: string[]
+    includes: string[],
   ): Promise<Item> {
     const {
       name,
@@ -48,7 +48,6 @@ export class ItemsService {
       rentPricePerWeek,
       note,
     } = itemData;
-    const nowToString = Date.now().toString();
 
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
@@ -73,9 +72,7 @@ export class ItemsService {
     const createData: any = {
       data: {
         name,
-        slug: `${stringToSlug(name)}-${nowToString.substr(
-          nowToString.length - 5,
-        )}`,
+        slug: stringToSlug(name),
         description: description ? JSON.stringify(description) : '',
         termAndCondition: termAndCondition
           ? JSON.stringify(termAndCondition)
@@ -107,10 +104,10 @@ export class ItemsService {
         updatedBy: userId,
         isVerified: process.env.NODE_ENV === 'production' ? false : true,
       },
-    }
+    };
 
     if (includes.length) {
-      createData.include = include
+      createData.include = include;
     }
 
     return this.prismaService.item.create(createData);
@@ -225,10 +222,7 @@ export class ItemsService {
     };
   }
 
-  async findOneAvailableBySlug(
-    slug: string,
-    includes?: string[],
-  ): Promise<Item> {
+  async findOne(uuid: string, includes?: string[]): Promise<Item> {
     const validIncludeMap = {
       categories: true,
       areas: true,
@@ -242,7 +236,7 @@ export class ItemsService {
     }, {});
 
     const where = {
-      slug,
+      id: uuid,
     };
 
     const findCondition: any = {

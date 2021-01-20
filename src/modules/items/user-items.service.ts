@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Item, ItemStatus } from '@prisma/client';
 import { PaginationDTO } from '../../models';
-import { StoragesService } from '../storages/storages.service'
+import { StoragesService } from '../storages/storages.service';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers';
 
@@ -11,7 +11,7 @@ import { stringToSlug } from '../../helpers';
 export class UserItemsService {
   constructor(
     private prismaService: PrismaService,
-    private storageService: StoragesService
+    private storageService: StoragesService,
   ) {}
 
   async findAllItemsCreatedByUser({
@@ -166,7 +166,7 @@ export class UserItemsService {
     }, {});
 
     const where = {
-      id
+      id,
     };
 
     const findCondition: any = {
@@ -179,14 +179,23 @@ export class UserItemsService {
 
     const item = await this.prismaService.item.findUnique(findCondition);
 
-    if (item && (item.isDeleted || item.status === ItemStatus.Blocked || item.ownerUserId !== createdBy)) {
-      return null
+    if (
+      item &&
+      (item.isDeleted ||
+        item.status === ItemStatus.Blocked ||
+        item.ownerUserId !== createdBy)
+    ) {
+      return null;
     }
 
     return item;
   }
 
-  async updateMyItem(id: string, createdBy: string, data: ItemUserInputDTO): Promise<Item> {
+  async updateMyItem(
+    id: string,
+    createdBy: string,
+    data: ItemUserInputDTO,
+  ): Promise<Item> {
     const allowUpdateFields = [
       'name',
       'description',
@@ -202,92 +211,106 @@ export class UserItemsService {
       'rentPricePerMonth',
       'totalQuantity',
       'status',
-      'keyword'
+      'keyword',
     ];
-    const updateData: any = {}
+    const updateData: any = {};
 
     for (let i = 0; i < allowUpdateFields.length; i++) {
-      let field = allowUpdateFields[i]
+      let field = allowUpdateFields[i];
 
       switch (field) {
         case 'name':
           if (data[field] && data[field].length) {
-            updateData[field] = data[field]
-            const nowToString = Date.now().toString();
-            updateData['slug'] = `${stringToSlug(data[field])}-${nowToString.substr(
-              nowToString.length - 5,
-            )}`
+            updateData[field] = data[field];
+            updateData['slug'] = stringToSlug(data[field]);
           }
-          break
+          break;
         case 'termAndCondition':
         case 'description':
           if (data[field]) {
             if (typeof data[field] === 'string') {
-              updateData[field] = data[field]
+              updateData[field] = data[field];
             } else {
-              updateData[field] = JSON.stringify(data[field])
+              updateData[field] = JSON.stringify(data[field]);
             }
           }
-          break
+          break;
         case 'images':
           if (data[field] && Array.isArray(data[field])) {
-            const images: any = data[field]
+            const images: any = data[field];
             images.forEach((image) => {
-              this.storageService.handleUploadImageBySignedUrlComplete(image.id, ['small', 'medium'])
-            })
-            updateData[field] = JSON.stringify(images)
+              this.storageService.handleUploadImageBySignedUrlComplete(
+                image.id,
+                ['small', 'medium'],
+              );
+            });
+            updateData[field] = JSON.stringify(images);
           }
-          break
+          break;
         case 'checkBeforeRentDocuments':
         case 'keepWhileRentingDocuments':
-          updateData[field] = JSON.stringify(data[field])
-          break
+          updateData[field] = JSON.stringify(data[field]);
+          break;
         case 'unavailableForRentDays':
           if (data[field] && data[field].length) {
-            const unavailableForRentDays = data[field]
+            const unavailableForRentDays = data[field];
             updateData[field] = (unavailableForRentDays || []).map(
               (data) => new Date(data),
-            )
+            );
           }
         case 'status':
-          if (data[field] && (data[field] === ItemStatus.Draft || (data[field] === ItemStatus.Published))) {
-            updateData[field] = data[field]
+          if (
+            data[field] &&
+            (data[field] === ItemStatus.Draft ||
+              data[field] === ItemStatus.Published)
+          ) {
+            updateData[field] = data[field];
           }
-          break
+          break;
         default:
-          updateData[field] = data[field]
-          break
+          updateData[field] = data[field];
+          break;
       }
     }
 
     const where = {
-      id
-    }
-    const foundItem = await this.prismaService.item.findUnique({ where })
-    if (foundItem && (foundItem.isDeleted || foundItem.status === ItemStatus.Blocked || foundItem.ownerUserId !== createdBy)) {
-      return null
+      id,
+    };
+    const foundItem = await this.prismaService.item.findUnique({ where });
+    if (
+      foundItem &&
+      (foundItem.isDeleted ||
+        foundItem.status === ItemStatus.Blocked ||
+        foundItem.ownerUserId !== createdBy)
+    ) {
+      return null;
     }
 
     return this.prismaService.item.update({
       where,
-      data: updateData
-    })
+      data: updateData,
+    });
   }
 
   async softDeleteMyItem(id: string, createdBy: string): Promise<Item> {
     const where = {
-      id
-    }
-    const foundItem = await this.prismaService.item.findUnique({ where })
-    if (foundItem && (foundItem.isDeleted || foundItem.status === ItemStatus.Blocked || foundItem.ownerUserId !== createdBy)) {
-      return null
+      id,
+    };
+    const foundItem = await this.prismaService.item.findUnique({ where });
+    if (
+      foundItem &&
+      (foundItem.isDeleted ||
+        foundItem.status === ItemStatus.Blocked ||
+        foundItem.ownerUserId !== createdBy)
+    ) {
+      return null;
     }
 
     return this.prismaService.item.update({
       where,
       data: {
-        isDeleted: true
-      }
-    })
+        isDeleted: true,
+      },
+    });
   }
 }

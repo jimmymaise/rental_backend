@@ -31,7 +31,7 @@ export class ItemsResolvers {
   async listingNewItem(
     @CurrentUser() user: GuardUserPayload,
     @Args('itemData') itemData: ItemUserInputDTO,
-    @Args('includes') includes: string[]
+    @Args('includes') includes: string[],
   ): Promise<ItemDTO> {
     return new Promise((resolve, reject) => {
       this.itemService
@@ -115,13 +115,13 @@ export class ItemsResolvers {
 
   @Query()
   @UseGuards(EveryoneGqlAuthGuard)
-  async feedDetailBySlug(
+  async feedDetail(
     @CurrentUser() user: GuardUserPayload,
-    @Args('slug') slug: string,
+    @Args('id') id: string,
     @Args('includes') includes: string[],
     @Args('checkWishList') checkWishList: boolean,
   ): Promise<ItemDTO> {
-    const item = await this.itemService.findOneAvailableBySlug(slug, includes);
+    const item = await this.itemService.findOne(id, includes);
     const enhancedItem = toItemDTO(item);
 
     if (item.ownerUserId) {
