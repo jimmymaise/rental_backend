@@ -185,6 +185,9 @@ export class RentingItemRequetsService {
       result.dayAmount = result.countOfDay * result.rentPricePerDay;
     }
 
+    result.totalAmount =
+      result.dayAmount + result.weekAmount + result.monthAmount;
+
     return result;
   }
 
