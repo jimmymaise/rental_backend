@@ -101,6 +101,31 @@ function toRentingItemRequestActivityDTO(
   };
 }
 
+export interface CalcAmountResult {
+  fromDate: number;
+  toDate: number;
+  rentPricePerDay: number;
+  rentPricePerWeek: number;
+  rentPricePerMonth: number;
+  quantity: number;
+  countOfDay: number;
+  countOfWeek: number;
+  countOfMonth: number;
+  totalAmount: number;
+  dayAmount: number;
+  weekAmount: number;
+  monthAmount: number;
+}
+
+export interface CalcAmountParam {
+  fromDate: number;
+  toDate: number;
+  rentPricePerDay: number;
+  rentPricePerWeek: number;
+  rentPricePerMonth: number;
+  quantity: number;
+}
+
 @Injectable()
 export class RentingItemRequetsService {
   constructor(
@@ -108,6 +133,60 @@ export class RentingItemRequetsService {
     private notificationService: NotificationService,
     private userService: UsersService,
   ) {}
+
+  calcAmount({
+    rentPricePerDay,
+    rentPricePerWeek,
+    rentPricePerMonth,
+    fromDate,
+    toDate,
+    quantity,
+  }: CalcAmountParam): CalcAmountResult {
+    const result: CalcAmountResult = {
+      fromDate,
+      toDate,
+      rentPricePerDay,
+      rentPricePerWeek,
+      rentPricePerMonth,
+      quantity,
+      countOfDay: 0,
+      countOfWeek: 0,
+      countOfMonth: 0,
+      totalAmount: 0,
+      dayAmount: 0,
+      weekAmount: 0,
+      monthAmount: 0,
+    };
+
+    let remainingDays = Math.abs(moment(fromDate).diff(moment(toDate), 'day'));
+    if (rentPricePerMonth > 0) {
+      const numberOfMonth = parseInt((remainingDays / MONTH_DAY).toString());
+      if (numberOfMonth >= 1) {
+        remainingDays = remainingDays % MONTH_DAY;
+
+        result.countOfMonth = numberOfMonth;
+        result.monthAmount = result.countOfMonth * result.rentPricePerMonth;
+      }
+    }
+
+    if (rentPricePerWeek > 0) {
+      const numberOfWeek = parseInt((remainingDays / WEEK_DAY).toString());
+
+      if (numberOfWeek >= 1) {
+        remainingDays = remainingDays % WEEK_DAY;
+
+        result.countOfWeek = numberOfWeek;
+        result.weekAmount = result.countOfWeek * result.rentPricePerWeek;
+      }
+    }
+
+    if (rentPricePerDay > 0 && remainingDays > 0) {
+      result.countOfDay = remainingDays;
+      result.dayAmount = result.countOfDay * result.rentPricePerDay;
+    }
+
+    return result;
+  }
 
   calcTotalAmount(
     item: Item,

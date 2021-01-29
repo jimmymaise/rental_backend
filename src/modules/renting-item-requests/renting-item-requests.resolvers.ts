@@ -1,7 +1,11 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 
-import { RentingItemRequetsService } from './renting-item-requests.service';
+import {
+  RentingItemRequetsService,
+  CalcAmountParam,
+  CalcAmountResult,
+} from './renting-item-requests.service';
 import { RentingItemRequestActivitiesService } from './renting-item-request-activities.service';
 import { RentingItemRequestInputDTO } from './renting-item-request-input.dto';
 import { RentingItemRequestDTO } from './renting-item-request.dto';
@@ -203,5 +207,14 @@ export class RentingItemRequestsResolvers {
       limit,
       rentingRequestId: requestId,
     });
+  }
+
+  @Query()
+  @UseGuards(GqlAuthGuard)
+  calcAmount(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: CalcAmountParam,
+  ): CalcAmountResult {
+    return this.rentingItemRequestService.calcAmount(data);
   }
 }

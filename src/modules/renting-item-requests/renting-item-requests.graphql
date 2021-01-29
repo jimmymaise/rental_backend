@@ -75,6 +75,31 @@ type RentingItemRequestActivityPagination {
   offset: Int
 }
 
+input CalcAmountInput {
+  rentPricePerDay: Float
+  rentPricePerWeek: Float
+  rentPricePerMonth: Float
+  fromDate: Float
+  toDate: Float
+  quantity: Int
+}
+
+type CalcAmountResult {
+  fromDate: Float
+  toDate: Float
+  rentPricePerDay: Float
+  rentPricePerWeek: Float
+  rentPricePerMonth: Float
+  quantity: Int
+  countOfDay: Int
+  countOfWeek: Int
+  countOfMonth: Int
+  totalAmount: Float
+  dayAmount: Float
+  weekAmount: Float
+  monthAmount: Float
+}
+
 type Mutation {
   newRequest(requestData: RentingItemRequestInput!): RentingItemRequest
   cancelRequest(data: UpdateItemRequestStatusInput!): RentingItemRequest
@@ -82,12 +107,18 @@ type Mutation {
   declineRequest(data: UpdateItemRequestStatusInput!): RentingItemRequest
   startRequest(data: UpdateItemRequestStatusInput!): RentingItemRequest
   completeRequest(data: UpdateItemRequestStatusInput!): RentingItemRequest
-  commentOnRequest(data: UpdateItemRequestStatusInput!): RentingItemRequestActivity
+  commentOnRequest(
+    data: UpdateItemRequestStatusInput!
+  ): RentingItemRequestActivity
 }
 
 type Query {
   # findAllRequestFromMe(query: RentingItemRequestQuery): RentingItemRequestPagination
   # findAllRequestToMe(query: RentingItemRequestQuery): RentingItemRequestPagination
   findAllRequest(query: RentingItemRequestQuery): RentingItemRequestPagination
-  findAllActivityRequest(requestId: String!, query: RentingItemRequestActivityQuery): RentingItemRequestActivityPagination
+  findAllActivityRequest(
+    requestId: String!
+    query: RentingItemRequestActivityQuery
+  ): RentingItemRequestActivityPagination
+  calcAmount(data: CalcAmountInput): CalcAmountResult
 }
