@@ -11,99 +11,144 @@ const BUCKET_ITEM_IMAGE_NAME =
 export class StoragesService {
   constructor(
     private prismaService: PrismaService,
-    private googleStorageService: GoogleCloudStorageService
+    private googleStorageService: GoogleCloudStorageService,
   ) {}
 
-  public getPublicUrl = (bucketName: string, folderName: string, fileName: string) => this.googleStorageService.getPublicUrl(bucketName, folderName, fileName)
+  public getPublicUrl = (
+    bucketName: string,
+    folderName: string,
+    fileName: string,
+  ) => this.googleStorageService.getPublicUrl(bucketName, folderName, fileName);
 
   public getImagePublicUrl(folderName: string, fileName: string): string {
-    return this.getPublicUrl(BUCKET_ITEM_IMAGE_NAME, folderName, fileName)
+    return this.getPublicUrl(BUCKET_ITEM_IMAGE_NAME, folderName, fileName);
   }
 
   public async generateReadSignedUrl(fileName: string): Promise<string> {
-    return await this.googleStorageService.generateV4ReadSignedUrl(fileName, BUCKET_ITEM_IMAGE_NAME)
+    return await this.googleStorageService.generateV4ReadSignedUrl(
+      fileName,
+      BUCKET_ITEM_IMAGE_NAME,
+    );
   }
 
-  public generateUploadImageSignedUrl(fileName: string, contentType: string): Promise<string> {
-    return this.googleStorageService.getPreSignedUrlForUpload(fileName, contentType, BUCKET_ITEM_IMAGE_NAME)
+  public generateUploadImageSignedUrl(
+    fileName: string,
+    contentType: string,
+  ): Promise<string> {
+    return this.googleStorageService.getPreSignedUrlForUpload(
+      fileName,
+      contentType,
+      BUCKET_ITEM_IMAGE_NAME,
+    );
   }
 
-  public async getReadSignedUrlForUrl(originalUrl: string, includes: string[] = []) {
+  public async getReadSignedUrlForUrl(
+    originalUrl: string,
+    includes: string[] = [],
+  ) {
     // Extract, get signed url cho tung file
-    const splitedUrl = originalUrl.split('/')
-    const bucketName = BUCKET_ITEM_IMAGE_NAME
-    const fileName = splitedUrl[splitedUrl.length - 1]
-    const folderName = splitedUrl[splitedUrl.length - 2]
+    const splitedUrl = originalUrl.split('/');
+    const bucketName = BUCKET_ITEM_IMAGE_NAME;
+    const fileName = splitedUrl[splitedUrl.length - 1];
+    const folderName = splitedUrl[splitedUrl.length - 2];
 
-    let url
-    let smallUrl
-    let mediumUrl
+    let url;
+    let smallUrl;
+    let mediumUrl;
 
     try {
-      url = await this.googleStorageService.generateV4ReadSignedUrl(`${folderName}/${fileName}`, bucketName)
+      url = await this.googleStorageService.generateV4ReadSignedUrl(
+        `${folderName}/${fileName}`,
+        bucketName,
+      );
     } catch (err) {}
 
     if (includes.includes('small')) {
       try {
-        smallUrl = await this.googleStorageService.generateV4ReadSignedUrl(`${folderName}/small-${fileName}`, bucketName)
+        smallUrl = await this.googleStorageService.generateV4ReadSignedUrl(
+          `${folderName}/small-${fileName}`,
+          bucketName,
+        );
       } catch (err) {}
     }
 
     if (includes.includes('medium')) {
       try {
-        mediumUrl = await this.googleStorageService.generateV4ReadSignedUrl(`${folderName}/medium-${fileName}`, bucketName)
+        mediumUrl = await this.googleStorageService.generateV4ReadSignedUrl(
+          `${folderName}/medium-${fileName}`,
+          bucketName,
+        );
       } catch (err) {}
     }
 
     return {
       url,
       smallUrl,
-      mediumUrl
-    }
+      mediumUrl,
+    };
   }
 
-  public async handleUploadImageBySignedUrlComplete(fileId: string, includes: string[] = []): Promise<FileStorage> {
+  public async handleUploadImageBySignedUrlComplete(
+    fileId: string,
+    includes: string[] = [],
+  ): Promise<FileStorage> {
     const fileDb = await this.prismaService.fileStorage.findUnique({
       where: {
-        id: fileId
-      }
-    })
+        id: fileId,
+      },
+    });
 
-    if (fileDb.isUploadSuccess) {
-      return fileDb
+    if (!fileDb || fileDb.isUploadSuccess) {
+      return fileDb;
     }
 
     if (fileDb) {
       try {
-        await this.googleStorageService.makePublic(fileDb.folderName, fileDb.name, fileDb.bucketName)
+        await this.googleStorageService.makePublic(
+          fileDb.folderName,
+          fileDb.name,
+          fileDb.bucketName,
+        );
       } catch (err) {}
 
       if (includes.includes('small')) {
         try {
-          await this.googleStorageService.makePublic(fileDb.folderName, `small-${fileDb.name}`, fileDb.bucketName)
+          await this.googleStorageService.makePublic(
+            fileDb.folderName,
+            `small-${fileDb.name}`,
+            fileDb.bucketName,
+          );
         } catch (err) {}
       }
 
       if (includes.includes('medium')) {
         try {
-          await this.googleStorageService.makePublic(fileDb.folderName, `medium-${fileDb.name}`, fileDb.bucketName)
+          await this.googleStorageService.makePublic(
+            fileDb.folderName,
+            `medium-${fileDb.name}`,
+            fileDb.bucketName,
+          );
         } catch (err) {}
       }
     }
 
     const updatedFileDb = await this.prismaService.fileStorage.update({
       where: {
-        id: fileId
+        id: fileId,
       },
       data: {
-        isUploadSuccess: true
-      }
-    })
+        isUploadSuccess: true,
+      },
+    });
 
-    return updatedFileDb
+    return updatedFileDb;
   }
 
-  public uploadItemImage(stream: any, filename: string, mimetype: string): Promise<string> {
+  public uploadItemImage(
+    stream: any,
+    filename: string,
+    mimetype: string,
+  ): Promise<string> {
     return this.googleStorageService.sendFileToGCSByStream(
       stream,
       filename,
@@ -112,22 +157,19 @@ export class StoragesService {
     );
   }
 
-  async getFileDataById(
-    fileId: string
-  ): Promise<FileStorage> {
-    return this.prismaService.fileStorage.findUnique({ where: { id: fileId } })
+  async getFileDataById(fileId: string): Promise<FileStorage> {
+    return this.prismaService.fileStorage.findUnique({ where: { id: fileId } });
   }
 
-  async hardDeleteFile(
-    fileId: string
-  ): Promise<FileStorage> {
-    return this.prismaService.fileStorage.delete({ where: { id: fileId } })
+  async hardDeleteFile(fileId: string): Promise<FileStorage> {
+    return this.prismaService.fileStorage.delete({ where: { id: fileId } });
   }
 
-  async softDeleteFile(
-    fileId: string
-  ): Promise<FileStorage> {
-    return this.prismaService.fileStorage.update({ where: { id: fileId }, data: { isDeleted: true } })
+  async softDeleteFile(fileId: string): Promise<FileStorage> {
+    return this.prismaService.fileStorage.update({
+      where: { id: fileId },
+      data: { isDeleted: true },
+    });
   }
 
   async saveItemImageStorageInfo(
@@ -145,7 +187,7 @@ export class StoragesService {
         bucketName: BUCKET_ITEM_IMAGE_NAME,
         folderName,
         createdBy,
-        usingLocate: FileUsingLocate.ItemPreviewImage
+        usingLocate: FileUsingLocate.ItemPreviewImage,
       },
     });
   }

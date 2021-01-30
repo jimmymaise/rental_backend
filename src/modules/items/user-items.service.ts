@@ -200,6 +200,7 @@ export class UserItemsService {
       'name',
       'description',
       'categories',
+      'termAndCondition',
       'images',
       'checkBeforeRentDocuments',
       'keepWhileRentingDocuments',
