@@ -11,14 +11,14 @@ export class AreasService {
     private redisCacheService: RedisCacheService,
   ) {}
 
-  async findAll(isDisabled: boolean = false): Promise<Area[]> {
+  async findAll(isDisabled: boolean = false): Promise<any> {
     let key = 'AREA_LIST';
 
     if (isDisabled) {
       key = 'AREA_LIST_DISABLED';
     }
 
-    let result = await this.redisCacheService.get(key);
+    let result = (await this.redisCacheService.get(key)) as Area[];
     if (!result) {
       result = await this.prismaService.area.findMany({
         where: { isDeleted: false, isDisabled },

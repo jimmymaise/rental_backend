@@ -37,7 +37,7 @@ export class CategoriesService {
       await this.redisCacheService.set(key, result, ONE_DAY);
     }
 
-    return result;
+    return result as Category[];
   }
 
   findAllAvailableInCategory(parentCategoryId: string): Promise<Category[]> {

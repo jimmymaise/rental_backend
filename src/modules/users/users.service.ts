@@ -78,7 +78,7 @@ export class UsersService {
     let userDetail = await this.redisCacheService.get(cacheKey);
 
     if (userDetail) {
-      return userDetail;
+      return userDetail as UserInfoDTO;
     }
 
     const userData = await this.getUserById(userId);
@@ -88,7 +88,7 @@ export class UsersService {
 
     this.redisCacheService.set(cacheKey, userDetail || {}, 3600);
 
-    return userDetail;
+    return userDetail as UserInfoDTO;
   }
 
   async getUserById(userId: string): Promise<User> {
