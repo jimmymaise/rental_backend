@@ -75,10 +75,8 @@ export class WishingItemsService {
       take: limit,
       include,
     });
-    const count = await this.prismaService.item.count({
+    const count = await this.prismaService.wishingItem.count({
       where,
-      skip: offset,
-      take: limit,
     });
 
     return {
