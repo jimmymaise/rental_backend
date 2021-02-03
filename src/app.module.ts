@@ -86,7 +86,7 @@ import { AppService } from './app.service';
         RESET_PASSWORD_TOKEN_EXPIRATION_TIME: Joi.string().required(),
         GOOGLE_RECAPTCHA_V3_SECRET_KEY: Joi.string().required(),
         SENTRY_DSN: Joi.string().required(),
-        APP_ENV: Joi.string().required(),
+        ENV_NAME: Joi.string().required(),
       }),
     }),
     CommonModule,

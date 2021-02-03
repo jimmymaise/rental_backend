@@ -30,7 +30,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   Sentry.init({
-    environment: process.env.APP_ENV,
+    environment: process.env.ENV_NAME,
     // see why we use APP_NAME here: https://github.com/getsentry/sentry-cli/issues/482
     // release: `${process.env.APP_NAME}-${process.env.APP_REVISION}` || '0.0.1',
     dsn: process.env.SENTRY_DSN,
