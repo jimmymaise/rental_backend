@@ -67,16 +67,16 @@ export function EncryptByAesCBCPassword(
   text: string,
   password: string,
 ): string {
-  const { aesKey, aesIv } = this.generateAesKeys(password);
-  return this.EncryptByAesCBC(text, aesKey, aesIv);
+  const { aesKey, aesIv } = generateAesKeys(password);
+  return EncryptByAesCBC(text, aesKey, aesIv);
 }
 
 export function DecryptByAesCBCPassword(
   text: string,
   password: string,
 ): string {
-  const { aesKey, aesIv } = this.generateAesKeys(password);
-  return this.DecryptObjByAesCBC(text, aesKey, aesIv);
+  const { aesKey, aesIv } = generateAesKeys(password);
+  return DecryptObjByAesCBC(text, aesKey, aesIv);
 }
 
 export function EncryptByAesCBC(
