@@ -18,7 +18,7 @@ enum UserRole {
 model User {
   id                        String     @id @default(uuid())
   email                     String?    @unique
-  PhoneNumber               String?    @unique
+  phoneNumber               String?    @unique
   passwordHash              String?
   currentHashedRefreshToken String?    @unique
   role                      UserRole[]
@@ -48,6 +48,7 @@ model UserInfo {
   bio         String?
   avatarImage String? // { id, url }
   coverImage  String? // { id, url }
+  phoneNumber String?
   createdDate DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
   userId      String

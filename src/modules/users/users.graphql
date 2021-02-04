@@ -4,6 +4,7 @@ type UserInfo {
   bio: String
   avatarImage: PublicStorageFile
   coverImage: PublicStorageFile
+  phoneNumber: String
   email: String
 }
 
@@ -13,6 +14,7 @@ type PublicUserInfo {
   bio: String
   avatarImage: PublicStorageFile
   coverImage: PublicStorageFile
+  phoneNumber: String
   permissions: [String]
 }
 
@@ -21,6 +23,7 @@ input UserInfoInput {
   bio: String
   avatarImage: PublicStorageFileInput
   coverImage: PublicStorageFileInput
+  phoneNumber: String
   email: String
 }
 

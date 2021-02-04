@@ -15,7 +15,8 @@
     "esModuleInterop": true,
     "paths": {
       "@app/*": ["src/*"],
-      "@modules/*": ["src/modules/*"]
+      "@modules/*": ["src/modules/*"],
+      "@helpers/*": ["src/helpers/*"]
     }
   }
 }

@@ -5,7 +5,7 @@ import { Item, ItemStatus } from '@prisma/client';
 import { PaginationDTO } from '../../models';
 import { StoragesService } from '../storages/storages.service';
 import { ItemUserInputDTO } from './item-user-input.dto';
-import { stringToSlug } from '../../helpers';
+import { stringToSlug } from '../../helpers/common';
 
 @Injectable()
 export class UserItemsService {

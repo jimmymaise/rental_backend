@@ -87,6 +87,7 @@ import { AppService } from './app.service';
         GOOGLE_RECAPTCHA_V3_SECRET_KEY: Joi.string().required(),
         SENTRY_DSN: Joi.string().required(),
         ENV_NAME: Joi.string().required(),
+        ENCRYPT_PHONE_NUMBER_PASSWORD: Joi.string().required(),
       }),
     }),
     CommonModule,

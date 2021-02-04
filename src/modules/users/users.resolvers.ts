@@ -21,7 +21,7 @@ export class UsersResolvers {
   @Query()
   @UseGuards(GqlAuthGuard)
   async whoAmI(@CurrentUser() user: GuardUserPayload): Promise<UserInfoDTO> {
-    return this.userService.getUserDetailData(user.id);
+    return this.userService.getUserDetailData(user.id, true);
   }
 
   @Query()

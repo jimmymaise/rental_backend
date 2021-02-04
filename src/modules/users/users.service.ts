@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import sample from 'lodash/sample';
+import isEmpty from 'lodash/isEmpty';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { User, UserRole, UserInfo } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
 import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
+import { EncryptByAesCBCPassword } from '@helpers/encrypt';
 
 const DEFAULT_AVATARS = [
   'https://asia-fast-storage.thuedo.vn/default-avatars/default_0008_avatar-1.jpg',
@@ -45,6 +47,18 @@ function getUserCacheKey(userId: string) {
   return `USER_INFO_${userId}`;
 }
 
+function encryptPhoneNumber(userInfo: UserInfoDTO): UserInfoDTO {
+  return {
+    ...userInfo,
+    phoneNumber: !isEmpty(userInfo.phoneNumber)
+      ? EncryptByAesCBCPassword(
+          userInfo.phoneNumber,
+          process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
+        )
+      : userInfo.phoneNumber,
+  };
+}
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -69,7 +83,10 @@ export class UsersService {
     );
   }
 
-  async getUserDetailData(userId: string): Promise<UserInfoDTO> {
+  async getUserDetailData(
+    userId: string,
+    isDisableEncryptPhoneNumber = false,
+  ): Promise<UserInfoDTO> {
     if (!userId) {
       return null;
     }
@@ -78,7 +95,9 @@ export class UsersService {
     let userDetail = await this.redisCacheService.get(cacheKey);
 
     if (userDetail) {
-      return userDetail as UserInfoDTO;
+      return !isDisableEncryptPhoneNumber
+        ? encryptPhoneNumber(userDetail as UserInfoDTO)
+        : (userDetail as UserInfoDTO);
     }
 
     const userData = await this.getUserById(userId);
@@ -88,7 +107,9 @@ export class UsersService {
 
     this.redisCacheService.set(cacheKey, userDetail || {}, 3600);
 
-    return userDetail as UserInfoDTO;
+    return !isDisableEncryptPhoneNumber
+      ? encryptPhoneNumber(userDetail as UserInfoDTO)
+      : (userDetail as UserInfoDTO);
   }
 
   async getUserById(userId: string): Promise<User> {
@@ -326,6 +347,7 @@ export class UsersService {
       'bio',
       'avatarImage',
       'coverImage',
+      'phoneNumber',
     ];
     const updateData: any = {};
 
