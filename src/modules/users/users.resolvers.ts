@@ -1,7 +1,6 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Resolver, Mutation, Query, Context } from '@nestjs/graphql';
+import { Args, Resolver, Mutation, Query } from '@nestjs/graphql';
 
-import { MyUserContact } from '@prisma/client';
 import { UsersService } from './users.service';
 import { GuardUserPayload } from '../auth/auth.dto';
 import { GqlAuthGuard } from '../auth/gpl-auth.guard';

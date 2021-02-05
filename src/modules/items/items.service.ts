@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import sanitizeHtml from 'sanitize-html';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { Item, ItemStatus } from '@prisma/client';
@@ -71,12 +72,16 @@ export class ItemsService {
 
     const createData: any = {
       data: {
-        name,
+        name: sanitizeHtml(name),
         slug: stringToSlug(name),
-        description: description ? JSON.stringify(description) : '',
-        termAndCondition: termAndCondition
-          ? JSON.stringify(termAndCondition)
-          : '',
+        description:
+          description && typeof description === 'object'
+            ? JSON.stringify(description)
+            : sanitizeHtml(description),
+        termAndCondition:
+          termAndCondition && typeof termAndCondition === 'object'
+            ? JSON.stringify(termAndCondition)
+            : sanitizeHtml(termAndCondition),
         categories: {
           connect: categoryIds.map((id) => ({ id })),
         },

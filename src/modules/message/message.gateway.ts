@@ -10,6 +10,7 @@ import {
 import { Logger, UseGuards } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Server } from 'ws';
+import sanitizeHtml from 'sanitize-html';
 
 import { WebsocketAuthGuard } from '../auth/ws-auth.guard';
 import { AuthService } from '../auth/auth.service';
@@ -127,9 +128,11 @@ export class MessageGateway
       });
     }
 
+    const secureContent = sanitizeHtml(content);
+
     const newMessage = await this.messageService.addMessage({
       fromUserId: user.userId,
-      content,
+      content: secureContent,
       chatConversationId: conversationId,
       replyToId,
     });
@@ -138,7 +141,7 @@ export class MessageGateway
     const newMessageToClient = {
       chatConversationId: conversationId,
       id: newMessage.id,
-      content,
+      content: secureContent,
       replyToId,
       fromUserId: user.userId,
       fromUserInfo: userInfo,

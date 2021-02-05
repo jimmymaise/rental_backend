@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import sanitizeHtml from 'sanitize-html';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { Item, ItemStatus } from '@prisma/client';
@@ -222,7 +223,7 @@ export class UserItemsService {
       switch (field) {
         case 'name':
           if (data[field] && data[field].length) {
-            updateData[field] = data[field];
+            updateData[field] = sanitizeHtml(data[field]);
             updateData['slug'] = stringToSlug(data[field]);
           }
           break;

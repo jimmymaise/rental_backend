@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import sample from 'lodash/sample';
 import isEmpty from 'lodash/isEmpty';
+import sanitizeHtml from 'sanitize-html';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { User, UserRole, UserInfo } from '@prisma/client';
@@ -127,7 +128,7 @@ export class UsersService {
   ): Promise<User> {
     const passwordHash = await bcrypt.hash(password, 10);
     return this.prismaService.user.create({
-      data: { email, passwordHash, role: [UserRole.User] },
+      data: { email: sanitizeHtml(email), passwordHash, role: [UserRole.User] },
     });
   }
 
@@ -319,8 +320,8 @@ export class UsersService {
   ): Promise<UserInfo> {
     return await this.prismaService.userInfo.create({
       data: {
-        displayName: info.displayName || '',
-        bio: info.bio,
+        displayName: sanitizeHtml(info.displayName || ''),
+        bio: sanitizeHtml(info.bio || ''),
         avatarImage: JSON.stringify({
           url: sample(DEFAULT_AVATARS),
         }),
@@ -355,6 +356,12 @@ export class UsersService {
       let field = ALLOW_UPDATE_FIELDS[i];
 
       switch (field) {
+        case 'displayName':
+        case 'bio':
+          if (data[field]) {
+            updateData[field] = sanitizeHtml(data[field]);
+          }
+          break;
         case 'avatarImage':
           if (data[field]) {
             this.storageService.handleUploadImageBySignedUrlComplete(
