@@ -4,6 +4,7 @@ import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { RentingMandatoryVerifyDocumentPublicDTO } from '../renting-mandatory-verify-documents/renting-mandatory-verify-document-public.dto';
 import { UserInfoDTO } from '../users/user-info.dto';
 import { tryToParseJSON } from '@app/helpers/common';
+import { Permission } from './permission.enum';
 
 export interface ItemDTO {
   id: string;
@@ -34,11 +35,29 @@ export interface ItemDTO {
   isInMyWishList?: boolean;
   createdDate: number;
   createdBy?: UserInfoDTO;
+  permissions?: Permission[];
 }
 
-export function toItemDTO(item: Item): ItemDTO {
+export function toItemDTO(item: Item, userId: string): ItemDTO {
   if (!item) {
     return null;
+  }
+
+  const permissions: Permission[] = [];
+  if (userId) {
+    permissions.push(Permission.ADD_TO_MY_LIST);
+
+    if (userId === item.ownerUserId) {
+      permissions.push(Permission.EDIT_ITEM);
+    } else {
+      permissions.push(Permission.VIEW_RENTING_REQUEST_BOX);
+      permissions.push(Permission.CHAT_WITH_SHOP_OWNER);
+      permissions.push(Permission.CREATE_RENTING_REQUEST);
+      permissions.push(Permission.VIEW_CHAT_WITH_SHOP_OWNER_BOX);
+    }
+  } else {
+    permissions.push(Permission.VIEW_RENTING_REQUEST_BOX);
+    permissions.push(Permission.VIEW_CHAT_WITH_SHOP_OWNER_BOX);
   }
 
   return {
@@ -58,5 +77,6 @@ export function toItemDTO(item: Item): ItemDTO {
       item.keepWhileRentingDocuments,
       [],
     ),
+    permissions,
   };
 }

@@ -37,7 +37,7 @@ export class ItemsResolvers {
       this.itemService
         .createItemForUser(itemData, user.id, includes)
         .then((item) => {
-          resolve(toItemDTO(item));
+          resolve(toItemDTO(item, null));
         })
         .catch(reject);
     });
@@ -88,7 +88,7 @@ export class ItemsResolvers {
     const items = [];
 
     for (let i = 0; i < result.items.length; i++) {
-      const newItem = toItemDTO(result.items[i]);
+      const newItem = toItemDTO(result.items[i], user?.id);
 
       if (result.items[i].ownerUserId) {
         newItem.createdBy = await this.usersService.getUserDetailData(
@@ -122,7 +122,7 @@ export class ItemsResolvers {
     @Args('checkWishList') checkWishList: boolean,
   ): Promise<ItemDTO> {
     const item = await this.itemService.findOne(id, includes);
-    const enhancedItem = toItemDTO(item);
+    const enhancedItem = toItemDTO(item, user?.id);
 
     if (item.ownerUserId) {
       enhancedItem.createdBy = await this.usersService.getUserDetailData(
@@ -167,7 +167,7 @@ export class ItemsResolvers {
     const items = [];
 
     for (let i = 0; i < result.items.length; i++) {
-      const newItem = toItemDTO(result.items[i]);
+      const newItem = toItemDTO(result.items[i], user.id);
 
       if (checkWishList) {
         newItem.isInMyWishList =
@@ -212,7 +212,7 @@ export class ItemsResolvers {
 
     const items = [];
     for (let i = 0; i < result.items.length; i++) {
-      const newItem = toItemDTO(result.items[i]);
+      const newItem = toItemDTO(result.items[i], user?.id);
 
       if (result.items[i].ownerUserId) {
         newItem.createdBy = await this.usersService.getUserDetailData(
@@ -251,7 +251,7 @@ export class ItemsResolvers {
       includes,
     );
 
-    const enhancedItem = toItemDTO(item);
+    const enhancedItem = toItemDTO(item, user.id);
 
     if (checkWishList) {
       enhancedItem.isInMyWishList =
@@ -273,7 +273,7 @@ export class ItemsResolvers {
       this.userItemService
         .updateMyItem(id, user.id, itemData)
         .then((item) => {
-          resolve(toItemDTO(item));
+          resolve(toItemDTO(item, user.id));
         })
         .catch(reject);
     });
@@ -293,7 +293,7 @@ export class ItemsResolvers {
             throw new Error('Item is not existing!');
           }
 
-          resolve(toItemDTO(item));
+          resolve(toItemDTO(item, user.id));
         })
         .catch(reject);
     });

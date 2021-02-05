@@ -58,7 +58,7 @@ export class WishingItemsResolvers {
 
     for (let i = 0; i < result.items.length; i++) {
       const item = (result.items[i] as any).item;
-      const newItem = toItemDTO(item);
+      const newItem = toItemDTO(item, user.id);
 
       if (item.ownerUserId) {
         newItem.createdBy = await this.usersService.getUserDetailData(
