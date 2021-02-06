@@ -23,6 +23,14 @@ const DEFAULT_AVATARS = [
   'https://asia-fast-storage.thuedo.vn/default-avatars/default_0000_avatar-9.jpg',
 ];
 
+const DEFAULT_COVERS = [
+  'https://asia-fast-storage.thuedo.vn/default-covers/Wavy_Tsp-02_Single-09.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-covers/mount-fuji-lake-kawaguchiko-sunrise-vintage.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-covers/nature-landscape-hot-air-balloons-festival-sky.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-covers/panorama-rice-fields-terraced-sunset-mu-cang-chai.jpg',
+  'https://asia-fast-storage.thuedo.vn/default-covers/scenery-sunburst-lake-mount-assiniboine-reflections-pine-tree-sunrise.jpg',
+];
+
 function toUserInfoDTO(user: User, userInfo: UserInfo): UserInfoDTO {
   if (!user) {
     return null;
@@ -326,8 +334,7 @@ export class UsersService {
           url: sample(DEFAULT_AVATARS),
         }),
         coverImage: JSON.stringify({
-          url:
-            'https://asia-fast-storage.thuedo.vn/default-avatars/default-cover.jpg',
+          url: sample(DEFAULT_COVERS),
         }),
         user: {
           connect: {
