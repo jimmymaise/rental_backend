@@ -317,7 +317,24 @@ export class RentingItemRequetsService {
 
     const include = (includes || []).reduce((result, cur) => {
       if (validIncludeMap[cur]) {
-        result[cur] = true;
+        if (cur === 'rentingItem') {
+          result[cur] = {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              categories: true,
+              areas: true,
+              description: true,
+              createdDate: true,
+              ownerUserId: true,
+              unavailableForRentDays: true,
+              images: true,
+            },
+          };
+        } else {
+          result[cur] = true;
+        }
       }
       return result;
     }, {});
