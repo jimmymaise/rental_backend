@@ -191,37 +191,6 @@ export class RentingItemRequetsService {
     return result;
   }
 
-  calcTotalAmount(
-    item: Item,
-    fromDate: number,
-    toDate: number,
-    quantity: number,
-  ): number {
-    const diffDay = Math.abs(moment(fromDate).diff(moment(toDate), 'day'));
-
-    const numberOfWeek = parseInt((diffDay / WEEK_DAY).toString());
-    if (numberOfWeek >= 1 && item.rentPricePerWeek > 0) {
-      const days = diffDay % WEEK_DAY;
-
-      return (
-        quantity *
-        (numberOfWeek * item.rentPricePerWeek + days * item.rentPricePerDay)
-      );
-    }
-
-    const numberOfMonth = parseInt((diffDay / MONTH_DAY).toString());
-    if (numberOfMonth >= 1 && item.rentPricePerMonth > 0) {
-      const days = diffDay % MONTH_DAY;
-
-      return (
-        quantity *
-        (numberOfMonth * item.rentPricePerMonth + days * item.rentPricePerDay)
-      );
-    }
-
-    return quantity * (diffDay * item.rentPricePerDay);
-  }
-
   async createNewRequestForUser(
     data: RentingItemRequestInputDTO,
     ownerUserId: string,
@@ -230,8 +199,15 @@ export class RentingItemRequetsService {
     const item = await this.prismaService.item.findUnique({
       where: { id: itemId },
     });
-    const totalAmount = await this.calcTotalAmount(item, fromDate, toDate, 1);
-
+    const amountData = this.calcAmount({
+      rentPricePerDay: item.rentPricePerDay,
+      rentPricePerWeek: item.rentPricePerWeek,
+      rentPricePerMonth: item.rentPricePerMonth,
+      fromDate,
+      toDate,
+      quantity: 1,
+    });
+    const totalAmount = amountData.totalAmount;
     const newItem = await this.prismaService.rentingItemRequest.create({
       data: {
         rentingItem: {
@@ -240,7 +216,7 @@ export class RentingItemRequetsService {
           },
         },
         totalAmount,
-        actualTotalAmount: 0,
+        actualTotalAmount: totalAmount,
         rentTotalQuantity: 1,
         fromDate: new Date(fromDate),
         toDate: new Date(toDate),
@@ -330,6 +306,9 @@ export class RentingItemRequetsService {
               ownerUserId: true,
               unavailableForRentDays: true,
               images: true,
+              rentPricePerDay: true,
+              rentPricePerMonth: true,
+              rentPricePerWeek: true,
             },
           };
         } else {
