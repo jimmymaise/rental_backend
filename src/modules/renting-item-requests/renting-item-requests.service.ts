@@ -34,6 +34,7 @@ interface ChangeItemRequestStatusModel {
   updatedBy: string;
   comment?: string;
   files?: StoragePublicDTO[];
+  actualTotalAmount?: number;
 }
 
 const RequestActivityTypeMap = {
@@ -568,15 +569,22 @@ export class RentingItemRequetsService {
     updatedBy,
     comment,
     files,
+    actualTotalAmount,
   }: ChangeItemRequestStatusModel): Promise<RentingItemRequestDTO> {
+    const updatingData: any = {
+      status,
+      updatedBy,
+    };
+
+    if (actualTotalAmount || actualTotalAmount === 0) {
+      updatingData['actualTotalAmount'] = actualTotalAmount;
+    }
+
     const rentingRequest = await this.prismaService.rentingItemRequest.update({
       where: {
         id,
       },
-      data: {
-        status,
-        updatedBy,
-      },
+      data: updatingData,
       include: {
         rentingItem: true,
       },

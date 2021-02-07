@@ -18,6 +18,7 @@ interface UpdateItemRequestStatusModel {
   rentingRequestId: string;
   comment?: string;
   files?: StoragePublicDTO[];
+  actualTotalAmount?: number;
 }
 
 @Resolver('RentingItemRequest')
@@ -129,6 +130,7 @@ export class RentingItemRequestsResolvers {
       id: data.rentingRequestId,
       comment: data.comment,
       files: data.files,
+      actualTotalAmount: data.actualTotalAmount,
       updatedBy: user.id,
     });
   }
