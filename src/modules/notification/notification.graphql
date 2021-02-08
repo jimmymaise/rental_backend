@@ -9,6 +9,10 @@ type NotificationItem {
   createdDate: Float
 }
 
+type NotificationInfo {
+  unReadCount: Int
+}
+
 type NotificationPagination {
   items: [NotificationItem]
   total: Int
@@ -23,4 +27,9 @@ input NotificationQuery {
 
 type Query {
   feedMyNotifications(query: NotificationQuery): NotificationPagination
+  feedNotificationInfo: NotificationInfo
+}
+
+type Mutation {
+  setAllNotificationRead: NotificationInfo
 }

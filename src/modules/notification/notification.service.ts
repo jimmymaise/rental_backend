@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PaginationDTO } from '../../models';
 import { NotificationDTO } from './notification.dto';
 import { RequestDataNotificationModel } from './models/request-data-notification.model';
+import { NotificationInfoModel } from './models/notication-info.model';
 import { UsersService } from '../users/users.service';
 import { RENTING_REQUEST_TYPE_SET } from './constants';
 import { MessageGateway } from '../message/message.gateway';
@@ -188,5 +189,30 @@ export class NotificationService {
       offset,
       limit,
     };
+  }
+
+  async unReadNotificationsCount(userId): Promise<NotificationInfoModel> {
+    const unReadCount = await this.prismaService.userNotification.count({
+      where: {
+        isRead: false,
+        forUserId: userId,
+      },
+    });
+
+    return {
+      unReadCount,
+    };
+  }
+
+  async setAllNotificationRead(userId): Promise<any> {
+    return await this.prismaService.userNotification.updateMany({
+      where: {
+        isRead: false,
+        forUserId: userId,
+      },
+      data: {
+        isRead: true,
+      },
+    });
   }
 }
