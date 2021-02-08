@@ -127,7 +127,7 @@ export class UsersService {
   }
 
   async getUserInfoById(userId: string): Promise<UserInfo> {
-    return this.prismaService.userInfo.findUnique({ where: { id: userId } });
+    return this.prismaService.userInfo.findUnique({ where: { userId } });
   }
 
   async createUserByEmailPassword(
@@ -341,7 +341,6 @@ export class UsersService {
             id: userId,
           },
         },
-        id: userId,
       },
     });
   }
@@ -399,11 +398,10 @@ export class UsersService {
 
     const updatedUserInfo = await this.prismaService.userInfo.upsert({
       where: {
-        id: userId,
+        userId,
       },
       update: updateData,
       create: {
-        id: userId,
         ...updateData,
         user: {
           connect: {

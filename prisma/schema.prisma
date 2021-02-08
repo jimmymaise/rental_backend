@@ -43,7 +43,6 @@ model User {
 }
 
 model UserInfo {
-  id          String   @id
   displayName String?
   bio         String?
   avatarImage String? // { id, url }
@@ -51,7 +50,7 @@ model UserInfo {
   phoneNumber String?
   createdDate DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
-  userId      String
+  userId      String   @id
 }
 
 enum UserVerifyDocumentType {
