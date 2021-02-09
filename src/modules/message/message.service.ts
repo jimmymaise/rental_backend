@@ -1,88 +1,127 @@
 import { Injectable } from '@nestjs/common';
-import { ChatConversation, ChatConversationMember, ChatMessage } from '@prisma/client';
+import {
+  ChatConversation,
+  ChatConversationMember,
+  ChatMessage,
+} from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginationDTO } from '../../models';
-import { UserInfoDTO } from '../users/user-info.dto'
-import { UsersService } from '../users/users.service'
+import { UserInfoDTO } from '../users/user-info.dto';
+import { UsersService } from '../users/users.service';
 
 interface MessageData {
-  id?: string
-  fromUserId: string
-  fromUserInfo?: UserInfoDTO
-  replyToId?: string
-  chatConversationId: string
-  content: string
+  id?: string;
+  fromUserId: string;
+  fromUserInfo?: UserInfoDTO;
+  replyToId?: string;
+  chatConversationId: string;
+  content: string;
+}
+
+export interface MessageInfoModel {
+  unReadCount: number;
 }
 
 @Injectable()
 export class MessageService {
   constructor(
     private prismaService: PrismaService,
-    private userService: UsersService
+    private userService: UsersService,
   ) {}
 
-  createNewConversation(memberIds: string[], createdBy: string): Promise<ChatConversation> {
+  createNewConversation(
+    memberIds: string[],
+    createdBy: string,
+  ): Promise<ChatConversation> {
     return this.prismaService.chatConversation.create({
       data: {
         createdBy,
         chatConversationMembers: {
           create: memberIds.map((item) => ({
-            userId: item
-          }))
-        }
-      }
-    })
+            userId: item,
+          })),
+        },
+      },
+    });
   }
 
-  async isUserMemberInTheConversation(conversationId: string, memberId: string): Promise<boolean> {
-    return await this.prismaService.chatConversationMember.findUnique({
-      where: {
-        chatConversationId_userId: {
-          chatConversationId: conversationId,
-          userId: memberId
-        }
-      }
-    }) !== null
+  async isUserMemberInTheConversation(
+    conversationId: string,
+    memberId: string,
+  ): Promise<boolean> {
+    return (
+      (await this.prismaService.chatConversationMember.findUnique({
+        where: {
+          chatConversationId_userId: {
+            chatConversationId: conversationId,
+            userId: memberId,
+          },
+        },
+      })) !== null
+    );
   }
 
-  findConversationUniqueByMembers(memberIds: string[]): Promise<ChatConversation> {
+  findConversationUniqueByMembers(
+    memberIds: string[],
+  ): Promise<ChatConversation> {
     const orConditional = memberIds.map((userId) => ({
-      userId
-    }))
+      userId,
+    }));
     return this.prismaService.chatConversation.findFirst({
       where: {
         chatConversationMembers: {
           every: {
-            OR: orConditional
-          }
+            OR: orConditional,
+          },
         },
       },
       include: {
         chatConversationMembers: true,
-      }
-    })
+      },
+    });
   }
 
   getConversation(id: string): Promise<ChatConversation> {
-    return this.prismaService.chatConversation.findUnique({ where: { id } })
+    return this.prismaService.chatConversation.findUnique({ where: { id } });
   }
 
   getConversationMembers(id: string): Promise<ChatConversationMember[]> {
-    return this.prismaService.chatConversation.findUnique({ where: { id } }).chatConversationMembers({})
+    return this.prismaService.chatConversation
+      .findUnique({ where: { id } })
+      .chatConversationMembers({});
+  }
+
+  async countUnReadConversation(userId: string): Promise<number> {
+    const unReadCount = await this.prismaService.chatConversation.count({
+      where: {
+        chatConversationMembers: {
+          some: {
+            userId,
+          },
+        },
+        chatMessages: {
+          some: {
+            isRead: false,
+          },
+        },
+      },
+    });
+
+    return unReadCount;
   }
 
   async findAllMyConversations({
     offset = 0,
     limit = 10,
-    userId
+    userId,
   }): Promise<PaginationDTO<ChatConversation>> {
     const items = await this.prismaService.chatConversation.findMany({
       where: {
         chatConversationMembers: {
           some: {
-            userId
-          }
+            userId,
+          },
         },
       },
       include: {
@@ -90,58 +129,63 @@ export class MessageService {
         chatMessages: {
           where: {
             replyBy: {
-              is: null
-            }
-          }
-        }
+              is: null,
+            },
+          },
+        },
       },
       skip: offset,
-      take: limit
+      take: limit,
     });
     const count = await this.prismaService.chatConversation.count({
       where: {
         chatConversationMembers: {
           some: {
-            userId
-          }
-        }
-      }
+            userId,
+          },
+        },
+      },
     });
 
     return {
       items,
       total: count,
       offset,
-      limit
+      limit,
     };
   }
 
-  addMessage({ fromUserId, replyToId, chatConversationId, content }: MessageData): Promise<ChatMessage> {
+  addMessage({
+    fromUserId,
+    replyToId,
+    chatConversationId,
+    content,
+  }: MessageData): Promise<ChatMessage> {
     const data: any = {
       fromUserId,
       content,
       chatConversation: {
         connect: {
-          id: chatConversationId
-        }
-      }
-    }
+          id: chatConversationId,
+        },
+      },
+    };
 
     if (replyToId) {
       data.replyTo = {
         connect: {
-          id: replyToId
-        }
-      }
+          id: replyToId,
+        },
+      };
     }
 
     return this.prismaService.chatMessage.create({
-      data
-    })
+      data,
+    });
   }
 
   async findAllMyMessagesInConversation({
-    conversationId
+    conversationId,
   }): Promise<MessageData[]> {
     // TODO: HARD CODE 500 Messages
     const items = await this.prismaService.$queryRaw(
@@ -160,13 +204,15 @@ export class MessageService {
         SELECT * FROM recursive_message_query
         ORDER BY root desc
         LIMIT 500
-      `
-    )
+      `,
+    );
 
-    const result: MessageData[] = []
+    const result: MessageData[] = [];
     for (let i = 0; i < items.length; i++) {
-      const currentItem = items[i]
-      const fromUserInfo = await this.userService.getUserDetailData(currentItem['fromuserid'])
+      const currentItem = items[i];
+      const fromUserInfo = await this.userService.getUserDetailData(
+        currentItem['fromuserid'],
+      );
 
       result.push({
         id: currentItem['id'],
@@ -175,14 +221,14 @@ export class MessageService {
           id: fromUserInfo.id,
           displayName: fromUserInfo.displayName,
           avatarImage: fromUserInfo.avatarImage,
-          coverImage: fromUserInfo.coverImage
+          coverImage: fromUserInfo.coverImage,
         },
         replyToId: currentItem['replytoid'],
         chatConversationId: currentItem['chatconversationid'],
-        content: currentItem['content']
-      })
+        content: currentItem['content'],
+      });
     }
 
-    return result
+    return result;
   }
 }

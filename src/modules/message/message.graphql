@@ -13,6 +13,10 @@ type ChatMessage {
   createdDate: Float
 }
 
+type ChatMessageInfo {
+  unReadCount: Int
+}
+
 type ConversationItem {
   id: ID!
   lastMessages: [ChatMessage]
@@ -38,4 +42,5 @@ type Mutation {
 
 type Query {
   feedMyConversations(query: ConversationQuery): ConversationPagination
+  feedChatMessageInfo: ChatMessageInfo
 }
