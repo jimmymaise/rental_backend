@@ -231,4 +231,16 @@ export class MessageService {
 
     return result;
   }
+
+  async markMessageAsRead(messageId: string): Promise<ChatMessage> {
+    return await this.prismaService.chatMessage.update({
+      where: {
+        id: messageId,
+      },
+
+      data: {
+        isRead: true,
+      },
+    });
+  }
 }

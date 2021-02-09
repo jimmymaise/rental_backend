@@ -141,4 +141,15 @@ export class MessageResolvers {
       unReadCount,
     };
   }
+
+  @Mutation()
+  @UseGuards(GqlAuthGuard)
+  async markMessageAsRead(
+    @Args('messageId') messageId: string,
+  ): Promise<boolean> {
+    console.log('ddd', messageId);
+    await this.messageService.markMessageAsRead(messageId);
+
+    return true;
+  }
 }
