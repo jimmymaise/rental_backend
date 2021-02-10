@@ -19,4 +19,8 @@ export const ErrorMap = {
     code: 'REFRESH_PASSWORD_TOKEN_INVALID',
     message: 'Refresh password token invalid',
   },
+  FILE_TOO_BIG: {
+    code: 'FILE_TOO_BIG',
+    message: 'File too big',
+  },
 };

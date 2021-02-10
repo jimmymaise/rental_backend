@@ -5,15 +5,23 @@ input PublicStorageFileInput {
   url: String!
 }
 
+input FileSizeMapInput {
+  original: Int
+  small: Int
+  medium: Int
+  large: Int
+}
+
 input PreSignedUrlFileInput {
   name: String!
   contentType: String!
   includes: [String]
+  fileSizeMap: FileSizeMapInput!
 }
 
 type PreSignedUrlImageData {
   id: String!
-  preSignedUrl: String!
+  preSignedUrl: String
   mediumPreSignedUrl: String
   smallPreSignedUrl: String
   imageUrl: String

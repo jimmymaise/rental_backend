@@ -1,29 +1,30 @@
-import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { UseGuards, BadRequestException } from '@nestjs/common';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
 // import * as sharp from 'sharp'
-import * as mime from 'mime-types'
+import * as mime from 'mime-types';
 import { FileUsingLocate } from '@prisma/client';
 
-import { StoragesService } from './storages.service'
+import { StoragesService } from './storages.service';
 import { GoogleCloudStorageService } from './google-cloud-storage.service';
-import { GqlAuthGuard } from '../auth/gpl-auth.guard'
-import { GuardUserPayload } from '../auth/auth.dto'
-import { CurrentUser } from '../auth/current-user.decorator'
-import { StorageDTO } from './storage.dto'
+import { GqlAuthGuard } from '../auth/gpl-auth.guard';
+import { GuardUserPayload } from '../auth/auth.dto';
+import { CurrentUser } from '../auth/current-user.decorator';
+// import { StorageDTO } from './storage.dto';
+import { ErrorMap } from '@app/constants';
 
 interface PreSignedImageUrlData {
-  id: string
-  preSignedUrl: string
-  mediumPreSignedUrl: string
-  smallPreSignedUrl: string
-  imageUrl: string
+  id: string;
+  preSignedUrl: string;
+  mediumPreSignedUrl: string;
+  smallPreSignedUrl: string;
+  imageUrl: string;
 }
 
 @Resolver('Storage')
 export class StoragesResolvers {
   constructor(
     private storagesService: StoragesService,
-    private googleStorageService: GoogleCloudStorageService
+    private googleStorageService: GoogleCloudStorageService,
   ) {}
 
   // @Mutation(() => Boolean)
@@ -74,71 +75,123 @@ export class StoragesResolvers {
   @UseGuards(GqlAuthGuard)
   async generateImageFile(
     @CurrentUser() user: GuardUserPayload,
-    @Args('imageData') imageData: {
-      name: string,
-      contentType: string,
-      includes?: string[] // medium, small
-    }
+    @Args('imageData')
+    imageData: {
+      name: string;
+      contentType: string;
+      includes?: string[]; // medium, small
+      fileSizeMap?: {
+        small?: number;
+        medium?: number;
+        original?: number;
+      };
+    },
   ): Promise<PreSignedImageUrlData> {
-    let smallPreSignedUrl
-    let mediumPreSignedUrl
+    let smallPreSignedUrl;
+    let mediumPreSignedUrl;
+    let preSignedUrl;
 
-    const contentType = imageData.contentType
-    
-    const fileExtension = mime.extension(contentType)
+    const contentType = imageData.contentType;
+    const fileSizeMap = imageData.fileSizeMap;
 
-    const folderName = user.id
-    const fileName = `${Date.now()}-${Buffer.from(imageData.name.slice(0, 10)).toString('base64').toLowerCase()}-thue-do-vn.${fileExtension}`
-    const fileFullUrl = this.storagesService.getImagePublicUrl(folderName, fileName)
-    const storageInfo = await this.storagesService.saveItemImageStorageInfo(folderName, fileName, fileFullUrl, contentType, user.id)
+    const OneMb = 1000000;
+    for (const key of Object.keys(fileSizeMap)) {
+      if (fileSizeMap[key] > OneMb) {
+        throw new BadRequestException(ErrorMap.FILE_TOO_BIG);
+      }
+    }
+
+    const fileExtension = mime.extension(contentType);
+
+    const folderName = user.id;
+    const fileName = `${Date.now()}-${Buffer.from(imageData.name.slice(0, 10))
+      .toString('base64')
+      .toLowerCase()}-thue-do-vn.${fileExtension}`;
+    const fileFullUrl = this.storagesService.getImagePublicUrl(
+      folderName,
+      fileName,
+    );
+    const storageInfo = await this.storagesService.saveItemImageStorageInfo(
+      folderName,
+      fileName,
+      fileFullUrl,
+      contentType,
+      user.id,
+    );
 
     if (imageData?.includes?.includes('small')) {
-      smallPreSignedUrl = await this.storagesService.generateUploadImageSignedUrl(`${folderName}/small-${fileName}`, contentType)
+      smallPreSignedUrl = await this.storagesService.generateUploadImageSignedUrl(
+        `${folderName}/small-${fileName}`,
+        contentType,
+        fileSizeMap.small,
+      );
     }
 
     if (imageData?.includes?.includes('medium')) {
-      mediumPreSignedUrl = await this.storagesService.generateUploadImageSignedUrl(`${folderName}/medium-${fileName}`, contentType)
+      mediumPreSignedUrl = await this.storagesService.generateUploadImageSignedUrl(
+        `${folderName}/medium-${fileName}`,
+        contentType,
+        fileSizeMap.medium,
+      );
     }
 
-    const preSignedUrl = await this.storagesService.generateUploadImageSignedUrl(`${folderName}/${fileName}`, contentType)
+    if (imageData?.includes?.includes('original')) {
+      preSignedUrl = await this.storagesService.generateUploadImageSignedUrl(
+        `${folderName}/${fileName}`,
+        contentType,
+        fileSizeMap.original,
+      );
+    }
 
     return {
       id: storageInfo.id,
       preSignedUrl,
       mediumPreSignedUrl,
       smallPreSignedUrl,
-      imageUrl: fileFullUrl
-    }
+      imageUrl: fileFullUrl,
+    };
   }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async deleteFileForListingItem(
     @CurrentUser() user: GuardUserPayload,
-    @Args('fileId') fileId: string
+    @Args('fileId') fileId: string,
   ): Promise<string> {
-    const fileData = await this.storagesService.getFileDataById(fileId)
+    const fileData = await this.storagesService.getFileDataById(fileId);
     if (fileData.createdBy !== user.id || fileData.isDeleted) {
-      throw new Error('File does not exist')
+      throw new Error('File does not exist');
     }
 
     if (fileData.usingLocate !== FileUsingLocate.ItemPreviewImage) {
-      throw new Error('File does not exist')
+      throw new Error('File does not exist');
     }
 
-    this.storagesService.hardDeleteFile(fileId)
+    this.storagesService.hardDeleteFile(fileId);
     try {
-      this.googleStorageService.deleteFile(fileData.folderName, fileData.name, fileData.bucketName)
+      this.googleStorageService.deleteFile(
+        fileData.folderName,
+        fileData.name,
+        fileData.bucketName,
+      );
     } catch {}
 
     try {
-      this.googleStorageService.deleteFile(fileData.folderName, `small-${fileData.name}`, fileData.bucketName)
+      this.googleStorageService.deleteFile(
+        fileData.folderName,
+        `small-${fileData.name}`,
+        fileData.bucketName,
+      );
     } catch {}
 
     try {
-      this.googleStorageService.deleteFile(fileData.folderName, `medium-${fileData.name}`, fileData.bucketName)
+      this.googleStorageService.deleteFile(
+        fileData.folderName,
+        `medium-${fileData.name}`,
+        fileData.bucketName,
+      );
     } catch {}
 
-    return fileId
+    return fileId;
   }
 }

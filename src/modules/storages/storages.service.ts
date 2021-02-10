@@ -34,10 +34,12 @@ export class StoragesService {
   public generateUploadImageSignedUrl(
     fileName: string,
     contentType: string,
+    size: number
   ): Promise<string> {
     return this.googleStorageService.getPreSignedUrlForUpload(
       fileName,
       contentType,
+      size,
       BUCKET_ITEM_IMAGE_NAME,
     );
   }
