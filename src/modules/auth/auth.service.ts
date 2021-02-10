@@ -149,6 +149,7 @@ export class AuthService {
     const tokenPayload = { userId: user.id, facebookId };
     const accessToken = this.getAccessToken(tokenPayload);
     const refreshToken = this.getRefreshToken(tokenPayload);
+    await this.usersService.updateLastSignedIn(user.id);
 
     return {
       accessToken,
@@ -185,6 +186,7 @@ export class AuthService {
     const tokenPayload = { userId: user.id, googleId };
     const accessToken = this.getAccessToken(tokenPayload);
     const refreshToken = this.getRefreshToken(tokenPayload);
+    await this.usersService.updateLastSignedIn(user.id);
 
     return {
       accessToken,
@@ -233,6 +235,7 @@ export class AuthService {
     const tokenPayload = { userId: user.id, email };
     const accessToken = this.getAccessToken(tokenPayload);
     const refreshToken = this.getRefreshToken(tokenPayload);
+    await this.usersService.updateLastSignedIn(user.id);
 
     return {
       accessToken,

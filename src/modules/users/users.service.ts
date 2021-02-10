@@ -200,6 +200,17 @@ export class UsersService {
     return user;
   }
 
+  async updateLastSignedIn(userId: string): Promise<User> {
+    return await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        lastSignedIn: new Date(),
+      },
+    });
+  }
+
   async connectWithFacebookAccount(
     userId: string,
     facebookId: string,

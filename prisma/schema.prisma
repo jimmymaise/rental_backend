@@ -31,6 +31,7 @@ model User {
   verifyEmailToken          String?
   verifyPhoneToken          String?
   userInfo                  UserInfo?
+  lastSignedIn              DateTime   @default(now())
 
   ownerItemReview              ItemReview[]         @relation("OwnerItemReview")
   ownerUserRentingItemRequest  RentingItemRequest[] @relation("OwnerRequest")
