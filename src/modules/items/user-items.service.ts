@@ -225,6 +225,7 @@ export class UserItemsService {
           if (data[field] && data[field].length) {
             updateData[field] = sanitizeHtml(data[field]);
             updateData['slug'] = stringToSlug(data[field]);
+            updateData['isVerified'] = false;
           }
           break;
         case 'termAndCondition':
@@ -235,6 +236,7 @@ export class UserItemsService {
             } else {
               updateData[field] = JSON.stringify(data[field]);
             }
+            updateData['isVerified'] = false;
           }
           break;
         case 'images':
@@ -247,6 +249,7 @@ export class UserItemsService {
               );
             });
             updateData[field] = JSON.stringify(images);
+            updateData['isVerified'] = false;
           }
           break;
         case 'checkBeforeRentDocuments':
