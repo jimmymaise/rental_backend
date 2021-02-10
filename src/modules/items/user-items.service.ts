@@ -64,6 +64,11 @@ export class UserItemsService {
       where,
       skip: offset,
       take: limit,
+      orderBy: [
+        {
+          updatedDate: 'desc',
+        },
+      ],
     };
 
     if (Object.keys(include).length) {

@@ -74,6 +74,11 @@ export class WishingItemsService {
       skip: offset,
       take: limit,
       include,
+      orderBy: [
+        {
+          createdDate: 'desc',
+        },
+      ],
     });
     const count = await this.prismaService.wishingItem.count({
       where,
