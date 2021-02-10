@@ -92,24 +92,28 @@ export class MessageService {
       .chatConversationMembers({});
   }
 
-  async countUnReadConversation(userId: string): Promise<number> {
-    const unReadCount = await this.prismaService.chatConversation.count({
-      where: {
-        chatConversationMembers: {
-          some: {
-            userId,
-          },
-        },
-        chatMessages: {
-          some: {
-            isRead: false,
-          },
-        },
-      },
-    });
+  // async countUnReadConversation(userId: string): Promise<number> {
+  //   const unReadCount = await this.prismaService.chatConversation.count({
+  //     where: {
+  //       chatConversationMembers: {
+  //         some: {
+  //           userId,
+  //         },
+  //       },
+  //       chatMessages: {
+  //         some: {
+  //           fromUserId: {
+  //             not: userId,
+  //           },
+  //           replyBy: undefined,
+  //           isRead: false,
+  //         },
+  //       },
+  //     },
+  //   });
 
-    return unReadCount;
-  }
+  //   return unReadCount;
+  // }
 
   async findAllMyConversations({
     offset = 0,

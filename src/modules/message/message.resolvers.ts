@@ -128,26 +128,25 @@ export class MessageResolvers {
     };
   }
 
-  @Query()
-  @UseGuards(GqlAuthGuard)
-  async feedChatMessageInfo(
-    @CurrentUser() user: GuardUserPayload,
-  ): Promise<MessageInfoModel> {
-    const unReadCount = await this.messageService.countUnReadConversation(
-      user.id,
-    );
+  // @Query()
+  // @UseGuards(GqlAuthGuard)
+  // async feedChatMessageInfo(
+  //   @CurrentUser() user: GuardUserPayload,
+  // ): Promise<MessageInfoModel> {
+  //   const unReadCount = await this.messageService.countUnReadConversation(
+  //     user.id,
+  //   );
 
-    return {
-      unReadCount,
-    };
-  }
+  //   return {
+  //     unReadCount,
+  //   };
+  // }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
   async markMessageAsRead(
     @Args('messageId') messageId: string,
   ): Promise<boolean> {
-    console.log('ddd', messageId);
     await this.messageService.markMessageAsRead(messageId);
 
     return true;
