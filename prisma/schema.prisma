@@ -66,6 +66,8 @@ model UserIdentifyDocument {
   type      UserVerifyDocumentType
   value     String
   isVerfied Boolean?
+
+  @@index(fields: [userId], name: "user_identify_document_index")
 }
 
 model Area {
@@ -166,6 +168,7 @@ model Item {
   @@index(fields: [status, isDeleted, isVerified], name: "item_main_index")
   @@index(fields: [createdDate], name: "item_created_date_index")
   @@index(fields: [keyword], name: "item_keyword_index")
+  @@index(fields: [ownerUserId], name: "item_owner_user_index")
 }
 
 enum RentingMandatoryVerifyDocumentDataType {
@@ -208,6 +211,10 @@ model RentingItemRequest {
   updatedDate                DateTime                     @updatedAt
   updatedBy                  String
   RentingItemRequestActivity RentingItemRequestActivity[]
+
+  @@index(fields: [ownerUserId], name: "request_owner_user_index")
+  @@index(fields: [lenderUserId], name: "request_lender_user_index")
+  @@index(fields: [itemId], name: "request_item_index")
 }
 
 model ItemReview {
@@ -224,6 +231,9 @@ model ItemReview {
   createdDate      DateTime @default(now())
   updatedDate      DateTime @updatedAt
   updatedBy        String
+
+  @@index(fields: [ownerUserId], name: "review_owner_user_index")
+  @@index(fields: [itemId], name: "review_item_index")
 }
 
 model UserReview {
@@ -239,6 +249,9 @@ model UserReview {
   createdDate      DateTime @default(now())
   updatedDate      DateTime @updatedAt
   updatedBy        String
+
+  @@index(fields: [ownerUserId], name: "user_review_owner_user_index")
+  @@index(fields: [toUserId], name: "user_review_to_user_index")
 }
 
 enum RentingItemRequestActivityType {
@@ -263,6 +276,8 @@ model RentingItemRequestActivity {
   updatedDate          DateTime                       @updatedAt
   createdBy            String
   updatedBy            String
+
+  @@index(fields: [rentingItemRequestId], name: "renting_request_id_index")
 }
 
 // Log Systems
@@ -276,6 +291,8 @@ model UserLoginLog {
   ownerUserId  String
   ipAddress    String
   signedInDate DateTime @default(now())
+
+  @@index(fields: [ownerUserId], name: "login_log_owner_user_index")
 }
 
 enum UserNotificationType {
@@ -297,6 +314,7 @@ model UserNotification {
   createdDate DateTime             @default(now())
 
   @@index(fields: [createdDate], name: "user_notification_index")
+  @@index(fields: [forUserId], name: "notification_for_user_index")
 }
 
 model WishingItem {

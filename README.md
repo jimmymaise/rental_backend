@@ -6,7 +6,7 @@
 [travis-url]: https://travis-ci.org/nestjs/nest
 [linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
 [linux-url]: https://travis-ci.org/nestjs/nest
-  
+
   <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
@@ -72,10 +72,12 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## License
 
-  Nest is [MIT licensed](LICENSE).
+Nest is [MIT licensed](LICENSE).
 
 ## Note
+
 if graphql.schema.ts NOT exist
+
 ```
 ts-node generate-typings
 ```
@@ -86,6 +88,7 @@ upgrade to apollo-server-fastify@3.0.0-alpha.3
 ```
 
 ## Update Table Changed
+
 ```
 npm run prisma:mirgation-save
 npm run prisma:mirgation-up
@@ -93,6 +96,7 @@ npm run prisma:generate
 ```
 
 ## Upload file Graphql PostMan
+
 ```
 curl --location --request POST 'http://localhost:3000/graphql' \
 --header 'Connection: keep-alive' \
@@ -116,6 +120,7 @@ docker-compose up -d
 ```
 
 ## NOTE
+
 ```
 tsconfig.json esModuleInterop -> import default and don't need to * as
 
@@ -126,7 +131,17 @@ docker exec -ti 59aca58159b4 sh
 redis-cli FLUSHALL
 ```
 
+```
+A database index is automatically created on the ForeignKey. You can disable this by setting db_index to False. You may want to avoid the overhead of an index if you are creating a foreign key for consistency rather than joins, or if you will be creating an alternative index like a partial or multiple column index.
+
+Almost all real-life cases require having these indexes. But Postgres doesn’t create them automatically as MySQL (innodb) does. It’s a significant difference
+So, all migration tools or/and ORM systems except of Django require to do these indexes for Postgres in addition. I mean SQLAlchemy, Knex-migrations etc.
+
+@@index(fields: [userId], name: "file_storage_main_index")
+```
+
 ## TODO:
+
 [] Request Activities
 [] Item Review
 [] Lender Review
