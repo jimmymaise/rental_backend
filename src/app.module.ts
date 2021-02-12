@@ -31,6 +31,7 @@ import { AppService } from './app.service';
     GraphQLModule.forRoot({
       cors: {
         origin: [
+          'http://localhost:3600',
           'http://localhost:3500',
           'https://*.thuedo.vn',
           'https://thuedo.vn',
