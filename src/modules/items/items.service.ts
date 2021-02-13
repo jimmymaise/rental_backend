@@ -118,6 +118,116 @@ export class ItemsService {
     return this.prismaService.item.create(createData);
   }
 
+  async findAllItems({
+    searchValue = '',
+    offset = 0,
+    limit = 10,
+    areaId,
+    categoryId,
+    includes,
+    sortByFields,
+  }): Promise<PaginationDTO<Item>> {
+    const mandatoryWhere = {
+      isDeleted: false,
+    };
+
+    const areaCategoryWhere: any = {};
+    if (areaId) {
+      areaCategoryWhere.areas = {
+        some: {
+          id: areaId,
+        },
+      };
+    }
+
+    if (categoryId) {
+      areaCategoryWhere.categories = {
+        some: {
+          id: categoryId,
+        },
+      };
+    }
+
+    const validIncludeMap = {
+      categories: true,
+      areas: true,
+    };
+
+    const include = (includes || []).reduce((result, cur) => {
+      if (validIncludeMap[cur]) {
+        result[cur] = true;
+      }
+      return result;
+    }, {});
+
+    const where = searchValue
+      ? {
+          AND: [
+            {
+              ...mandatoryWhere,
+              ...areaCategoryWhere,
+            },
+            {
+              keyword: { contains: searchValue },
+            },
+          ],
+        }
+      : {
+          ...mandatoryWhere,
+          ...areaCategoryWhere,
+        };
+
+    const findCondition: any = {
+      where,
+      skip: offset,
+      take: limit,
+    };
+
+    const validSortBy = {
+      name: true,
+      rentPricePerDay: true,
+      status: true,
+      isVerified: true,
+      createdDate: true,
+      updatedDate: true,
+    };
+
+    if (sortByFields && sortByFields.length) {
+      sortByFields.forEach((sortBy) => {
+        const sortByChunk = sortBy.split(':');
+        if (validSortBy[sortByChunk[0]]) {
+          findCondition.orderBy = [
+            {
+              [sortByChunk[0]]: sortByChunk[1] || 'asc',
+            },
+          ];
+        }
+      });
+    } else {
+      findCondition.orderBy = [
+        {
+          createdDate: 'desc',
+        },
+      ];
+    }
+
+    if (Object.keys(include).length) {
+      findCondition.include = include;
+    }
+
+    const items = await this.prismaService.item.findMany(findCondition);
+    const count = await this.prismaService.item.count({
+      where: findCondition.where,
+    });
+
+    return {
+      items,
+      total: count,
+      offset,
+      limit,
+    };
+  }
+
   async findAllAvailablesItem({
     searchValue = '',
     offset = 0,

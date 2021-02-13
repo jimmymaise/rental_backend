@@ -10,28 +10,22 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum UserRole {
-  Admin
-  User
-}
-
 model User {
-  id                        String     @id @default(uuid())
-  email                     String?    @unique
-  phoneNumber               String?    @unique
+  id                        String    @id @default(uuid())
+  email                     String?   @unique
+  phoneNumber               String?   @unique
   passwordHash              String?
-  currentHashedRefreshToken String?    @unique
-  role                      UserRole[]
-  facebookId                String?    @unique
+  currentHashedRefreshToken String?   @unique
+  facebookId                String?   @unique
   facebookAccessToken       String?
-  googleId                  String?    @unique
+  googleId                  String?   @unique
   googleAccessToken         String?
-  isEmailVerified           Boolean    @default(false)
+  isEmailVerified           Boolean   @default(false)
   resetPasswordToken        String?
   verifyEmailToken          String?
   verifyPhoneToken          String?
   userInfo                  UserInfo?
-  lastSignedIn              DateTime   @default(now())
+  lastSignedIn              DateTime  @default(now())
 
   ownerItemReview              ItemReview[]         @relation("OwnerItemReview")
   ownerUserRentingItemRequest  RentingItemRequest[] @relation("OwnerRequest")
@@ -41,6 +35,16 @@ model User {
   Item                         Item[]
   MyUserContact                MyUserContact[]
   userNotifications            UserNotification[]   @relation("ForUserNotification")
+  permissions                  UserPermission[]     @relation("UserPermission")
+}
+
+model UserPermission {
+  User        User     @relation("UserPermission", fields: [userId], references: [id])
+  userId      String
+  permission  String
+  createdDate DateTime @default(now())
+
+  @@id([userId, permission])
 }
 
 model UserInfo {

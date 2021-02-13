@@ -95,4 +95,6 @@ type Query {
     includes: [String]
     checkWishList: Boolean
   ): Item
+
+  adminFeed(query: ItemQuery): ItemPagination
 }

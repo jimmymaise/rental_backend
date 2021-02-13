@@ -5,7 +5,7 @@ import isEmpty from 'lodash/isEmpty';
 import sanitizeHtml from 'sanitize-html';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { User, UserRole, UserInfo } from '@prisma/client';
+import { User, UserInfo } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
 import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
@@ -136,7 +136,7 @@ export class UsersService {
   ): Promise<User> {
     const passwordHash = await bcrypt.hash(password, 10);
     return this.prismaService.user.create({
-      data: { email: sanitizeHtml(email), passwordHash, role: [UserRole.User] },
+      data: { email: sanitizeHtml(email), passwordHash },
     });
   }
 
@@ -164,7 +164,7 @@ export class UsersService {
     email: string = null,
   ): Promise<User> {
     return this.prismaService.user.create({
-      data: { facebookId, facebookAccessToken, email, role: [UserRole.User] },
+      data: { facebookId, facebookAccessToken, email },
     });
   }
 
@@ -174,7 +174,7 @@ export class UsersService {
     email: string = null,
   ): Promise<User> {
     return this.prismaService.user.create({
-      data: { googleId, googleAccessToken, email, role: [UserRole.User] },
+      data: { googleId, googleAccessToken, email },
     });
   }
 

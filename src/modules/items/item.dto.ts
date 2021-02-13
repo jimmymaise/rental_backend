@@ -38,7 +38,7 @@ export interface ItemDTO {
   permissions?: Permission[];
 }
 
-export function toItemDTO(item: Item, userId: string): ItemDTO {
+export function toItemDTO(item: Item, userId: string = null): ItemDTO {
   if (!item) {
     return null;
   }

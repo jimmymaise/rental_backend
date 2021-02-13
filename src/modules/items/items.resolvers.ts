@@ -298,4 +298,62 @@ export class ItemsResolvers {
         .catch(reject);
     });
   }
+
+  // FOR ADMIN ONLY
+  @Query()
+  @UseGuards(GqlAuthGuard)
+  async adminFeed(
+    @Args('query')
+    query: {
+      search: string;
+      offset: number;
+      limit: number;
+      areaId: string;
+      categoryId: string;
+      includes: string[];
+      sortByFields: string[];
+    },
+  ): Promise<PaginationDTO<ItemDTO>> {
+    const {
+      search,
+      offset,
+      limit,
+      areaId,
+      categoryId,
+      includes,
+      sortByFields,
+    } = query || {};
+    const actualLimit = limit && limit > 100 ? 100 : limit;
+
+    const result = await this.itemService.findAllItems({
+      searchValue: search,
+      offset,
+      limit: actualLimit,
+      areaId,
+      categoryId,
+      includes,
+      sortByFields,
+    });
+
+    const items = [];
+
+    for (let i = 0; i < result.items.length; i++) {
+      const newItem = toItemDTO(result.items[i]);
+
+      if (result.items[i].ownerUserId) {
+        newItem.createdBy = await this.usersService.getUserDetailData(
+          result.items[i].ownerUserId,
+        );
+      }
+
+      items.push(newItem);
+    }
+
+    return {
+      items,
+      total: result.total,
+      offset: offset || 0,
+      limit: actualLimit,
+    };
+  }
 }
