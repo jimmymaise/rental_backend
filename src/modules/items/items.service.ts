@@ -184,21 +184,23 @@ export class ItemsService {
     };
 
     const validSortBy = {
-      name: true,
-      rentPricePerDay: true,
-      status: true,
-      isVerified: true,
-      createdDate: true,
-      updatedDate: true,
+      name: 'name',
+      rentPricePerDay: 'rentPricePerDay',
+      status: 'status',
+      isVerified: 'isVerified',
+      createdBy: 'ownerUserId',
+      createdDate: 'createdDate',
+      updatedDate: 'updatedDate',
     };
 
     if (sortByFields && sortByFields.length) {
       sortByFields.forEach((sortBy) => {
         const sortByChunk = sortBy.split(':');
-        if (validSortBy[sortByChunk[0]]) {
+        const sortKey = validSortBy[sortByChunk[0]];
+        if (sortKey) {
           findCondition.orderBy = [
             {
-              [sortByChunk[0]]: sortByChunk[1] || 'asc',
+              [sortKey]: sortByChunk[1] || 'asc',
             },
           ];
         }

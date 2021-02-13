@@ -154,6 +154,9 @@ export class UsersService {
 
     return this.prismaService.user.update({
       where: { id: userId },
+      include: {
+        permissions: true,
+      },
       data,
     });
   }
@@ -181,6 +184,9 @@ export class UsersService {
   async getUserByFacebookId(facebookId: string): Promise<User> {
     const user = await this.prismaService.user.findUnique({
       where: { facebookId },
+      include: {
+        permissions: true,
+      },
     });
 
     return user;
@@ -189,13 +195,21 @@ export class UsersService {
   async getUserByGoogleId(googleId: string): Promise<User> {
     const user = await this.prismaService.user.findUnique({
       where: { googleId },
+      include: {
+        permissions: true,
+      },
     });
 
     return user;
   }
 
   async getUserByEmail(email: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({ where: { email } });
+    const user = await this.prismaService.user.findUnique({
+      where: { email },
+      include: {
+        permissions: true,
+      },
+    });
 
     return user;
   }
@@ -238,7 +252,10 @@ export class UsersService {
   }
 
   async getUserByEmailPassword(email: string, password: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({ where: { email } });
+    const user = await this.prismaService.user.findUnique({
+      where: { email },
+      include: { permissions: true },
+    });
     if (!user) {
       throw new Error('No such user found');
     }

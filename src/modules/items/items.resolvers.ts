@@ -15,6 +15,8 @@ import { PaginationDTO } from '../../models';
 import { UsersService } from '../users/users.service';
 import { SearchKeywordService } from '../search-keyword/search-keyword.service';
 import { WishingItemsService } from '../wishing-items/wishing-items.service';
+import { Permissions } from '@modules/auth/permission/permissions.decorator';
+import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
 
 @Resolver('Item')
 export class ItemsResolvers {
@@ -301,7 +303,8 @@ export class ItemsResolvers {
 
   // FOR ADMIN ONLY
   @Query()
-  @UseGuards(GqlAuthGuard)
+  @Permissions('ROOT')
+  @UseGuards(GqlPermissionsGuard)
   async adminFeed(
     @Args('query')
     query: {

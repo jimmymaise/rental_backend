@@ -124,6 +124,10 @@ export class AuthService {
     }
   }
 
+  public decodeJwtToken(token: string): any {
+    return this.jwtService.decode(token);
+  }
+
   async signInByFacebookId(
     facebookId: string,
     fbAccessToken: string,
@@ -146,7 +150,10 @@ export class AuthService {
       // await this.usersService.connectWithFacebookAccount(user.id, facebookId, fbAccessToken)
     }
 
-    const tokenPayload = { userId: user.id, facebookId };
+    const permissions = (user as any).permissions?.map(
+      ({ permission }) => permission,
+    );
+    const tokenPayload = { userId: user.id, facebookId, permissions };
     const accessToken = this.getAccessToken(tokenPayload);
     const refreshToken = this.getRefreshToken(tokenPayload);
     await this.usersService.updateLastSignedIn(user.id);
@@ -183,7 +190,10 @@ export class AuthService {
       // await this.usersService.connectWithGoogleAccount(user.id, googleId, googleAccessToken)
     }
 
-    const tokenPayload = { userId: user.id, googleId };
+    const permissions = (user as any).permissions?.map(
+      ({ permission }) => permission,
+    );
+    const tokenPayload = { userId: user.id, googleId, permissions };
     const accessToken = this.getAccessToken(tokenPayload);
     const refreshToken = this.getRefreshToken(tokenPayload);
     await this.usersService.updateLastSignedIn(user.id);
@@ -232,7 +242,10 @@ export class AuthService {
       password,
     );
 
-    const tokenPayload = { userId: user.id, email };
+    const permissions = (user as any).permissions?.map(
+      ({ permission }) => permission,
+    );
+    const tokenPayload = { userId: user.id, email, permissions };
     const accessToken = this.getAccessToken(tokenPayload);
     const refreshToken = this.getRefreshToken(tokenPayload);
     await this.usersService.updateLastSignedIn(user.id);

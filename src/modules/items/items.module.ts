@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { AuthModule } from '@modules/auth';
 import { ItemsService } from './items.service';
 import { UserItemsService } from './user-items.service';
 import { ItemsResolvers } from './items.resolvers';
@@ -10,6 +11,7 @@ import { WishingItemsModule } from '../wishing-items/wishing-items.module';
 
 @Module({
   imports: [
+    AuthModule,
     StoragesModule,
     UsersModule,
     SearchKeywordModule,
