@@ -1,8 +1,10 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { ItemStatus } from '@prisma/client';
 
 import { ItemsService } from './items.service';
 import { UserItemsService } from './user-items.service';
+import { AdminItemsService } from './admin-items.service';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { ItemDTO, toItemDTO } from './item.dto';
 import {
@@ -24,6 +26,7 @@ export class ItemsResolvers {
     private itemService: ItemsService,
     private userItemService: UserItemsService,
     private usersService: UsersService,
+    private adminItemService: AdminItemsService,
     private searchKeywordService: SearchKeywordService,
     private wishingItemService: WishingItemsService,
   ) {}
@@ -330,7 +333,7 @@ export class ItemsResolvers {
     } = query || {};
     const actualLimit = limit && limit > 100 ? 100 : limit;
 
-    const result = await this.itemService.findAllItems({
+    const result = await this.adminItemService.findAllItems({
       searchValue: search,
       offset,
       limit: actualLimit,
@@ -360,5 +363,17 @@ export class ItemsResolvers {
       offset: offset || 0,
       limit: actualLimit,
     };
+  }
+
+  @Mutation()
+  @Permissions('ROOT')
+  @UseGuards(GqlPermissionsGuard)
+  async updateItemStatus(
+    @Args('id') id: string,
+    @Args('status') status: ItemStatus,
+  ): Promise<ItemDTO> {
+    const result = await this.adminItemService.changeStatus(id, status);
+
+    return toItemDTO(result);
   }
 }

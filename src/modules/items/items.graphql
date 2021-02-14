@@ -1,5 +1,11 @@
 scalar JSON
 
+enum ItemStatus {
+  Draft
+  Blocked
+  Published
+}
+
 type Item {
   id: ID!
   name: String!
@@ -24,7 +30,7 @@ type Item {
   availableQuantity: Int
   totalQuantity: Int
   isVerified: Boolean
-  status: String
+  status: ItemStatus
   note: String
   isInMyWishList: Boolean
   createdDate: Float
@@ -83,6 +89,8 @@ type Mutation {
   listingNewItem(itemData: ItemUserInput!, includes: [String]): Item
   updateMyItem(id: String!, itemData: ItemUserInput!): Item
   deleteMyItem(id: String!): Item
+
+  updateItemStatus(id: String!, status: ItemStatus!): Item
 }
 
 type Query {
