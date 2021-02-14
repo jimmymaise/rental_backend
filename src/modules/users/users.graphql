@@ -58,7 +58,7 @@ type Query {
   whoAmI: UserInfo
   userPublicProfile(userId: String!): PublicUserInfo
 
-  adminUserListFeed(query: UserQuery): ItemPagination
+  adminUserListFeed(query: UserQuery): UserPagination
 }
 
 type Mutation {
