@@ -6,4 +6,4 @@ import { ApolloServerSentryPlugin } from './apollo-server-sentry';
 @Module({
   providers: [ApolloServerLoggingPlugin, ApolloServerSentryPlugin],
 })
-export class CommonModule {}
+export class LoggingModule {}

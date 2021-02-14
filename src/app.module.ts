@@ -18,7 +18,7 @@ import {
   MailModule,
   MessageModule,
   NotificationModule,
-  CommonModule,
+  LoggingModule,
 } from './modules';
 
 import { rootContants } from './constants';
@@ -91,7 +91,7 @@ import { AppService } from './app.service';
         ENCRYPT_PHONE_NUMBER_PASSWORD: Joi.string().required(),
       }),
     }),
-    CommonModule,
+    LoggingModule,
     AuthModule,
     UsersModule,
     AreasModule,

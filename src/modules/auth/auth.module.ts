@@ -3,9 +3,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
-import { AuthsResolvers } from './auths.resolvers';
 
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
@@ -13,15 +11,11 @@ import { JwtRefreshTokenStrategy } from './jwt-refresh-token.strategy';
 import { FacebookStrategy } from './facebook.strategy';
 import { GoogleStrategy } from './google.strategy';
 import { AnonymousStrategy } from './anoymous.strategy';
-import { AuthController } from './auth.controller';
-import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     HttpModule,
     ConfigModule,
-    UsersModule,
-    MailModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -38,7 +32,6 @@ import { MailModule } from '../mail/mail.module';
   ],
   providers: [
     AuthService,
-    AuthsResolvers,
     LocalStrategy,
     JwtStrategy,
     JwtRefreshTokenStrategy,
@@ -46,7 +39,6 @@ import { MailModule } from '../mail/mail.module';
     GoogleStrategy,
     AnonymousStrategy,
   ],
-  controllers: [AuthController],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -26,6 +26,7 @@ model User {
   verifyPhoneToken          String?
   userInfo                  UserInfo?
   lastSignedIn              DateTime  @default(now())
+  isBlocked                 Boolean?  @default(false)
 
   ownerItemReview              ItemReview[]         @relation("OwnerItemReview")
   ownerUserRentingItemRequest  RentingItemRequest[] @relation("OwnerRequest")

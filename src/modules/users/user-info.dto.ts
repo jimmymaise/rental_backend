@@ -9,6 +9,7 @@ export interface UserInfoDTO {
   coverImage: StoragePublicDTO;
   email?: string;
   phoneNumber?: string;
+  lastSignedIn?: number;
   createdDate?: number;
 }
 

@@ -10,6 +10,9 @@ import { StoragesService } from '../storages/storages.service';
 import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { EncryptByAesCBCPassword } from '@helpers/encrypt';
+import { getUserCacheKey, toUserInfoDTO } from './helpers';
+import { AuthService } from '@modules/auth/auth.service';
+import { AuthDTO } from '@modules/auth/auth.dto';
 
 const DEFAULT_AVATARS = [
   'https://asia-fast-storage.thuedo.vn/default-avatars/default_0008_avatar-1.jpg',
@@ -31,31 +34,6 @@ const DEFAULT_COVERS = [
   'https://asia-fast-storage.thuedo.vn/default-covers/scenery-sunburst-lake-mount-assiniboine-reflections-pine-tree-sunrise.jpg',
 ];
 
-function toUserInfoDTO(user: User, userInfo: UserInfo): UserInfoDTO {
-  if (!user) {
-    return null;
-  }
-
-  return {
-    ...userInfo,
-    id: user.id,
-    createdDate: userInfo?.createdDate.getTime(),
-    avatarImage:
-      userInfo?.avatarImage && userInfo.avatarImage.length
-        ? JSON.parse(userInfo.avatarImage)
-        : [],
-    coverImage:
-      userInfo?.coverImage && userInfo.coverImage.length
-        ? JSON.parse(userInfo.coverImage)
-        : [],
-    email: user?.email,
-  };
-}
-
-function getUserCacheKey(userId: string) {
-  return `USER_INFO_${userId}`;
-}
-
 function encryptPhoneNumber(userInfo: UserInfoDTO): UserInfoDTO {
   return {
     ...userInfo,
@@ -68,12 +46,18 @@ function encryptPhoneNumber(userInfo: UserInfoDTO): UserInfoDTO {
   };
 }
 
+interface SignInUserSSOInfo {
+  email?: string;
+  displayName?: string;
+}
+
 @Injectable()
 export class UsersService {
   constructor(
     private prismaService: PrismaService,
     private storageService: StoragesService,
     private redisCacheService: RedisCacheService,
+    private authService: AuthService,
   ) {}
 
   async isUserInMyContactList(
@@ -443,5 +427,198 @@ export class UsersService {
     this.redisCacheService.set(cacheKey, userInfoData, 3600);
 
     return userInfoData;
+  }
+
+  public async generateResetPasswordToken(
+    email: string,
+  ): Promise<{ email: string; displayName: string; token: string }> {
+    const user = await this.getUserByEmail(email);
+
+    if (!user) {
+      throw new Error('User not existing');
+    }
+
+    const refreshPasswordToken = this.authService.getResetPasswordToken(
+      user.id,
+      email,
+    );
+
+    await this.setResetPasswordToken(refreshPasswordToken, user.id);
+    const userInfo = await this.getUserDetailData(user.id);
+
+    return {
+      email,
+      displayName: userInfo.displayName,
+      token: refreshPasswordToken,
+    };
+  }
+
+  public async updatePasswordByToken(
+    token: string,
+    newPassword: string,
+  ): Promise<User> {
+    const { userId } = await this.authService.verifyResetPasswordToken(token);
+    const userInfo = await this.verifyResetPasswordToken(token, userId);
+
+    if (userInfo) {
+      return await this.setUserPassword(userId, newPassword, true);
+    } else {
+      throw new Error('Token not valid');
+    }
+  }
+
+  async signInByFacebookId(
+    facebookId: string,
+    fbAccessToken: string,
+    userInfo: SignInUserSSOInfo,
+  ): Promise<AuthDTO> {
+    let user = await this.getUserByFacebookId(facebookId);
+
+    if (!user && userInfo.email) {
+      user = await this.getUserByEmail(userInfo.email);
+    }
+
+    if (!user) {
+      user = await this.createUserByFacebookAccount(
+        facebookId,
+        fbAccessToken,
+        null,
+      );
+      await this.createTheProfileForUser(user.id, userInfo as any);
+    } else if (!user.facebookId) {
+      // await this.connectWithFacebookAccount(user.id, facebookId, fbAccessToken)
+    }
+
+    const permissions = (user as any).permissions?.map(
+      ({ permission }) => permission,
+    );
+    const tokenPayload = { userId: user.id, facebookId, permissions };
+    const accessToken = this.authService.getAccessToken(tokenPayload);
+    const refreshToken = this.authService.getRefreshToken(tokenPayload);
+    await this.updateLastSignedIn(user.id);
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+    };
+  }
+
+  async signInByGoogleId(
+    googleId: string,
+    googleAccessToken: string,
+    userInfo: SignInUserSSOInfo,
+  ): Promise<AuthDTO> {
+    let user = await this.getUserByGoogleId(googleId);
+
+    if (!user && userInfo.email) {
+      user = await this.getUserByEmail(userInfo.email);
+    }
+
+    if (!user) {
+      user = await this.createUserByGoogleAccount(
+        googleId,
+        googleAccessToken,
+        null,
+      );
+      await this.createTheProfileForUser(user.id, userInfo as any);
+    } else if (!user.googleId) {
+      // await this.connectWithGoogleAccount(user.id, googleId, googleAccessToken)
+    }
+
+    const permissions = (user as any).permissions?.map(
+      ({ permission }) => permission,
+    );
+    const tokenPayload = { userId: user.id, googleId, permissions };
+    const accessToken = this.authService.getAccessToken(tokenPayload);
+    const refreshToken = this.authService.getRefreshToken(tokenPayload);
+    await this.updateLastSignedIn(user.id);
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+    };
+  }
+
+  async signUpByEmail(email: string, password: string): Promise<AuthDTO> {
+    const isEmailExisted = await this.getUserByEmail(email);
+    if (isEmailExisted) {
+      throw new Error('This email is existed!');
+    }
+
+    const user = await this.createUserByEmailPassword(email, password);
+    await this.createTheProfileForUser(user.id, {
+      displayName: email.substr(0, email.indexOf('@')),
+    } as any);
+
+    const tokenPayload = { userId: user.id, email };
+    const accessToken = this.authService.getAccessToken(tokenPayload);
+    const refreshToken = this.authService.getRefreshToken(tokenPayload);
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+    };
+  }
+
+  async loginByEmail(email: string, password: string): Promise<AuthDTO> {
+    const user = await this.getUserByEmailPassword(email, password);
+
+    const permissions = (user as any).permissions?.map(
+      ({ permission }) => permission,
+    );
+    const tokenPayload = { userId: user.id, email, permissions };
+    const accessToken = this.authService.getAccessToken(tokenPayload);
+    const refreshToken = this.authService.getRefreshToken(tokenPayload);
+    await this.updateLastSignedIn(user.id);
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+    };
+  }
+
+  async changeUserPassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<AuthDTO> {
+    const user = await this.changePassword(
+      userId,
+      currentPassword,
+      newPassword,
+    );
+
+    const tokenPayload = { userId: user.id, email: user.email };
+    const accessToken = this.authService.getAccessToken(tokenPayload);
+    const refreshToken = this.authService.getRefreshToken(tokenPayload);
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+    };
+  }
+
+  async removeRefreshToken(userId: string): Promise<void> {
+    return this.removeCurrentRefreshToken(userId);
   }
 }

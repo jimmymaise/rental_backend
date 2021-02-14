@@ -6,6 +6,15 @@ type UserInfo {
   coverImage: PublicStorageFile
   phoneNumber: String
   email: String
+  createdDate: Float
+  lastSignedIn: Float
+}
+
+type UserPagination {
+  items: [UserInfo]
+  total: Int
+  limit: Int
+  offset: Int
 }
 
 type PublicUserInfo {
@@ -27,11 +36,38 @@ input UserInfoInput {
   email: String
 }
 
+input UserQuery {
+  search: String
+  offset: Int
+  limit: Int
+  sortByFields: [String]
+}
+
+type AuthPayload {
+  accessToken: String
+  refreshToken: String
+  user: UserAuth
+}
+
+type UserAuth {
+  id: ID!
+  email: String!
+}
+
 type Query {
   whoAmI: UserInfo
   userPublicProfile(userId: String!): PublicUserInfo
+
+  adminUserListFeed(query: UserQuery): ItemPagination
 }
 
 type Mutation {
   updateUserInfoData(userInfoData: UserInfoInput!): UserInfo
+  signUpByEmail(email: String!, password: String!): AuthPayload
+  loginByEmail(email: String!, password: String!): AuthPayload
+  logout: Boolean
+  refreshUserAccessToken(refresh: String): AuthPayload
+  requestResetPassword(email: String!, recaptchaKey: String!): String
+  setPasswordByToken(token: String!, password: String!): String
+  changePassword(currentPassword: String!, newPassword: String!): AuthPayload
 }

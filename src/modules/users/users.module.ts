@@ -1,14 +1,26 @@
-import { Module } from '@nestjs/common'
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 
-import { RedisCacheModule } from '../redis-cache/redis-cache.module'
+import { AuthModule } from '../auth/auth.module';
+import { RedisCacheModule } from '../redis-cache/redis-cache.module';
 
-import { UsersService } from './users.service'
-import { StoragesModule } from '../storages/storages.module'
-import { UsersResolvers } from './users.resolvers'
+import { UsersService } from './users.service';
+import { AdminUsersService } from './admin-users.service';
+import { StoragesModule } from '../storages/storages.module';
+import { UsersResolvers } from './users.resolvers';
+import { MailModule } from '../mail/mail.module';
+import { UserController } from './user.controller';
 
 @Module({
-  imports: [StoragesModule, RedisCacheModule],
-  providers: [UsersService, UsersResolvers],
-  exports: [UsersService]
+  imports: [
+    AuthModule,
+    ConfigModule,
+    MailModule,
+    StoragesModule,
+    RedisCacheModule,
+  ],
+  providers: [UsersService, AdminUsersService, UsersResolvers],
+  controllers: [UserController],
+  exports: [UsersService],
 })
 export class UsersModule {}
