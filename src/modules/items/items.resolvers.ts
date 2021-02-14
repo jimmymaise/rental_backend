@@ -305,7 +305,9 @@ export class ItemsResolvers {
   @Query()
   @Permissions('ROOT')
   @UseGuards(GqlPermissionsGuard)
+  @UseGuards(GqlAuthGuard)
   async adminFeed(
+    @CurrentUser() user: GuardUserPayload,
     @Args('query')
     query: {
       search: string;
@@ -341,7 +343,7 @@ export class ItemsResolvers {
     const items = [];
 
     for (let i = 0; i < result.items.length; i++) {
-      const newItem = toItemDTO(result.items[i]);
+      const newItem = toItemDTO(result.items[i], user.id, user.permissions);
 
       if (result.items[i].ownerUserId) {
         newItem.createdBy = await this.usersService.getUserDetailData(
