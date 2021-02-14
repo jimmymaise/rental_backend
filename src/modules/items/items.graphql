@@ -91,6 +91,7 @@ type Mutation {
   deleteMyItem(id: String!): Item
 
   updateItemStatus(id: String!, status: ItemStatus!): Item
+  changeVerifyStatus(id: String!, isVerified: Boolean!): Item
 }
 
 type Query {

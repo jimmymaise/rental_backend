@@ -376,4 +376,19 @@ export class ItemsResolvers {
 
     return toItemDTO(result);
   }
+
+  @Mutation()
+  @Permissions('ROOT')
+  @UseGuards(GqlPermissionsGuard)
+  async changeVerifyStatus(
+    @Args('id') id: string,
+    @Args('isVerified') isVerified: boolean,
+  ): Promise<ItemDTO> {
+    const result = await this.adminItemService.changeVerifyStatus(
+      id,
+      isVerified,
+    );
+
+    return toItemDTO(result);
+  }
 }
