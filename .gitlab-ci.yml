@@ -1,4 +1,4 @@
-image: keymetrics/pm2:6
+image: node:12.14.0
 
 cache:
   paths:
@@ -25,6 +25,7 @@ Build:
 Deploy-Staging:
   stage: deploy
   environment: staging
+  image: keymetrics/pm2:6
   script:
     - echo "====== Deploy to production server ======"
     - apk update && apk upgrade
