@@ -12,7 +12,9 @@ stages:
 
 Setup:
   stage: setup
-  script: npm install
+  script:
+    - npm install
+    - npm install --only=dev
   only:
     - /^release-v\d+\.\d+\.\d+$/
   artifacts:
