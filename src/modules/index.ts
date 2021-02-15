@@ -13,3 +13,4 @@ export * from './mail';
 export * from './message';
 export * from './notification';
 export * from './logging';
+export * from './redis-cache';

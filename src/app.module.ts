@@ -19,6 +19,7 @@ import {
   MessageModule,
   NotificationModule,
   LoggingModule,
+  RedisCacheModule,
 } from './modules';
 
 import { rootContants } from './constants';
@@ -105,6 +106,7 @@ import { AppService } from './app.service';
     MailModule,
     MessageModule,
     NotificationModule,
+    RedisCacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],

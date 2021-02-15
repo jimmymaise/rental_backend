@@ -170,7 +170,7 @@ model Item {
   ItemReview  ItemReview[]
   WishingItem WishingItem[]
 
-  @@index(fields: [status, isDeleted, isVerified], name: "item_main_index")
+  @@index(fields: [status, isDeleted, isVerified, keyword], name: "item_main_index")
   @@index(fields: [createdDate], name: "item_created_date_index")
   @@index(fields: [keyword], name: "item_keyword_index")
   @@index(fields: [ownerUserId], name: "item_owner_user_index")
@@ -287,8 +287,9 @@ model RentingItemRequestActivity {
 
 // Log Systems
 model SearchKeyword {
-  keyword String @id
-  count   Int?   @default(0)
+  keyword    String   @id
+  count      Int?     @default(0)
+  isVerified Boolean? @default(false)
 }
 
 model UserLoginLog {

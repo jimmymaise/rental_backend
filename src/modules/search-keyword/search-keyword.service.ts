@@ -20,6 +20,7 @@ export class SearchKeywordService {
       create: {
         keyword: lowerKeyword,
         count: 1,
+        isVerified: false,
       },
       update: {
         count: {
@@ -40,6 +41,9 @@ export class SearchKeywordService {
     }
 
     const keywords = await this.prismaService.searchKeyword.findMany({
+      where: {
+        isVerified: true,
+      },
       skip: 0,
       take: 45,
       orderBy: { count: 'desc' },
