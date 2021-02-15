@@ -14,13 +14,13 @@ Setup:
   stage: setup
   script: npm install
   only:
-    - master
+    - /^release-v\d+\.\d+\.[1-9][0-9]*$/
 
 Build:
   stage: build
   script: npm run build
   only:
-    - master
+    - /^release-v\d+\.\d+\.[1-9][0-9]*$/
 
 Deploy-Staging:
   stage: deploy
@@ -41,4 +41,4 @@ Deploy-Staging:
     - echo "make deploy"
     - pm2 deploy ecosystem.config.js production
   only:
-    - master
+    - /^release-v\d+\.\d+\.[1-9][0-9]*$/
