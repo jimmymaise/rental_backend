@@ -15,6 +15,7 @@ Setup:
   script:
     - npm install
     - npm install --only=dev
+    - npm run prisma:generate
   only:
     - /^release-v\d+\.\d+\.\d+$/
   artifacts:
