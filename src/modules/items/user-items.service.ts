@@ -228,8 +228,13 @@ export class UserItemsService {
       switch (field) {
         case 'name':
           if (data[field] && data[field].length) {
-            updateData[field] = sanitizeHtml(data[field]);
-            updateData['slug'] = stringToSlug(data[field]);
+            const actualName = sanitizeHtml(data[field]);
+            const slug = stringToSlug(actualName);
+            updateData[field] = actualName;
+            updateData['slug'] = slug
+              .replace(/[^a-z0-9\-]/g, '-')
+              .replace(/-+/g, '-');
+            updateData['keyword'] = `${actualName} ${slug}`;
             updateData['isVerified'] = false;
           }
           break;

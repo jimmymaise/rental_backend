@@ -70,10 +70,12 @@ export class ItemsService {
       return result;
     }, {});
 
+    const actualName = sanitizeHtml(name);
+    const slug = stringToSlug(actualName);
     const createData: any = {
       data: {
-        name: sanitizeHtml(name),
-        slug: stringToSlug(name),
+        name: actualName,
+        slug: slug.replace(/[^a-z0-9\-]/g, '-').replace(/-+/g, '-'),
         description:
           description && typeof description === 'object'
             ? JSON.stringify(description)
@@ -108,6 +110,7 @@ export class ItemsService {
         },
         updatedBy: userId,
         isVerified: process.env.NODE_ENV === 'production' ? false : true,
+        keyword: `${actualName} ${slug}`,
       },
     };
 
