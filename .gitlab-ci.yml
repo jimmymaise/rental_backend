@@ -21,11 +21,14 @@ Build:
   script: npm run build
   only:
     - /^release-v\d+\.\d+\.\d+$/
+  artifacts:
+    paths:
+      - node_modules/
 
 Deploy-Staging:
   stage: deploy
   environment: staging
-  image: keymetrics/pm2:6
+  image: keymetrics/pm2:15-alpine
   script:
     - echo "====== Deploy to production server ======"
     - apk update && apk upgrade
@@ -43,3 +46,6 @@ Deploy-Staging:
     - pm2 deploy ecosystem.config.js production
   only:
     - /^release-v\d+\.\d+\.\d+$/
+  artifacts:
+    paths:
+      - dist/
