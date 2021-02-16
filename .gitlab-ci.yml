@@ -1,4 +1,4 @@
-image: node:12.14.0
+image: docker:stable
 
 stages:
   - setup
@@ -7,6 +7,7 @@ stages:
 
 Setup:
   stage: setup
+  image: node:12.14.0
   environment: staging
   script:
     - node ./scripts/generate-env-from-system.js
@@ -16,7 +17,6 @@ Setup:
 Dockerfile:
   stage: dockerfile
   environment: staging
-  image: docker:git
   services:
     - docker:dind
   script:
