@@ -32,6 +32,7 @@ const ALLOWED_KEYS = [
   'GOOGLE_RECAPTCHA_V3_SECRET_KEY',
   'SENTRY_DSN',
   'ENCRYPT_PHONE_NUMBER_PASSWORD',
+  'GOOGLE_CLOUD_STORAGE_HOST',
 ];
 
 for (let key in process.env) {

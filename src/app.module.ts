@@ -90,6 +90,7 @@ import { AppService } from './app.service';
         SENTRY_DSN: Joi.string().required(),
         ENV_NAME: Joi.string().required(),
         ENCRYPT_PHONE_NUMBER_PASSWORD: Joi.string().required(),
+        GOOGLE_CLOUD_STORAGE_HOST: Joi.string().required(),
       }),
     }),
     LoggingModule,

@@ -21,17 +21,13 @@ export class GoogleCloudStorageService {
     folderName: string,
     fileName: string,
   ) =>
-    process.env.NODE_ENV === 'production'
-      ? `https://${bucketName}/${folderName}/${fileName}`
-      : `https://storage.googleapis.com/${bucketName}/${folderName}/${fileName}`;
+    `${process.env.GOOGLE_CLOUD_STORAGE_HOST}${bucketName}/${folderName}/${fileName}`;
 
   private maskSignedUrl = (orginalUrl: string, bucketName: string) =>
-    process.env.NODE_ENV === 'production'
-      ? orginalUrl.replace(
-          `https://storage.googleapis.com/${bucketName}`,
-          `https://${bucketName}`,
-        )
-      : orginalUrl;
+    orginalUrl.replace(
+      `https://storage.googleapis.com/${bucketName}`,
+      `${process.env.GOOGLE_CLOUD_STORAGE_HOST$}${bucketName}`,
+    );
   // public static copyFileToGCS = (localFilePath: string, bucketName: string, options: any) => {
   //   options = options || {};
 
