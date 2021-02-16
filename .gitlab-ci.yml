@@ -52,6 +52,6 @@ Deploy-Staging:
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_SHA"
     # Delete old containers && old images
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true && docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'registry.gitlab.com/thuedo1/web-api') || true"
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --name thuedo_api_app registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_SHA"
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host"  --name thuedo_api_app --add-host=host.docker.internal:127.0.0.1 registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_SHA"
   only:
     - /^release-v\d+\.\d+\.\d+$/
