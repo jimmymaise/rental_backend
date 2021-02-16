@@ -1,15 +1,23 @@
 image: node:12.14.0
 
 stages:
+  - setup
   - dockerfile
   - deploy
+
+Setup:
+  stage: setup
+  environment: staging
+  script:
+    - node ./scripts/generate-env-from-system.js
+  only:
+    - /^release-v\d+\.\d+\.\d+$/
 
 Dockerfile:
   stage: dockerfile
   environment: staging
   image: docker:git
   script:
-    - node ./scripts/generate-env-from-system.js
     # Deploy to Docker Registry
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
@@ -21,7 +29,6 @@ Dockerfile:
 Deploy-Staging:
   stage: deploy
   environment: staging
-  image: keymetrics/pm2:15-alpine
   script:
     - echo "====== Deploy to production server ======"
     - apk update && apk upgrade
