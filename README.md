@@ -140,6 +140,14 @@ So, all migration tools or/and ORM systems except of Django require to do these 
 @@index(fields: [userId], name: "file_storage_main_index")
 ```
 
+## NOTE:
+
+```
+DOCKER BUILD must use
+
+host.docker.internal insteal localhost in .env
+```
+
 ## TODO:
 
 [] Request Activities

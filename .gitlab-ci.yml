@@ -1,35 +1,16 @@
 image: node:12.14.0
 
-cache:
-  paths:
-    - node_modules/
-    - dist/
-
 stages:
-  - setup
-  - build
+  - dockerfile
   - deploy
 
-Setup:
-  stage: setup
+Dockerfile:
+  stage: dockerfile
+  environment: staging
   script:
-    - npm install
-    - npm install --only=dev
-    - npm run prisma:generate
+    - node ./scripts/generate-env-from-system.js
   only:
     - /^release-v\d+\.\d+\.\d+$/
-  artifacts:
-    paths:
-      - node_modules/
-
-Build:
-  stage: build
-  script: npm run build
-  only:
-    - /^release-v\d+\.\d+\.\d+$/
-  artifacts:
-    paths:
-      - dist/
 
 Deploy-Staging:
   stage: deploy
@@ -45,10 +26,15 @@ Deploy-Staging:
     - chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
     - echo "Test ssh connection"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST"
-    # Delploy
-    - echo "Setup tagget server directories"
-    - pm2 deploy ecosystem.config.js production setup 2>&1 || true
-    - echo "make deploy"
-    - pm2 deploy ecosystem.config.js production
+
+    # Deploy to Docker Registry
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
+    - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_SHA
+    - docker push registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_SHA
+
+    # Deploy to server
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_SHA"
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker service update node-server --image registry.gitlab.com/$CI_PROJECT_PATH:$CI_COMMIT_SHA --with-registry-auth --force --detach"
   only:
     - /^release-v\d+\.\d+\.\d+$/
