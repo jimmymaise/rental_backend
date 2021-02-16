@@ -17,6 +17,8 @@ Dockerfile:
   stage: dockerfile
   environment: staging
   image: docker:git
+   services:
+    - docker:dind
   script:
     # Deploy to Docker Registry
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
