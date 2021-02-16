@@ -17,7 +17,7 @@ Dockerfile:
   stage: dockerfile
   environment: staging
   image: docker:git
-   services:
+  services:
     - docker:dind
   script:
     # Deploy to Docker Registry
