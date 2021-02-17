@@ -34,7 +34,7 @@ import { AppService } from './app.service';
         origin: [
           'http://localhost:3600',
           'http://localhost:3500',
-          'https://*.thuedo.vn',
+          'https://stag.thuedo.vn',
           'https://thuedo.vn',
         ],
         credentials: true,

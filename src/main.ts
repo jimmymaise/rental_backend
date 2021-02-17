@@ -59,7 +59,7 @@ async function bootstrap() {
     const allowedOrigins = [
       'http://localhost:3600',
       'http://localhost:3500',
-      'https://*.thuedo.vn',
+      'https://stag.thuedo.vn',
       'https://thuedo.vn',
     ];
 
