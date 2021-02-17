@@ -26,7 +26,7 @@ export class GoogleCloudStorageService {
   private maskSignedUrl = (orginalUrl: string, bucketName: string) =>
     orginalUrl.replace(
       `https://storage.googleapis.com/${bucketName}`,
-      `${process.env.GOOGLE_CLOUD_STORAGE_HOST$}${bucketName}`,
+      `${process.env.GOOGLE_CLOUD_STORAGE_HOST}${bucketName}`,
     );
   // public static copyFileToGCS = (localFilePath: string, bucketName: string, options: any) => {
   //   options = options || {};

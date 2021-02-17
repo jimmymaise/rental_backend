@@ -60,6 +60,8 @@ async function bootstrap() {
       'http://localhost:3600',
       'http://localhost:3500',
       'https://stag.thuedo.vn',
+      'https://portal.thuedo.vn',
+      'https://stag-portal.thuedo.vn',
       'https://thuedo.vn',
     ];
 
