@@ -99,6 +99,7 @@ export class UserItemsService {
       isDeleted: false,
       status: ItemStatus.Published,
       ownerUserId: createdBy,
+      isVerified: true,
     };
 
     const validIncludeMap = {
