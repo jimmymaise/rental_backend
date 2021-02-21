@@ -9,8 +9,6 @@ export function toUserInfoDTO(
     return null;
   }
 
-  console.log(user);
-
   return {
     ...userInfo,
     id: user.id,
