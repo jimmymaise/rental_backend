@@ -278,6 +278,28 @@ export class UsersResolvers {
     };
   }
 
+  @Mutation()
+  async deleteMyUser(
+    @CurrentUser() currentUser: GuardUserPayload,
+    @Args('reason') reason: string,
+    @Args('recaptchaKey') recaptchaKey: string,
+  ): Promise<boolean> {
+    const isRecaptchaKeyVerified = await this.authService.verifyRecaptchaResponse(
+      recaptchaKey,
+    );
+
+    if (!isRecaptchaKeyVerified) {
+      throw new BadRequestException(ErrorMap.RECAPTCHA_RESPONSE_KEY_INVALID);
+    }
+
+    try {
+      await this.userService.deleteUser(currentUser.id, reason);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
   // FOR ADMIN ONLY
   @Query()
   @Permissions('ROOT')

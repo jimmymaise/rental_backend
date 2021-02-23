@@ -11,6 +11,7 @@ export interface UserInfoDTO {
   phoneNumber?: string;
   lastSignedIn?: number;
   createdDate?: number;
+  isDeleted?: boolean;
 }
 
 export interface PublicUserInfoDTO {

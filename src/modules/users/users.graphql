@@ -70,4 +70,5 @@ type Mutation {
   requestResetPassword(email: String!, recaptchaKey: String!): String
   setPasswordByToken(token: String!, password: String!): String
   changePassword(currentPassword: String!, newPassword: String!): AuthPayload
+  deleteMyUser(reason: String, recaptchaKey: String!): Boolean
 }

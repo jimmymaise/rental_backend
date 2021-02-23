@@ -27,6 +27,8 @@ model User {
   userInfo                  UserInfo?
   lastSignedIn              DateTime  @default(now())
   isBlocked                 Boolean?  @default(false)
+  isDeleted                 Boolean?  @default(false)
+  systemNote                String?
 
   ownerItemReview              ItemReview[]         @relation("OwnerItemReview")
   ownerUserRentingItemRequest  RentingItemRequest[] @relation("OwnerRequest")

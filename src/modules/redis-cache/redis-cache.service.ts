@@ -19,6 +19,10 @@ export class RedisCacheService {
     return await this.cache.set(key, value, { ttl });
   }
 
+  async del(key) {
+    return await this.cache.del(key);
+  }
+
   async ping(): Promise<boolean> {
     try {
       const TEST_KEY = 'TEST_KEY_HEALTH_CHECK';

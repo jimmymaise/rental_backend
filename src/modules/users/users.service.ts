@@ -621,4 +621,51 @@ export class UsersService {
   async removeRefreshToken(userId: string): Promise<void> {
     return this.removeCurrentRefreshToken(userId);
   }
+
+  async deleteUser(userId: string, reason: string): Promise<void> {
+    const currentUserInfo = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        facebookId: currentUserInfo.facebookId?.length
+          ? `deleted-${currentUserInfo.facebookId}`
+          : currentUserInfo.facebookId,
+        googleId: currentUserInfo.googleId?.length
+          ? `deleted-${currentUserInfo.googleId}`
+          : currentUserInfo.googleId,
+        email: currentUserInfo.email?.length
+          ? `deleted-${currentUserInfo.email}`
+          : currentUserInfo.email,
+        systemNote: reason || '',
+        isDeleted: true,
+      },
+    });
+
+    await this.prismaService.item.updateMany({
+      where: {
+        ownerUserId: userId,
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    await this.prismaService.fileStorage.updateMany({
+      where: {
+        createdBy: userId,
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    const cacheKey = getUserCacheKey(userId);
+    await this.redisCacheService.del(cacheKey);
+  }
 }

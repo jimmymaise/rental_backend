@@ -1,12 +1,37 @@
 import { User, UserInfo } from '@prisma/client';
 import { UserInfoDTO } from './user-info.dto';
 
+const DEFAULT_AVATAR_URL =
+  'https://asia-fast-storage.thuedo.vn/default-avatars/default-avatar.png';
+const DEFAULT_COVER_URL =
+  'https://asia-fast-storage.thuedo.vn/default-covers/nature-landscape-hot-air-balloons-festival-sky.jpg';
+const DEFAULT_EMAIL = 'former_user@thuedo.vn';
+const DEFAULT_DISPLAY_NAME = 'Former User';
+
 export function toUserInfoDTO(
   user: User | any,
   userInfo: UserInfo | any,
 ): UserInfoDTO {
   if (!user) {
     return null;
+  }
+
+  let avatarImage =
+    userInfo?.avatarImage && userInfo.avatarImage.length
+      ? JSON.parse(userInfo.avatarImage)
+      : {};
+  let coverImage =
+    userInfo?.coverImage && userInfo.coverImage.length
+      ? JSON.parse(userInfo.coverImage)
+      : {};
+  let displayName = userInfo.displayName;
+  let email = user.email;
+
+  if (user.isDeleted) {
+    avatarImage = DEFAULT_AVATAR_URL;
+    coverImage = DEFAULT_COVER_URL;
+    email = DEFAULT_EMAIL;
+    displayName = DEFAULT_DISPLAY_NAME;
   }
 
   return {
@@ -18,15 +43,11 @@ export function toUserInfoDTO(
     createdDate: userInfo?.createdDate?.getTime
       ? userInfo?.createdDate.getTime()
       : (userInfo?.createdDate as number),
-    avatarImage:
-      userInfo?.avatarImage && userInfo.avatarImage.length
-        ? JSON.parse(userInfo.avatarImage)
-        : [],
-    coverImage:
-      userInfo?.coverImage && userInfo.coverImage.length
-        ? JSON.parse(userInfo.coverImage)
-        : [],
-    email: user?.email,
+    avatarImage,
+    coverImage,
+    displayName,
+    email,
+    isDeleted: user.isDeleted,
   };
 }
 
