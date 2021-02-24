@@ -474,6 +474,7 @@ export class UsersService {
   ): Promise<AuthDTO> {
     let user = await this.getUserByFacebookId(facebookId);
 
+    // TODO: potential, người khác có thể ăn cắp account tạo bằng Email bang cách dùng account Facebook
     if (!user && userInfo.email) {
       user = await this.getUserByEmail(userInfo.email);
     }
