@@ -33,6 +33,7 @@ export interface ItemDTO {
   isVerified?: boolean;
   status: string;
   isInMyWishList?: boolean;
+  updatedDate: number;
   createdDate: number;
   createdBy?: UserInfoDTO;
   permissions?: Permission[];
@@ -89,9 +90,14 @@ export function toItemDTO(
 
   return {
     ...item,
-    createdDate: item.createdDate.getTime(),
+    createdDate: item.createdDate?.getTime
+      ? item.createdDate.getTime()
+      : new Date(item.createdDate).getTime(), // Parse for RedisCache
+    updatedDate: item.updatedDate?.getTime
+      ? item.updatedDate.getTime()
+      : new Date(item.updatedDate).getTime(), // Parse for RedisCache
     unavailableForRentDays: item.unavailableForRentDays.map((data) =>
-      data.getTime(),
+      data?.getTime ? data.getTime() : new Date(data).getTime(),
     ),
     description: tryToParseJSON(item.description, item.description),
     termAndCondition: tryToParseJSON(

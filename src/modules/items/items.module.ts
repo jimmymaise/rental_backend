@@ -9,9 +9,11 @@ import { StoragesModule } from '../storages/storages.module';
 import { UsersModule } from '../users/users.module';
 import { SearchKeywordModule } from '../search-keyword/search-keyword.module';
 import { WishingItemsModule } from '../wishing-items/wishing-items.module';
+import { RedisCacheModule } from '../redis-cache/redis-cache.module';
 
 @Module({
   imports: [
+    RedisCacheModule,
     AuthModule,
     StoragesModule,
     UsersModule,

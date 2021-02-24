@@ -297,7 +297,6 @@ export class UsersResolvers {
       await this.userService.deleteUser(currentUser.id, reason);
       return true;
     } catch (err) {
-      console.log('ddd', err);
       return false;
     }
   }

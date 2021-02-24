@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import sanitizeHtml from 'sanitize-html';
+import { Base64 } from 'js-base64';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { Item, ItemStatus } from '@prisma/client';
@@ -7,12 +8,14 @@ import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers/common';
 import { PaginationDTO } from '../../models';
 import { StoragesService } from '../storages/storages.service';
+import { RedisCacheService } from '../redis-cache/redis-cache.service';
 
 @Injectable()
 export class ItemsService {
   constructor(
     private prismaService: PrismaService,
     private storageService: StoragesService,
+    private redisCacheService: RedisCacheService,
   ) {}
 
   // findAllAvailable(isFeatured: boolean): Promise<Item[]> {
@@ -130,6 +133,20 @@ export class ItemsService {
     includes,
     sortByFields,
   }): Promise<PaginationDTO<Item>> {
+    let cacheKey;
+    if (offset === 0) {
+      // Enabled Cache for only first page
+      const hash = `${searchValue}_${offset}_${limit}_${areaId}_${categoryId}_${includes.join(
+        '|',
+      )}_${sortByFields.join('|')}`;
+      cacheKey = `ITEMS_LIST_${Base64.encode(hash)}`;
+
+      const cachedResult = await this.redisCacheService.get(cacheKey);
+      if (cachedResult) {
+        return cachedResult as any;
+      }
+    }
+
     const mandatoryWhere = {
       status: ItemStatus.Published,
       isDeleted: false,
@@ -222,12 +239,19 @@ export class ItemsService {
       where: findCondition.where,
     });
 
-    return {
+    const result = {
       items,
       total: count,
       offset,
       limit,
     };
+
+    if (cacheKey) {
+      const ONE_DAY = 86400;
+      await this.redisCacheService.set(cacheKey, result, ONE_DAY);
+    }
+
+    return result;
   }
 
   async findOne(uuid: string, includes?: string[]): Promise<Item> {

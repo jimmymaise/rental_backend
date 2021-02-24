@@ -12,13 +12,11 @@ export class PermissionsGuard implements CanActivate {
       context.getHandler(),
     );
 
-    console.log('iii', permissions);
     if (!permissions) {
       return true;
     }
     const request = context.switchToHttp().getRequest();
 
-    console.log('dddd', permissions, request);
     const user = request.user;
 
     return true;

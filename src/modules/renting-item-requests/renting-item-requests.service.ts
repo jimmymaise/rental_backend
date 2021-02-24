@@ -56,6 +56,7 @@ function toItemDTO(item: Item): ItemDTO {
   return {
     ...item,
     createdDate: item.createdDate.getTime(),
+    updatedDate: item.updatedDate.getTime(),
     unavailableForRentDays: item.unavailableForRentDays.map((data) =>
       data.getTime(),
     ),
