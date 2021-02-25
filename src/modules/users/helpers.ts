@@ -28,8 +28,12 @@ export function toUserInfoDTO(
   let email = user.email;
 
   if (user.isDeleted) {
-    avatarImage = DEFAULT_AVATAR_URL;
-    coverImage = DEFAULT_COVER_URL;
+    avatarImage = {
+      url: DEFAULT_AVATAR_URL,
+    };
+    coverImage = {
+      url: DEFAULT_COVER_URL,
+    };
     email = DEFAULT_EMAIL;
     displayName = DEFAULT_DISPLAY_NAME;
   }
