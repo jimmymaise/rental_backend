@@ -22,8 +22,6 @@ Setup-Staging:
 Dockerfile-Staging:
   stage: dockerfile
   environment: staging
-  services:
-    - docker:dind
   script:
     # Deploy to Docker Registry
     # - cat .env
@@ -72,8 +70,6 @@ Setup-Production:
 Dockerfile-Production:
   stage: dockerfile
   environment: production
-  services:
-    - docker:dind
   script:
     # Deploy to Docker Registry
     # - cat .env
