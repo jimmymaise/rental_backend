@@ -94,13 +94,13 @@ Deploy-Production:
     - echo "Test ssh connection"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST"
 
-    # Deploy to server
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker login registry.gitlab.com -u thuedo-deploy -p $GITLAB_DEPLOY_TOKEN"
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
     # Delete old containers
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true"
     # Delete old images
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'registry.gitlab.com/thuedo1/web-api') || true"
+    # Deploy to server
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker login registry.gitlab.com -u thuedo-deploy -p $GITLAB_DEPLOY_TOKEN"
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host" --restart always  --name thuedo_api_app registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
   only:
     - /^v\d+\.\d+\.\d+$/
