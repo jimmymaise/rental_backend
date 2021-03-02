@@ -108,6 +108,7 @@ Deploy-Production:
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host" --restart always  --name thuedo_api_app registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
     # Delete old images
+    - echo $runningWebAPIImageID
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $runningWebAPIImageID" || true
     # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'registry.gitlab.com/thuedo1/web-api')" || true
   only:
