@@ -29,6 +29,8 @@ Dockerfile-Staging:
     - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
     - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
     - docker push registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
+    - docker rmi registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
+    - docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH)
   only:
     - /^release-v\d+\.\d+\.\d+$/
 
@@ -47,13 +49,15 @@ Deploy-Staging:
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST"
 
     # Deploy to server
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "runningStagingWebAPIImageID=$(docker images -q registry.gitlab.com/$CI_PROJECT_PATH/staging)"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker login registry.gitlab.com -u thuedo-stag-depoy -p $GITLAB_DEPLOY_TOKEN"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA"
     # Delete old containers
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host" --restart always  --name thuedo_api_app --add-host=host.docker.internal:127.0.0.1 registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA"
     # Delete old images
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'registry.gitlab.com/thuedo1/web-api')" || true
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $runningStagingWebAPIImageID" || true
+    # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'registry.gitlab.com/thuedo1/web-api')" || true
   only:
     - /^release-v\d+\.\d+\.\d+$/
 
@@ -77,6 +81,8 @@ Dockerfile-Production:
     - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
     - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
     - docker push registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
+    - docker rmi registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
+    - docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH)
   only:
     - /^v\d+\.\d+\.\d+$/
 
@@ -95,12 +101,14 @@ Deploy-Production:
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST"
 
     # Deploy to server
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "runningWebAPIImageID=$(docker images -q registry.gitlab.com/$CI_PROJECT_PATH/production)"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker login registry.gitlab.com -u thuedo-deploy -p $GITLAB_DEPLOY_TOKEN"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
     # Delete old containers
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host" --restart always  --name thuedo_api_app registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
     # Delete old images
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'registry.gitlab.com/thuedo1/web-api')" || true
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $runningWebAPIImageID" || true
+    # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'registry.gitlab.com/thuedo1/web-api')" || true
   only:
     - /^v\d+\.\d+\.\d+$/
