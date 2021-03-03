@@ -4,8 +4,8 @@ import { GoogleCloudStorageService } from './google-cloud-storage.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { FileStorage, FileUsingLocate } from '@prisma/client';
 
-const BUCKET_ITEM_IMAGE_NAME =
-  process.env.BUCKET_ITEM_IMAGE_NAME || 'asia-item-images';
+const DEFAULT_BUCKET_NAME =
+  process.env.DEFAULT_BUCKET_NAME || 'asia-item-images';
 
 @Injectable()
 export class StoragesService {
@@ -21,26 +21,26 @@ export class StoragesService {
   ) => this.googleStorageService.getPublicUrl(bucketName, folderName, fileName);
 
   public getImagePublicUrl(folderName: string, fileName: string): string {
-    return this.getPublicUrl(BUCKET_ITEM_IMAGE_NAME, folderName, fileName);
+    return this.getPublicUrl(DEFAULT_BUCKET_NAME, folderName, fileName);
   }
 
   public async generateReadSignedUrl(fileName: string): Promise<string> {
     return await this.googleStorageService.generateV4ReadSignedUrl(
       fileName,
-      BUCKET_ITEM_IMAGE_NAME,
+      DEFAULT_BUCKET_NAME,
     );
   }
 
   public generateUploadImageSignedUrl(
     fileName: string,
     contentType: string,
-    size: number
+    size: number,
   ): Promise<string> {
     return this.googleStorageService.getPreSignedUrlForUpload(
       fileName,
       contentType,
       size,
-      BUCKET_ITEM_IMAGE_NAME,
+      DEFAULT_BUCKET_NAME,
     );
   }
 
@@ -50,7 +50,7 @@ export class StoragesService {
   ) {
     // Extract, get signed url cho tung file
     const splitedUrl = originalUrl.split('/');
-    const bucketName = BUCKET_ITEM_IMAGE_NAME;
+    const bucketName = DEFAULT_BUCKET_NAME;
     const fileName = splitedUrl[splitedUrl.length - 1];
     const folderName = splitedUrl[splitedUrl.length - 2];
 
@@ -155,7 +155,7 @@ export class StoragesService {
       stream,
       filename,
       mimetype,
-      BUCKET_ITEM_IMAGE_NAME,
+      DEFAULT_BUCKET_NAME,
     );
   }
 
@@ -186,7 +186,7 @@ export class StoragesService {
         url,
         name,
         contentType,
-        bucketName: BUCKET_ITEM_IMAGE_NAME,
+        bucketName: DEFAULT_BUCKET_NAME,
         folderName,
         createdBy,
         usingLocate: FileUsingLocate.ItemPreviewImage,
