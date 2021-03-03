@@ -49,14 +49,13 @@ Deploy-Staging:
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST"
 
     # Deploy to server
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "export RUNNING_STAGING_WEB_API_IMAGE_ID=$(docker images -q registry.gitlab.com/$CI_PROJECT_PATH/staging)"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker login registry.gitlab.com -u thuedo-stag-depoy -p $GITLAB_DEPLOY_TOKEN"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA"
     # Delete old containers
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host" --restart always  --name thuedo_api_app --add-host=host.docker.internal:127.0.0.1 registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA"
     # Delete old images
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $RUNNING_STAGING_WEB_API_IMAGE_ID" || true
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH/staging)" || true
     # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'registry.gitlab.com/thuedo1/web-api')" || true
   only:
     - /^release-v\d+\.\d+\.\d+$/
@@ -101,16 +100,13 @@ Deploy-Production:
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST"
 
     # Deploy to server
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker images -q registry.gitlab.com/$CI_PROJECT_PATH/production > /home/thuedo/running_production_web_api_image_id.txt"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker login registry.gitlab.com -u thuedo-deploy -p $GITLAB_DEPLOY_TOKEN"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
     # Delete old containers
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true"
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host" --restart always  --name thuedo_api_app registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
     # Delete old images
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "ls ~/"
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "echo $(cat /home/thuedo/running_production_web_api_image_id.txt)"
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(cat /home/thuedo/running_production_web_api_image_id.txt)" || true
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH/production)" || true
     # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images --format '{{.Repository}}:{{.Tag}}' | grep 'registry.gitlab.com/thuedo1/web-api')" || true
   only:
     - /^v\d+\.\d+\.\d+$/
