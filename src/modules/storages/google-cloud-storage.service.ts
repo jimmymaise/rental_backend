@@ -80,8 +80,8 @@ export class GoogleCloudStorageService {
       version: 'v4',
     });
 
-    const signedUrl = this.maskSignedUrl(response[0], bucketName);
-    return signedUrl;
+    // const signedUrl = this.maskSignedUrl(response[0], bucketName);
+    return response[0];
   }
 
   public async makePublic(
