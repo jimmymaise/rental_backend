@@ -55,8 +55,12 @@ function toItemDTO(item: Item): ItemDTO {
 
   return {
     ...item,
-    createdDate: item.createdDate.getTime(),
-    updatedDate: item.updatedDate.getTime(),
+    createdDate: item.createdDate?.getTime
+      ? item.createdDate.getTime()
+      : new Date(item.createdDate).getTime(), // Parse for RedisCache
+    updatedDate: item.updatedDate?.getTime
+      ? item.updatedDate.getTime()
+      : new Date(item.updatedDate).getTime(), // Parse for RedisCache
     unavailableForRentDays: item.unavailableForRentDays.map((data) =>
       data.getTime(),
     ),
