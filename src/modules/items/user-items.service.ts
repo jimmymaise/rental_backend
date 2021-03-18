@@ -219,7 +219,6 @@ export class UserItemsService {
       'rentPricePerMonth',
       'totalQuantity',
       'status',
-      'keyword',
     ];
     const updateData: any = {};
 
@@ -274,6 +273,7 @@ export class UserItemsService {
               (data) => new Date(data),
             );
           }
+          break;
         case 'status':
           if (
             data[field] &&

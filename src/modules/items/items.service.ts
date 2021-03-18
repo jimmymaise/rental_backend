@@ -247,8 +247,8 @@ export class ItemsService {
     };
 
     if (cacheKey) {
-      const ONE_DAY = 86400;
-      await this.redisCacheService.set(cacheKey, result, ONE_DAY);
+      const ONE_HOUR = 3600;
+      await this.redisCacheService.set(cacheKey, result, ONE_HOUR);
     }
 
     return result;
