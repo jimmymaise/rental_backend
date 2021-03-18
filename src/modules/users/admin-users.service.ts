@@ -48,6 +48,7 @@ export class AdminUsersService {
         OR: {
           email: {
             contains: searchValue,
+            mode: 'insensitive',
           },
           phoneNumber: {
             contains: searchValue,
@@ -55,6 +56,7 @@ export class AdminUsersService {
           userInfo: {
             displayName: {
               contains: searchValue,
+              mode: 'insensitive',
             },
           },
         },

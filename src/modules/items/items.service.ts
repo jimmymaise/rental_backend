@@ -190,7 +190,7 @@ export class ItemsService {
               ...areaCategoryWhere,
             },
             {
-              keyword: { contains: searchValue },
+              keyword: { contains: searchValue, mode: 'insensitive' },
             },
           ],
         }

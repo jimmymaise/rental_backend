@@ -58,7 +58,7 @@ export class AdminItemsService {
               ...areaCategoryWhere,
             },
             {
-              keyword: { contains: searchValue },
+              keyword: { contains: searchValue, mode: 'insensitive' },
             },
           ],
         }

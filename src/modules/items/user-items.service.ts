@@ -49,10 +49,7 @@ export class UserItemsService {
               ...mandatoryWhere,
             },
             {
-              OR: [
-                { name: { contains: searchValue } },
-                { keyword: { contains: searchValue } },
-              ],
+              OR: [{ keyword: { contains: searchValue, mode: 'insensitive' } }],
             },
           ],
         }
@@ -121,10 +118,7 @@ export class UserItemsService {
               ...mandatoryWhere,
             },
             {
-              OR: [
-                { name: { contains: searchValue } },
-                { keyword: { contains: searchValue } },
-              ],
+              OR: [{ keyword: { contains: searchValue, mode: 'insensitive' } }],
             },
           ],
         }
