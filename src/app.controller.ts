@@ -1,4 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Req } from '@nestjs/common';
+import { ItemStatus } from '@prisma/client';
+import { Request } from 'express';
+
 import { AppService } from './app.service';
 import { RedisCacheService } from '@modules/redis-cache/redis-cache.service';
 import { PrismaService } from '@modules/prisma/prisma.service';
@@ -29,5 +32,64 @@ export class AppController {
       cache: isRedisWorkig,
       database: isDatabaseWorking,
     };
+  }
+
+  @Get('sitemap-data')
+  async siteMapData(@Req() request: Request): Promise<any> {
+    const SITE_MAP_DATA_CACHE_KEY = 'SITE_MAP_DATA';
+    const cachedSiteMapData = await this.redisCacheService.get(
+      SITE_MAP_DATA_CACHE_KEY,
+    );
+
+    if (cachedSiteMapData) {
+      return cachedSiteMapData;
+    }
+
+    // TODO: temporary to hard coded the number of items just in the MVP
+    const items = await this.prismaService.item.findMany({
+      take: 20000,
+      orderBy: {
+        createdDate: 'desc',
+      },
+      where: {
+        status: ItemStatus.Published,
+        isDeleted: false,
+        isVerified: true,
+      },
+      select: {
+        id: true,
+        slug: true,
+        areas: {
+          select: {
+            slug: true,
+          },
+        },
+        categories: {
+          select: {
+            slug: true,
+          },
+        },
+      },
+    });
+
+    const siteMapData = {
+      items: items.map((item) => ({
+        id: item.id,
+        areas: item.areas.map((area) => ({ slug: area.slug })),
+        categories: item.categories.map((category) => ({
+          slug: category.slug,
+        })),
+        slug: item.slug,
+      })),
+    };
+
+    const FIVE_DAYS = 432000;
+    await this.redisCacheService.set(
+      SITE_MAP_DATA_CACHE_KEY,
+      siteMapData,
+      FIVE_DAYS,
+    );
+
+    return siteMapData;
   }
 }
