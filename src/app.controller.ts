@@ -45,6 +45,16 @@ export class AppController {
       return cachedSiteMapData;
     }
 
+    const categories = await this.prismaService.category.findMany({
+      take: 1000,
+      where: {
+        isDeleted: false,
+      },
+      select: {
+        slug: true,
+      },
+    });
+
     // TODO: temporary to hard coded the number of items just in the MVP
     const items = await this.prismaService.item.findMany({
       take: 20000,
@@ -73,6 +83,7 @@ export class AppController {
     });
 
     const siteMapData = {
+      categories,
       items: items.map((item) => ({
         id: item.id,
         areas: item.areas.map((area) => ({ slug: area.slug })),
