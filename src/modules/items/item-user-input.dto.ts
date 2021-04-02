@@ -14,6 +14,7 @@ export interface ItemUserInputDTO {
   unavailableForRentDays?: number[];
   currentOriginalPrice?: number;
   sellPrice?: number;
+  hidePrice?: boolean;
   rentPricePerDay?: number;
   rentPricePerWeek?: number;
   rentPricePerMonth?: number;

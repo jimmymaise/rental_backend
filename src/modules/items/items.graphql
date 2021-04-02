@@ -21,6 +21,7 @@ type Item {
   unavailableForRentDays: [Float]
   currentOriginalPrice: Float
   sellPrice: Float
+  hidePrice: Boolean
   rentPricePerDay: Float
   rentPricePerWeek: Float
   rentPricePerMonth: Float

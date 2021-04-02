@@ -151,6 +151,7 @@ model Item {
   unavailableForRentDays    DateTime[]
   currentOriginalPrice      Float?
   sellPrice                 Float?
+  hidePrice                 Boolean?             @default(false)
   rentPricePerDay           Float?
   rentPricePerWeek          Float?
   rentPricePerMonth         Float?

@@ -208,6 +208,7 @@ export class UserItemsService {
       'unavailableForRentDays',
       'currentOriginalPrice',
       'sellPrice',
+      'hidePrice',
       'rentPricePerDay',
       'rentPricePerWeek',
       'rentPricePerMonth',
