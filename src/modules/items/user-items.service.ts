@@ -130,6 +130,9 @@ export class UserItemsService {
       where,
       skip: offset,
       take: limit,
+      orderBy: {
+        updatedDate: 'desc',
+      },
     };
 
     if (Object.keys(include).length) {
@@ -216,13 +219,22 @@ export class UserItemsService {
       'status',
     ];
     const updateData: any = {};
+    const where = {
+      id,
+    };
+    const foundItem = await this.prismaService.item.findUnique({ where });
 
     for (let i = 0; i < allowUpdateFields.length; i++) {
       let field = allowUpdateFields[i];
+      const isVerified = process.env.NODE_ENV === 'production' ? false : true;
 
       switch (field) {
         case 'name':
-          if (data[field] && data[field].length) {
+          if (
+            data[field] &&
+            data[field].length &&
+            data[field] !== foundItem.name
+          ) {
             const actualName = sanitizeHtml(data[field]);
             const slug = stringToSlug(actualName);
             updateData[field] = actualName;
@@ -230,7 +242,7 @@ export class UserItemsService {
               .replace(/[^a-z0-9\-]/g, '-')
               .replace(/-+/g, '-');
             updateData['keyword'] = `${actualName} ${slug}`;
-            updateData['isVerified'] = false;
+            updateData['isVerified'] = isVerified;
           }
           break;
         case 'termAndCondition':
@@ -241,7 +253,9 @@ export class UserItemsService {
             } else {
               updateData[field] = JSON.stringify(data[field]);
             }
-            updateData['isVerified'] = false;
+            if (updateData[field] !== foundItem[field]) {
+              updateData['isVerified'] = isVerified;
+            }
           }
           break;
         case 'images':
@@ -254,7 +268,9 @@ export class UserItemsService {
               );
             });
             updateData[field] = JSON.stringify(images);
-            updateData['isVerified'] = false;
+            if (updateData[field] !== foundItem[field]) {
+              updateData['isVerified'] = isVerified;
+            }
           }
           break;
         case 'checkBeforeRentDocuments':
@@ -284,10 +300,6 @@ export class UserItemsService {
       }
     }
 
-    const where = {
-      id,
-    };
-    const foundItem = await this.prismaService.item.findUnique({ where });
     if (
       foundItem &&
       (foundItem.isDeleted ||

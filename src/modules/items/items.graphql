@@ -65,6 +65,7 @@ input ItemUserInput {
   rentPricePerMonth: Float
   note: String
   status: String
+  hidePrice: Boolean
 }
 
 input ItemQuery {
