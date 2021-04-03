@@ -8,6 +8,7 @@ enum ItemStatus {
 
 type Item {
   id: ID!
+  pid: Int!
   name: String!
   slug: String!
   description: JSON
@@ -98,6 +99,7 @@ type Mutation {
 
 type Query {
   feed(query: ItemQuery): ItemPagination
+  feedDetailByPID(pid: Int!, includes: [String], checkWishList: Boolean): Item
   feedDetail(id: String!, includes: [String], checkWishList: Boolean): Item
   feedMyItems(query: MyItemQuery): ItemPagination
   feedUserPublicItems(userId: String!, query: ItemQuery): ItemPagination

@@ -118,6 +118,7 @@ export class ItemsResolvers {
     };
   }
 
+  // TODO: remove it
   @Query()
   @UseGuards(EveryoneGqlAuthGuard)
   async feedDetail(
@@ -127,6 +128,32 @@ export class ItemsResolvers {
     @Args('checkWishList') checkWishList: boolean,
   ): Promise<ItemDTO> {
     const item = await this.itemService.findOne(id, includes);
+    const enhancedItem = toItemDTO(item, user?.id);
+
+    if (item.ownerUserId) {
+      enhancedItem.createdBy = await this.usersService.getUserDetailData(
+        item.ownerUserId,
+      );
+    }
+
+    if (user && checkWishList) {
+      enhancedItem.isInMyWishList =
+        (await this.wishingItemService.findUnique(user.id, enhancedItem.id)) !==
+        null;
+    }
+
+    return enhancedItem;
+  }
+
+  @Query()
+  @UseGuards(EveryoneGqlAuthGuard)
+  async feedDetailByPID(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('pid') pid: number,
+    @Args('includes') includes: string[],
+    @Args('checkWishList') checkWishList: boolean,
+  ): Promise<ItemDTO> {
+    const item = await this.itemService.findOneByPID(pid, includes);
     const enhancedItem = toItemDTO(item, user?.id);
 
     if (item.ownerUserId) {

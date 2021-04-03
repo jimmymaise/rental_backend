@@ -138,6 +138,7 @@ enum ItemStatus {
 // areas, FE will use the last area, it's smallest unit
 model Item {
   id                        String               @id @default(uuid())
+  pid                       Int                  @unique @default(autoincrement())
   name                      String
   slug                      String
   description               String?
