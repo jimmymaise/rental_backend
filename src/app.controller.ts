@@ -68,6 +68,7 @@ export class AppController {
       },
       select: {
         id: true,
+        pid: true,
         slug: true,
         areas: {
           select: {
