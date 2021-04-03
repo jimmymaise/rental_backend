@@ -92,6 +92,7 @@ export class AppController {
           slug: category.slug,
         })),
         slug: item.slug,
+        pid: item.pid,
       })),
     };
 
