@@ -138,9 +138,9 @@ export class ItemsService {
     let cacheKey;
     if (offset === 0) {
       // Enabled Cache for only first page
-      const hash = `${searchValue}_${offset}_${limit}_${areaId}_${categoryId}_${includes.join(
-        '|',
-      )}_${sortByFields.join('|')}`;
+      const hash = `${searchValue}_${offset}_${limit}_${areaId}_${categoryId}_${(
+        includes || []
+      ).join('|')}_${sortByFields.join('|')}`;
       cacheKey = `ITEMS_LIST_${Base64.encode(hash)}`;
 
       const cachedResult = await this.redisCacheService.get(cacheKey);
