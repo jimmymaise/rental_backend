@@ -5,6 +5,8 @@ type Category {
   imageUrl: String
   coverImageUrl: String
   parentCategoryId: String
+  seoTitle: String
+  seoDescription: String
   order: Int
   isDisabled: Boolean
   isFeatured: Boolean

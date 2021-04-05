@@ -104,6 +104,8 @@ model Category {
   isDisabled       Boolean? @default(false)
   isDeleted        Boolean? @default(false)
   items            Item[]   @relation(references: [id])
+  seoTitle         String?
+  seoDescription   String?
   isFeatured       Boolean? @default(false)
 }
 
