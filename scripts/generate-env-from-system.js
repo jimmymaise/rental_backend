@@ -36,6 +36,7 @@ const ALLOWED_KEYS = [
 ];
 
 for (let key in process.env) {
+  console.log('ENV_NAME = ' + process.env['ENV_NAME']);
   if (ALLOWED_KEYS.includes(key)) {
     fs.appendFileSync('.env', `${key}=${process.env[key]}\r\n`);
   }
