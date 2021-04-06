@@ -35,8 +35,9 @@ const ALLOWED_KEYS = [
   'GOOGLE_CLOUD_STORAGE_HOST',
 ];
 
+console.log('ENV_NAME = ' + process.env['ENV_NAME']);
+
 for (let key in process.env) {
-  console.log('ENV_NAME = ' + process.env['ENV_NAME']);
   if (ALLOWED_KEYS.includes(key)) {
     fs.appendFileSync('.env', `${key}=${process.env[key]}\r\n`);
   }
