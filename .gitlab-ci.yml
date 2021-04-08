@@ -1,7 +1,6 @@
 image: docker:stable
 
 cache:
-  key: $CI_COMMIT_REF_SLUG"
   paths:
     - .env
 
