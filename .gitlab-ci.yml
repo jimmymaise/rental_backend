@@ -1,4 +1,4 @@
-image: node:14.15.5
+image: docker-node:latest
 
 stages:
   - dockerfile
