@@ -1,33 +1,17 @@
 image: docker:stable
 
-cache:
-  paths:
-    - .env
-
 stages:
-  - setup
   - dockerfile
   - deploy
 
 # Staging
-Setup-Staging:
-  stage: setup
-  image: node:12.15.0-slim
-  environment: staging
-  script:
-    - echo $CI_JOB_NAME
-    - echo $CI_COMMIT_REF_SLUG
-    - echo $CI_JOB_STAGE
-    - node ./scripts/generate-env-from-system.js
-  only:
-    - /^release-v\d+\.\d+\.\d+$/
-
 Dockerfile-Staging:
   stage: dockerfile
   environment: staging
   script:
     # Deploy to Docker Registry
     # - cat .env
+    - node ./scripts/generate-env-from-system.js
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
     - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
@@ -64,21 +48,13 @@ Deploy-Staging:
     - /^release-v\d+\.\d+\.\d+$/
 
 # Production
-Setup-Production:
-  stage: setup
-  image: node:12.15.0-slim
-  environment: production
-  script:
-    - node ./scripts/generate-env-from-system.js
-  only:
-    - /^v\d+\.\d+\.\d+$/
-
 Dockerfile-Production:
   stage: dockerfile
   environment: production
   script:
     # Deploy to Docker Registry
     # - cat .env
+    - node ./scripts/generate-env-from-system.js
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
     - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
