@@ -57,7 +57,8 @@ Deploy-Staging:
     # Delete old images
     # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images -q registry.gitlab.com/thuedo1/web-api/staging)" || true
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker image prune -a -f" || true
-  when: manual
+  only:
+    - master
 
 # Production
 Setup-Production:
