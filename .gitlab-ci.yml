@@ -1,17 +1,30 @@
-image: node-docker:latest
+image: docker:stable
 
 stages:
+  - setup
   - dockerfile
   - deploy
 
 # Staging
+Setup-Staging:
+  stage: setup
+  image: node:12.15.0-slim
+  environment: staging
+  script:
+    - node ./scripts/generate-env-from-system.js
+  artifacts:
+    expire_in: 2 hrs
+    paths:
+      - .env
+  only:
+    - master
+
 Dockerfile-Staging:
   stage: dockerfile
   environment: staging
   script:
     # Deploy to Docker Registry
     # - cat .env
-    - node ./scripts/generate-env-from-system.js
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
     - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
@@ -19,7 +32,7 @@ Dockerfile-Staging:
     - docker rmi registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
     - docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH)
   only:
-    - /^release-v\d+\.\d+\.\d+$/
+    - master
 
 Deploy-Staging:
   stage: deploy
@@ -44,17 +57,28 @@ Deploy-Staging:
     # Delete old images
     # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images -q registry.gitlab.com/thuedo1/web-api/staging)" || true
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker image prune -a -f" || true
-  only:
-    - /^release-v\d+\.\d+\.\d+$/
+  when: manual
 
 # Production
+Setup-Production:
+  stage: setup
+  image: node:12.15.0-slim
+  environment: production
+  script:
+    - node ./scripts/generate-env-from-system.js
+  artifacts:
+    expire_in: 2 hrs
+    paths:
+      - .env
+  only:
+    - /^v\d+\.\d+\.\d+$/
+
 Dockerfile-Production:
   stage: dockerfile
   environment: production
   script:
     # Deploy to Docker Registry
     # - cat .env
-    - node ./scripts/generate-env-from-system.js
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
     - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
