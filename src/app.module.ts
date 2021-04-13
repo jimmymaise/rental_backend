@@ -38,6 +38,8 @@ import { AppService } from './app.service';
           'https://portal.thuedo.vn',
           'https://stag-portal.thuedo.vn',
           'https://thuedo.vn',
+          'https://stag-host.thuedo.vn',
+          'https://host.thuedo.vn',
         ],
         credentials: true,
       },

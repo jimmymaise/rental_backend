@@ -63,6 +63,8 @@ async function bootstrap() {
       'https://portal.thuedo.vn',
       'https://stag-portal.thuedo.vn',
       'https://thuedo.vn',
+      'https://stag-host.thuedo.vn',
+      'https://host.thuedo.vn',
     ];
 
     const origin = req.headers.origin;
