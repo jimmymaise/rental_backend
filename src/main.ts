@@ -57,6 +57,7 @@ async function bootstrap() {
   app.useWebSocketAdapter(new RedisIoAdapter(app, configService));
   app.use(function (req, res, next) {
     const allowedOrigins = [
+      'http://localhost:3700',
       'http://localhost:3600',
       'http://localhost:3500',
       'https://stag.thuedo.vn',
