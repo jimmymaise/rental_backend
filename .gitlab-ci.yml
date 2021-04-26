@@ -50,20 +50,6 @@ Deploy-Staging:
   only:
     - master
 
-# Production
-Setup-Production:
-  stage: setup
-  image: node:12.15.0-slim
-  environment: production
-  script:
-    - node ./scripts/generate-env-from-system.js
-  artifacts:
-    expire_in: 2 hrs
-    paths:
-      - .env
-  only:
-    - /^v\d+\.\d+\.\d+$/
-
 Dockerfile-Production:
   stage: dockerfile
   environment: production
