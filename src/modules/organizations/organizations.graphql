@@ -1,0 +1,67 @@
+type OrganizationInfo {
+    id: ID!
+    name: String
+    avatarImage: String
+    description: String
+    slug: String
+    createdDate: Float
+    updatedDate: Float,
+    createdBy: String,
+    users:[UserOrgInfo],
+
+}
+
+type UserOrgInfo {
+    userId: String,
+    isOwner: Boolean,
+    orgId: String
+}
+
+
+type OrganizationPagination {
+    items: [OrganizationInfo]
+    total: Int
+    limit: Int
+    offset: Int
+}
+
+
+input createOrganizationInput {
+    name: String
+    description: String
+    avatarImage: PublicStorageFileInput
+    slug: String
+}
+
+input updateMyOrganizationInput {
+    name: String
+    description: String
+    avatarImage: PublicStorageFileInput
+    slug: String
+    users: [String]
+    addUsersToOrg: [String]
+    removeUsersFromOrg: [String]
+    setOwner:setOwner
+}
+input setOwner {
+    userId: String,
+    isOwner:Boolean
+}
+
+input OrganizationQuery {
+    search: String
+    offset: Int
+    limit: Int
+    sortByFields: [String]
+}
+
+
+type Query {
+    getMyOrg: OrganizationInfo
+    searchOrg(query: OrganizationQuery): OrganizationPagination
+}
+
+type Mutation {
+    updateMyOrg(updateMyOrganizationInput: updateMyOrganizationInput!): OrganizationInfo
+    createOrg(createOrganizationInput: createOrganizationInput!): OrganizationInfo
+}

@@ -14,3 +14,5 @@ export * from './message';
 export * from './notification';
 export * from './logging';
 export * from './redis-cache';
+export * from './organizations';
+export * from './roles';

@@ -14,7 +14,7 @@ import {
   PublicUserInfoDTO,
 } from './user-info.dto';
 import { PaginationDTO } from '../../models';
-import { Permission } from './permission.enum';
+import { Permission } from '@modules/auth/permission/permission.enum';
 import { AuthService } from '@modules/auth/auth.service';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
@@ -28,7 +28,8 @@ export class UsersResolvers {
     private readonly authService: AuthService,
     private readonly emailService: EmailService,
     private readonly adminUserService: AdminUsersService,
-  ) {}
+  ) {
+  }
 
   @Query()
   @UseGuards(GqlAuthGuard)
@@ -74,6 +75,8 @@ export class UsersResolvers {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
+  @Permissions(Permission.NEED_LOGIN)
+
   async updateUserInfoData(
     @CurrentUser() user: GuardUserPayload,
     @Args('userInfoData') userInfoData: UserInfoInputDTO,
@@ -83,6 +86,7 @@ export class UsersResolvers {
 
   // SIGN-IN - SIGN-UP
   @Mutation()
+  @Permissions(Permission.NO_NEED_LOGIN)
   async signUpByEmail(
     @Context() context: any, // GraphQLExecutionContext
     @Args('email') email: string,
@@ -123,6 +127,7 @@ export class UsersResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NO_NEED_LOGIN)
   async loginByEmail(
     @Context() context: any, // GraphQLExecutionContext
     @Args('email') email: string,
@@ -163,18 +168,17 @@ export class UsersResolvers {
 
   @Mutation()
   @UseGuards(GqlRefreshGuard)
+  @Permissions(Permission.NEED_LOGIN)
+
   async refreshUserAccessToken(
     @Context() context: any, // GraphQLExecutionContext
     @CurrentUser() currentUser: GuardUserPayload,
     @Args('refresh') refresh: string,
   ): Promise<AuthDTO> {
     const user = await this.userService.getUserById(currentUser.id);
+    let token = await this.authService.generateNewToken(null,user.id)
 
-    const accessToken = this.authService.getAccessToken({
-      userId: user.id,
-      email: user.email,
-    });
-
+    const accessToken = token.accessToken
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
       accessToken,
     );
@@ -188,6 +192,8 @@ export class UsersResolvers {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
+  @Permissions(Permission.NEED_LOGIN)
+
   async logout(
     @Context() context: any,
     @CurrentUser() currentUser: GuardUserPayload,
@@ -201,6 +207,8 @@ export class UsersResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NO_NEED_LOGIN)
+
   async requestResetPassword(
     @Args('email') email: string,
     @Args('recaptchaKey') recaptchaKey: string,
@@ -226,6 +234,8 @@ export class UsersResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NO_NEED_LOGIN)
+
   async setPasswordByToken(
     @Args('token') token: string,
     @Args('password') password: string,
@@ -244,6 +254,8 @@ export class UsersResolvers {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
+  @Permissions(Permission.NEED_LOGIN)
+
   async changePassword(
     @Context() context: any, // GraphQLExecutionContext
     @CurrentUser() currentUser: GuardUserPayload,
@@ -280,6 +292,8 @@ export class UsersResolvers {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
+  @Permissions(Permission.NEED_LOGIN)
+
   async deleteMyUser(
     @CurrentUser() currentUser: GuardUserPayload,
     @Args('reason') reason: string,
@@ -307,7 +321,7 @@ export class UsersResolvers {
   @UseGuards(GqlPermissionsGuard)
   async adminUserListFeed(
     @Args('query')
-    query: {
+      query: {
       search: string;
       offset: number;
       limit: number;

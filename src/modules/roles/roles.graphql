@@ -1,0 +1,63 @@
+type RoleInfo {
+    id: ID!
+    name: String
+    description: String
+    createdDate: Float
+    updatedDate: Float,
+    users:[PublicUserInfo],
+    orgId: String,
+    permissions:[PermissionInfo]
+
+}
+
+type PermissionInfo {
+    id: ID!
+    name: String
+    description: String
+    createdDate: Float
+    updatedDate: Float,
+}
+
+
+type RolePagination {
+    items: [RoleInfo]
+    total: Int
+    limit: Int
+    offset: Int
+}
+
+
+input createRoleInput {
+    name: String
+    description: String
+    permissions: [String]
+    users: [String]
+
+}
+
+input updateRoleInput {
+    id: ID!
+    name: String
+    description: String
+    avatarImage: PublicStorageFileInput
+    addUsersToRole: [String]
+    removeUsersFromRole: [String]
+}
+
+input RoleQuery {
+    search: String
+    offset: Int
+    limit: Int
+    sortByFields: [String]
+}
+
+
+type Query {
+    getMyRole: RoleInfo
+    searchRole(query: RoleQuery): RolePagination
+}
+
+type Mutation {
+    updateRole(updateRoleInput: updateRoleInput!): RoleInfo
+    createRole(createRoleInput: createRoleInput!): RoleInfo
+}

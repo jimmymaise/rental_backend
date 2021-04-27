@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { rootContants } from '../../constants';
 import { AuthDTO } from './auth.dto';
 import { TokenPayload } from './token-payload';
+import { UserInfoForMakingToken } from '@modules/users/user-info.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,8 @@ export class AuthService {
     private jwtService: JwtService,
     private prismaService: PrismaService,
     private configService: ConfigService,
-  ) {}
+  ) {
+  }
 
   public getAccessToken(payload: TokenPayload): string {
     return this.jwtService.sign(payload, {
@@ -88,21 +90,21 @@ export class AuthService {
     // With Credential = True
     return rootContants.isProduction
       ? `Authentication=${accessToken}; HttpOnly; Secure; Path=/; Max-Age=${this.configService.get(
-          'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-        )}; SameSite=None;`
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}; SameSite=None;`
       : `Authentication=${accessToken}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-          'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-        )}; SameSite=Lax;`;
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}; SameSite=Lax;`;
   }
 
   getCookieWithJwtRefreshToken(refreshToken: string) {
     return rootContants.isProduction
       ? `Refresh=${refreshToken}; HttpOnly; Secure; Path=/; Max-Age=${this.configService.get(
-          'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-        )}; SameSite=None;`
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}; SameSite=None;`
       : `Refresh=${refreshToken}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-          'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-        )}; SameSite=Lax;`;
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}; SameSite=Lax;`;
   }
 
   getCookieForLogout(): string[] {
@@ -135,17 +137,49 @@ export class AuthService {
     return this.jwtService.decode(token);
   }
 
-  async loginByEmail(email: string, password: string): Promise<AuthDTO> {
+  async loginByEmail(email: string, password: string, orgId?: string): Promise<AuthDTO> {
     const user = await this.getUserByEmailPassword(email, password);
+    orgId = orgId || user.currentOrgId;
+    return this.generateNewToken(user, null, orgId);
+  }
 
-    const permissions = (user as any).permissions?.map(
-      ({ permission }) => permission,
-    );
-    const tokenPayload = { userId: user.id, email, permissions };
+  async generateNewToken(user?: UserInfoForMakingToken,
+                         userId?: string,
+                         orgId?: string,
+                         otherTokenPayloadParams: object = {}): Promise<AuthDTO> {
+    if (!user) {
+      user = await this.prismaService.user.findUnique({
+        where: { id: userId },
+        include: { roles: true, orgsThisUserBelongTo: true },
+      });
+    }
+    let orgIds = user.orgsThisUserBelongTo.map(org => org.orgId);
+    let firstOrg = orgIds.length > 0 ? orgIds[0] : undefined;
+    orgId = orgId || user.currentOrgId || firstOrg;
+    let currentOrgPermissionNames = [];
+    let isOwner;
+    if (orgId) {
+      isOwner = user.orgsThisUserBelongTo.filter(org => (org.orgId == orgId))[0].isOwner;
+      let roleIds = user.roles.map(role => role.id);
+      currentOrgPermissionNames = await this.getOrgPermissionNameByRoleIds(roleIds, orgId);
+      await this.prismaService.user.update({
+        where: { id: user.id },
+        data: { currentOrgId: orgId },
+
+      });
+    }
+
+    const tokenPayload: TokenPayload = {
+      userId: user.id,
+      email: user.email,
+      isCurrentOrgOwner: isOwner,
+      currentOrgPermissionNames,
+      currentOrgId: orgId,
+      orgIds: orgIds,
+      ...otherTokenPayloadParams,
+    };
     const accessToken = this.getAccessToken(tokenPayload);
     const refreshToken = this.getRefreshToken(tokenPayload);
-    await this.updateLastSignedIn(user.id);
-
     return {
       accessToken,
       refreshToken,
@@ -154,13 +188,34 @@ export class AuthService {
         email: user.email,
       },
     };
+
   }
 
-  async getUserByEmailPassword(email: string, password: string): Promise<User> {
+  async getOrgPermissionNameByRoleIds(roleIds: string[], orgId: string): Promise<string[]> {
+
+    let permissions = await this.prismaService.permission.findMany({
+      where: {
+        roles: {
+          some: {
+            id: {
+              in: orgId,
+            },
+          },
+        },
+      },
+    });
+    return permissions.map(permission => permission.name);
+
+  }
+
+  async getUserByEmailPassword(email: string, password: string): Promise<User & {
+    roles: any, orgsThisUserBelongTo: any
+  }> {
     const user = await this.prismaService.user.findUnique({
       where: { email },
-      include: { permissions: true },
+      include: { orgsThisUserBelongTo: true, roles: true },
     });
+
     if (!user) {
       throw new Error('No such user found');
     }
@@ -169,6 +224,7 @@ export class AuthService {
     if (!valid) {
       throw new Error('Invalid password');
     }
+
 
     return user;
   }

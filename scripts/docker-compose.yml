@@ -5,8 +5,16 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - 'redis_data:/data'
+      - '~/docker_data/redis_data:/data'
+  postgres:
+    image: 'postgres'
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: '123456789'
+      PGDATA: '/data/postgres'
+    volumes:
+      - '~/docker_data/postgres_data:/data/postgres'
+    ports:
+      - "5432:5432"
 
-volumes:
-  redis_data:
 
