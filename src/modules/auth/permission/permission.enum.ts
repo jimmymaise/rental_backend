@@ -1,0 +1,25 @@
+export enum Permission {
+  //General Permission
+  NEED_LOGIN = 'NEED_LOGIN',
+  NO_NEED_LOGIN = 'NOT_LOGIN',
+
+  //Inside Org permission
+
+  //ROLE
+  CREATE_ROLE = 'CREATE_ROLE',
+  UPDATE_ROLE = 'UPDATE_ROLE',
+  DELETE_ROLE = 'DELETE_ROLE',
+
+  //ORG
+  UPDATE_OWN_ORG = 'UPDATE_OWN_ORG',
+  DELETE_OWN_ORG = 'DELETE_OWN_ORG',
+  CONNECT = 'CONNECT',
+  REMOVE_CONNECT = 'REMOVE_CONNECT',
+  EDIT_PROFILE = 'EDIT_PROFILE',
+  SEND_MESSAGE = 'SEND_MESSAGE'
+
+
+}
+
+export const ORG_OWNER_PERMISSION = Object.values(Permission);
+

@@ -1,10 +1,12 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 // TODO: NOT COMPLETED YET
 @Injectable()
 export class PermissionsGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector) {
+  }
 
   canActivate(context: ExecutionContext): boolean {
     const permissions = this.reflector.get<string[]>(
@@ -15,9 +17,10 @@ export class PermissionsGuard implements CanActivate {
     if (!permissions) {
       return true;
     }
-    const request = context.switchToHttp().getRequest();
+    let user = GqlExecutionContext.create(context).getContext().user
+    let a
 
-    const user = request.user;
+
 
     return true;
   }

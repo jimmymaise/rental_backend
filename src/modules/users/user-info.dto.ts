@@ -1,5 +1,6 @@
 import { StoragePublicDTO } from '../storages/storage-public.dto';
-import { Permission } from './permission.enum';
+import { Permission } from '@modules/auth/permission/permission.enum';
+import { User } from '@prisma/client';
 
 export interface UserInfoDTO {
   id: string;
@@ -32,3 +33,9 @@ export interface UserInfoInputDTO {
   avatarImage: StoragePublicDTO;
   coverImage: StoragePublicDTO;
 }
+
+export type UserInfoForMakingToken = User & {
+  roles: any[], orgsThisUserBelongTo: any[]
+}
+
+

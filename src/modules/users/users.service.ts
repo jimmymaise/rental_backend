@@ -7,12 +7,13 @@ import sanitizeHtml from 'sanitize-html';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, UserInfo } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
-import { UserInfoInputDTO, UserInfoDTO } from './user-info.dto';
+import { UserInfoInputDTO, UserInfoDTO, UserInfoForMakingToken } from './user-info.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { EncryptByAesCBCPassword } from '@helpers/encrypt';
 import { getUserCacheKey, toUserInfoDTO } from './helpers';
 import { AuthService } from '@modules/auth/auth.service';
 import { AuthDTO } from '@modules/auth/auth.dto';
+import { TokenPayload } from '@modules/auth/token-payload';
 
 const DEFAULT_AVATARS = [
   'https://asia-fast-storage.thuedo.vn/default-avatars/default_0008_avatar-1.jpg',
@@ -39,9 +40,9 @@ function encryptPhoneNumber(userInfo: UserInfoDTO): UserInfoDTO {
     ...userInfo,
     phoneNumber: !isEmpty(userInfo.phoneNumber)
       ? EncryptByAesCBCPassword(
-          userInfo.phoneNumber,
-          process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
-        )
+        userInfo.phoneNumber,
+        process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
+      )
       : userInfo.phoneNumber,
   };
 }
@@ -58,7 +59,8 @@ export class UsersService {
     private storageService: StoragesService,
     private redisCacheService: RedisCacheService,
     private authService: AuthService,
-  ) {}
+  ) {
+  }
 
   async isUserInMyContactList(
     userId: string,
@@ -117,10 +119,14 @@ export class UsersService {
   async createUserByEmailPassword(
     email: string,
     password: string,
-  ): Promise<User> {
+  ): Promise<UserInfoForMakingToken> {
     const passwordHash = await bcrypt.hash(password, 10);
     return this.prismaService.user.create({
       data: { email: sanitizeHtml(email), passwordHash },
+      include: {
+        roles: true,
+        orgsThisUserBelongTo: true,
+      },
     });
   }
 
@@ -139,7 +145,7 @@ export class UsersService {
     return this.prismaService.user.update({
       where: { id: userId },
       include: {
-        permissions: true,
+        roles: true,
       },
       data,
     });
@@ -166,40 +172,38 @@ export class UsersService {
   }
 
   async getUserByFacebookId(facebookId: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({
+    return this.prismaService.user.findUnique({
       where: { facebookId },
       include: {
-        permissions: true,
+        roles: true,
+        orgsThisUserBelongTo: true,
       },
     });
-
-    return user;
   }
 
   async getUserByGoogleId(googleId: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({
+    return await this.prismaService.user.findUnique({
       where: { googleId },
       include: {
-        permissions: true,
+        roles: true,
       },
     });
 
-    return user;
   }
 
-  async getUserByEmail(email: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({
+  async getUserByEmail(email: string): Promise<UserInfoForMakingToken> {
+    return this.prismaService.user.findUnique({
       where: { email },
       include: {
-        permissions: true,
+        roles: true,
+        orgsThisUserBelongTo: true,
       },
     });
 
-    return user;
   }
 
   async updateLastSignedIn(userId: string): Promise<User> {
-    return await this.prismaService.user.update({
+    return this.prismaService.user.update({
       where: {
         id: userId,
       },
@@ -214,12 +218,11 @@ export class UsersService {
     facebookId: string,
     facebookAccessToken: string,
   ): Promise<User> {
-    const user = await this.prismaService.user.update({
+    return await this.prismaService.user.update({
       where: { id: userId },
       data: { facebookId, facebookAccessToken },
     });
 
-    return user;
   }
 
   async connectWithGoogleAccount(
@@ -227,30 +230,13 @@ export class UsersService {
     googleId: string,
     googleAccessToken: string,
   ): Promise<User> {
-    const user = await this.prismaService.user.update({
+    return await this.prismaService.user.update({
       where: { id: userId },
       data: { googleId, googleAccessToken },
     });
 
-    return user;
   }
 
-  async getUserByEmailPassword(email: string, password: string): Promise<User> {
-    const user = await this.prismaService.user.findUnique({
-      where: { email },
-      include: { permissions: true },
-    });
-    if (!user) {
-      throw new Error('No such user found');
-    }
-
-    const valid = await bcrypt.compare(password, user.passwordHash);
-    if (!valid) {
-      throw new Error('Invalid password');
-    }
-
-    return user;
-  }
 
   async changePassword(
     userId: string,
@@ -391,7 +377,7 @@ export class UsersService {
           break;
         case 'coverImage':
           if (data[field]) {
-            this.storageService.handleUploadImageBySignedUrlComplete(
+            await this.storageService.handleUploadImageBySignedUrlComplete(
               data[field].id,
             );
             updateData[field] = JSON.stringify(data[field]);
@@ -489,23 +475,7 @@ export class UsersService {
     } else if (!user.facebookId) {
       // await this.connectWithFacebookAccount(user.id, facebookId, fbAccessToken)
     }
-
-    const permissions = (user as any).permissions?.map(
-      ({ permission }) => permission,
-    );
-    const tokenPayload = { userId: user.id, facebookId, permissions };
-    const accessToken = this.authService.getAccessToken(tokenPayload);
-    const refreshToken = this.authService.getRefreshToken(tokenPayload);
-    await this.updateLastSignedIn(user.id);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-      },
-    };
+    return this.authService.generateNewToken(null, user.id, null, { facebookId });
   }
 
   async signInByGoogleId(
@@ -530,22 +500,7 @@ export class UsersService {
       // await this.connectWithGoogleAccount(user.id, googleId, googleAccessToken)
     }
 
-    const permissions = (user as any).permissions?.map(
-      ({ permission }) => permission,
-    );
-    const tokenPayload = { userId: user.id, googleId, permissions };
-    const accessToken = this.authService.getAccessToken(tokenPayload);
-    const refreshToken = this.authService.getRefreshToken(tokenPayload);
-    await this.updateLastSignedIn(user.id);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-      },
-    };
+    return this.authService.generateNewToken(null, user.id, null);
   }
 
   async signUpByEmail(email: string, password: string): Promise<AuthDTO> {
@@ -559,40 +514,18 @@ export class UsersService {
       displayName: email.substr(0, email.indexOf('@')),
     } as any);
 
-    const tokenPayload = { userId: user.id, email };
-    const accessToken = this.authService.getAccessToken(tokenPayload);
-    const refreshToken = this.authService.getRefreshToken(tokenPayload);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-      },
-    };
+    return this.authService.generateNewToken(null, user.id, null);
   }
 
-  async loginByEmail(email: string, password: string): Promise<AuthDTO> {
-    const user = await this.getUserByEmailPassword(email, password);
-
-    const permissions = (user as any).permissions?.map(
-      ({ permission }) => permission,
-    );
-    const tokenPayload = { userId: user.id, email, permissions };
-    const accessToken = this.authService.getAccessToken(tokenPayload);
-    const refreshToken = this.authService.getRefreshToken(tokenPayload);
-    await this.updateLastSignedIn(user.id);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-      },
-    };
+  async getNewTokenByOrg(userId, orgId) {
+    return this.authService.generateNewToken(null, userId, orgId);
   }
+
+
+  async loginByEmail(email: string, password: string, orgId?: string): Promise<AuthDTO> {
+    return this.authService.loginByEmail(email, password);
+  }
+
 
   async changeUserPassword(
     userId: string,
@@ -605,18 +538,7 @@ export class UsersService {
       newPassword,
     );
 
-    const tokenPayload = { userId: user.id, email: user.email };
-    const accessToken = this.authService.getAccessToken(tokenPayload);
-    const refreshToken = this.authService.getRefreshToken(tokenPayload);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-      },
-    };
+    return this.authService.generateNewToken(null, userId, user.currentOrgId);
   }
 
   async removeRefreshToken(userId: string): Promise<void> {

@@ -25,6 +25,7 @@ import * as Sentry from '@sentry/node';
 
 import { AppModule } from './app.module';
 import { RedisIoAdapter } from './modules/message/redis.adapter';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -55,7 +56,7 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   app.useWebSocketAdapter(new RedisIoAdapter(app, configService));
-  app.use(function (req, res, next) {
+  app.use(function(req, res, next) {
     const allowedOrigins = [
       'http://localhost:3700',
       'http://localhost:3600',
@@ -85,6 +86,7 @@ async function bootstrap() {
     }
   });
   app.use(cookieParser());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   await app.listen(Number(process.env.PORT) || 3000, '0.0.0.0');
 }

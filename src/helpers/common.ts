@@ -28,3 +28,4 @@ export function tryToParseJSON(str: string, defaultResult: any = ''): any {
     return defaultResult;
   }
 }
+

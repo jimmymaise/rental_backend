@@ -5,5 +5,8 @@ export interface TokenPayload {
   email?: string;
   facebookId?: string;
   googleId?: string;
-  permissions?: SystemPermission[];
+  orgIds?: string[];
+  isCurrentOrgOwner: boolean,
+  currentOrgId?: string,
+  currentOrgPermissionNames?: string[];
 }
