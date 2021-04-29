@@ -5,6 +5,7 @@ import { User } from '@prisma/client';
 export interface UserInfoDTO {
   id: string;
   displayName?: string;
+  currentOrgId: string;
   bio?: string;
   avatarImage: StoragePublicDTO;
   coverImage: StoragePublicDTO;
@@ -18,6 +19,7 @@ export interface UserInfoDTO {
 export interface PublicUserInfoDTO {
   id: string;
   displayName: string;
+  currentOrgId: string;
   bio: string;
   avatarImage: StoragePublicDTO;
   coverImage: StoragePublicDTO;

@@ -38,7 +38,7 @@ export class GqlPermissionsGuard implements CanActivate {
       ])(request);
 
       const user = this.authService.decodeJwtToken(token);
-      if (permissions.includes(Permission.NEED_LOGIN ) ) {
+      if (user && permissions.includes(Permission.NEED_LOGIN)) {
         return true;
       }
       let currentUserPermissionNames = user?.currentOrgPermissionNames;

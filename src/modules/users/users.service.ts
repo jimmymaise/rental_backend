@@ -353,6 +353,7 @@ export class UsersService {
       'avatarImage',
       'coverImage',
       'phoneNumber',
+      'currentOrgId'
     ];
     const updateData: any = {};
 

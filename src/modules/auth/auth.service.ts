@@ -3,12 +3,15 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { RedisCacheService } from '@modules/redis-cache/redis-cache.service';
+
 import * as bcrypt from 'bcrypt';
 
 import { rootContants } from '../../constants';
 import { AuthDTO } from './auth.dto';
 import { TokenPayload } from './token-payload';
 import { UserInfoForMakingToken } from '@modules/users/user-info.dto';
+import { getUserCacheKey } from '@modules/users/helpers';
 
 @Injectable()
 export class AuthService {
@@ -17,8 +20,10 @@ export class AuthService {
     private jwtService: JwtService,
     private prismaService: PrismaService,
     private configService: ConfigService,
+    private redisCacheService:RedisCacheService,
   ) {
   }
+
 
   public getAccessToken(payload: TokenPayload): string {
     return this.jwtService.sign(payload, {
@@ -189,6 +194,35 @@ export class AuthService {
       },
     };
 
+  }
+
+  async setCookiesByTokens(accessToken, refreshToken, context) {
+    const accessTokenCookie = this.getCookieWithJwtAccessToken(
+      accessToken,
+    );
+    const refreshTokenCookie = this.getCookieWithJwtRefreshToken(
+      refreshToken,
+    );
+
+    context.res.setHeader('Set-Cookie', [
+      accessTokenCookie,
+      refreshTokenCookie,
+    ]);
+
+  }
+
+  async updateUserCurrentOrg(userId, orgId, context) {
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { currentOrgId: orgId },
+
+    });
+    const cacheKey = getUserCacheKey(userId);
+    await this.redisCacheService.del(cacheKey);
+    const tokenResult = await this.generateNewToken(null, userId, orgId);
+
+
+    await this.setCookiesByTokens(tokenResult.accessToken, tokenResult.refreshToken, context);
   }
 
   async getOrgPermissionNameByRoleIds(roleIds: string[], orgId: string): Promise<string[]> {

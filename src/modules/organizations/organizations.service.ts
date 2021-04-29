@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
+import { AuthService } from '@modules/auth/auth.service';
+
 import { Organization } from '@prisma/client';
 import { CreateOrganizationDto, UpdateMyOrganizationDto } from './organizations.dto';
 
 @Injectable()
 export class OrganizationsService {
   constructor(
-    private prismaService: PrismaService) {
+    private prismaService: PrismaService,
+    public authService: AuthService,
+  ) {
   }
 
   async getOrganization(orgId: string, include: object): Promise<Organization> {
@@ -22,7 +26,7 @@ export class OrganizationsService {
     createOrganizationData: CreateOrganizationDto, userId?: string, include?: object,
   ): Promise<Organization> {
     createOrganizationData['createdBy'] = userId;
-    return this.prismaService.organization.create({
+    return await this.prismaService.organization.create({
       include: include,
       data: {
         ...createOrganizationData,
@@ -32,7 +36,11 @@ export class OrganizationsService {
         },
       },
     });
+
+
   }
+
+
 
   async updateOrganization(
     updateMyOrganizationData: UpdateMyOrganizationDto, orgId: string, include?: object,
