@@ -31,6 +31,7 @@ export class UsersResolvers {
   ) {
   }
 
+  @Permissions(Permission.NEED_LOGIN)
   @Query()
   @UseGuards(GqlAuthGuard)
   async whoAmI(@CurrentUser() user: GuardUserPayload): Promise<UserInfoDTO> {
@@ -64,6 +65,7 @@ export class UsersResolvers {
 
     return {
       id: allData.id,
+      currentOrgId: allData.currentOrgId,
       displayName: allData.displayName,
       bio: allData.bio,
       avatarImage: allData.avatarImage,

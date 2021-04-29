@@ -26,7 +26,7 @@ export function toUserInfoDTO(
       : {};
   let displayName = userInfo.displayName;
   let email = user.email;
-
+  let currentOrgId = user.currentOrgId
   if (user.isDeleted) {
     avatarImage = {
       url: DEFAULT_AVATAR_URL,
@@ -51,6 +51,7 @@ export function toUserInfoDTO(
     coverImage,
     displayName,
     email,
+    currentOrgId,
     isDeleted: user.isDeleted,
   };
 }

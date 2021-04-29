@@ -226,6 +226,8 @@ export class MessageService {
           displayName: fromUserInfo.displayName,
           avatarImage: fromUserInfo.avatarImage,
           coverImage: fromUserInfo.coverImage,
+          currentOrgId: fromUserInfo.currentOrgId,
+
         },
         replyToId: currentItem['replytoid'],
         chatConversationId: currentItem['chatconversationid'],

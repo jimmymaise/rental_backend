@@ -1,5 +1,6 @@
 type UserInfo {
   id: ID!
+  currentOrgId: String
   displayName: String
   bio: String
   avatarImage: PublicStorageFile
@@ -20,6 +21,7 @@ type UserPagination {
 type PublicUserInfo {
   id: ID!
   displayName: String
+  currentOrgId: String
   bio: String
   avatarImage: PublicStorageFile
   coverImage: PublicStorageFile

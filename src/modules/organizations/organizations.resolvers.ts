@@ -13,12 +13,12 @@ import {
   CreateOrganizationDto,
   UpdateMyOrganizationDto,
 } from './organizations.dto';
-import  {Permission} from '@modules/auth/permission/permission.enum'
+import { Permission } from '@modules/auth/permission/permission.enum';
 
 import { Organization } from '@prisma/client';
 import { UploadFilePipe } from '@modules/storages/file-handler.pipe';
 import { PublicUserInfoDTO } from '@modules/users/user-info.dto';
-import  {Permissions} from '@modules/auth/permission/permissions.decorator'
+import { Permissions } from '@modules/auth/permission/permissions.decorator';
 
 @Resolver('Organization')
 export class OrganizationsResolvers {
@@ -33,7 +33,7 @@ export class OrganizationsResolvers {
   async getMyOrg(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
-  ):  Promise<Organization> {
+  ): Promise<Organization> {
 
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields(['users']);
@@ -45,12 +45,15 @@ export class OrganizationsResolvers {
   @UseGuards(GqlAuthGuard)
   async createOrg(
     @Info() info: GraphQLResolveInfo,
+    @Context() context: any, // GraphQLExecutionContext
     @CurrentUser() user: GuardUserPayload,
     @Args('createOrganizationInput', UploadFilePipe) createOrganizationData: CreateOrganizationDto,
   ): Promise<Organization> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields(['users']);
-    return this.organizationsService.createOrganization(createOrganizationData, user?.id, include);
+    let createOrgResult = await this.organizationsService.createOrganization(createOrganizationData, user?.id, include);
+    await this.organizationsService.authService.updateUserCurrentOrg(user.id, createOrgResult.id, context);
+    return createOrgResult;
   }
 
   @Mutation()
@@ -63,7 +66,7 @@ export class OrganizationsResolvers {
   ): Promise<Organization> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields(['users']);
-    return this.organizationsService.updateOrganization(updateMyOrganizationData,user.currentOrgId, include);
+    return this.organizationsService.updateOrganization(updateMyOrganizationData, user.currentOrgId, include);
   }
 
 
