@@ -1,5 +1,6 @@
 import { User, UserInfo } from '@prisma/client';
 import { UserInfoDTO } from './user-info.dto';
+import { Organization } from '@prisma/client';
 
 const DEFAULT_AVATAR_URL =
   'https://asia-fast-storage.thuedo.vn/default-avatars/default-avatar.png';
@@ -15,7 +16,7 @@ export function toUserInfoDTO(
   if (!user) {
     return null;
   }
-
+  let orgIds = user['orgsThisUserBelongTo'].map(org => org.orgId);
   let avatarImage =
     userInfo?.avatarImage && userInfo.avatarImage.length
       ? JSON.parse(userInfo.avatarImage)
@@ -26,7 +27,7 @@ export function toUserInfoDTO(
       : {};
   let displayName = userInfo.displayName;
   let email = user.email;
-  let currentOrgId = user.currentOrgId
+  let currentOrgId = user.currentOrgId;
   if (user.isDeleted) {
     avatarImage = {
       url: DEFAULT_AVATAR_URL,
@@ -49,6 +50,7 @@ export function toUserInfoDTO(
       : (userInfo?.createdDate as number),
     avatarImage,
     coverImage,
+    orgIds,
     displayName,
     email,
     currentOrgId,
@@ -56,6 +58,18 @@ export function toUserInfoDTO(
   };
 }
 
+export function getSummaryOrgInfo(fullOrgData: Organization) {
+  return {
+    name: fullOrgData.name,
+    description: fullOrgData.description,
+    id: fullOrgData.id,
+  };
+}
+
 export function getUserCacheKey(userId: string) {
   return `USER_INFO_${userId}`;
+}
+
+export function getOrgCacheKey(userId: string) {
+  return `ORG_INFO_${userId}`;
 }

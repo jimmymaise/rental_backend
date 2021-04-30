@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import sample from 'lodash/sample';
 import isEmpty from 'lodash/isEmpty';
@@ -12,6 +12,8 @@ import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { EncryptByAesCBCPassword } from '@helpers/encrypt';
 import { getUserCacheKey, toUserInfoDTO } from './helpers';
 import { AuthService } from '@modules/auth/auth.service';
+import { OrganizationsService } from '@modules/organizations/organizations.service';
+
 import { AuthDTO } from '@modules/auth/auth.dto';
 import { TokenPayload } from '@modules/auth/token-payload';
 
@@ -59,6 +61,7 @@ export class UsersService {
     private storageService: StoragesService,
     private redisCacheService: RedisCacheService,
     private authService: AuthService,
+    private organizationsService: OrganizationsService,
   ) {
   }
 
@@ -81,6 +84,7 @@ export class UsersService {
   async getUserDetailData(
     userId: string,
     isDisableEncryptPhoneNumber = false,
+    include?: object,
   ): Promise<UserInfoDTO> {
     if (!userId) {
       return null;
@@ -89,26 +93,34 @@ export class UsersService {
     const cacheKey = getUserCacheKey(userId);
     let userDetail = await this.redisCacheService.get(cacheKey);
 
-    if (userDetail) {
-      return !isDisableEncryptPhoneNumber
-        ? encryptPhoneNumber(userDetail as UserInfoDTO)
-        : (userDetail as UserInfoDTO);
+    if (!userDetail) {
+      const userData = await this.getUserById(userId, { orgsThisUserBelongTo: true });
+      const userInfoData = await this.getUserInfoById(userId);
+
+      userDetail = toUserInfoDTO(userData, userInfoData);
+
+      await this.redisCacheService.set(cacheKey, userDetail || {}, 3600);
     }
 
-    const userData = await this.getUserById(userId);
-    const userInfoData = await this.getUserInfoById(userId);
 
-    userDetail = toUserInfoDTO(userData, userInfoData);
+    if (include['orgDetails']) {
 
-    this.redisCacheService.set(cacheKey, userDetail || {}, 3600);
+      userDetail['orgDetails'] = userDetail['orgIds'].map(orgId =>
+        this.organizationsService.getOrgSummaryCache(orgId));
+    }
+    if (include['currentOrgDetail']) {
+      userDetail['currentOrgDetail'] = await
+        this.organizationsService.getOrgSummaryCache(userDetail['currentOrgId']);
+    }
+
 
     return !isDisableEncryptPhoneNumber
       ? encryptPhoneNumber(userDetail as UserInfoDTO)
       : (userDetail as UserInfoDTO);
   }
 
-  async getUserById(userId: string): Promise<User> {
-    return this.prismaService.user.findUnique({ where: { id: userId } });
+  async getUserById(userId: string, include?: object): Promise<User> {
+    return this.prismaService.user.findUnique({ where: { id: userId }, include });
     // throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);
   }
 
@@ -353,7 +365,6 @@ export class UsersService {
       'avatarImage',
       'coverImage',
       'phoneNumber',
-      'currentOrgId'
     ];
     const updateData: any = {};
 

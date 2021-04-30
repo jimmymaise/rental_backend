@@ -1,7 +1,7 @@
 type OrganizationInfo {
     id: ID!
     name: String
-    avatarImage: String
+    avatarImage: JSON
     description: String
     slug: String
     createdDate: Float
@@ -11,10 +11,20 @@ type OrganizationInfo {
 
 }
 
+
+
 type UserOrgInfo {
     userId: String,
     isOwner: Boolean,
     orgId: String
+}
+
+type OrgSummaryCache {
+    id: ID!
+    name: String
+    avatarImage: JSON
+    description: String
+    slug: String
 }
 
 

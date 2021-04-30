@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { getOrgCacheKey } from '@helpers/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '@modules/auth/auth.service';
 
 import { Organization } from '@prisma/client';
-import { CreateOrganizationDto, UpdateMyOrganizationDto } from './organizations.dto';
+import { CreateOrganizationDto, UpdateMyOrganizationDto, OrganizationSummaryCacheDto } from './organizations.dto';
+import { RedisCacheService } from '../redis-cache/redis-cache.service';
 
 @Injectable()
 export class OrganizationsService {
   constructor(
     private prismaService: PrismaService,
     public authService: AuthService,
+    public redisCacheService: RedisCacheService,
   ) {
   }
 
@@ -39,7 +42,6 @@ export class OrganizationsService {
 
 
   }
-
 
 
   async updateOrganization(
@@ -98,6 +100,32 @@ export class OrganizationsService {
 
   }
 
+  async convertFullOrgDataToSummaryOrgInfo(fullOrgData: Organization): Promise<OrganizationSummaryCacheDto> {
+    return {
+      name: fullOrgData.name,
+      avatarImage: fullOrgData.avatarImage,
+      description: fullOrgData.description,
+      id: fullOrgData.id,
+      slug: fullOrgData.slug,
+    };
+  }
+
+  async getOrgSummaryCache(orgId:string) {
+    const cacheKey = getOrgCacheKey(orgId);
+    let orgSummaryCache = await this.redisCacheService.get(cacheKey);
+    if (!orgSummaryCache) {
+      let fullOrgData = await this.getOrganization(orgId, null);
+      orgSummaryCache = this.convertFullOrgDataToSummaryOrgInfo(fullOrgData);
+      await this.redisCacheService.set(cacheKey, fullOrgData || {}, 3600);
+    }
+    return orgSummaryCache;
+
+  }
+
 
 }
+
+
+
+
 

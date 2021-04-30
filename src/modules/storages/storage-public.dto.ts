@@ -11,6 +11,9 @@ export interface StoragePublicDTO extends Prisma.InputJsonObject {
   }
 }
 
+
+
+
 export interface StoragePublicDTO extends Prisma.InputJsonObject {
   id: string
   url: string

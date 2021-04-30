@@ -2,11 +2,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Info, Args, Resolver, Mutation, Query, Context } from '@nestjs/graphql';
-import { parseResolveInfo, ResolveTree, simplifyParsedResolveInfoFragmentWithType } from 'graphql-parse-resolve-info';
 import { GraphQLResolveInfo } from 'graphql';
 import { GraphQLFieldHandler } from '@helpers/graphql-field-handler';
 import { OrganizationsService } from './organizations.service';
-import { GuardUserPayload, AuthDTO } from '@modules/auth/auth.dto';
+import { GuardUserPayload } from '@modules/auth/auth.dto';
 import { EveryoneGqlAuthGuard, GqlAuthGuard } from '@app/modules';
 import { CurrentUser } from '@app/modules';
 import {
@@ -17,7 +16,6 @@ import { Permission } from '@modules/auth/permission/permission.enum';
 
 import { Organization } from '@prisma/client';
 import { UploadFilePipe } from '@modules/storages/file-handler.pipe';
-import { PublicUserInfoDTO } from '@modules/users/user-info.dto';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 
 @Resolver('Organization')
