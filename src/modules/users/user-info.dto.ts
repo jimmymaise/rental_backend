@@ -33,6 +33,13 @@ export interface PublicUserInfoDTO {
   permissions: Permission[];
 }
 
+export interface UserSummary {
+  id: string
+  email: string
+  currentOrgId: String,
+  userInfo?: UserInfoDTO
+}
+
 export interface UserInfoInputDTO {
   displayName: string;
   bio: string;
@@ -40,6 +47,12 @@ export interface UserInfoInputDTO {
   avatarImage: StoragePublicDTO;
   coverImage: StoragePublicDTO;
 }
+
+export interface GetMyOrgUsersWithPagingDTO {
+  pageSize: number;
+  cursor: string
+}
+
 
 export type UserInfoForMakingToken = User & {
   roles: any[], orgsThisUserBelongTo: any[]

@@ -5,12 +5,13 @@ import isEmpty from 'lodash/isEmpty';
 import sanitizeHtml from 'sanitize-html';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { User, UserInfo } from '@prisma/client';
+import {User, UserInfo } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
 import {
   UserInfoInputDTO,
   UserInfoDTO,
   UserInfoForMakingToken,
+  UserSummary
 } from './user-info.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { EncryptByAesCBCPassword } from '@helpers/encrypt';
@@ -19,7 +20,8 @@ import { AuthService } from '@modules/auth/auth.service';
 import { OrganizationsService } from '@modules/organizations/organizations.service';
 
 import { AuthDTO } from '@modules/auth/auth.dto';
-import { TokenPayload } from '@modules/auth/token-payload';
+import { PagingHandler } from '@helpers/handlers/paging-handler';
+import { PaginationDTO } from '@app/models';
 
 const DEFAULT_AVATARS = [
   'https://asia-fast-storage.thuedo.vn/default-avatars/default_0008_avatar-1.jpg',
@@ -83,6 +85,27 @@ export class UsersService {
       })) !== null
     );
   }
+
+  async getAllUsersWithPaging(whereQuery: object, pageSize: number, cursor?: any, include?: object): Promise<PaginationDTO<UserSummary>> {
+
+    let pagingHandler = new PagingHandler(whereQuery, pageSize, 'id', 'asc', this.prismaService, 'user');
+    return pagingHandler.getPage('user', cursor);
+  }
+
+  async getAllUsersByOrgIdWithPaging(orgId, pageSize: number, cursor?: any, include?: object): Promise<PaginationDTO<UserSummary>> {
+
+    let whereQuery = {
+      orgsThisUserBelongTo: {
+        some: {
+          orgId: orgId,
+        },
+      },
+    };
+    return this.getAllUsersWithPaging(whereQuery, pageSize, cursor, include);
+
+
+  }
+
 
   async getUserDetailData(
     userId: string,

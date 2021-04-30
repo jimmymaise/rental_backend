@@ -13,6 +13,8 @@ import {
   UserInfoInputDTO,
   UserInfoDTO,
   PublicUserInfoDTO,
+  GetMyOrgUsersWithPagingDTO,
+  UserSummary,
 } from './user-info.dto';
 import { PaginationDTO } from '../../models';
 import { Permission } from '@modules/auth/permission/permission.enum';
@@ -22,6 +24,8 @@ import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.gu
 import { ErrorMap } from '@app/constants';
 import { EmailService } from '@modules/mail/mail.service';
 import { GraphQLResolveInfo } from 'graphql';
+import { GetMyOrgsWithPagingDTO } from '@modules/organizations/organizations.dto';
+import { Organization } from '@prisma/client';
 
 @Resolver('User')
 export class UsersResolvers {
@@ -44,6 +48,22 @@ export class UsersResolvers {
 
     return this.userService.getUserDetailData(user.id, true, include);
   }
+
+  @Permissions(Permission.REMOVE_CONNECT)
+  @Query()
+  @UseGuards(GqlAuthGuard)
+
+  async getMyOrgUsersWithPaging(
+    @Info() info: GraphQLResolveInfo,
+    @CurrentUser() user: GuardUserPayload,
+    @Args('getMyOrgUsersWithPaging') getMyOrgUsersWithPagingData: GetMyOrgUsersWithPagingDTO,
+  ): Promise<PaginationDTO<UserSummary>> {
+
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include = graphQLFieldHandler.getIncludeForRelationalFields(['userInfo']);
+    return this.userService.getAllUsersByOrgIdWithPaging(user.currentOrgId, getMyOrgUsersWithPagingData.pageSize, getMyOrgUsersWithPagingData.cursor, include);
+  }
+
 
   @Query()
   @UseGuards(EveryoneGqlAuthGuard)

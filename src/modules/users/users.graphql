@@ -1,3 +1,15 @@
+input BasePagingInput {
+    pageSize: Int
+    cursor: String
+}
+type UserSummary {
+    id: ID!
+    name: String!
+    avatarImage: PublicStorageFile
+    currentOrgId:String
+    userInfo:UserInfo
+}
+
 type UserInfo {
     id: ID!
     currentOrgId: String
@@ -19,6 +31,12 @@ type UserPagination {
     total: Int
     limit: Int
     offset: Int
+}
+type UserSummaryPagination {
+    items: [UserSummary]
+    total: Int
+    limit: Int
+    offset: String
 }
 
 type PublicUserInfo {
@@ -63,7 +81,7 @@ type UserAuth {
 type Query {
     whoAmI: UserInfo
     userPublicProfile(userId: String!): PublicUserInfo
-
+    getMyOrgUsersWithPaging(getMyOrgUsersWithPaging:BasePagingInput):UserSummaryPagination
     adminUserListFeed(query: UserQuery): UserPagination
 }
 

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { Item, ItemStatus } from '@prisma/client';
-import { PaginationDTO } from '../../models';
+import { PaginationDTO } from '@app/models';
 
 @Injectable()
 export class AdminItemsService {

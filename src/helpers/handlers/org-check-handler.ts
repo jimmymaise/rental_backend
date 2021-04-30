@@ -1,5 +1,3 @@
-import { GraphQLResolveInfo } from 'graphql';
-import { parseResolveInfo, ResolveTree, simplifyParsedResolveInfoFragmentWithType } from 'graphql-parse-resolve-info';
 import { PrismaService } from '@modules/prisma/prisma.service';
 
 export class OrgCheckHandler {
