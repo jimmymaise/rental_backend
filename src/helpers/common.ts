@@ -29,3 +29,10 @@ export function tryToParseJSON(str: string, defaultResult: any = ''): any {
   }
 }
 
+export function getUserCacheKey(userId: string) {
+  return `USER_INFO_${userId}`;
+}
+
+export function getOrgCacheKey(userId: string) {
+  return `ORG_INFO_${userId}`;
+}

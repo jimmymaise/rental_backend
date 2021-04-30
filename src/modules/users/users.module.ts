@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { AuthModule } from '../auth/auth.module';
+import { OrganizationsModule } from '@modules/organizations/organizations.module';
+
 import { RedisCacheModule } from '../redis-cache/redis-cache.module';
 
 import { UsersService } from './users.service';
@@ -18,6 +20,7 @@ import { UserController } from './user.controller';
     MailModule,
     StoragesModule,
     RedisCacheModule,
+    OrganizationsModule,
   ],
   providers: [UsersService, AdminUsersService, UsersResolvers],
   controllers: [UserController],

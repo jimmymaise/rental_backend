@@ -1,5 +1,6 @@
 import { UseGuards, BadRequestException } from '@nestjs/common';
-import { Args, Resolver, Mutation, Query, Context } from '@nestjs/graphql';
+import { Args, Resolver, Mutation, Query, Context, Info } from '@nestjs/graphql';
+import { GraphQLFieldHandler } from '@helpers/graphql-field-handler';
 
 import { UsersService } from './users.service';
 import { AdminUsersService } from './admin-users.service';
@@ -20,6 +21,7 @@ import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
 import { ErrorMap } from '@app/constants';
 import { EmailService } from '@modules/mail/mail.service';
+import { GraphQLResolveInfo } from 'graphql';
 
 @Resolver('User')
 export class UsersResolvers {
@@ -34,8 +36,13 @@ export class UsersResolvers {
   @Permissions(Permission.NEED_LOGIN)
   @Query()
   @UseGuards(GqlAuthGuard)
-  async whoAmI(@CurrentUser() user: GuardUserPayload): Promise<UserInfoDTO> {
-    return this.userService.getUserDetailData(user.id, true);
+  async whoAmI(
+    @CurrentUser() user: GuardUserPayload,
+    @Info() info: GraphQLResolveInfo): Promise<UserInfoDTO> {
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include = graphQLFieldHandler.getIncludeForRelationalFields(['currentOrgDetail', 'orgDetails']);
+
+    return this.userService.getUserDetailData(user.id, true, include);
   }
 
   @Query()
@@ -65,6 +72,7 @@ export class UsersResolvers {
 
     return {
       id: allData.id,
+      orgIds: allData.orgIds,
       currentOrgId: allData.currentOrgId,
       displayName: allData.displayName,
       bio: allData.bio,
@@ -178,9 +186,9 @@ export class UsersResolvers {
     @Args('refresh') refresh: string,
   ): Promise<AuthDTO> {
     const user = await this.userService.getUserById(currentUser.id);
-    let token = await this.authService.generateNewToken(null,user.id)
+    let token = await this.authService.generateNewToken(null, user.id);
 
-    const accessToken = token.accessToken
+    const accessToken = token.accessToken;
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
       accessToken,
     );
