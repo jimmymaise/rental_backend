@@ -24,8 +24,6 @@ import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.gu
 import { ErrorMap } from '@app/constants';
 import { EmailService } from '@modules/mail/mail.service';
 import { GraphQLResolveInfo } from 'graphql';
-import { GetMyOrgsWithPagingDTO } from '@modules/organizations/organizations.dto';
-import { Organization } from '@prisma/client';
 
 @Resolver('User')
 export class UsersResolvers {
