@@ -7,7 +7,11 @@ import sanitizeHtml from 'sanitize-html';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, UserInfo } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
-import { UserInfoInputDTO, UserInfoDTO, UserInfoForMakingToken } from './user-info.dto';
+import {
+  UserInfoInputDTO,
+  UserInfoDTO,
+  UserInfoForMakingToken,
+} from './user-info.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { EncryptByAesCBCPassword } from '@helpers/encrypt';
 import { getUserCacheKey, toUserInfoDTO } from './helpers';
@@ -42,9 +46,9 @@ function encryptPhoneNumber(userInfo: UserInfoDTO): UserInfoDTO {
     ...userInfo,
     phoneNumber: !isEmpty(userInfo.phoneNumber)
       ? EncryptByAesCBCPassword(
-        userInfo.phoneNumber,
-        process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
-      )
+          userInfo.phoneNumber,
+          process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
+        )
       : userInfo.phoneNumber,
   };
 }
@@ -62,8 +66,7 @@ export class UsersService {
     private redisCacheService: RedisCacheService,
     private authService: AuthService,
     private organizationsService: OrganizationsService,
-  ) {
-  }
+  ) {}
 
   async isUserInMyContactList(
     userId: string,
@@ -94,7 +97,9 @@ export class UsersService {
     let userDetail = await this.redisCacheService.get(cacheKey);
 
     if (!userDetail) {
-      const userData = await this.getUserById(userId, { orgsThisUserBelongTo: true });
+      const userData = await this.getUserById(userId, {
+        orgsThisUserBelongTo: true,
+      });
       const userInfoData = await this.getUserInfoById(userId);
 
       userDetail = toUserInfoDTO(userData, userInfoData);
@@ -102,17 +107,20 @@ export class UsersService {
       await this.redisCacheService.set(cacheKey, userDetail || {}, 3600);
     }
 
-
-    if (include['orgDetails']) {
-
-      userDetail['orgDetails'] = userDetail['orgIds'].map(orgId =>
-        this.organizationsService.getOrgSummaryCache(orgId));
+    if (include) {
+      if (include['orgDetails']) {
+        userDetail['orgDetails'] = userDetail['orgIds'].map((orgId) =>
+          this.organizationsService.getOrgSummaryCache(orgId),
+        );
+      }
+      if (include['currentOrgDetail']) {
+        userDetail[
+          'currentOrgDetail'
+        ] = await this.organizationsService.getOrgSummaryCache(
+          userDetail['currentOrgId'],
+        );
+      }
     }
-    if (include['currentOrgDetail']) {
-      userDetail['currentOrgDetail'] = await
-        this.organizationsService.getOrgSummaryCache(userDetail['currentOrgId']);
-    }
-
 
     return !isDisableEncryptPhoneNumber
       ? encryptPhoneNumber(userDetail as UserInfoDTO)
@@ -120,7 +128,10 @@ export class UsersService {
   }
 
   async getUserById(userId: string, include?: object): Promise<User> {
-    return this.prismaService.user.findUnique({ where: { id: userId }, include });
+    return this.prismaService.user.findUnique({
+      where: { id: userId },
+      include,
+    });
     // throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);
   }
 
@@ -200,7 +211,6 @@ export class UsersService {
         roles: true,
       },
     });
-
   }
 
   async getUserByEmail(email: string): Promise<UserInfoForMakingToken> {
@@ -211,7 +221,6 @@ export class UsersService {
         orgsThisUserBelongTo: true,
       },
     });
-
   }
 
   async updateLastSignedIn(userId: string): Promise<User> {
@@ -234,7 +243,6 @@ export class UsersService {
       where: { id: userId },
       data: { facebookId, facebookAccessToken },
     });
-
   }
 
   async connectWithGoogleAccount(
@@ -246,9 +254,7 @@ export class UsersService {
       where: { id: userId },
       data: { googleId, googleAccessToken },
     });
-
   }
-
 
   async changePassword(
     userId: string,
@@ -487,7 +493,9 @@ export class UsersService {
     } else if (!user.facebookId) {
       // await this.connectWithFacebookAccount(user.id, facebookId, fbAccessToken)
     }
-    return this.authService.generateNewToken(null, user.id, null, { facebookId });
+    return this.authService.generateNewToken(null, user.id, null, {
+      facebookId,
+    });
   }
 
   async signInByGoogleId(
@@ -533,11 +541,13 @@ export class UsersService {
     return this.authService.generateNewToken(null, userId, orgId);
   }
 
-
-  async loginByEmail(email: string, password: string, orgId?: string): Promise<AuthDTO> {
+  async loginByEmail(
+    email: string,
+    password: string,
+    orgId?: string,
+  ): Promise<AuthDTO> {
     return this.authService.loginByEmail(email, password);
   }
-
 
   async changeUserPassword(
     userId: string,
