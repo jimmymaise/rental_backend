@@ -16,7 +16,7 @@ export interface UserInfoDTO {
   lastSignedIn?: number;
   createdDate?: number;
   isDeleted?: boolean;
-  currentOrgDetail?: OrganizationSummaryCacheDto,
+  currentOrgDetail?: OrganizationSummaryCacheDto;
   orgDetails?: OrganizationSummaryCacheDto[];
 }
 
@@ -34,10 +34,10 @@ export interface PublicUserInfoDTO {
 }
 
 export interface UserSummary {
-  id: string
-  email: string
-  currentOrgId: String,
-  userInfo?: UserInfoDTO
+  id: string;
+  email: string;
+  currentOrgId: String;
+  userInfo?: UserInfoDTO;
 }
 
 export interface UserInfoInputDTO {
@@ -50,12 +50,10 @@ export interface UserInfoInputDTO {
 
 export interface GetMyOrgUsersWithPagingDTO {
   pageSize: number;
-  cursor: string
+  cursor: number;
 }
-
 
 export type UserInfoForMakingToken = User & {
-  roles: any[], orgsThisUserBelongTo: any[]
-}
-
-
+  roles: any[];
+  orgsThisUserBelongTo: any[];
+};

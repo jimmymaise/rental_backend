@@ -1,5 +1,12 @@
 import { UseGuards, BadRequestException } from '@nestjs/common';
-import { Args, Resolver, Mutation, Query, Context, Info } from '@nestjs/graphql';
+import {
+  Args,
+  Resolver,
+  Mutation,
+  Query,
+  Context,
+  Info,
+} from '@nestjs/graphql';
 import { GraphQLFieldHandler } from '@helpers/graphql-field-handler';
 
 import { UsersService } from './users.service';
@@ -32,36 +39,44 @@ export class UsersResolvers {
     private readonly authService: AuthService,
     private readonly emailService: EmailService,
     private readonly adminUserService: AdminUsersService,
-  ) {
-  }
+  ) {}
 
-  @Permissions(Permission.NEED_LOGIN)
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async whoAmI(
     @CurrentUser() user: GuardUserPayload,
-    @Info() info: GraphQLResolveInfo): Promise<UserInfoDTO> {
+    @Info() info: GraphQLResolveInfo,
+  ): Promise<UserInfoDTO> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
-    const include = graphQLFieldHandler.getIncludeForRelationalFields(['currentOrgDetail', 'orgDetails']);
+    const include = graphQLFieldHandler.getIncludeForRelationalFields([
+      'currentOrgDetail',
+      'orgDetails',
+    ]);
 
     return this.userService.getUserDetailData(user.id, true, include);
   }
 
-  @Permissions(Permission.REMOVE_CONNECT)
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
-
   async getMyOrgUsersWithPaging(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
-    @Args('getMyOrgUsersWithPaging') getMyOrgUsersWithPagingData: GetMyOrgUsersWithPagingDTO,
+    @Args('getMyOrgUsersWithPagingData')
+    getMyOrgUsersWithPagingData: GetMyOrgUsersWithPagingDTO,
   ): Promise<PaginationDTO<UserSummary>> {
-
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
-    const include = graphQLFieldHandler.getIncludeForRelationalFields(['userInfo']);
-    return this.userService.getAllUsersByOrgIdWithPaging(user.currentOrgId, getMyOrgUsersWithPagingData.pageSize, getMyOrgUsersWithPagingData.cursor, include);
+    const include = graphQLFieldHandler.getIncludeForRelationalFields([
+      'userInfo',
+    ]);
+    return this.userService.getAllUsersByOrgIdWithPaging(
+      user.currentOrgId,
+      getMyOrgUsersWithPagingData.pageSize,
+      getMyOrgUsersWithPagingData.cursor,
+      include,
+    );
   }
-
 
   @Query()
   @UseGuards(EveryoneGqlAuthGuard)
@@ -104,7 +119,6 @@ export class UsersResolvers {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @Permissions(Permission.NEED_LOGIN)
-
   async updateUserInfoData(
     @CurrentUser() user: GuardUserPayload,
     @Args('userInfoData') userInfoData: UserInfoInputDTO,
@@ -197,7 +211,6 @@ export class UsersResolvers {
   @Mutation()
   @UseGuards(GqlRefreshGuard)
   @Permissions(Permission.NEED_LOGIN)
-
   async refreshUserAccessToken(
     @Context() context: any, // GraphQLExecutionContext
     @CurrentUser() currentUser: GuardUserPayload,
@@ -221,7 +234,6 @@ export class UsersResolvers {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @Permissions(Permission.NEED_LOGIN)
-
   async logout(
     @Context() context: any,
     @CurrentUser() currentUser: GuardUserPayload,
@@ -236,7 +248,6 @@ export class UsersResolvers {
 
   @Mutation()
   @Permissions(Permission.NO_NEED_LOGIN)
-
   async requestResetPassword(
     @Args('email') email: string,
     @Args('recaptchaKey') recaptchaKey: string,
@@ -263,7 +274,6 @@ export class UsersResolvers {
 
   @Mutation()
   @Permissions(Permission.NO_NEED_LOGIN)
-
   async setPasswordByToken(
     @Args('token') token: string,
     @Args('password') password: string,
@@ -283,7 +293,6 @@ export class UsersResolvers {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @Permissions(Permission.NEED_LOGIN)
-
   async changePassword(
     @Context() context: any, // GraphQLExecutionContext
     @CurrentUser() currentUser: GuardUserPayload,
@@ -321,7 +330,6 @@ export class UsersResolvers {
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @Permissions(Permission.NEED_LOGIN)
-
   async deleteMyUser(
     @CurrentUser() currentUser: GuardUserPayload,
     @Args('reason') reason: string,
@@ -349,7 +357,7 @@ export class UsersResolvers {
   @UseGuards(GqlPermissionsGuard)
   async adminUserListFeed(
     @Args('query')
-      query: {
+    query: {
       search: string;
       offset: number;
       limit: number;
