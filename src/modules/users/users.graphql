@@ -1,11 +1,10 @@
 input BasePagingInput {
   pageSize: Int
-  cursor: Int
+  cursor: String
 }
 type UserSummary {
   id: ID!
-  name: String
-  avatarImage: PublicStorageFile
+  email: String
   currentOrgId: String
   userInfo: UserInfo
 }

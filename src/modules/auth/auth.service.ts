@@ -20,10 +20,8 @@ export class AuthService {
     private jwtService: JwtService,
     private prismaService: PrismaService,
     private configService: ConfigService,
-    private redisCacheService:RedisCacheService,
-  ) {
-  }
-
+    private redisCacheService: RedisCacheService,
+  ) {}
 
   public getAccessToken(payload: TokenPayload): string {
     return this.jwtService.sign(payload, {
@@ -95,21 +93,21 @@ export class AuthService {
     // With Credential = True
     return rootContants.isProduction
       ? `Authentication=${accessToken}; HttpOnly; Secure; Path=/; Max-Age=${this.configService.get(
-        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-      )}; SameSite=None;`
+          'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+        )}; SameSite=None;`
       : `Authentication=${accessToken}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-      )}; SameSite=Lax;`;
+          'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+        )}; SameSite=Lax;`;
   }
 
   getCookieWithJwtRefreshToken(refreshToken: string) {
     return rootContants.isProduction
       ? `Refresh=${refreshToken}; HttpOnly; Secure; Path=/; Max-Age=${this.configService.get(
-        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-      )}; SameSite=None;`
+          'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+        )}; SameSite=None;`
       : `Refresh=${refreshToken}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-      )}; SameSite=Lax;`;
+          'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+        )}; SameSite=Lax;`;
   }
 
   getCookieForLogout(): string[] {
@@ -142,35 +140,44 @@ export class AuthService {
     return this.jwtService.decode(token);
   }
 
-  async loginByEmail(email: string, password: string, orgId?: string): Promise<AuthDTO> {
+  async loginByEmail(
+    email: string,
+    password: string,
+    orgId?: string,
+  ): Promise<AuthDTO> {
     const user = await this.getUserByEmailPassword(email, password);
     orgId = orgId || user.currentOrgId;
     return this.generateNewToken(user, null, orgId);
   }
 
-  async generateNewToken(user?: UserInfoForMakingToken,
-                         userId?: string,
-                         orgId?: string,
-                         otherTokenPayloadParams: object = {}): Promise<AuthDTO> {
+  async generateNewToken(
+    user?: UserInfoForMakingToken,
+    userId?: string,
+    orgId?: string,
+    otherTokenPayloadParams: object = {},
+  ): Promise<AuthDTO> {
     if (!user) {
       user = await this.prismaService.user.findUnique({
         where: { id: userId },
         include: { roles: true, orgsThisUserBelongTo: true },
       });
     }
-    let orgIds = user.orgsThisUserBelongTo.map(org => org.orgId);
+    let orgIds = user.orgsThisUserBelongTo.map((org) => org.orgId);
     let firstOrg = orgIds.length > 0 ? orgIds[0] : undefined;
     orgId = orgId || user.currentOrgId || firstOrg;
     let currentOrgPermissionNames = [];
     let isOwner;
     if (orgId) {
-      isOwner = user.orgsThisUserBelongTo.filter(org => (org.orgId == orgId))[0].isOwner;
-      let roleIds = user.roles.map(role => role.id);
-      currentOrgPermissionNames = await this.getOrgPermissionNameByRoleIds(roleIds, orgId);
+      isOwner = user.orgsThisUserBelongTo.filter((org) => org.orgId == orgId)[0]
+        .isOwner;
+      let roleIds = user.roles.map((role) => role.id);
+      currentOrgPermissionNames = await this.getOrgPermissionNameByRoleIds(
+        roleIds,
+        orgId,
+      );
       await this.prismaService.user.update({
         where: { id: user.id },
         data: { currentOrgId: orgId },
-
       });
     }
 
@@ -193,40 +200,38 @@ export class AuthService {
         email: user.email,
       },
     };
-
   }
 
   async setCookiesByTokens(accessToken, refreshToken, context) {
-    const accessTokenCookie = this.getCookieWithJwtAccessToken(
-      accessToken,
-    );
-    const refreshTokenCookie = this.getCookieWithJwtRefreshToken(
-      refreshToken,
-    );
+    const accessTokenCookie = this.getCookieWithJwtAccessToken(accessToken);
+    const refreshTokenCookie = this.getCookieWithJwtRefreshToken(refreshToken);
 
     context.res.setHeader('Set-Cookie', [
       accessTokenCookie,
       refreshTokenCookie,
     ]);
-
   }
 
   async updateUserCurrentOrg(userId, orgId, context) {
     await this.prismaService.user.update({
       where: { id: userId },
       data: { currentOrgId: orgId },
-
     });
     const cacheKey = getUserCacheKey(userId);
     await this.redisCacheService.del(cacheKey);
     const tokenResult = await this.generateNewToken(null, userId, orgId);
 
-
-    await this.setCookiesByTokens(tokenResult.accessToken, tokenResult.refreshToken, context);
+    await this.setCookiesByTokens(
+      tokenResult.accessToken,
+      tokenResult.refreshToken,
+      context,
+    );
   }
 
-  async getOrgPermissionNameByRoleIds(roleIds: string[], orgId: string): Promise<string[]> {
-
+  async getOrgPermissionNameByRoleIds(
+    roleIds: string[],
+    orgId: string,
+  ): Promise<string[]> {
     let permissions = await this.prismaService.permission.findMany({
       where: {
         roles: {
@@ -238,13 +243,18 @@ export class AuthService {
         },
       },
     });
-    return permissions.map(permission => permission.name);
-
+    return permissions.map((permission) => permission.name);
   }
 
-  async getUserByEmailPassword(email: string, password: string): Promise<User & {
-    roles: any, orgsThisUserBelongTo: any
-  }> {
+  async getUserByEmailPassword(
+    email: string,
+    password: string,
+  ): Promise<
+    User & {
+      roles: any;
+      orgsThisUserBelongTo: any;
+    }
+  > {
     const user = await this.prismaService.user.findUnique({
       where: { email },
       include: { orgsThisUserBelongTo: true, roles: true },
@@ -258,7 +268,6 @@ export class AuthService {
     if (!valid) {
       throw new Error('Invalid password');
     }
-
 
     return user;
   }

@@ -3,7 +3,6 @@ import { sanitize } from './helpers';
 
 import { Transform } from 'class-transformer';
 
-
 export class CreateRoleDto {
   name: string;
   @Transform(sanitize)
@@ -11,11 +10,9 @@ export class CreateRoleDto {
   orgId!: string;
   permissions: string[];
   users: string[];
-
 }
 
 export class UpdateRoleDto {
-
   id: string;
   @Transform(sanitize)
   name: string;
@@ -24,9 +21,4 @@ export class UpdateRoleDto {
   permissionsRemoved: string[];
   addUsersToRole: string[];
   removeUsersFromRole: string[];
-
-
 }
-
-
-

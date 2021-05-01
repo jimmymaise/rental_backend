@@ -1,1 +1,1 @@
-export * from './my-user-contacts.module'
+export * from './my-user-contacts.module';

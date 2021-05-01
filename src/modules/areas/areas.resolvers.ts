@@ -1,9 +1,7 @@
-import { Args, Query, Resolver } from '@nestjs/graphql'
+import { Args, Query, Resolver } from '@nestjs/graphql';
 
-import { AreasService } from './areas.service'
-import {
-  Area,
-} from '@prisma/client';
+import { AreasService } from './areas.service';
+import { Area } from '@prisma/client';
 
 @Resolver('Area')
 export class AreasResolvers {
@@ -12,9 +10,8 @@ export class AreasResolvers {
   @Query()
   async getAllAvailableAreas(
     @Args('isDisabled')
-    isDisabled: boolean
+    isDisabled: boolean,
   ): Promise<Area[]> {
-    return this.areasService.findAll(isDisabled || false)
+    return this.areasService.findAll(isDisabled || false);
   }
 }
-

@@ -5,7 +5,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '@modules/auth/auth.service';
 
 import { Organization } from '@prisma/client';
-import { CreateOrganizationDto, UpdateMyOrganizationDto, OrganizationSummaryCacheDto } from './organizations.dto';
+import {
+  CreateOrganizationDto,
+  UpdateMyOrganizationDto,
+  OrganizationSummaryCacheDto,
+} from './organizations.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 
 @Injectable()
@@ -14,19 +18,19 @@ export class OrganizationsService {
     private prismaService: PrismaService,
     public authService: AuthService,
     public redisCacheService: RedisCacheService,
-  ) {
-  }
+  ) {}
 
   async getOrganization(orgId: string, include: object): Promise<Organization> {
     return this.prismaService.organization.findUnique({
       where: { id: orgId },
       include: include,
     });
-
   }
 
   async createOrganization(
-    createOrganizationData: CreateOrganizationDto, userId?: string, include?: object,
+    createOrganizationData: CreateOrganizationDto,
+    userId?: string,
+    include?: object,
   ): Promise<Organization> {
     createOrganizationData['createdBy'] = userId;
     return await this.prismaService.organization.create({
@@ -39,32 +43,34 @@ export class OrganizationsService {
         },
       },
     });
-
-
   }
 
-
   async updateOrganization(
-    updateMyOrganizationData: UpdateMyOrganizationDto, orgId: string, include?: object,
+    updateMyOrganizationData: UpdateMyOrganizationDto,
+    orgId: string,
+    include?: object,
   ): Promise<Organization> {
-    const usersAdded = (updateMyOrganizationData['addUsersToOrg'] || []).map(user => {
-      // return { userId: user };
+    const usersAdded = (updateMyOrganizationData['addUsersToOrg'] || []).map(
+      (user) => {
+        // return { userId: user };
 
-      return {
-        create: { userId: user },
-        where: {
-          userId_orgId: { userId: user, orgId: orgId },
-        },
-      };
-    });
-    const usersRemoved = (updateMyOrganizationData['removeUsersFromOrg'] || []).map(user => {
+        return {
+          create: { userId: user },
+          where: {
+            userId_orgId: { userId: user, orgId: orgId },
+          },
+        };
+      },
+    );
+    const usersRemoved = (
+      updateMyOrganizationData['removeUsersFromOrg'] || []
+    ).map((user) => {
       return { userId_orgId: { userId: user, orgId: orgId } };
     });
     const setOwner = updateMyOrganizationData['setOwner'];
     delete updateMyOrganizationData['addUsersToOrg'];
     delete updateMyOrganizationData['removeUsersFromOrg'];
     delete updateMyOrganizationData['setOwner'];
-
 
     let userOrgUpdateCommand = {};
 
@@ -97,10 +103,11 @@ export class OrganizationsService {
         },
       },
     });
-
   }
 
-  async convertFullOrgDataToSummaryOrgInfo(fullOrgData: Organization): Promise<OrganizationSummaryCacheDto> {
+  async convertFullOrgDataToSummaryOrgInfo(
+    fullOrgData: Organization,
+  ): Promise<OrganizationSummaryCacheDto> {
     return {
       name: fullOrgData.name,
       avatarImage: fullOrgData.avatarImage,
@@ -110,7 +117,7 @@ export class OrganizationsService {
     };
   }
 
-  async getOrgSummaryCache(orgId:string) {
+  async getOrgSummaryCache(orgId: string) {
     const cacheKey = getOrgCacheKey(orgId);
     let orgSummaryCache = await this.redisCacheService.get(cacheKey);
     if (!orgSummaryCache) {
@@ -119,13 +126,5 @@ export class OrganizationsService {
       await this.redisCacheService.set(cacheKey, fullOrgData || {}, 3600);
     }
     return orgSummaryCache;
-
   }
-
-
 }
-
-
-
-
-

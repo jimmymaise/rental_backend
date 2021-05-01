@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
-import {GqlPermissionsGuard} from './modules/auth/permission/gql-permissions.guard'
-import { APP_GUARD, } from '@nestjs/core'
+import { GqlPermissionsGuard } from './modules/auth/permission/gql-permissions.guard';
+import { APP_GUARD } from '@nestjs/core';
 import {
   AuthModule,
   OrganizationsModule,
@@ -22,7 +22,7 @@ import {
   NotificationModule,
   LoggingModule,
   RedisCacheModule,
-  RolesModule
+  RolesModule,
 } from './modules';
 
 import { rootContants } from './constants';
@@ -117,10 +117,11 @@ import { AppService } from './app.service';
     NotificationModule,
     RedisCacheModule,
     OrganizationsModule,
-    RolesModule
+    RolesModule,
   ],
   controllers: [AppController],
-  providers: [AppService,
+  providers: [
+    AppService,
     {
       provide: APP_GUARD,
       useClass: GqlPermissionsGuard,

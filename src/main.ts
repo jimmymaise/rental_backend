@@ -56,7 +56,7 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   app.useWebSocketAdapter(new RedisIoAdapter(app, configService));
-  app.use(function(req, res, next) {
+  app.use(function (req, res, next) {
     const allowedOrigins = [
       'http://localhost:3700',
       'http://localhost:3600',

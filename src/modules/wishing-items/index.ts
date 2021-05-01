@@ -1,1 +1,1 @@
-export * from './wishing-items.module'
+export * from './wishing-items.module';

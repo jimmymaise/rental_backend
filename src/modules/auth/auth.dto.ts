@@ -11,13 +11,13 @@ export interface AuthDTO {
 
 export interface GuardUserPayload {
   id: string;
-  userId?: string,
+  userId?: string;
   email: string;
   facebookId?: string;
   googleId?: string;
   orgIds?: string[];
-  currentOrgId?: string,
-  isCurrentOrgOwner: boolean,
+  currentOrgId?: string;
+  isCurrentOrgOwner: boolean;
   permissions?: SystemPermission[];
   currentOrgPermissionNames?: string[];
 }

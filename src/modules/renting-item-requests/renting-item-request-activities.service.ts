@@ -1,16 +1,15 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common';
 
-import { PrismaService } from '../prisma/prisma.service'
-import {
-  RentingItemRequestActivity,
-} from '@prisma/client'
-import { UsersService } from '../users/users.service'
-import { StoragesService } from '../storages/storages.service'
-import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto'
-import { PaginationDTO } from '../../models'
+import { PrismaService } from '../prisma/prisma.service';
+import { RentingItemRequestActivity } from '@prisma/client';
+import { UsersService } from '../users/users.service';
+import { StoragesService } from '../storages/storages.service';
+import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto';
+import { PaginationDTO } from '../../models';
 
-export function toRentingItemRequestActivityDTO(data: RentingItemRequestActivity): RentingItemRequestActivityDTO {
-
+export function toRentingItemRequestActivityDTO(
+  data: RentingItemRequestActivity,
+): RentingItemRequestActivityDTO {
   return {
     id: data.id,
     rentingItemRequestId: data.rentingItemRequestId,
@@ -18,8 +17,8 @@ export function toRentingItemRequestActivityDTO(data: RentingItemRequestActivity
     type: data.type,
     files: data.files && data.files.length ? JSON.parse(data.files) : [],
     createdDate: data.createdDate.getTime(),
-    updatedDate: data.updatedDate.getTime()
-  }
+    updatedDate: data.updatedDate.getTime(),
+  };
 }
 
 @Injectable()
@@ -27,7 +26,7 @@ export class RentingItemRequestActivitiesService {
   constructor(
     private prismaService: PrismaService,
     private userService: UsersService,
-    private storageService: StoragesService
+    private storageService: StoragesService,
   ) {}
 
   // TODO: check user owner of this activitiy
@@ -35,23 +34,20 @@ export class RentingItemRequestActivitiesService {
     userId,
     offset = 0,
     limit = 10,
-    rentingRequestId
+    rentingRequestId,
   }): Promise<PaginationDTO<RentingItemRequestActivityDTO>> {
-    
-    const items = await this.prismaService.rentingItemRequestActivity.findMany(
-      {
-        where: {
-          rentingItemRequestId: rentingRequestId
-        },
-        orderBy: {
-          createdDate: 'desc'
-        }
-      }
-    );
+    const items = await this.prismaService.rentingItemRequestActivity.findMany({
+      where: {
+        rentingItemRequestId: rentingRequestId,
+      },
+      orderBy: {
+        createdDate: 'desc',
+      },
+    });
     const count = await this.prismaService.rentingItemRequestActivity.count({
       where: {
-        rentingItemRequestId: rentingRequestId
-      }
+        rentingItemRequestId: rentingRequestId,
+      },
     });
 
     const finalItems: RentingItemRequestActivityDTO[] = [];
@@ -59,11 +55,20 @@ export class RentingItemRequestActivitiesService {
       const item = items[i] as RentingItemRequestActivity;
       const newItem = toRentingItemRequestActivityDTO(item);
 
-      newItem.createdBy = await this.userService.getUserDetailData(item.createdBy)
-      newItem.updatedBy = await this.userService.getUserDetailData(item.updatedBy)
-      
-      for(let j = 0; j < newItem.files.length; j++) {
-        newItem.files[j].signedUrl = await this.storageService.getReadSignedUrlForUrl(newItem.files[j].url, ['small', 'medium'])
+      newItem.createdBy = await this.userService.getUserDetailData(
+        item.createdBy,
+      );
+      newItem.updatedBy = await this.userService.getUserDetailData(
+        item.updatedBy,
+      );
+
+      for (let j = 0; j < newItem.files.length; j++) {
+        newItem.files[
+          j
+        ].signedUrl = await this.storageService.getReadSignedUrlForUrl(
+          newItem.files[j].url,
+          ['small', 'medium'],
+        );
       }
 
       finalItems.push(newItem);
@@ -76,5 +81,4 @@ export class RentingItemRequestActivitiesService {
       limit,
     };
   }
-
 }

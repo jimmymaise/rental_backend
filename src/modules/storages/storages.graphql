@@ -4,7 +4,6 @@ input PublicStorageFileInput {
   id: String!
   url: String!
   isUploadField: Boolean
-
 }
 
 input FileSizeMapInput {

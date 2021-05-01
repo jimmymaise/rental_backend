@@ -1,1 +1,1 @@
-export * from './storages.module'
+export * from './storages.module';

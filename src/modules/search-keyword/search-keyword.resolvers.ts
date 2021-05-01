@@ -1,9 +1,7 @@
-import { Query, Resolver } from '@nestjs/graphql'
+import { Query, Resolver } from '@nestjs/graphql';
 
-import { SearchKeywordService } from './search-keyword.service'
-import {
-  SearchKeyword,
-} from '@prisma/client';
+import { SearchKeywordService } from './search-keyword.service';
+import { SearchKeyword } from '@prisma/client';
 
 @Resolver('SearchKeyword')
 export class SearchKeywordResolvers {
@@ -11,7 +9,6 @@ export class SearchKeywordResolvers {
 
   @Query()
   async getTopKeywords(): Promise<SearchKeyword[]> {
-    return this.searchKeywordService.findTopKeywords()
+    return this.searchKeywordService.findTopKeywords();
   }
 }
-

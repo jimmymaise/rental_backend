@@ -16,7 +16,5 @@ export class OrgCheckHandler {
       },
     });
     return uniqueUsers.length === countUsersInOrg;
-
   }
-
 }

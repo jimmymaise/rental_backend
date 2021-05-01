@@ -2,15 +2,17 @@ import { ExtractJwt } from 'passport-jwt';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { Permission, ORG_OWNER_PERMISSION } from '@modules/auth/permission/permission.enum';
+import {
+  Permission,
+  ORG_OWNER_PERMISSION,
+} from '@modules/auth/permission/permission.enum';
 
 import { AuthService } from '../auth.service';
 
 // TODO: NOT COMPLETED YET
 @Injectable()
 export class GqlPermissionsGuard implements CanActivate {
-  constructor(private reflector: Reflector, private authService: AuthService) {
-  }
+  constructor(private reflector: Reflector, private authService: AuthService) {}
 
   canActivate(context: ExecutionContext): boolean {
     const permissions = this.reflector.get<string[]>(

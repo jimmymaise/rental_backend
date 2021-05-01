@@ -16,10 +16,7 @@ export enum Permission {
   CONNECT = 'CONNECT',
   REMOVE_CONNECT = 'REMOVE_CONNECT',
   EDIT_PROFILE = 'EDIT_PROFILE',
-  SEND_MESSAGE = 'SEND_MESSAGE'
-
-
+  SEND_MESSAGE = 'SEND_MESSAGE',
 }
 
 export const ORG_OWNER_PERMISSION = Object.values(Permission);
-

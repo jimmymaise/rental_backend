@@ -46,5 +46,4 @@ import { AnonymousStrategy } from './anoymous.strategy';
   ],
   exports: [AuthService],
 })
-export class AuthModule {
-}
+export class AuthModule {}

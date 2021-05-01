@@ -5,13 +5,13 @@ import isEmpty from 'lodash/isEmpty';
 import sanitizeHtml from 'sanitize-html';
 
 import { PrismaService } from '../prisma/prisma.service';
-import {User, UserInfo } from '@prisma/client';
+import { User, UserInfo } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
 import {
   UserInfoInputDTO,
   UserInfoDTO,
   UserInfoForMakingToken,
-  UserSummary
+  UserSummary,
 } from './user-info.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { EncryptByAesCBCPassword } from '@helpers/encrypt';
@@ -86,14 +86,31 @@ export class UsersService {
     );
   }
 
-  async getAllUsersWithPaging(whereQuery: object, pageSize: number, cursor?: any, include?: object): Promise<PaginationDTO<UserSummary>> {
-
-    let pagingHandler = new PagingHandler(whereQuery, pageSize, 'id', 'asc', this.prismaService, 'user');
+  async getAllUsersWithPaging(
+    whereQuery: object,
+    pageSize: number,
+    cursor?: any,
+    include?: object,
+  ): Promise<PaginationDTO<UserSummary>> {
+    let pagingHandler = new PagingHandler(
+      whereQuery,
+      pageSize,
+      'id',
+      'asc',
+      this.prismaService,
+      'user',
+      null,
+      include,
+    );
     return pagingHandler.getPage('user', cursor);
   }
 
-  async getAllUsersByOrgIdWithPaging(orgId, pageSize: number, cursor?: any, include?: object): Promise<PaginationDTO<UserSummary>> {
-
+  async getAllUsersByOrgIdWithPaging(
+    orgId,
+    pageSize: number,
+    cursor?: any,
+    include?: object,
+  ): Promise<PaginationDTO<UserSummary>> {
     let whereQuery = {
       orgsThisUserBelongTo: {
         some: {
@@ -102,10 +119,7 @@ export class UsersService {
       },
     };
     return this.getAllUsersWithPaging(whereQuery, pageSize, cursor, include);
-
-
   }
-
 
   async getUserDetailData(
     userId: string,

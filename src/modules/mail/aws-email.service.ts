@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 
-import { MailData } from './mail-data.model'
+import { MailData } from './mail-data.model';
 
 @Injectable()
 export class AWSEmailService {

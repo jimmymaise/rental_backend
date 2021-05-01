@@ -1,6 +1,6 @@
-import { UserInfoDTO } from '../users/user-info.dto'
+import { UserInfoDTO } from '../users/user-info.dto';
 
 export interface ChatConversationDTO {
-  id: string
-  members: UserInfoDTO[]
+  id: string;
+  members: UserInfoDTO[];
 }

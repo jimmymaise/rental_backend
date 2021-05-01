@@ -1,10 +1,14 @@
 export interface ResetPasswordData {
-  displayName?: string
-  email: string
-  url: string
+  displayName?: string;
+  email: string;
+  url: string;
 }
 
-export function GeneratePlainTextResetPasswordEmail({ displayName, email, url }: ResetPasswordData): string {
+export function GeneratePlainTextResetPasswordEmail({
+  displayName,
+  email,
+  url,
+}: ResetPasswordData): string {
   return `
     Xin Chào ${displayName},
     ThueDO vừa nhận được yêu cầu khôi phục mật khẩu từ bạn. Hãy mở link bên dưới để tiến hành đổi mật khẩu cho tài khoản ${email}.
@@ -20,10 +24,14 @@ export function GeneratePlainTextResetPasswordEmail({ displayName, email, url }:
     Theo dõi tại: 
     
     https://www.facebook.com/Thue-Do-105363268055385 
-  `
+  `;
 }
 
-export function GenerateHTMLResetPasswordEmail({ displayName, email, url }: ResetPasswordData): string {
+export function GenerateHTMLResetPasswordEmail({
+  displayName,
+  email,
+  url,
+}: ResetPasswordData): string {
   return `
   <!doctype html>
   <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -450,5 +458,5 @@ export function GenerateHTMLResetPasswordEmail({ displayName, email, url }: Rese
   </body>
   
   </html>
-  `
+  `;
 }

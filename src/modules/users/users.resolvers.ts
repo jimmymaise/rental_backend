@@ -67,8 +67,8 @@ export class UsersResolvers {
     getMyOrgUsersWithPagingData: GetMyOrgUsersWithPagingDTO,
   ): Promise<PaginationDTO<UserSummary>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
-    const include = graphQLFieldHandler.getIncludeForRelationalFields([
-      'userInfo',
+    const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      { fieldName: 'userInfo', fieldPath: 'items.UserSummary' },
     ]);
     return this.userService.getAllUsersByOrgIdWithPaging(
       user.currentOrgId,

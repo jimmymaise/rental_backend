@@ -16,7 +16,7 @@ export function toUserInfoDTO(
   if (!user) {
     return null;
   }
-  let orgIds = user['orgsThisUserBelongTo'].map(org => org.orgId);
+  let orgIds = user['orgsThisUserBelongTo'].map((org) => org.orgId);
   let avatarImage =
     userInfo?.avatarImage && userInfo.avatarImage.length
       ? JSON.parse(userInfo.avatarImage)

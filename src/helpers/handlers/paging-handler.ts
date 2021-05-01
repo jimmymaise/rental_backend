@@ -6,7 +6,7 @@ class PageQueryDto {
   where: object;
   orderBy: object;
   skip?: number;
-
+  include?: object;
 }
 
 export class PagingHandler {
@@ -18,7 +18,7 @@ export class PagingHandler {
   query: PageQueryDto;
   prismaService: PrismaService;
   table: string;
-
+  include?: object;
 
   constructor(
     where: object,
@@ -28,6 +28,7 @@ export class PagingHandler {
     prismaService: PrismaService,
     table: string,
     initCursor?: any,
+    include?: object,
   ) {
     this.where = where;
     this.pageSize = pageSize;
@@ -42,8 +43,8 @@ export class PagingHandler {
       orderBy: {
         [orderByColumn]: orderByType,
       },
+      include: include,
     };
-
   }
 
   getPageQuery(cursor?: string | number): PageQueryDto {
@@ -64,7 +65,6 @@ export class PagingHandler {
   }
 
   async getPage(table, cursor?: string | number): Promise<PaginationDTO<any>> {
-
     let totalItem = await this.prismaService.user.count({
       where: this.where,
     });
@@ -73,14 +73,13 @@ export class PagingHandler {
     let pageResult = await this.prismaService[table].findMany({
       ...pageQuery,
     });
-    let lastItemId = pageResult.length > 0 ? pageResult[pageResult.length - 1].id : null;
+    let lastItemId =
+      pageResult.length > 0 ? pageResult[pageResult.length - 1].id : null;
     return {
       items: pageResult,
       total: totalItem,
       offset: lastItemId,
       limit: this.pageSize,
     };
-
   }
-
 }

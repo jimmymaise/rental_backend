@@ -1,77 +1,73 @@
 type OrganizationInfo {
-    id: ID!
-    name: String
-    avatarImage: JSON
-    description: String
-    slug: String
-    createdDate: Float
-    updatedDate: Float,
-    createdBy: String,
-    users:[UserOrgInfo],
-
+  id: ID!
+  name: String
+  avatarImage: JSON
+  description: String
+  slug: String
+  createdDate: Float
+  updatedDate: Float
+  createdBy: String
+  users: [UserOrgInfo]
 }
 
-
-
 type UserOrgInfo {
-    userId: String,
-    isOwner: Boolean,
-    orgId: String
+  userId: String
+  isOwner: Boolean
+  orgId: String
 }
 
 type OrgSummaryCache {
-    id: ID!
-    name: String
-    avatarImage: JSON
-    description: String
-    slug: String
+  id: ID!
+  name: String
+  avatarImage: JSON
+  description: String
+  slug: String
 }
-
 
 type OrganizationPagination {
-    items: [OrganizationInfo]
-    total: Int
-    limit: Int
-    offset: Int
+  items: [OrganizationInfo]
+  total: Int
+  limit: Int
+  offset: Int
 }
 
-
 input createOrganizationInput {
-    name: String
-    description: String
-    avatarImage: PublicStorageFileInput
-    slug: String
+  name: String
+  description: String
+  avatarImage: PublicStorageFileInput
+  slug: String
 }
 
 input updateMyOrganizationInput {
-    name: String
-    description: String
-    avatarImage: PublicStorageFileInput
-    slug: String
-    users: [String]
-    addUsersToOrg: [String]
-    removeUsersFromOrg: [String]
-    setOwner:setOwner
+  name: String
+  description: String
+  avatarImage: PublicStorageFileInput
+  slug: String
+  users: [String]
+  addUsersToOrg: [String]
+  removeUsersFromOrg: [String]
+  setOwner: setOwner
 }
 input setOwner {
-    userId: String,
-    isOwner:Boolean
+  userId: String
+  isOwner: Boolean
 }
 
 input OrganizationQuery {
-    search: String
-    offset: Int
-    limit: Int
-    sortByFields: [String]
+  search: String
+  offset: Int
+  limit: Int
+  sortByFields: [String]
 }
 
-
 type Query {
-    getMyOrg: OrganizationInfo
-    searchOrg(query: OrganizationQuery): OrganizationPagination
+  getMyOrg: OrganizationInfo
+  searchOrg(query: OrganizationQuery): OrganizationPagination
 }
 
 type Mutation {
-    updateMyOrg(updateMyOrganizationInput: updateMyOrganizationInput!): OrganizationInfo
-    createOrg(createOrganizationInput: createOrganizationInput!): OrganizationInfo
+  updateMyOrg(
+    updateMyOrganizationInput: updateMyOrganizationInput!
+  ): OrganizationInfo
+  createOrg(createOrganizationInput: createOrganizationInput!): OrganizationInfo
 }

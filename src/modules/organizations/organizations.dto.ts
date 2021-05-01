@@ -3,7 +3,6 @@ import { sanitize } from './helpers';
 import { Prisma } from '@prisma/client';
 import { Transform } from 'class-transformer';
 
-
 export class OrganizationSummaryCacheDto {
   id?: string;
   name?: string;
@@ -11,7 +10,6 @@ export class OrganizationSummaryCacheDto {
   description: string;
   slug: string;
 }
-
 
 export class CreateOrganizationDto {
   name?: string;
@@ -31,7 +29,6 @@ export class UpdateMyOrganizationDto {
   addUsersToOrg: string[];
   removeUsersFromOrg: string[];
   setOwner: setOwner;
-
 }
 
 class setOwner {
@@ -39,8 +36,6 @@ class setOwner {
   isOwner: boolean;
 }
 
-
 export class AddUserToMyOrganizationDto {
   userId: string;
 }
-
