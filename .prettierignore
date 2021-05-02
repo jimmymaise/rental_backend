@@ -1,0 +1,8 @@
+.gitlab-ci.yml
+package-lock.json
+package.json
+tslint.json
+/node_modules/
+/dist/
+/mail-template/
+/scripts/
