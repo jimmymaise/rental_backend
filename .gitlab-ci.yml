@@ -8,7 +8,7 @@ Dockerfile-Staging:
   stage: dockerfile
   environment: staging
   services:
-    - docker:dind
+    - name: docker:dind
   script:
     # Deploy to Docker Registry
     # - cat .env
@@ -22,6 +22,8 @@ Dockerfile-Staging:
     - docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH)
   only:
     - master
+  variables:
+    DOCKER_HOST: tcp://docker:2375
 
 Deploy-Staging:
   stage: deploy
@@ -54,7 +56,7 @@ Dockerfile-Production:
   stage: dockerfile
   environment: production
   services:
-    - docker:dind
+    - name: docker:dind
   script:
     # Deploy to Docker Registry
     # - cat .env
@@ -67,6 +69,8 @@ Dockerfile-Production:
     - docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH)
   only:
     - /^v\d+\.\d+\.\d+$/
+  variables:
+    DOCKER_HOST: tcp://docker:2375
 
 Deploy-Production:
   stage: deploy
