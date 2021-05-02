@@ -11,6 +11,8 @@ import { GuardUserPayload } from '../auth/auth.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
 // import { StorageDTO } from './storage.dto';
 import { ErrorMap } from '@app/constants';
+import { Permission } from '@modules/auth/permission/permission.enum';
+import { Permissions } from '@modules/auth/permission/permissions.decorator';
 
 interface PreSignedImageUrlData {
   id: string;
@@ -72,6 +74,7 @@ export class StoragesResolvers {
 
   // Pre Generation Image File Signed URL for upload
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async generateImageFile(
     @CurrentUser() user: GuardUserPayload,
@@ -153,6 +156,7 @@ export class StoragesResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async deleteFileForListingItem(
     @CurrentUser() user: GuardUserPayload,

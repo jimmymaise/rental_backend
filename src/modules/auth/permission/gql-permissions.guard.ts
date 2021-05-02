@@ -21,6 +21,9 @@ export class GqlPermissionsGuard implements CanActivate {
     );
 
     if (!permissions) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Require Permission', context);
+      }
       // To avoid  mistake let the permissions empty, We must not authorize it as well
       return false;
     }

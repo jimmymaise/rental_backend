@@ -7,6 +7,8 @@ import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
 import { OffsetPaginationDTO } from '../../models';
 import { MyUserContactDTO } from './my-user-contact.dto';
 import { UsersService } from '../users/users.service';
+import { Permission } from '@modules/auth/permission/permission.enum';
+import { Permissions } from '@modules/auth/permission/permissions.decorator';
 
 @Resolver('MyUserContact')
 export class WishingItemsResolvers {
@@ -16,6 +18,7 @@ export class WishingItemsResolvers {
   ) {}
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async addUserToMyContactList(
     @CurrentUser() user: GuardUserPayload,
@@ -25,6 +28,7 @@ export class WishingItemsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async deleteUserFromMyContactList(
     @CurrentUser() user: GuardUserPayload,
@@ -37,6 +41,7 @@ export class WishingItemsResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async feedMyContacts(
     @CurrentUser() user: GuardUserPayload,
