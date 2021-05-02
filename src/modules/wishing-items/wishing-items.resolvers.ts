@@ -5,9 +5,10 @@ import { WishingItemsService } from './wishing-items.service';
 import { WishingItem } from '@prisma/client';
 import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
 import { OffsetPaginationDTO } from '../../models';
-import { WishingItemDTO } from './wishing-item.dto';
 import { ItemDTO, toItemDTO } from '../items/item.dto';
 import { UsersService } from '../users/users.service';
+import { Permission } from '@modules/auth/permission/permission.enum';
+import { Permissions } from '@modules/auth/permission/permissions.decorator';
 
 @Resolver('WishingItem')
 export class WishingItemsResolvers {
@@ -17,6 +18,7 @@ export class WishingItemsResolvers {
   ) {}
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async addItemToMyWishlist(
     @CurrentUser() user: GuardUserPayload,
@@ -26,6 +28,7 @@ export class WishingItemsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async deleteItemFromMyWishlist(
     @CurrentUser() user: GuardUserPayload,
@@ -35,6 +38,7 @@ export class WishingItemsResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async feedMyWishlist(
     @CurrentUser() user: GuardUserPayload,
