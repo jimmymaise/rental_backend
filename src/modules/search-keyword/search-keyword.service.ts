@@ -19,11 +19,11 @@ export class SearchKeywordService {
       },
       create: {
         keyword: lowerKeyword,
-        count: 1,
+        searchCount: 1,
         isVerified: false,
       },
       update: {
-        count: {
+        searchCount: {
           increment: 1,
         },
       },
@@ -46,7 +46,7 @@ export class SearchKeywordService {
       },
       skip: 0,
       take: 45,
-      orderBy: { count: 'desc' },
+      orderBy: { searchCount: 'desc' },
     });
 
     await this.redisCacheService.set(TOP_KEYWORD_CACHE_KEY, keywords, 86400);

@@ -7,35 +7,35 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["orderByRelation"]
 }
 
 model Organization {
-  id                 String  @id @default(uuid())
+  id                 String              @id @default(uuid())
   name               String?
   description        String?
   avatarImage        Json?
-  slug               String? @unique
-  createdDate        DateTime? @default(now())
-  updatedDate        DateTime? @updatedAt
+  slug               String?             @unique
+  createdDate        DateTime?           @default(now())
+  updatedDate        DateTime?           @updatedAt
   rolesThisOrgHaving Role[]
-  createdByUser      User?    @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdByUser      User?               @relation("CreatedByUser", fields: [createdBy], references: [id])
   createdBy          String?
   users              UserOrganizations[]
 }
 
 model UserOrganizations {
-  user               User @relation(fields: [userId], references: [id])
-  organization       Organization @relation(fields: [orgId], references: [id])
-  userId             String
-  orgId              String
-  isOwner            Boolean @default(false)
-  createdDate        DateTime? @default(now())
-  updatedDate        DateTime? @updatedAt
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [orgId], references: [id])
+  userId       String
+  orgId        String
+  isOwner      Boolean      @default(false)
+  createdDate  DateTime?    @default(now())
+  updatedDate  DateTime?    @updatedAt
+
   @@id([userId, orgId])
 }
-
 
 model User {
   id                           String               @id @default(uuid())
@@ -70,34 +70,29 @@ model User {
   roles                        Role[]
 }
 
-
 model Role {
-  id                  String @id @default(uuid())
-  name                String
-  description         String
-  orgId               String
-  users               User[]
-  permissions         Permission[]
-  createdDate         DateTime     @default(now())
-  updatedDate         DateTime? @updatedAt
-  orgs                Organization[]
+  id          String         @id @default(uuid())
+  name        String
+  description String
+  orgId       String
+  users       User[]
+  permissions Permission[]
+  createdDate DateTime       @default(now())
+  updatedDate DateTime?      @updatedAt
+  orgs        Organization[]
+
   @@unique([orgId, id])
   @@unique([orgId, name])
-
 }
-
 
 model Permission {
-  id                    String   @id @default(uuid())
-  name                  String @unique
-  description           String
-  createdDate           DateTime @default(now())
-  updatedDate           DateTime? @updatedAt
-  roles                 Role[]
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String
+  createdDate DateTime  @default(now())
+  updatedDate DateTime? @updatedAt
+  roles       Role[]
 }
-
-
-
 
 model UserInfo {
   displayName String?
@@ -346,9 +341,9 @@ model RentingItemRequestActivity {
 
 // Log Systems
 model SearchKeyword {
-  keyword    String   @id
-  count      Int?     @default(0)
-  isVerified Boolean? @default(false)
+  keyword     String   @id
+  searchCount Int?     @default(0)
+  isVerified  Boolean? @default(false)
 }
 
 model UserLoginLog {
