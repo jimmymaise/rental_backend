@@ -48,7 +48,13 @@ export interface UserInfoInputDTO {
   coverImage: StoragePublicDTO;
 }
 
-export interface GetMyOrgUsersWithPagingDTO {
+export interface GetMyOrgUsersWithOffsetPagingDTO {
+  pageSize: number;
+  offset: number;
+  orderBy: object;
+}
+
+export interface GetMyOrgUsersWithCursorPagingDTO {
   pageSize: number;
   cursor: number;
 }

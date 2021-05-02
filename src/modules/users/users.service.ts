@@ -20,8 +20,10 @@ import { AuthService } from '@modules/auth/auth.service';
 import { OrganizationsService } from '@modules/organizations/organizations.service';
 
 import { AuthDTO } from '@modules/auth/auth.dto';
-import { PagingHandler } from '@helpers/handlers/paging-handler';
-import { PaginationDTO } from '@app/models';
+import { CursorPagingHandler } from '@helpers/handlers/cursor-paging-handler';
+import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
+
+import { OffsetPaginationDTO } from '@app/models';
 
 const DEFAULT_AVATARS = [
   'https://asia-fast-storage.thuedo.vn/default-avatars/default_0008_avatar-1.jpg',
@@ -86,13 +88,13 @@ export class UsersService {
     );
   }
 
-  async getAllUsersWithPaging(
+  async getAllUsersWithCursorPaging(
     whereQuery: object,
     pageSize: number,
     cursor?: any,
     include?: object,
-  ): Promise<PaginationDTO<UserSummary>> {
-    let pagingHandler = new PagingHandler(
+  ): Promise<OffsetPaginationDTO<UserSummary>> {
+    let pagingHandler = new CursorPagingHandler(
       whereQuery,
       pageSize,
       'id',
@@ -105,12 +107,30 @@ export class UsersService {
     return pagingHandler.getPage('user', cursor);
   }
 
-  async getAllUsersByOrgIdWithPaging(
+  async getAllUsersWithOffsetPaging(
+    whereQuery: object,
+    pageSize: number,
+    offset?: any,
+    orderBy: object = { id: 'desc' },
+    include?: object,
+  ): Promise<OffsetPaginationDTO<UserSummary>> {
+    let pagingHandler = new OffsetPagingHandler(
+      whereQuery,
+      pageSize,
+      orderBy,
+      this.prismaService,
+      'user',
+      include,
+    );
+    return pagingHandler.getPage('user', offset);
+  }
+
+  async getAllUsersByOrgIdWithCursorPaging(
     orgId,
     pageSize: number,
     cursor?: any,
     include?: object,
-  ): Promise<PaginationDTO<UserSummary>> {
+  ): Promise<OffsetPaginationDTO<UserSummary>> {
     let whereQuery = {
       orgsThisUserBelongTo: {
         some: {
@@ -118,7 +138,36 @@ export class UsersService {
         },
       },
     };
-    return this.getAllUsersWithPaging(whereQuery, pageSize, cursor, include);
+    return this.getAllUsersWithCursorPaging(
+      whereQuery,
+      pageSize,
+      cursor,
+      include,
+    );
+  }
+
+  async getAllUsersByOrgIdWithOffsetPaging(
+    orgId,
+    pageSize: number,
+    offset?: any,
+    orderBy?: object,
+    include?: object,
+  ): Promise<OffsetPaginationDTO<UserSummary>> {
+    let whereQuery = {
+      orgsThisUserBelongTo: {
+        some: {
+          orgId: orgId,
+        },
+      },
+    };
+
+    return this.getAllUsersWithOffsetPaging(
+      whereQuery,
+      pageSize,
+      offset,
+      orderBy,
+      include,
+    );
   }
 
   async getUserDetailData(

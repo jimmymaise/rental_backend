@@ -4,7 +4,7 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { MyUserContactsService } from './my-user-contacts.service';
 import { MyUserContact } from '@prisma/client';
 import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 import { MyUserContactDTO } from './my-user-contact.dto';
 import { UsersService } from '../users/users.service';
 
@@ -45,7 +45,7 @@ export class WishingItemsResolvers {
       offset: number;
       limit: number;
     },
-  ): Promise<PaginationDTO<MyUserContactDTO>> {
+  ): Promise<OffsetPaginationDTO<MyUserContactDTO>> {
     const { offset, limit } = query || {};
     const actualLimit = limit && limit > 100 ? 100 : limit;
     const result = await this.myUserContactService.findAllMyContactList({

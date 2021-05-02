@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { Item, ItemStatus } from '@prisma/client';
-import { PaginationDTO } from '@app/models';
+import { OffsetPaginationDTO } from '@app/models';
 
 @Injectable()
 export class AdminItemsService {
@@ -16,7 +16,7 @@ export class AdminItemsService {
     categoryId,
     includes,
     sortByFields,
-  }): Promise<PaginationDTO<Item>> {
+  }): Promise<OffsetPaginationDTO<Item>> {
     const mandatoryWhere = {
       isDeleted: false,
     };

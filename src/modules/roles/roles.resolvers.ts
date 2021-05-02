@@ -13,7 +13,7 @@ import {
   simplifyParsedResolveInfoFragmentWithType,
 } from 'graphql-parse-resolve-info';
 import { GraphQLResolveInfo } from 'graphql';
-import { GraphQLFieldHandler } from '@helpers/graphql-field-handler';
+import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 import { RolesService } from './roles.service';
 import { GuardUserPayload, AuthDTO } from '@modules/auth/auth.dto';
 import { EveryoneGqlAuthGuard, GqlAuthGuard } from '@app/modules';

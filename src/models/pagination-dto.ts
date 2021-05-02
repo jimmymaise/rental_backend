@@ -1,4 +1,4 @@
-export interface PaginationDTO<T> {
+export interface OffsetPaginationDTO<T> {
   items: T[];
   total: number;
   offset: number | string;

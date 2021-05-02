@@ -13,7 +13,7 @@ import {
   GqlAuthGuard,
   EveryoneGqlAuthGuard,
 } from '../auth';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 import { UsersService } from '../users/users.service';
 import { SearchKeywordService } from '../search-keyword/search-keyword.service';
 import { WishingItemsService } from '../wishing-items/wishing-items.service';
@@ -63,7 +63,7 @@ export class ItemsResolvers {
       sortByFields: string[];
       checkWishList?: boolean;
     },
-  ): Promise<PaginationDTO<ItemDTO>> {
+  ): Promise<OffsetPaginationDTO<ItemDTO>> {
     const {
       search,
       offset,
@@ -185,7 +185,7 @@ export class ItemsResolvers {
       includes: string[];
       checkWishList?: boolean;
     },
-  ): Promise<PaginationDTO<ItemDTO>> {
+  ): Promise<OffsetPaginationDTO<ItemDTO>> {
     const { search, offset, limit, includes, checkWishList } = query || {};
     const actualLimit = limit && limit > 100 ? 100 : limit;
     const result = await this.userItemService.findAllItemsCreatedByUser({
@@ -231,7 +231,7 @@ export class ItemsResolvers {
       includes: string[];
       checkWishList?: boolean;
     },
-  ): Promise<PaginationDTO<ItemDTO>> {
+  ): Promise<OffsetPaginationDTO<ItemDTO>> {
     const { search, offset, limit, includes, checkWishList } = query || {};
     const actualLimit = limit && limit > 100 ? 100 : limit;
     const result = await this.userItemService.findAllPublicItemsCreatedByUser({
@@ -348,7 +348,7 @@ export class ItemsResolvers {
       includes: string[];
       sortByFields: string[];
     },
-  ): Promise<PaginationDTO<ItemDTO>> {
+  ): Promise<OffsetPaginationDTO<ItemDTO>> {
     const {
       search,
       offset,

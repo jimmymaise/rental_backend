@@ -10,7 +10,7 @@ import { RentingItemRequestActivitiesService } from './renting-item-request-acti
 import { RentingItemRequestInputDTO } from './renting-item-request-input.dto';
 import { RentingItemRequestDTO } from './renting-item-request.dto';
 import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto';
 
@@ -50,7 +50,7 @@ export class RentingItemRequestsResolvers {
   //     includes: string[],
   //     sortByFields: string[]
   //   },
-  // ): Promise<PaginationDTO<RentingItemRequestDTO>> {
+  // ): Promise<OffsetPaginationDTO<RentingItemRequestDTO>> {
   //   const { offset, limit, includes, sortByFields } = query || {};
 
   //   return this.rentingItemRequestService.findAllRequestFromOwner({
@@ -72,7 +72,7 @@ export class RentingItemRequestsResolvers {
   //     includes: string[],
   //     sortByFields: string[]
   //   },
-  // ): Promise<PaginationDTO<RentingItemRequestDTO>> {
+  // ): Promise<OffsetPaginationDTO<RentingItemRequestDTO>> {
   //   const { offset, limit, includes, sortByFields } = query || {};
 
   //   return this.rentingItemRequestService.findAllRequestToLender({
@@ -94,7 +94,7 @@ export class RentingItemRequestsResolvers {
       includes: string[];
       sortByFields: string[];
     },
-  ): Promise<PaginationDTO<RentingItemRequestDTO>> {
+  ): Promise<OffsetPaginationDTO<RentingItemRequestDTO>> {
     const { offset, limit, includes, sortByFields } = query || {};
 
     return this.rentingItemRequestService.findAllRequestFromUser({
@@ -201,7 +201,7 @@ export class RentingItemRequestsResolvers {
       offset: number;
       limit: number;
     },
-  ): Promise<PaginationDTO<RentingItemRequestActivityDTO>> {
+  ): Promise<OffsetPaginationDTO<RentingItemRequestActivityDTO>> {
     const { offset, limit } = query || {};
     return this.rentingItemRequestActivityService.findAllActivityFromRequest({
       userId: user.id,

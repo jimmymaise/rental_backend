@@ -1,5 +1,5 @@
 import { PrismaService } from '@modules/prisma/prisma.service';
-import { PaginationDTO } from '@app/models';
+import { OffsetPaginationDTO } from '@app/models';
 
 class PageQueryDto {
   take: number;
@@ -9,7 +9,7 @@ class PageQueryDto {
   include?: object;
 }
 
-export class PagingHandler {
+export class CursorPagingHandler {
   where: object;
   pageSize: number;
   orderByColumn: string;
@@ -64,7 +64,10 @@ export class PagingHandler {
     };
   }
 
-  async getPage(table, cursor?: string | number): Promise<PaginationDTO<any>> {
+  async getPage(
+    table,
+    cursor?: string | number,
+  ): Promise<OffsetPaginationDTO<any>> {
     let totalItem = await this.prismaService.user.count({
       where: this.where,
     });

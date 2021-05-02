@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserInfoDTO } from './user-info.dto';
 import { toUserInfoDTO } from './helpers';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 
 @Injectable()
 export class AdminUsersService {
@@ -14,7 +14,7 @@ export class AdminUsersService {
     offset = 0,
     limit = 10,
     sortByFields,
-  }): Promise<PaginationDTO<UserInfoDTO>> {
+  }): Promise<OffsetPaginationDTO<UserInfoDTO>> {
     const validSortBy = {
       email: 'email',
       phoneNumber: 'phoneNumber',

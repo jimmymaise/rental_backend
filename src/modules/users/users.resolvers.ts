@@ -7,7 +7,7 @@ import {
   Context,
   Info,
 } from '@nestjs/graphql';
-import { GraphQLFieldHandler } from '@helpers/graphql-field-handler';
+import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 
 import { UsersService } from './users.service';
 import { AdminUsersService } from './admin-users.service';
@@ -20,10 +20,10 @@ import {
   UserInfoInputDTO,
   UserInfoDTO,
   PublicUserInfoDTO,
-  GetMyOrgUsersWithPagingDTO,
+  GetMyOrgUsersWithOffsetPagingDTO,
   UserSummary,
 } from './user-info.dto';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { AuthService } from '@modules/auth/auth.service';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
@@ -63,17 +63,19 @@ export class UsersResolvers {
   async getMyOrgUsersWithPaging(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
-    @Args('getMyOrgUsersWithPagingData')
-    getMyOrgUsersWithPagingData: GetMyOrgUsersWithPagingDTO,
-  ): Promise<PaginationDTO<UserSummary>> {
+    @Args('getMyOrgUsersWithOffsetPagingData')
+    getMyOrgUsersWithOffsetPagingData: GetMyOrgUsersWithOffsetPagingDTO,
+  ): Promise<OffsetPaginationDTO<UserSummary>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
       { fieldName: 'userInfo', fieldPath: 'items.UserSummary' },
     ]);
-    return this.userService.getAllUsersByOrgIdWithPaging(
+
+    return this.userService.getAllUsersByOrgIdWithOffsetPaging(
       user.currentOrgId,
-      getMyOrgUsersWithPagingData.pageSize,
-      getMyOrgUsersWithPagingData.cursor,
+      getMyOrgUsersWithOffsetPagingData.pageSize,
+      getMyOrgUsersWithOffsetPagingData.offset,
+      getMyOrgUsersWithOffsetPagingData.orderBy,
       include,
     );
   }
@@ -363,7 +365,7 @@ export class UsersResolvers {
       limit: number;
       sortByFields: string[];
     },
-  ): Promise<PaginationDTO<UserInfoDTO>> {
+  ): Promise<OffsetPaginationDTO<UserInfoDTO>> {
     const { search, offset, limit, sortByFields } = query || {};
     const actualLimit = limit && limit > 100 ? 100 : limit;
 

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserNotification, UserNotificationType } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 import { NotificationDTO } from './notification.dto';
 import { RequestDataNotificationModel } from './models/request-data-notification.model';
 import { NotificationInfoModel } from './models/notication-info.model';
@@ -157,7 +157,7 @@ export class NotificationService {
     offset = 0,
     limit = 10,
     userId,
-  }): Promise<PaginationDTO<NotificationDTO>> {
+  }): Promise<OffsetPaginationDTO<NotificationDTO>> {
     const items = await this.prismaService.userNotification.findMany({
       where: {
         forUserId: userId,

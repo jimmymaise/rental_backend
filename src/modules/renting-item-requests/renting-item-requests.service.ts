@@ -12,7 +12,7 @@ import {
 } from '@prisma/client';
 import { RentingItemRequestInputDTO } from './renting-item-request-input.dto';
 import { RentingItemRequestDTO } from './renting-item-request.dto';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 import { UsersService } from '../users/users.service';
 import { Permission } from './permission.enum';
 import { StoragePublicDTO } from '../storages/storage-public.dto';
@@ -279,7 +279,7 @@ export class RentingItemRequetsService {
     includes,
     sortByFields,
     // userType = RentingItemRequestUserType.Owner,
-  }): Promise<PaginationDTO<RentingItemRequestDTO>> {
+  }): Promise<OffsetPaginationDTO<RentingItemRequestDTO>> {
     const mandatoryWhere: any = {
       AND: [
         {

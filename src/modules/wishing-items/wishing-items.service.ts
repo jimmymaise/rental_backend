@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { WishingItem } from '@prisma/client';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 
 @Injectable()
 export class WishingItemsService {
@@ -51,7 +51,7 @@ export class WishingItemsService {
     offset = 0,
     limit = 10,
     includes = [],
-  }): Promise<PaginationDTO<WishingItem>> {
+  }): Promise<OffsetPaginationDTO<WishingItem>> {
     const where = {
       ownerUserId: userId,
     };

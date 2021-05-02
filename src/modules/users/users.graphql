@@ -1,4 +1,11 @@
-input BasePagingInput {
+scalar JSON
+
+input BaseOffsetPagingInput {
+  pageSize: Int
+  offset: Int
+  orderBy: JSON
+}
+input BaseCursorPagingInput {
   pageSize: Int
   cursor: String
 }
@@ -35,7 +42,7 @@ type UserSummaryPagination {
   items: [UserSummary]
   total: Int
   limit: Int
-  offset: String
+  offset: Int
 }
 
 type PublicUserInfo {
@@ -81,7 +88,7 @@ type Query {
   whoAmI: UserInfo
   userPublicProfile(userId: String!): PublicUserInfo
   getMyOrgUsersWithPaging(
-    getMyOrgUsersWithPagingData: BasePagingInput
+    getMyOrgUsersWithOffsetPagingData: BaseOffsetPagingInput
   ): UserSummaryPagination
   adminUserListFeed(query: UserQuery): UserPagination
 }

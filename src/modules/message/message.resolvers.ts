@@ -3,7 +3,7 @@ import { Args, Resolver, Mutation, Query } from '@nestjs/graphql';
 
 import { MessageService, MessageInfoModel } from './message.service';
 import { ChatConversationDTO } from './chat-conversation.dto';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 import { GqlAuthGuard } from '../auth/gpl-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { GuardUserPayload } from '../auth/auth.dto';
@@ -60,7 +60,7 @@ export class MessageResolvers {
       offset: number;
       limit: number;
     },
-  ): Promise<PaginationDTO<ChatConversationDTO>> {
+  ): Promise<OffsetPaginationDTO<ChatConversationDTO>> {
     const { offset, limit } = query || {};
     const actualLimit = limit && limit > 100 ? 100 : limit;
 

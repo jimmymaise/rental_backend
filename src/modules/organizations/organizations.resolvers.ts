@@ -8,7 +8,7 @@ import {
   Context,
 } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';
-import { GraphQLFieldHandler } from '@helpers/graphql-field-handler';
+import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 import { OrganizationsService } from './organizations.service';
 import { GuardUserPayload } from '@modules/auth/auth.dto';
 import { EveryoneGqlAuthGuard, GqlAuthGuard } from '@app/modules';

@@ -5,7 +5,7 @@ import { RentingItemRequestActivity } from '@prisma/client';
 import { UsersService } from '../users/users.service';
 import { StoragesService } from '../storages/storages.service';
 import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 
 export function toRentingItemRequestActivityDTO(
   data: RentingItemRequestActivity,
@@ -35,7 +35,7 @@ export class RentingItemRequestActivitiesService {
     offset = 0,
     limit = 10,
     rentingRequestId,
-  }): Promise<PaginationDTO<RentingItemRequestActivityDTO>> {
+  }): Promise<OffsetPaginationDTO<RentingItemRequestActivityDTO>> {
     const items = await this.prismaService.rentingItemRequestActivity.findMany({
       where: {
         rentingItemRequestId: rentingRequestId,

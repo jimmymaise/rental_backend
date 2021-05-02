@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Item, ItemStatus } from '@prisma/client';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers/common';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 import { StoragesService } from '../storages/storages.service';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 
@@ -134,7 +134,7 @@ export class ItemsService {
     categoryId,
     includes,
     sortByFields,
-  }): Promise<PaginationDTO<Item>> {
+  }): Promise<OffsetPaginationDTO<Item>> {
     let cacheKey;
     if (offset === 0) {
       // Enabled Cache for only first page

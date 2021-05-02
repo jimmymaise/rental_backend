@@ -6,7 +6,7 @@ import {
 } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { PaginationDTO } from '../../models';
+import { OffsetPaginationDTO } from '../../models';
 import { UserInfoDTO } from '../users/user-info.dto';
 import { UsersService } from '../users/users.service';
 
@@ -119,7 +119,7 @@ export class MessageService {
     offset = 0,
     limit = 10,
     userId,
-  }): Promise<PaginationDTO<ChatConversation>> {
+  }): Promise<OffsetPaginationDTO<ChatConversation>> {
     const items = await this.prismaService.chatConversation.findMany({
       where: {
         chatConversationMembers: {
