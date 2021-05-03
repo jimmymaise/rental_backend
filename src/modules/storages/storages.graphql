@@ -36,7 +36,7 @@ type PublicStorageFileSignedUrl {
 
 type PublicStorageFile {
   id: String
-  url: String!
+  url: String
   signedUrl: PublicStorageFileSignedUrl
 }
 
