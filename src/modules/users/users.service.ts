@@ -50,9 +50,9 @@ function encryptPhoneNumber(userInfo: UserInfoDTO): UserInfoDTO {
     ...userInfo,
     phoneNumber: !isEmpty(userInfo.phoneNumber)
       ? EncryptByAesCBCPassword(
-          userInfo.phoneNumber,
-          process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
-        )
+        userInfo.phoneNumber,
+        process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
+      )
       : userInfo.phoneNumber,
   };
 }
@@ -70,7 +70,8 @@ export class UsersService {
     private redisCacheService: RedisCacheService,
     private authService: AuthService,
     private organizationsService: OrganizationsService,
-  ) {}
+  ) {
+  }
 
   async isUserInMyContactList(
     userId: string,
@@ -122,7 +123,7 @@ export class UsersService {
       'user',
       include,
     );
-    return pagingHandler.getPage('user', offset);
+    return pagingHandler.getPage(offset);
   }
 
   async getAllUsersByOrgIdWithCursorPaging(
@@ -202,7 +203,7 @@ export class UsersService {
       if (include['currentOrgDetail']) {
         userDetail[
           'currentOrgDetail'
-        ] = await this.organizationsService.getOrgSummaryCache(
+          ] = await this.organizationsService.getOrgSummaryCache(
           userDetail['currentOrgId'],
         );
       }

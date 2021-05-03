@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query, Info } from '@nestjs/graphql';
 import { ItemStatus } from '@prisma/client';
 
 import { ItemsService } from './items.service';
@@ -19,6 +19,10 @@ import { SearchKeywordService } from '../search-keyword/search-keyword.service';
 import { WishingItemsService } from '../wishing-items/wishing-items.service';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
+import { Permission } from '@modules/auth/permission/permission.enum';
+import { GraphQLResolveInfo } from 'graphql';
+import { QueryWithOffsetPagingDTO } from '@modules/users/user-info.dto';
+import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 
 @Resolver('Item')
 export class ItemsResolvers {
@@ -29,23 +33,28 @@ export class ItemsResolvers {
     private adminItemService: AdminItemsService,
     private searchKeywordService: SearchKeywordService,
     private wishingItemService: WishingItemsService,
-  ) {}
+  ) {
+  }
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
+  @Permissions(Permission.NEED_LOGIN)
   async listingNewItem(
+    @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('itemData') itemData: ItemUserInputDTO,
-    @Args('includes') includes: string[],
   ): Promise<ItemDTO> {
-    return new Promise((resolve, reject) => {
-      this.itemService
-        .createItemForUser(itemData, user.id, includes)
-        .then((item) => {
-          resolve(toItemDTO(item, null));
-        })
-        .catch(reject);
-    });
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      { fieldName: 'categories', fieldPath: 'items.Item' },
+      { fieldName: 'areas', fieldPath: 'items.Item' },
+      { fieldName: 'org', fieldPath: 'items.Item' },
+      { fieldName: 'rentingItemRequests', fieldPath: 'items.Item' },
+    ]);
+    let item =await this.itemService.createItemForUser(itemData, user.id, include, user.currentOrgId)
+    return toItemDTO(item, null)
+
+
   }
 
   @Query()
@@ -53,7 +62,7 @@ export class ItemsResolvers {
   async feed(
     @CurrentUser() user: GuardUserPayload,
     @Args('query')
-    query: {
+      query: {
       search: string;
       offset: number;
       limit: number;
@@ -178,7 +187,7 @@ export class ItemsResolvers {
   async feedMyItems(
     @CurrentUser() user: GuardUserPayload,
     @Args('query')
-    query: {
+      query: {
       search: string;
       offset: number;
       limit: number;
@@ -224,7 +233,7 @@ export class ItemsResolvers {
     @CurrentUser() user: GuardUserPayload,
     @Args('userId') userId: string,
     @Args('query')
-    query: {
+      query: {
       search: string;
       offset: number;
       limit: number;
@@ -332,6 +341,34 @@ export class ItemsResolvers {
   }
 
   // FOR ADMIN ONLY
+
+  @Query()
+  @Permissions(Permission.NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
+  async getMyOrgItemsWithPaging(
+    @Info() info: GraphQLResolveInfo,
+    @CurrentUser() user: GuardUserPayload,
+    @Args('getMyOrgItemsWithOffsetPagingData')
+      getMyOrgItemsWithOffsetPagingData: QueryWithOffsetPagingDTO,
+  ): Promise<OffsetPaginationDTO<ItemDTO>> {
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      { fieldName: 'categories', fieldPath: 'items.Item' },
+      { fieldName: 'areas', fieldPath: 'items.Item' },
+      { fieldName: 'org', fieldPath: 'items.Item' },
+      { fieldName: 'rentingItemRequests', fieldPath: 'items.Item' },
+    ]);
+
+    return this.itemService.getAllItemsByOrgIdWithOffsetPaging(
+      user.currentOrgId,
+      getMyOrgItemsWithOffsetPagingData.pageSize,
+      getMyOrgItemsWithOffsetPagingData.offset,
+      getMyOrgItemsWithOffsetPagingData.orderBy,
+      include,
+    );
+  }
+
+
   @Query()
   @Permissions('ROOT')
   @UseGuards(GqlPermissionsGuard)
@@ -339,7 +376,7 @@ export class ItemsResolvers {
   async adminFeed(
     @CurrentUser() user: GuardUserPayload,
     @Args('query')
-    query: {
+      query: {
       search: string;
       offset: number;
       limit: number;
@@ -391,6 +428,7 @@ export class ItemsResolvers {
       limit: actualLimit,
     };
   }
+
 
   @Mutation()
   @Permissions('ROOT')

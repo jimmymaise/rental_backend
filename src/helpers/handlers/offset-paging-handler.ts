@@ -46,13 +46,13 @@ export class OffsetPagingHandler {
     };
   }
 
-  async getPage(table, offset: number = 0): Promise<OffsetPaginationDTO<any>> {
-    let totalItem = await this.prismaService.user.count({
+  async getPage(offset: number = 0): Promise<OffsetPaginationDTO<any>> {
+    let totalItem = await this.prismaService[this.table].count({
       where: this.where,
     });
 
     let pageQuery = this.getPageQuery(offset);
-    let pageResult = await this.prismaService[table].findMany({
+    let pageResult = await this.prismaService[this.table].findMany({
       ...pageQuery,
     });
     return {

@@ -23,6 +23,7 @@ model Organization {
   createdByUser      User?               @relation("CreatedByUser", fields: [createdBy], references: [id])
   createdBy          String?
   users              UserOrganizations[]
+  items              Item[]              @relation("ItemBelongToOrg")
 }
 
 model UserOrganizations {
@@ -185,6 +186,8 @@ enum ItemStatus {
 model Item {
   id                        String               @id @default(uuid())
   pid                       Int                  @unique @default(autoincrement())
+  org                       Organization?        @relation("ItemBelongToOrg",fields: [orgId], references: [id])
+  orgId                     String?
   name                      String
   slug                      String
   description               String?

@@ -20,7 +20,7 @@ import {
   UserInfoInputDTO,
   UserInfoDTO,
   PublicUserInfoDTO,
-  GetMyOrgUsersWithOffsetPagingDTO,
+  QueryWithOffsetPagingDTO,
   UserSummary,
 } from './user-info.dto';
 import { OffsetPaginationDTO } from '../../models';
@@ -64,7 +64,7 @@ export class UsersResolvers {
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('getMyOrgUsersWithOffsetPagingData')
-    getMyOrgUsersWithOffsetPagingData: GetMyOrgUsersWithOffsetPagingDTO,
+    getMyOrgUsersWithOffsetPagingData: QueryWithOffsetPagingDTO,
   ): Promise<OffsetPaginationDTO<UserSummary>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([

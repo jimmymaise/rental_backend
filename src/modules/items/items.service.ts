@@ -9,6 +9,8 @@ import { stringToSlug } from '../../helpers/common';
 import { OffsetPaginationDTO } from '../../models';
 import { StoragesService } from '../storages/storages.service';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
+import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
+import { ItemDTO } from '@modules/items/item.dto';
 
 @Injectable()
 export class ItemsService {
@@ -16,7 +18,8 @@ export class ItemsService {
     private prismaService: PrismaService,
     private storageService: StoragesService,
     private redisCacheService: RedisCacheService,
-  ) {}
+  ) {
+  }
 
   // findAllAvailable(isFeatured: boolean): Promise<Item[]> {
   //   if (isFeatured !== null) {
@@ -33,7 +36,8 @@ export class ItemsService {
   async createItemForUser(
     itemData: ItemUserInputDTO,
     userId: string,
-    includes: string[],
+    include: object,
+    orgId?: string,
   ): Promise<Item> {
     const {
       name,
@@ -61,18 +65,6 @@ export class ItemsService {
         'medium',
       ]);
     }
-
-    const validIncludeMap = {
-      categories: true,
-      areas: true,
-    };
-
-    const include = (includes || []).reduce((result, cur) => {
-      if (validIncludeMap[cur]) {
-        result[cur] = true;
-      }
-      return result;
-    }, {});
 
     const actualName = sanitizeHtml(name);
     const slug = stringToSlug(actualName);
@@ -114,27 +106,30 @@ export class ItemsService {
           },
         },
         updatedBy: userId,
+        // org: {
+        //   connect: {
+        //     id: orgId,
+        //   },
+        // },
         isVerified: process.env.NODE_ENV === 'production' ? false : true,
         keyword: `${actualName} ${slug}`,
       },
+      include: include,
     };
 
-    if (includes.length) {
-      createData.include = include;
-    }
 
     return this.prismaService.item.create(createData);
   }
 
   async findAllAvailablesItem({
-    searchValue = '',
-    offset = 0,
-    limit = 10,
-    areaId,
-    categoryId,
-    includes,
-    sortByFields,
-  }): Promise<OffsetPaginationDTO<Item>> {
+                                searchValue = '',
+                                offset = 0,
+                                limit = 10,
+                                areaId,
+                                categoryId,
+                                includes,
+                                sortByFields,
+                              }): Promise<OffsetPaginationDTO<Item>> {
     let cacheKey;
     if (offset === 0) {
       // Enabled Cache for only first page
@@ -186,20 +181,20 @@ export class ItemsService {
 
     const where = searchValue
       ? {
-          AND: [
-            {
-              ...mandatoryWhere,
-              ...areaCategoryWhere,
-            },
-            {
-              keyword: { contains: searchValue, mode: 'insensitive' },
-            },
-          ],
-        }
+        AND: [
+          {
+            ...mandatoryWhere,
+            ...areaCategoryWhere,
+          },
+          {
+            keyword: { contains: searchValue, mode: 'insensitive' },
+          },
+        ],
+      }
       : {
-          ...mandatoryWhere,
-          ...areaCategoryWhere,
-        };
+        ...mandatoryWhere,
+        ...areaCategoryWhere,
+      };
 
     const findCondition: any = {
       where,
@@ -322,5 +317,43 @@ export class ItemsService {
     }
 
     return item;
+  }
+
+  async getAllItemsByOrgIdWithOffsetPaging(
+    orgId,
+    pageSize: number,
+    offset?: any,
+    orderBy?: object,
+    include?: object,
+  ): Promise<OffsetPaginationDTO<ItemDTO>> {
+    let whereQuery = {
+      orgId: orgId,
+    };
+
+    return this.getAllItemsWithOffsetPaging(
+      whereQuery,
+      pageSize,
+      offset,
+      orderBy,
+      include,
+    );
+  }
+
+  async getAllItemsWithOffsetPaging(
+    whereQuery: object,
+    pageSize: number,
+    offset?: any,
+    orderBy: object = { id: 'desc' },
+    include?: object,
+  ): Promise<OffsetPaginationDTO<ItemDTO>> {
+    let pagingHandler = new OffsetPagingHandler(
+      whereQuery,
+      pageSize,
+      orderBy,
+      this.prismaService,
+      'item',
+      include,
+    );
+    return pagingHandler.getPage(offset);
   }
 }

@@ -40,6 +40,9 @@ export interface UserSummary {
   userInfo?: UserInfoDTO;
 }
 
+
+
+
 export interface UserInfoInputDTO {
   displayName: string;
   bio: string;
@@ -48,13 +51,14 @@ export interface UserInfoInputDTO {
   coverImage: StoragePublicDTO;
 }
 
-export interface GetMyOrgUsersWithOffsetPagingDTO {
+
+export interface QueryWithOffsetPagingDTO {
   pageSize: number;
   offset: number;
   orderBy: object;
 }
 
-export interface GetMyOrgUsersWithCursorPagingDTO {
+export interface QueryWithCursorPagingDTO {
   pageSize: number;
   cursor: number;
 }
