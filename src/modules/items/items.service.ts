@@ -106,17 +106,18 @@ export class ItemsService {
           },
         },
         updatedBy: userId,
-        // org: {
-        //   connect: {
-        //     id: orgId,
-        //   },
-        // },
         isVerified: process.env.NODE_ENV === 'production' ? false : true,
         keyword: `${actualName} ${slug}`,
       },
       include: include,
     };
-
+    if(orgId) {
+      createData['data']['org'] ={
+        connect: {
+          id:orgId,
+        }
+      }
+    }
 
     return this.prismaService.item.create(createData);
   }
