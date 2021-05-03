@@ -163,7 +163,7 @@ export class UsersService {
           this.organizationsService.getOrgSummaryCache(orgId),
         );
       }
-      if (include['currentOrgDetail']) {
+      if (userDetail['currentOrgId'] && include['currentOrgDetail']) {
         userDetail[
           'currentOrgDetail'
           ] = await this.organizationsService.getOrgSummaryCache(

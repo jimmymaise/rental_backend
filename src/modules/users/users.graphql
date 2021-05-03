@@ -29,6 +29,7 @@ type DBUserInfo {
 
 
 type UserInfo {
+    id: ID!
     currentOrgId: String
     orgIds: [String]
     displayName: String

@@ -1,6 +1,6 @@
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { Permission } from '@modules/auth/permission/permission.enum';
-import { User, UserInfo } from '@prisma/client';
+import { User } from '@prisma/client';
 import { OrganizationSummaryCacheDto } from '@modules/organizations/organizations.dto';
 
 export interface UserInfoDTO {
@@ -37,7 +37,7 @@ export interface UserSummary {
   id: string;
   email: string;
   currentOrgId: String;
-  userInfo?: UserInfo;
+  userInfo?: UserInfoDTO;
 }
 
 
