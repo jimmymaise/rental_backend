@@ -13,6 +13,8 @@ import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
 import { OffsetPaginationDTO } from '../../models';
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { RentingItemRequestActivityDTO } from './renting-item-request-activity.dto';
+import { Permission } from '@modules/auth/permission/permission.enum';
+import { Permissions } from '@modules/auth/permission/permissions.decorator';
 
 interface UpdateItemRequestStatusModel {
   rentingRequestId: string;
@@ -29,6 +31,7 @@ export class RentingItemRequestsResolvers {
   ) {}
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async newRequest(
     @CurrentUser() user: GuardUserPayload,
@@ -84,6 +87,7 @@ export class RentingItemRequestsResolvers {
   //   })
   // }
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async findAllRequest(
     @CurrentUser() user: GuardUserPayload,
@@ -107,6 +111,7 @@ export class RentingItemRequestsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async cancelRequest(
     @CurrentUser() user: GuardUserPayload,
@@ -121,6 +126,7 @@ export class RentingItemRequestsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async approveRequest(
     @CurrentUser() user: GuardUserPayload,
@@ -136,6 +142,7 @@ export class RentingItemRequestsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async declineRequest(
     @CurrentUser() user: GuardUserPayload,
@@ -150,6 +157,7 @@ export class RentingItemRequestsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async startRequest(
     @CurrentUser() user: GuardUserPayload,
@@ -164,6 +172,7 @@ export class RentingItemRequestsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async completeRequest(
     @CurrentUser() user: GuardUserPayload,
@@ -178,6 +187,7 @@ export class RentingItemRequestsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async commentOnRequest(
     @CurrentUser() user: GuardUserPayload,
@@ -192,6 +202,7 @@ export class RentingItemRequestsResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async findAllActivityRequest(
     @CurrentUser() user: GuardUserPayload,
@@ -212,6 +223,7 @@ export class RentingItemRequestsResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   calcAmount(
     @CurrentUser() user: GuardUserPayload,

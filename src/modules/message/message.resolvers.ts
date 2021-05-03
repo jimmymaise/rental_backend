@@ -8,6 +8,8 @@ import { GqlAuthGuard } from '../auth/gpl-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { GuardUserPayload } from '../auth/auth.dto';
 import { UsersService } from '../users/users.service';
+import { Permission } from '@modules/auth/permission/permission.enum';
+import { Permissions } from '@modules/auth/permission/permissions.decorator';
 
 @Resolver('Message')
 export class MessageResolvers {
@@ -17,6 +19,7 @@ export class MessageResolvers {
   ) {}
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async generateChatConversationWith(
     @CurrentUser() user: GuardUserPayload,
@@ -52,6 +55,7 @@ export class MessageResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async feedMyConversations(
     @CurrentUser() user: GuardUserPayload,
@@ -143,6 +147,7 @@ export class MessageResolvers {
   // }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async markMessageAsRead(
     @Args('messageId') messageId: string,

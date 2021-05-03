@@ -25,8 +25,8 @@ import {
 } from './user-info.dto';
 import { OffsetPaginationDTO } from '../../models';
 import { Permission } from '@modules/auth/permission/permission.enum';
-import { AuthService } from '@modules/auth/auth.service';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
+import { AuthService } from '@modules/auth/auth.service';
 import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
 import { ErrorMap } from '@app/constants';
 import { EmailService } from '@modules/mail/mail.service';
@@ -81,6 +81,7 @@ export class UsersResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NO_NEED_LOGIN)
   @UseGuards(EveryoneGqlAuthGuard)
   async userPublicProfile(
     @CurrentUser() user: GuardUserPayload,

@@ -17,6 +17,7 @@ import { OffsetPaginationDTO } from '../../models';
 import { UsersService } from '../users/users.service';
 import { SearchKeywordService } from '../search-keyword/search-keyword.service';
 import { WishingItemsService } from '../wishing-items/wishing-items.service';
+import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
 import { Permission } from '@modules/auth/permission/permission.enum';
@@ -37,6 +38,7 @@ export class ItemsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   @Permissions(Permission.NEED_LOGIN)
   async listingNewItem(
@@ -58,6 +60,7 @@ export class ItemsResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NO_NEED_LOGIN)
   @UseGuards(EveryoneGqlAuthGuard)
   async feed(
     @CurrentUser() user: GuardUserPayload,
@@ -129,6 +132,7 @@ export class ItemsResolvers {
 
   // TODO: remove it
   @Query()
+  @Permissions(Permission.NO_NEED_LOGIN)
   @UseGuards(EveryoneGqlAuthGuard)
   async feedDetail(
     @CurrentUser() user: GuardUserPayload,
@@ -155,6 +159,7 @@ export class ItemsResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NO_NEED_LOGIN)
   @UseGuards(EveryoneGqlAuthGuard)
   async feedDetailByPID(
     @CurrentUser() user: GuardUserPayload,
@@ -183,6 +188,7 @@ export class ItemsResolvers {
   // #### For Me
 
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async feedMyItems(
     @CurrentUser() user: GuardUserPayload,
@@ -228,6 +234,7 @@ export class ItemsResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NO_NEED_LOGIN)
   @UseGuards(EveryoneGqlAuthGuard)
   async feedUserPublicItems(
     @CurrentUser() user: GuardUserPayload,
@@ -279,6 +286,7 @@ export class ItemsResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async feedMyItemDetail(
     @CurrentUser() user: GuardUserPayload,
@@ -304,6 +312,7 @@ export class ItemsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async updateMyItem(
     @CurrentUser() user: GuardUserPayload,
@@ -321,6 +330,7 @@ export class ItemsResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async deleteMyItem(
     @CurrentUser() user: GuardUserPayload,

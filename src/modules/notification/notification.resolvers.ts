@@ -8,12 +8,15 @@ import { GqlAuthGuard } from '../auth/gpl-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { GuardUserPayload } from '../auth/auth.dto';
 import { NotificationInfoModel } from './models/notication-info.model';
+import { Permission } from '@modules/auth/permission/permission.enum';
+import { Permissions } from '@modules/auth/permission/permissions.decorator';
 
 @Resolver('Notification')
 export class NotificationResolvers {
   constructor(private notificationService: NotificationService) {}
 
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async feedMyNotifications(
     @CurrentUser() user: GuardUserPayload,
@@ -41,6 +44,7 @@ export class NotificationResolvers {
   }
 
   @Query()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async feedNotificationInfo(
     @CurrentUser() user: GuardUserPayload,
@@ -49,6 +53,7 @@ export class NotificationResolvers {
   }
 
   @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async setAllNotificationRead(
     @CurrentUser() user: GuardUserPayload,
