@@ -110,7 +110,7 @@ export class OrganizationsService {
   ): Promise<OrganizationSummaryCacheDto> {
     return {
       name: fullOrgData.name,
-      avatarImage: fullOrgData.avatarImage,
+      avatarImage: fullOrgData.avatarImage as any,
       description: fullOrgData.description,
       id: fullOrgData.id,
       slug: fullOrgData.slug,

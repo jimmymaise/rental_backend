@@ -251,7 +251,7 @@ export class UserItemsService {
             if (typeof data[field] === 'string') {
               updateData[field] = data[field];
             } else {
-              updateData[field] = JSON.stringify(data[field]);
+              updateData[field] = data[field];
             }
             if (updateData[field] !== foundItem[field]) {
               updateData['isVerified'] = isVerified;
@@ -267,7 +267,7 @@ export class UserItemsService {
                 ['small', 'medium'],
               );
             });
-            updateData[field] = JSON.stringify(images);
+            updateData[field] = images;
             if (updateData[field] !== foundItem[field]) {
               updateData['isVerified'] = isVerified;
             }
@@ -275,7 +275,7 @@ export class UserItemsService {
           break;
         case 'checkBeforeRentDocuments':
         case 'keepWhileRentingDocuments':
-          updateData[field] = JSON.stringify(data[field]);
+          updateData[field] = data[field];
           break;
         case 'unavailableForRentDays':
           if (data[field] && data[field].length) {

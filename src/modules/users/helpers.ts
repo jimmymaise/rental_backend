@@ -19,11 +19,11 @@ export function toUserInfoDTO(
   let orgIds = user['orgsThisUserBelongTo'].map((org) => org.orgId);
   let avatarImage =
     userInfo?.avatarImage && userInfo.avatarImage.length
-      ? JSON.parse(userInfo.avatarImage)
+      ? userInfo.avatarImage
       : {};
   let coverImage =
     userInfo?.coverImage && userInfo.coverImage.length
-      ? JSON.parse(userInfo.coverImage)
+      ? userInfo.coverImage
       : {};
   let displayName = userInfo.displayName;
   let email = user.email;

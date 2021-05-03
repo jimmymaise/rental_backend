@@ -15,7 +15,7 @@ export function toRentingItemRequestActivityDTO(
     rentingItemRequestId: data.rentingItemRequestId,
     comment: data.comment,
     type: data.type,
-    files: data.files && data.files.length ? JSON.parse(data.files) : [],
+    files: data.files as any,
     createdDate: data.createdDate.getTime(),
     updatedDate: data.updatedDate.getTime(),
   };

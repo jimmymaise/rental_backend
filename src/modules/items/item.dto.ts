@@ -16,7 +16,7 @@ export interface ItemDTO {
   areas?: Area[];
   images?: StoragePublicDTO[];
   roughAddress?: string;
-  checkBeforeRentDocuments?: RentingMandatoryVerifyDocumentPublicDTO[];
+  checkBeforeRentDocuments?: RentingMandatoryVerifyDocumentPublicDTO[] ;
   keepWhileRentingDocuments?: RentingMandatoryVerifyDocumentPublicDTO[];
   unavailableForRentDays?: number[];
   currentOriginalPrice?: number;
@@ -99,17 +99,11 @@ export function toItemDTO(
     unavailableForRentDays: item.unavailableForRentDays.map((data) =>
       data?.getTime ? data.getTime() : new Date(data).getTime(),
     ),
-    description: tryToParseJSON(item.description, item.description),
-    termAndCondition: tryToParseJSON(
-      item.termAndCondition,
-      item.termAndCondition,
-    ),
-    images: tryToParseJSON(item.images, []),
-    checkBeforeRentDocuments: tryToParseJSON(item.checkBeforeRentDocuments, []),
-    keepWhileRentingDocuments: tryToParseJSON(
-      item.keepWhileRentingDocuments,
-      [],
-    ),
+    description: item.description,
+    termAndCondition: item.termAndCondition,
+    images: item.images as any,
+    checkBeforeRentDocuments: item.checkBeforeRentDocuments as any,
+    keepWhileRentingDocuments: item.keepWhileRentingDocuments as any,
     permissions,
   };
 }

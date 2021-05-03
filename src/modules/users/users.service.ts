@@ -89,24 +89,6 @@ export class UsersService {
     );
   }
 
-  async getAllUsersWithCursorPaging(
-    whereQuery: object,
-    pageSize: number,
-    cursor?: any,
-    include?: object,
-  ): Promise<OffsetPaginationDTO<UserSummary>> {
-    let pagingHandler = new CursorPagingHandler(
-      whereQuery,
-      pageSize,
-      'id',
-      'asc',
-      this.prismaService,
-      'user',
-      null,
-      include,
-    );
-    return pagingHandler.getPage('user', cursor);
-  }
 
   async getAllUsersWithOffsetPaging(
     whereQuery: object,
@@ -126,26 +108,7 @@ export class UsersService {
     return pagingHandler.getPage(offset);
   }
 
-  async getAllUsersByOrgIdWithCursorPaging(
-    orgId,
-    pageSize: number,
-    cursor?: any,
-    include?: object,
-  ): Promise<OffsetPaginationDTO<UserSummary>> {
-    let whereQuery = {
-      orgsThisUserBelongTo: {
-        some: {
-          orgId: orgId,
-        },
-      },
-    };
-    return this.getAllUsersWithCursorPaging(
-      whereQuery,
-      pageSize,
-      cursor,
-      include,
-    );
-  }
+
 
   async getAllUsersByOrgIdWithOffsetPaging(
     orgId,
@@ -433,12 +396,12 @@ export class UsersService {
       data: {
         displayName: sanitizeHtml(info.displayName || ''),
         bio: sanitizeHtml(info.bio || ''),
-        avatarImage: JSON.stringify({
+        avatarImage: {
           url: sample(DEFAULT_AVATARS),
-        }),
-        coverImage: JSON.stringify({
+        },
+        coverImage: {
           url: sample(DEFAULT_COVERS),
-        }),
+        },
         user: {
           connect: {
             id: userId,
@@ -477,7 +440,7 @@ export class UsersService {
               data[field].id,
               ['small', 'medium'],
             );
-            updateData[field] = JSON.stringify(data[field]);
+            updateData[field] = data[field];
           }
           break;
         case 'coverImage':
@@ -485,7 +448,7 @@ export class UsersService {
             await this.storageService.handleUploadImageBySignedUrlComplete(
               data[field].id,
             );
-            updateData[field] = JSON.stringify(data[field]);
+            updateData[field] = data[field];
           }
           break;
         default:

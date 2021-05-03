@@ -74,11 +74,11 @@ export class ItemsService {
         slug: slug.replace(/[^a-z0-9\-]/g, '-').replace(/-+/g, '-'),
         description:
           description && typeof description === 'object'
-            ? JSON.stringify(description)
+            ? description
             : sanitizeHtml(description),
         termAndCondition:
           termAndCondition && typeof termAndCondition === 'object'
-            ? JSON.stringify(termAndCondition)
+            ? termAndCondition
             : sanitizeHtml(termAndCondition),
         categories: {
           connect: categoryIds.map((id) => ({ id })),
@@ -86,9 +86,9 @@ export class ItemsService {
         areas: {
           connect: areaIds.map((id) => ({ id })),
         },
-        images: JSON.stringify(images),
-        checkBeforeRentDocuments: JSON.stringify(checkBeforeRentDocuments),
-        keepWhileRentingDocuments: JSON.stringify(keepWhileRentingDocuments),
+        images: images,
+        checkBeforeRentDocuments: checkBeforeRentDocuments,
+        keepWhileRentingDocuments: keepWhileRentingDocuments,
         unavailableForRentDays: (unavailableForRentDays || []).map(
           (data) => new Date(data),
         ),

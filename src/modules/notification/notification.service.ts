@@ -14,7 +14,7 @@ export function toNotificationDTO(data: UserNotification): NotificationDTO {
   return {
     id: data.id,
     forUserId: data.forUserId,
-    data: data.data ? JSON.parse(data.data) : null,
+    data: data.data ? data.data : null,
     type: data.type,
     isRead: data.isRead,
     createdDate: data.createdDate.getTime(),
@@ -105,7 +105,7 @@ export class NotificationService {
             id: data.forUserId,
           },
         },
-        data: JSON.stringify(data.data),
+        data: data.data,
         type: data.type,
       },
     });

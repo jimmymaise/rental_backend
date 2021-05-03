@@ -6,7 +6,7 @@ import { Transform } from 'class-transformer';
 export class OrganizationSummaryCacheDto {
   id?: string;
   name?: string;
-  avatarImage?: Prisma.JsonValue;
+  avatarImage?: StoragePublicDTO;
   description: string;
   slug: string;
 }

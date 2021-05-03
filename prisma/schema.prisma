@@ -98,8 +98,8 @@ model Permission {
 model UserInfo {
   displayName String?
   bio         String?
-  avatarImage String? // { id, url }
-  coverImage  String? // { id, url }
+  avatarImage Json?
+  coverImage  Json?
   phoneNumber String?
   createdDate DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
@@ -195,9 +195,9 @@ model Item {
   categories                Category[]           @relation(references: [id])
   areas                     Area[]               @relation(references: [id])
   rentingItemRequests       RentingItemRequest[]
-  images                    String?
-  checkBeforeRentDocuments  String?
-  keepWhileRentingDocuments String?
+  images                    Json?
+  checkBeforeRentDocuments  Json?
+  keepWhileRentingDocuments Json?
   unavailableForRentDays    DateTime[]
   currentOriginalPrice      Float?
   sellPrice                 Float?
@@ -331,7 +331,7 @@ model RentingItemRequestActivity {
   rentingItemRequestId String
   comment              String?
   type                 RentingItemRequestActivityType
-  files                String? // JSON
+  files                Json?
   isDisabled           Boolean?                       @default(false)
   isDeleted            Boolean?                       @default(false)
   createdDate          DateTime                       @default(now())
@@ -371,7 +371,7 @@ model UserNotification {
   id          String               @id @default(uuid())
   forUser     User                 @relation("ForUserNotification", fields: [forUserId], references: [id])
   forUserId   String
-  data        String? // JSON
+  data        Json?
   type        UserNotificationType
   isRead      Boolean?             @default(false)
   createdDate DateTime             @default(now())

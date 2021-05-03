@@ -64,15 +64,9 @@ function toItemDTO(item: Item): ItemDTO {
     unavailableForRentDays: item.unavailableForRentDays.map((data) =>
       data.getTime(),
     ),
-    images: item.images && item.images.length ? JSON.parse(item.images) : [],
-    checkBeforeRentDocuments:
-      item.checkBeforeRentDocuments && item.checkBeforeRentDocuments.length
-        ? JSON.parse(item.checkBeforeRentDocuments)
-        : [],
-    keepWhileRentingDocuments:
-      item.keepWhileRentingDocuments && item.keepWhileRentingDocuments.length
-        ? JSON.parse(item.keepWhileRentingDocuments)
-        : [],
+    images: item.images as any,
+    checkBeforeRentDocuments: item.checkBeforeRentDocuments as any,
+    keepWhileRentingDocuments: item.keepWhileRentingDocuments as any,
   };
 }
 
@@ -101,7 +95,7 @@ function toRentingItemRequestActivityDTO(
     rentingItemRequestId: data.rentingItemRequestId,
     comment: data.comment,
     type: data.type,
-    files: JSON.parse(data.files),
+    files: data.files as any,
     createdDate: data.createdDate.getTime(),
     updatedDate: data.updatedDate.getTime(),
   };
@@ -607,7 +601,7 @@ export class RentingItemRequetsService {
         },
         comment,
         files:
-          files && files.length ? JSON.stringify(files) : JSON.stringify([]),
+          files && files.length ? files : [],
         type: RequestActivityTypeMap[status],
         createdBy: updatedBy,
         updatedBy,
@@ -635,8 +629,8 @@ export class RentingItemRequetsService {
           comment,
           files:
             files && files.length
-              ? JSON.stringify(files)
-              : JSON.stringify('[]'),
+              ? files
+              : [],
           type: RentingItemRequestActivityType.Comment,
           createdBy: updatedBy,
           updatedBy,
