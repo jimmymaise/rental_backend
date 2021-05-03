@@ -3,7 +3,6 @@ import { Category, Area, Item, ItemStatus } from '@prisma/client';
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { RentingMandatoryVerifyDocumentPublicDTO } from '../renting-mandatory-verify-documents/renting-mandatory-verify-document-public.dto';
 import { UserInfoDTO } from '../users/user-info.dto';
-import { tryToParseJSON } from '@app/helpers/common';
 import { Permission } from './permission.enum';
 import { SystemPermission } from '@app/system-permission';
 export interface ItemDTO {

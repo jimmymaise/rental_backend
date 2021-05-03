@@ -20,7 +20,6 @@ import { WishingItemsService } from '../wishing-items/wishing-items.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
-import { Permission } from '@modules/auth/permission/permission.enum';
 import { GraphQLResolveInfo } from 'graphql';
 import { QueryWithOffsetPagingDTO } from '@modules/users/user-info.dto';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
