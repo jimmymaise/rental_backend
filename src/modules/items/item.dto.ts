@@ -9,13 +9,13 @@ export interface ItemDTO {
   id: string;
   name: string;
   slug: string;
-  description?: string;
-  termAndCondition?: string;
+  description?: any;
+  termAndCondition?: any;
   categories?: Category[];
   areas?: Area[];
   images?: StoragePublicDTO[];
   roughAddress?: string;
-  checkBeforeRentDocuments?: RentingMandatoryVerifyDocumentPublicDTO[] ;
+  checkBeforeRentDocuments?: RentingMandatoryVerifyDocumentPublicDTO[];
   keepWhileRentingDocuments?: RentingMandatoryVerifyDocumentPublicDTO[];
   unavailableForRentDays?: number[];
   currentOriginalPrice?: number;

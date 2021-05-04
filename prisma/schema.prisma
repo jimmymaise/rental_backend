@@ -186,12 +186,12 @@ enum ItemStatus {
 model Item {
   id                        String               @id @default(uuid())
   pid                       Int                  @unique @default(autoincrement())
-  org                       Organization?        @relation("ItemBelongToOrg",fields: [orgId], references: [id])
+  org                       Organization?        @relation("ItemBelongToOrg", fields: [orgId], references: [id])
   orgId                     String?
   name                      String
   slug                      String
-  description               String?
-  termAndCondition          String?
+  description               Json?
+  termAndCondition          Json?
   categories                Category[]           @relation(references: [id])
   areas                     Area[]               @relation(references: [id])
   rentingItemRequests       RentingItemRequest[]
