@@ -11,6 +11,9 @@ import { ConfigService } from '@nestjs/config';
 
 import { UsersService } from './users.service';
 import { AuthService } from '@modules/auth/auth.service';
+import { Permissions } from '@modules/auth/permission/permissions.decorator';
+import { Permission } from '@modules/auth/permission/permission.enum';
+import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
 
 // https://dev.to/elishaking/how-to-implement-facebook-login-with-nestjs-90h
 // http://www.passportjs.org/docs/google/
@@ -26,12 +29,14 @@ export class UserController {
     private configService: ConfigService,
   ) {}
 
+  @UseGuards(GqlPermissionsGuard)
   @Get('/facebook')
   @UseGuards(AuthGuard('facebook'))
   async facebookLogin(): Promise<any> {
     return HttpStatus.OK;
   }
 
+  @UseGuards(GqlPermissionsGuard)
   @Get('/facebook/redirect')
   @UseGuards(AuthGuard('facebook'))
   async facebookLoginRedirect(@Req() req: any, @Res() res: any): Promise<any> {
@@ -59,12 +64,14 @@ export class UserController {
     );
   }
 
+  @Permissions(Permission.NO_NEED_LOGIN)
   @Get('/google')
   @UseGuards(AuthGuard('google'))
   async googleLogin(): Promise<any> {
     return HttpStatus.OK;
   }
 
+  @Permissions(Permission.NO_NEED_LOGIN)
   @Get('/google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleLoginRedirect(@Req() req: any, @Res() res: any): Promise<any> {
