@@ -16,18 +16,12 @@ export function toUserInfoDTO(
   if (!user) {
     return null;
   }
-  let orgIds = user['orgsThisUserBelongTo'].map((org) => org.orgId);
-  let avatarImage =
-    userInfo?.avatarImage && userInfo.avatarImage.length
-      ? userInfo.avatarImage
-      : {};
-  let coverImage =
-    userInfo?.coverImage && userInfo.coverImage.length
-      ? userInfo.coverImage
-      : {};
+  const orgIds = user['orgsThisUserBelongTo'].map((org) => org.orgId);
+  let avatarImage = userInfo?.avatarImage;
+  let coverImage = userInfo?.coverImage;
   let displayName = userInfo.displayName;
   let email = user.email;
-  let currentOrgId = user.currentOrgId;
+  const currentOrgId = user.currentOrgId;
   if (user.isDeleted) {
     avatarImage = {
       url: DEFAULT_AVATAR_URL,

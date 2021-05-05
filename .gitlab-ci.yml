@@ -61,6 +61,7 @@ Dockerfile-Production:
     # Deploy to Docker Registry
     # - cat .env
     - sh ./scripts/build-ubuntu.sh
+    - node ./scripts/generate-env-from-system.js
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
     - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
