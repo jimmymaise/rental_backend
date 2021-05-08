@@ -17,7 +17,7 @@ export class UploadFilePipe implements PipeTransform {
 
   transform(value: any, metadata: ArgumentMetadata): any {
     for (const [field, field_value] of Object.entries(value)) {
-      if (field_value['isUploadField'] == true) {
+      if (field_value && field_value['isUploadField'] == true) {
         this.storagesService.handleUploadImageBySignedUrlComplete(
           field_value['id'],
           field_value['image_sizes'],
