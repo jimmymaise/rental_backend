@@ -21,7 +21,7 @@ Dockerfile-Staging:
     - docker rmi registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
     - docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH)
   only:
-    - master
+    - /^release-v\d+\.\d+\.\d+$/
   variables:
     DOCKER_HOST: tcp://docker:2375
 
@@ -50,7 +50,7 @@ Deploy-Staging:
     # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images -q registry.gitlab.com/thuedo1/web-api/staging)" || true
     - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker image prune -a -f" || true
   only:
-    - master
+    - /^release-v\d+\.\d+\.\d+$/
 
 Dockerfile-Production:
   stage: dockerfile

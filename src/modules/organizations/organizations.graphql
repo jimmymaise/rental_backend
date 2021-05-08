@@ -31,14 +31,14 @@ type OrganizationPagination {
   offset: Int
 }
 
-input createOrganizationInput {
+input CreateOrganizationInput {
   name: String
   description: String
   avatarImage: PublicStorageFileInput
   slug: String
 }
 
-input updateMyOrganizationInput {
+input UpdateMyOrganizationInput {
   name: String
   description: String
   avatarImage: PublicStorageFileInput
@@ -67,7 +67,7 @@ type Query {
 
 type Mutation {
   updateMyOrg(
-    updateMyOrganizationInput: updateMyOrganizationInput!
+    updateMyOrganizationInput: UpdateMyOrganizationInput!
   ): OrganizationInfo
-  createOrg(createOrganizationInput: createOrganizationInput!): OrganizationInfo
+  createOrg(createOrganizationInput: CreateOrganizationInput!): OrganizationInfo
 }
