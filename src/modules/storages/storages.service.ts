@@ -105,13 +105,15 @@ export class StoragesService {
     }
 
     if (fileDb) {
-      try {
-        await this.googleStorageService.makePublic(
-          fileDb.folderName,
-          fileDb.name,
-          fileDb.bucketName,
-        );
-      } catch (err) {}
+      if (includes.includes('original')) {
+        try {
+          await this.googleStorageService.makePublic(
+            fileDb.folderName,
+            fileDb.name,
+            fileDb.bucketName,
+          );
+        } catch (err) {}
+      }
 
       if (includes.includes('small')) {
         try {

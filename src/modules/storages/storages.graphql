@@ -3,6 +3,7 @@ scalar Upload
 input PublicStorageFileInput {
   id: String!
   url: String!
+  imageSizes: [String]
   isUploadField: Boolean
 }
 
