@@ -2,10 +2,7 @@ import { ExtractJwt } from 'passport-jwt';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import {
-  Permission,
-  ORG_OWNER_PERMISSION,
-} from '@modules/auth/permission/permission.enum';
+import { Permission } from '@modules/auth/permission/permission.enum';
 
 import { AuthService } from '../auth.service';
 
@@ -46,11 +43,10 @@ export class GqlPermissionsGuard implements CanActivate {
       if (user && permissions.includes(Permission.NEED_LOGIN)) {
         return true;
       }
-      let currentUserPermissionNames = user?.currentOrgPermissionNames;
+      const currentUserPermissionNames = user?.currentOrgPermissionNames;
       user?.currentOrgPermissionNames;
       if (user.isCurrentOrgOwner == true) {
-        currentUserPermissionNames.push(...ORG_OWNER_PERMISSION);
-        return true;
+        currentUserPermissionNames.push(Permission.ORG_MASTER);
       }
 
       let isAuthenticated = false;

@@ -1,3 +1,4 @@
+// Permission only for User UI only
 export enum Permission {
   ADD_TO_MY_LIST = 'ADD_TO_MY_LIST',
   CHAT_WITH_SHOP_OWNER = 'CHAT_WITH_SHOP_OWNER',

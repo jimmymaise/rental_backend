@@ -30,16 +30,15 @@ export interface PublicUserInfoDTO {
   coverImage: StoragePublicDTO;
   createdDate: number;
   phoneNumber?: string;
-  permissions: Permission[];
+  permissions: string[];
 }
 
 export interface UserSummary {
   id: string;
   email: string;
-  currentOrgId: String;
+  currentOrgId: string;
   userInfo?: UserInfoDTO;
 }
-
 
 export interface UserInfoInputDTO {
   displayName: string;
@@ -48,7 +47,6 @@ export interface UserInfoInputDTO {
   avatarImage: StoragePublicDTO;
   coverImage: StoragePublicDTO;
 }
-
 
 export interface QueryWithOffsetPagingDTO {
   pageSize: number;

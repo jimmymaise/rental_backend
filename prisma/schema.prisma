@@ -75,7 +75,8 @@ model Role {
   id          String         @id @default(uuid())
   name        String
   description String
-  orgId       String
+  orgId       String?
+  isDefault   Boolean        @default(false)
   users       User[]
   permissions Permission[]
   createdDate DateTime       @default(now())
@@ -87,10 +88,10 @@ model Role {
 }
 
 model Permission {
-  id          String    @id @default(uuid())
-  name        String    @unique
+  name        String    @id
   description String
   createdDate DateTime  @default(now())
+  isInternal  Boolean   @default(false)
   updatedDate DateTime? @updatedAt
   roles       Role[]
 }

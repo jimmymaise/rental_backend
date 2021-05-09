@@ -8,7 +8,7 @@ import { CreateRoleDto, UpdateRoleDto } from './roles.dto';
 export class RolesService {
   constructor(private prismaService: PrismaService) {}
 
-  async getRole(roleId: string, include: object): Promise<Role> {
+  async getRole(roleId: string, include: any): Promise<Role> {
     return this.prismaService.role.findUnique({
       where: { id: roleId },
       include: include,
@@ -17,10 +17,10 @@ export class RolesService {
 
   async createRole(
     createRoleData: CreateRoleDto,
-    include?: object,
+    include?: any,
   ): Promise<Role> {
-    let orgCheckHandler = new OrgCheckHandler(this.prismaService);
-    let addedCommand = {};
+    const orgCheckHandler = new OrgCheckHandler(this.prismaService);
+    const addedCommand = {};
 
     const usersAdded = (createRoleData['users'] || []).map((user) => {
       return {

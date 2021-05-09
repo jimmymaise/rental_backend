@@ -1,22 +1,17 @@
-export enum Permission {
+import * as permissions from './permissions.json';
+
+export const Permission = {
   //General Permission
-  NEED_LOGIN = 'NEED_LOGIN',
-  NO_NEED_LOGIN = 'NOT_LOGIN',
+  NEED_LOGIN: 'NEED_LOGIN',
+  NO_NEED_LOGIN: 'NOT_LOGIN',
 
   //Inside Org permission
+  ROOT: permissions.ROOT.name,
+  ORG_MASTER: permissions.ORG_MASTER.name,
+  GET_MY_ORG_DETAIL: permissions.GET_MY_ORG_DETAIL.name,
+  UPDATE_OWN_ORG: permissions.UPDATE_OWN_ORG.name,
+  CREATE_ROLE: permissions.CREATE_ROLE.name,
+  UPDATE_ROLE: permissions.UPDATE_ROLE.name,
+};
 
-  //ROLE
-  CREATE_ROLE = 'CREATE_ROLE',
-  UPDATE_ROLE = 'UPDATE_ROLE',
-  DELETE_ROLE = 'DELETE_ROLE',
-
-  //ORG
-  UPDATE_OWN_ORG = 'UPDATE_OWN_ORG',
-  DELETE_OWN_ORG = 'DELETE_OWN_ORG',
-  CONNECT = 'CONNECT',
-  REMOVE_CONNECT = 'REMOVE_CONNECT',
-  EDIT_PROFILE = 'EDIT_PROFILE',
-  SEND_MESSAGE = 'SEND_MESSAGE',
-}
-
-export const ORG_OWNER_PERMISSION = Object.values(Permission);
+export default Permission;

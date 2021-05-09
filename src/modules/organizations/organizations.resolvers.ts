@@ -29,7 +29,7 @@ export class OrganizationsResolvers {
 
   @Query()
   @UseGuards(EveryoneGqlAuthGuard)
-  @Permissions(Permission.REMOVE_CONNECT)
+  @Permissions(Permission.ORG_MASTER, Permission.GET_MY_ORG_DETAIL)
   async getMyOrg(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
@@ -58,7 +58,7 @@ export class OrganizationsResolvers {
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
       'users',
     ]);
-    let createOrgResult = await this.organizationsService.createOrganization(
+    const createOrgResult = await this.organizationsService.createOrganization(
       createOrganizationData,
       user?.id,
       include,
@@ -73,7 +73,7 @@ export class OrganizationsResolvers {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  @Permissions(Permission.UPDATE_OWN_ORG)
+  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_OWN_ORG)
   async updateMyOrg(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,

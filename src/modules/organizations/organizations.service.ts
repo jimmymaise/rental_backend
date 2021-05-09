@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { getOrgCacheKey } from '@helpers/common';
+import { Organization } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '@modules/auth/auth.service';
-
-import { Organization } from '@prisma/client';
 import {
   CreateOrganizationDto,
   UpdateMyOrganizationDto,
@@ -20,7 +19,7 @@ export class OrganizationsService {
     public redisCacheService: RedisCacheService,
   ) {}
 
-  async getOrganization(orgId: string, include: object): Promise<Organization> {
+  async getOrganization(orgId: string, include: any): Promise<Organization> {
     return this.prismaService.organization.findUnique({
       where: { id: orgId },
       include: include,
@@ -30,25 +29,44 @@ export class OrganizationsService {
   async createOrganization(
     createOrganizationData: CreateOrganizationDto,
     userId?: string,
-    include?: object,
+    include?: any,
   ): Promise<Organization> {
     createOrganizationData['createdBy'] = userId;
-    return await this.prismaService.organization.create({
-      include: include,
+    const organizationCreatedResult = await this.prismaService.organization.create(
+      {
+        include: include,
+        data: {
+          ...createOrganizationData,
+          createdBy: userId,
+          users: {
+            create: [{ userId: userId, isOwner: true }],
+          },
+        },
+      },
+    );
+
+    // Create default Role
+    await this.prismaService.role.create({
       data: {
-        ...createOrganizationData,
-        createdBy: userId,
+        name: 'Admin',
+        description: 'Admin',
+        isDefault: true,
+        orgId: organizationCreatedResult.id,
         users: {
-          create: [{ userId: userId, isOwner: true }],
+          connect: {
+            id: userId,
+          },
         },
       },
     });
+
+    return organizationCreatedResult;
   }
 
   async updateOrganization(
     updateMyOrganizationData: UpdateMyOrganizationDto,
     orgId: string,
-    include?: object,
+    include?: any,
   ): Promise<Organization> {
     const usersAdded = (updateMyOrganizationData['addUsersToOrg'] || []).map(
       (user) => {
@@ -72,7 +90,7 @@ export class OrganizationsService {
     delete updateMyOrganizationData['removeUsersFromOrg'];
     delete updateMyOrganizationData['setOwner'];
 
-    let userOrgUpdateCommand = {};
+    const userOrgUpdateCommand = {};
 
     if (usersAdded.length > 0) {
       userOrgUpdateCommand['connectOrCreate'] = usersAdded;
@@ -121,7 +139,7 @@ export class OrganizationsService {
     const cacheKey = getOrgCacheKey(orgId);
     let orgSummaryCache = await this.redisCacheService.get(cacheKey);
     if (!orgSummaryCache) {
-      let fullOrgData = await this.getOrganization(orgId, null);
+      const fullOrgData = await this.getOrganization(orgId, null);
       orgSummaryCache = this.convertFullOrgDataToSummaryOrgInfo(fullOrgData);
       await this.redisCacheService.set(cacheKey, fullOrgData || {}, 3600);
     }

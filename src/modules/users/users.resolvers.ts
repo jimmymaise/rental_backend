@@ -25,6 +25,8 @@ import {
 } from './user-info.dto';
 import { OffsetPaginationDTO } from '../../models';
 import { Permission } from '@modules/auth/permission/permission.enum';
+// Internal for only UI UserPermission
+import { Permission as UserPermission } from './permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { AuthService } from '@modules/auth/auth.service';
 import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
@@ -88,21 +90,21 @@ export class UsersResolvers {
     @Args('userId') userId: string,
   ): Promise<PublicUserInfoDTO> {
     const allData = await this.userService.getUserDetailData(userId);
-    const permissions: Permission[] = [];
+    const permissions: string[] = [];
 
     if (user) {
       if (user.id !== allData.id) {
-        permissions.push(Permission.SEND_MESSAGE);
+        permissions.push(UserPermission.SEND_MESSAGE);
 
         if (await this.userService.isUserInMyContactList(user.id, allData.id)) {
-          permissions.push(Permission.REMOVE_CONNECT);
+          permissions.push(UserPermission.REMOVE_CONNECT);
         } else {
-          permissions.push(Permission.CONNECT);
+          permissions.push(UserPermission.CONNECT);
         }
       }
 
       if (user.id === allData.id) {
-        permissions.push(Permission.EDIT_PROFILE);
+        permissions.push(UserPermission.EDIT_PROFILE);
       }
     }
 
@@ -220,7 +222,7 @@ export class UsersResolvers {
     @Args('refresh') refresh: string,
   ): Promise<AuthDTO> {
     const user = await this.userService.getUserById(currentUser.id);
-    let token = await this.authService.generateNewToken(null, user.id);
+    const token = await this.authService.generateNewToken(null, user.id);
 
     const accessToken = token.accessToken;
     const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(

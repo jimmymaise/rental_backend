@@ -1,29 +1,15 @@
 import { UseGuards } from '@nestjs/common';
-import {
-  Info,
-  Args,
-  Resolver,
-  Mutation,
-  Query,
-  Context,
-} from '@nestjs/graphql';
-import {
-  parseResolveInfo,
-  ResolveTree,
-  simplifyParsedResolveInfoFragmentWithType,
-} from 'graphql-parse-resolve-info';
+import { Info, Args, Resolver, Mutation } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 import { RolesService } from './roles.service';
-import { GuardUserPayload, AuthDTO } from '@modules/auth/auth.dto';
-import { EveryoneGqlAuthGuard, GqlAuthGuard } from '@app/modules';
+import { GuardUserPayload } from '@modules/auth/auth.dto';
+import { GqlAuthGuard } from '@app/modules';
 import { CurrentUser } from '@app/modules';
 import { CreateRoleDto, UpdateRoleDto } from './roles.dto';
 import { Permission } from '@modules/auth/permission/permission.enum';
 
 import { Role } from '@prisma/client';
-import { UploadFilePipe } from '@modules/storages/file-handler.pipe';
-import { PublicUserInfoDTO } from '@modules/users/user-info.dto';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 
 @Resolver('Role')
@@ -32,7 +18,7 @@ export class RolesResolvers {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  @Permissions(Permission.CREATE_ROLE)
+  @Permissions(Permission.ORG_MASTER, Permission.CREATE_ROLE)
   async createRole(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
@@ -51,7 +37,7 @@ export class RolesResolvers {
 
   @Mutation()
   @UseGuards(GqlAuthGuard)
-  @Permissions(Permission.UPDATE_ROLE)
+  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_ROLE)
   async updateRole(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
