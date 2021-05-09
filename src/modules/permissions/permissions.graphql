@@ -1,0 +1,14 @@
+type PermissionInfo {
+  name: String
+  description: String
+  createdDate: Float
+  updatedDate: Float
+}
+
+type PermissionsResult {
+  items: [PermissionInfo]
+}
+
+type Query {
+  getOrgAvailablePermissions: PermissionsResult
+}

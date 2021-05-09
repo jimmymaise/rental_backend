@@ -23,6 +23,7 @@ import {
   LoggingModule,
   RedisCacheModule,
   RolesModule,
+  PermissionsModule,
 } from './modules';
 
 import { rootContants } from './constants';
@@ -118,6 +119,7 @@ import { AppService } from './app.service';
     RedisCacheModule,
     OrganizationsModule,
     RolesModule,
+    PermissionsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -10,14 +10,6 @@ type RoleInfo {
   permissions: [PermissionInfo]
 }
 
-type PermissionInfo {
-  id: ID!
-  name: String
-  description: String
-  createdDate: Float
-  updatedDate: Float
-}
-
 type RolePagination {
   items: [RoleInfo]
   total: Int

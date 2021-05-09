@@ -16,3 +16,4 @@ export * from './logging';
 export * from './redis-cache';
 export * from './organizations';
 export * from './roles';
+export * from './permissions';
