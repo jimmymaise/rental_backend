@@ -100,4 +100,14 @@ export class RolesResolvers {
 
     return this.rolesService.getRoleDetail(id, include);
   }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.DELETE_ROLE)
+  @UseGuards(GqlAuthGuard)
+  async deleteRole(
+    @Args('id')
+    id: string,
+  ): Promise<Role> {
+    return this.rolesService.deleteRole(id);
+  }
 }
