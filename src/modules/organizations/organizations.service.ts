@@ -52,7 +52,11 @@ export class OrganizationsService {
         name: 'Admin',
         description: 'Admin',
         isDefault: true,
-        orgId: organizationCreatedResult.id,
+        org: {
+          connect: {
+            id: organizationCreatedResult.id,
+          },
+        },
         users: {
           connect: {
             id: userId,

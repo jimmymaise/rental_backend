@@ -72,19 +72,19 @@ model User {
 }
 
 model Role {
-  id          String         @id @default(uuid())
+  id          String       @id @default(uuid())
   name        String
   description String
-  orgId       String?
-  isDefault   Boolean        @default(false)
+  org         Organization @relation(fields: [orgId], references: [id])
+  orgId       String
+  isDefault   Boolean      @default(false)
   users       User[]
   permissions Permission[]
-  createdDate DateTime       @default(now())
-  updatedDate DateTime?      @updatedAt
-  orgs        Organization[]
+  order       Int?         @default(0)
+  createdDate DateTime     @default(now())
+  updatedDate DateTime?    @updatedAt
 
   @@unique([orgId, id])
-  @@unique([orgId, name])
 }
 
 model Permission {
@@ -92,6 +92,7 @@ model Permission {
   description String
   createdDate DateTime  @default(now())
   isInternal  Boolean   @default(false)
+  order       Int?      @default(0)
   updatedDate DateTime? @updatedAt
   roles       Role[]
 }

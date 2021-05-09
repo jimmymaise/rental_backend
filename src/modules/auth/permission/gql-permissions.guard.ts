@@ -44,14 +44,14 @@ export class GqlPermissionsGuard implements CanActivate {
         return true;
       }
       const currentUserPermissionNames = user?.currentOrgPermissionNames;
-      user?.currentOrgPermissionNames;
+
       if (user.isCurrentOrgOwner == true) {
         currentUserPermissionNames.push(Permission.ORG_MASTER);
       }
 
       let isAuthenticated = false;
       for (let i = 0; i < currentUserPermissionNames?.length; i++) {
-        if (permissions.includes(user?.permissions[i])) {
+        if (permissions.includes(currentUserPermissionNames[i])) {
           isAuthenticated = true;
           break;
         }

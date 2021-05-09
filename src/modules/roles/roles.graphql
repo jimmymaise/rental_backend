@@ -4,6 +4,7 @@ type RoleInfo {
   description: String
   createdDate: Float
   updatedDate: Float
+  isDefault: Boolean
   users: [PublicUserInfo]
   orgId: String
   permissions: [PermissionInfo]
@@ -40,16 +41,11 @@ input updateRoleInput {
   removeUsersFromRole: [String]
 }
 
-input RoleQuery {
-  search: String
-  offset: Int
-  limit: Int
-  sortByFields: [String]
-}
-
 type Query {
   getMyRole: RoleInfo
-  searchRole(query: RoleQuery): RolePagination
+  getMyOrgRolesWithPaging(
+    getMyOrgRolesWithOffsetPagingData: BaseOffsetPagingInput
+  ): RolePagination
 }
 
 type Mutation {

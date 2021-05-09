@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { Role } from '@prisma/client';
+
 import { OrgCheckHandler } from '@helpers/handlers/org-check-handler';
 import { PrismaService } from '../prisma/prisma.service';
-import { Role } from '@prisma/client';
+import { OffsetPaginationDTO } from '@app/models';
 import { CreateRoleDto, UpdateRoleDto } from './roles.dto';
+import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 
 @Injectable()
 export class RolesService {
@@ -56,12 +59,16 @@ export class RolesService {
       };
     }
 
-    delete createRoleData['permissions'];
-    delete createRoleData['users'];
     return await this.prismaService.role.create({
       include: include,
       data: {
-        ...createRoleData,
+        name: createRoleData.name,
+        description: createRoleData.description,
+        org: {
+          connect: {
+            id: createRoleData.orgId,
+          },
+        },
         ...addedCommand,
       },
     });
@@ -70,10 +77,10 @@ export class RolesService {
   async updateRole(
     updateRoleData: UpdateRoleDto,
     orgId,
-    include?: object,
+    include?: any,
   ): Promise<Role> {
-    let orgCheckHandler = new OrgCheckHandler(this.prismaService);
-    let addedCommand = { users: {}, permissions: {} };
+    const orgCheckHandler = new OrgCheckHandler(this.prismaService);
+    const addedCommand = { users: {}, permissions: {} };
 
     const usersAdded = (updateRoleData['addUsersToRole'] || []).map((user) => {
       return {
@@ -140,11 +147,54 @@ export class RolesService {
 
     return await this.prismaService.role.update({
       include: include,
-      where: { orgId_id: { id: updateRoleData.id, orgId: orgId } },
+      where: {
+        orgId_id: {
+          id: updateRoleData.id,
+          orgId,
+        },
+      },
       data: {
         ...updateRoleData,
         ...addedCommand,
       },
     });
+  }
+
+  async getRolesByOrgIdWithOffsetPaging(
+    orgId,
+    pageSize: number,
+    offset?: any,
+    orderBy?: any,
+    include?: any,
+  ): Promise<OffsetPaginationDTO<Role>> {
+    const whereQuery = {
+      orgId: orgId,
+    };
+
+    return this.getRolesWithOffsetPaging(
+      whereQuery,
+      pageSize,
+      offset,
+      orderBy,
+      include,
+    );
+  }
+
+  async getRolesWithOffsetPaging(
+    whereQuery: any,
+    pageSize: number,
+    offset?: any,
+    orderBy: any = { id: 'desc' },
+    include?: any,
+  ): Promise<OffsetPaginationDTO<Role>> {
+    const pagingHandler = new OffsetPagingHandler(
+      whereQuery,
+      pageSize,
+      orderBy,
+      this.prismaService,
+      'role',
+      include,
+    );
+    return pagingHandler.getPage(offset);
   }
 }

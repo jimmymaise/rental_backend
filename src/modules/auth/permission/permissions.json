@@ -2,31 +2,49 @@
   "ROOT": {
     "name": "ROOT",
     "description": "God of System",
-    "isInternal": true
+    "isInternal": true,
+    "order": -1
   },
   "ORG_MASTER": {
     "name": "ORG_MASTER",
     "description": "Organization Master - Full Permission in Org",
-    "isInternal": false
+    "isInternal": false,
+    "order": -1
   },
   "GET_MY_ORG_DETAIL": {
     "name": "GET_MY_ORG_DETAIL",
     "description": "Get Organization detail",
-    "isInternal": false
+    "isInternal": false,
+    "order": 10
   },
   "UPDATE_OWN_ORG": {
     "name": "UPDATE_OWN_ORG",
     "description": "",
-    "isInternal": false
+    "isInternal": false,
+    "order": 11
+  },
+  "GET_ROLE": {
+    "name": "GET_ROLE",
+    "description": "",
+    "isInternal": false,
+    "order": 20
   },
   "CREATE_ROLE": {
     "name": "CREATE_ROLE",
     "description": "",
-    "isInternal": false
+    "isInternal": false,
+    "order": 21
   },
   "UPDATE_ROLE": {
     "name": "UPDATE_ROLE",
     "description": "",
-    "isInternal": false
+    "isInternal": false,
+    "order": 22
+  },
+  "DELETE_ROLE": {
+    "name": "DELETE_ROLE",
+    "description": "",
+    "isInternal": false,
+    "order": 23
   }
 }

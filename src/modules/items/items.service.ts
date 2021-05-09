@@ -18,8 +18,7 @@ export class ItemsService {
     private prismaService: PrismaService,
     private storageService: StoragesService,
     private redisCacheService: RedisCacheService,
-  ) {
-  }
+  ) {}
 
   // findAllAvailable(isFeatured: boolean): Promise<Item[]> {
   //   if (isFeatured !== null) {
@@ -36,7 +35,7 @@ export class ItemsService {
   async createItemForUser(
     itemData: ItemUserInputDTO,
     userId: string,
-    include: object,
+    include: any,
     orgId?: string,
   ): Promise<Item> {
     const {
@@ -111,26 +110,26 @@ export class ItemsService {
       },
       include: include,
     };
-    if(orgId) {
-      createData['data']['org'] ={
+    if (orgId) {
+      createData['data']['org'] = {
         connect: {
-          id:orgId,
-        }
-      }
+          id: orgId,
+        },
+      };
     }
 
     return this.prismaService.item.create(createData);
   }
 
   async findAllAvailablesItem({
-                                searchValue = '',
-                                offset = 0,
-                                limit = 10,
-                                areaId,
-                                categoryId,
-                                includes,
-                                sortByFields,
-                              }): Promise<OffsetPaginationDTO<Item>> {
+    searchValue = '',
+    offset = 0,
+    limit = 10,
+    areaId,
+    categoryId,
+    includes,
+    sortByFields,
+  }): Promise<OffsetPaginationDTO<Item>> {
     let cacheKey;
     if (offset === 0) {
       // Enabled Cache for only first page
@@ -182,20 +181,20 @@ export class ItemsService {
 
     const where = searchValue
       ? {
-        AND: [
-          {
-            ...mandatoryWhere,
-            ...areaCategoryWhere,
-          },
-          {
-            keyword: { contains: searchValue, mode: 'insensitive' },
-          },
-        ],
-      }
+          AND: [
+            {
+              ...mandatoryWhere,
+              ...areaCategoryWhere,
+            },
+            {
+              keyword: { contains: searchValue, mode: 'insensitive' },
+            },
+          ],
+        }
       : {
-        ...mandatoryWhere,
-        ...areaCategoryWhere,
-      };
+          ...mandatoryWhere,
+          ...areaCategoryWhere,
+        };
 
     const findCondition: any = {
       where,
@@ -324,10 +323,10 @@ export class ItemsService {
     orgId,
     pageSize: number,
     offset?: any,
-    orderBy?: object,
-    include?: object,
+    orderBy?: any,
+    include?: any,
   ): Promise<OffsetPaginationDTO<ItemDTO>> {
-    let whereQuery = {
+    const whereQuery = {
       orgId: orgId,
     };
 
@@ -341,13 +340,13 @@ export class ItemsService {
   }
 
   async getAllItemsWithOffsetPaging(
-    whereQuery: object,
+    whereQuery: any,
     pageSize: number,
     offset?: any,
-    orderBy: object = { id: 'desc' },
-    include?: object,
+    orderBy: any = { id: 'desc' },
+    include?: any,
   ): Promise<OffsetPaginationDTO<ItemDTO>> {
-    let pagingHandler = new OffsetPagingHandler(
+    const pagingHandler = new OffsetPagingHandler(
       whereQuery,
       pageSize,
       orderBy,

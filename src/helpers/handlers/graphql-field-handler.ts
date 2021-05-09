@@ -25,9 +25,9 @@ export class GraphQLFieldHandler {
   }
 
   getIncludeForRelationalFields(fields: Array<string>) {
-    let include = {};
+    const include = {};
     fields.forEach(
-      (fieldName, index) =>
+      (fieldName) =>
         (include[fieldName] = fieldName in this.simplifiedInfo.fields),
     );
     return include;
@@ -36,9 +36,9 @@ export class GraphQLFieldHandler {
   getIncludeForNestedRelationalFields(
     includeNestFields: IncludeNestFieldDTO[],
   ) {
-    let include = {};
+    const include = {};
     includeNestFields.forEach(
-      (includeNestField, index) =>
+      (includeNestField) =>
         (include[
           includeNestField.fieldName
         ] = this.isFieldExistsInGraphQLFieldPath(
@@ -50,17 +50,17 @@ export class GraphQLFieldHandler {
   }
 
   isFieldExistsInGraphQLFieldPath(fieldName, fieldPath: string) {
-    let fieldPathArray = fieldPath.split('.');
+    const fieldPathArray = fieldPath.split('.');
     let checkObject = this.simplifiedInfo.fields;
     for (const key of fieldPathArray) {
-      let isHasKeyDirectly = !!checkObject.hasOwnProperty(key);
+      const isHasKeyDirectly = !!checkObject.hasOwnProperty(key);
 
       if (isHasKeyDirectly === true) {
         checkObject = checkObject[key];
         continue;
       }
 
-      let isHasKeyInsideFieldsByTypeName =
+      const isHasKeyInsideFieldsByTypeName =
         !!checkObject.hasOwnProperty('fieldsByTypeName') &&
         checkObject['fieldsByTypeName'].hasOwnProperty(key);
 

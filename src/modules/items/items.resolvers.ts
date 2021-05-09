@@ -33,8 +33,7 @@ export class ItemsResolvers {
     private adminItemService: AdminItemsService,
     private searchKeywordService: SearchKeywordService,
     private wishingItemService: WishingItemsService,
-  ) {
-  }
+  ) {}
 
   @Mutation()
   @Permissions(Permission.NEED_LOGIN)
@@ -52,10 +51,13 @@ export class ItemsResolvers {
       { fieldName: 'org', fieldPath: 'items.Item' },
       { fieldName: 'rentingItemRequests', fieldPath: 'items.Item' },
     ]);
-    let item =await this.itemService.createItemForUser(itemData, user.id, include, user.currentOrgId)
-    return toItemDTO(item, null)
-
-
+    const item = await this.itemService.createItemForUser(
+      itemData,
+      user.id,
+      include,
+      user.currentOrgId,
+    );
+    return toItemDTO(item, null);
   }
 
   @Query()
@@ -64,7 +66,7 @@ export class ItemsResolvers {
   async feed(
     @CurrentUser() user: GuardUserPayload,
     @Args('query')
-      query: {
+    query: {
       search: string;
       offset: number;
       limit: number;
@@ -192,7 +194,7 @@ export class ItemsResolvers {
   async feedMyItems(
     @CurrentUser() user: GuardUserPayload,
     @Args('query')
-      query: {
+    query: {
       search: string;
       offset: number;
       limit: number;
@@ -239,7 +241,7 @@ export class ItemsResolvers {
     @CurrentUser() user: GuardUserPayload,
     @Args('userId') userId: string,
     @Args('query')
-      query: {
+    query: {
       search: string;
       offset: number;
       limit: number;
@@ -358,7 +360,7 @@ export class ItemsResolvers {
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('getMyOrgItemsWithOffsetPagingData')
-      getMyOrgItemsWithOffsetPagingData: QueryWithOffsetPagingDTO,
+    getMyOrgItemsWithOffsetPagingData: QueryWithOffsetPagingDTO,
   ): Promise<OffsetPaginationDTO<ItemDTO>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
@@ -377,7 +379,6 @@ export class ItemsResolvers {
     );
   }
 
-
   @Query()
   @Permissions('ROOT')
   @UseGuards(GqlPermissionsGuard)
@@ -385,7 +386,7 @@ export class ItemsResolvers {
   async adminFeed(
     @CurrentUser() user: GuardUserPayload,
     @Args('query')
-      query: {
+    query: {
       search: string;
       offset: number;
       limit: number;
@@ -437,7 +438,6 @@ export class ItemsResolvers {
       limit: actualLimit,
     };
   }
-
 
   @Mutation()
   @Permissions('ROOT')

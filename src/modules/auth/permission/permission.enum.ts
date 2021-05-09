@@ -12,6 +12,8 @@ export const Permission = {
   UPDATE_OWN_ORG: permissions.UPDATE_OWN_ORG.name,
   CREATE_ROLE: permissions.CREATE_ROLE.name,
   UPDATE_ROLE: permissions.UPDATE_ROLE.name,
+  GET_ROLE: permissions.GET_ROLE.name,
+  DELETE_ROLE: permissions.DELETE_ROLE.name,
 };
 
 export default Permission;

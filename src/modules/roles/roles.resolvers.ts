@@ -1,6 +1,7 @@
 import { UseGuards } from '@nestjs/common';
-import { Info, Args, Resolver, Mutation } from '@nestjs/graphql';
+import { Info, Args, Resolver, Mutation, Query } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';
+
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 import { RolesService } from './roles.service';
 import { GuardUserPayload } from '@modules/auth/auth.dto';
@@ -8,9 +9,10 @@ import { GqlAuthGuard } from '@app/modules';
 import { CurrentUser } from '@app/modules';
 import { CreateRoleDto, UpdateRoleDto } from './roles.dto';
 import { Permission } from '@modules/auth/permission/permission.enum';
-
+import { QueryWithOffsetPagingDTO } from '@modules/users/user-info.dto';
 import { Role } from '@prisma/client';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
+import { OffsetPaginationDTO } from '@app/models';
 
 @Resolver('Role')
 export class RolesResolvers {
@@ -52,6 +54,23 @@ export class RolesResolvers {
       { ...updateRoleData },
       user.currentOrgId,
       include,
+    );
+  }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_ROLE)
+  @UseGuards(GqlAuthGuard)
+  async getMyOrgRolesWithPaging(
+    @Info() info: GraphQLResolveInfo,
+    @CurrentUser() user: GuardUserPayload,
+    @Args('getMyOrgRolesWithOffsetPagingData')
+    getMyOrgRolesWithOffsetPagingData: QueryWithOffsetPagingDTO,
+  ): Promise<OffsetPaginationDTO<Role>> {
+    return this.rolesService.getRolesByOrgIdWithOffsetPaging(
+      user.currentOrgId,
+      getMyOrgRolesWithOffsetPagingData.pageSize,
+      getMyOrgRolesWithOffsetPagingData.offset,
+      getMyOrgRolesWithOffsetPagingData.orderBy,
     );
   }
 }
