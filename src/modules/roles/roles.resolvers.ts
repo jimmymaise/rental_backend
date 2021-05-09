@@ -82,4 +82,22 @@ export class RolesResolvers {
       include,
     );
   }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_ROLE)
+  @UseGuards(GqlAuthGuard)
+  async getRoleDetail(
+    @Info() info: GraphQLResolveInfo,
+    @Args('id')
+    id: string,
+  ): Promise<Role> {
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      { fieldName: 'users', fieldPath: 'items.RoleInfo' },
+      { fieldName: 'org', fieldPath: 'items.RoleInfo' },
+      { fieldName: 'permissions', fieldPath: 'items.RoleInfo' },
+    ]);
+
+    return this.rolesService.getRoleDetail(id, include);
+  }
 }

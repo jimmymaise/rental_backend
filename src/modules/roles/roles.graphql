@@ -38,6 +38,7 @@ type Query {
   getMyOrgRolesWithPaging(
     getMyOrgRolesWithOffsetPagingData: BaseOffsetPagingInput
   ): RolePagination
+  getRoleDetail(id: ID!): RoleInfo
 }
 
 type Mutation {

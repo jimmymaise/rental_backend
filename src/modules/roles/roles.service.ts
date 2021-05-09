@@ -197,4 +197,27 @@ export class RolesService {
     );
     return pagingHandler.getPage(offset);
   }
+
+  async getRoleDetail(id: string, include?: any): Promise<Role> {
+    return this.prismaService.role.findUnique({
+      where: {
+        id,
+      },
+      include,
+    });
+  }
+
+  async deleteRole(id: string): Promise<Role> {
+    const deletingRole = await this.getRoleDetail(id);
+
+    if (deletingRole.isDefault) {
+      throw new Error('Cannot delete default role');
+    }
+
+    return this.prismaService.role.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }
