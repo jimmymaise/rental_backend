@@ -10,6 +10,7 @@ import {
   OrganizationSummaryCacheDto,
 } from './organizations.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
+import { Permission } from '@modules/auth/permission/permission.enum';
 
 @Injectable()
 export class OrganizationsService {
@@ -55,6 +56,11 @@ export class OrganizationsService {
         users: {
           connect: {
             id: userId,
+          },
+        },
+        permissions: {
+          connect: {
+            name: Permission.ORG_MASTER,
           },
         },
       },
