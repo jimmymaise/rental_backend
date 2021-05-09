@@ -35,6 +35,7 @@ export function toUserInfoDTO(
 
   return {
     ...userInfo,
+    authPhoneNumber: user.phoneNumber,
     id: user.id,
     lastSignedIn: user?.lastSignedIn?.getTime
       ? user?.lastSignedIn.getTime()

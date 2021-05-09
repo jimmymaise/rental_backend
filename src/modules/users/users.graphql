@@ -1,117 +1,117 @@
 scalar JSON
 
 input BaseOffsetPagingInput {
-    pageSize: Int
-    offset: Int
-    orderBy: JSON
+  pageSize: Int
+  offset: Int
+  orderBy: JSON
 }
 input BaseCursorPagingInput {
-    pageSize: Int
-    cursor: String
+  pageSize: Int
+  cursor: String
 }
 type UserSummary {
-    id: ID!
-    email: String
-    currentOrgId: String
-    userInfo: DBUserInfo
+  id: ID!
+  email: String
+  currentOrgId: String
+  userInfo: DBUserInfo
 }
 
 type DBUserInfo {
-    displayName:  String
-    bio:         String
-    avatarImage: PublicStorageFile
-    coverImage:  PublicStorageFile
-    phoneNumber: String
-    createdDate: Float
-    userId:      String
+  displayName: String
+  bio: String
+  avatarImage: PublicStorageFile
+  coverImage: PublicStorageFile
+  phoneNumber: String
+  createdDate: Float
+  userId: String
 }
 
-
-
 type UserInfo {
-    id: ID!
-    currentOrgId: String
-    orgIds: [String]
-    displayName: String
-    bio: String
-    currentOrgDetail: OrgSummaryCache
-    orgDetails: [OrgSummaryCache]
-    avatarImage: PublicStorageFile
-    coverImage: PublicStorageFile
-    phoneNumber: String
-    createdDate: Float
-    lastSignedIn: Float
+  id: ID!
+  currentOrgId: String
+  orgIds: [String]
+  displayName: String
+  bio: String
+  currentOrgDetail: OrgSummaryCache
+  orgDetails: [OrgSummaryCache]
+  avatarImage: PublicStorageFile
+  coverImage: PublicStorageFile
+  phoneNumber: String
+  authPhoneNumber: String
+  email: String
+  createdDate: Float
+  lastSignedIn: Float
 }
 
 type UserPagination {
-    items: [UserInfo]
-    total: Int
-    limit: Int
-    offset: Int
+  items: [UserInfo]
+  total: Int
+  limit: Int
+  offset: Int
 }
 type UserSummaryPagination {
-    items: [UserSummary]
-    total: Int
-    limit: Int
-    offset: Int
+  items: [UserSummary]
+  total: Int
+  limit: Int
+  offset: Int
 }
 
 type PublicUserInfo {
-    id: ID!
-    displayName: String
-    currentOrgId: String
-    orgIds: [String]
-    bio: String
-    avatarImage: PublicStorageFile
-    coverImage: PublicStorageFile
-    phoneNumber: String
-    permissions: [String]
+  id: ID!
+  displayName: String
+  currentOrgId: String
+  orgIds: [String]
+  bio: String
+  avatarImage: PublicStorageFile
+  coverImage: PublicStorageFile
+  phoneNumber: String
+  permissions: [String]
 }
 
 input UserInfoInput {
-    displayName: String
-    bio: String
-    avatarImage: PublicStorageFileInput
-    coverImage: PublicStorageFileInput
-    phoneNumber: String
-    email: String
+  displayName: String
+  bio: String
+  avatarImage: PublicStorageFileInput
+  coverImage: PublicStorageFileInput
+  phoneNumber: String
+  email: String
 }
 
 input UserQuery {
-    search: String
-    offset: Int
-    limit: Int
-    sortByFields: [String]
+  search: String
+  offset: Int
+  limit: Int
+  sortByFields: [String]
 }
 
 type AuthPayload {
-    accessToken: String
-    refreshToken: String
-    user: UserAuth
+  accessToken: String
+  refreshToken: String
+  user: UserAuth
 }
 
 type UserAuth {
-    id: ID!
-    email: String!
+  id: ID!
+  email: String!
 }
 
 type Query {
-    whoAmI: UserInfo
-    userPublicProfile(userId: String!): PublicUserInfo
-    getMyOrgUsersWithPaging(
-        getMyOrgUsersWithOffsetPagingData: BaseOffsetPagingInput
-    ): UserSummaryPagination
-    adminUserListFeed(query: UserQuery): UserPagination
+  whoAmI: UserInfo
+  userPublicProfile(userId: String!): PublicUserInfo
+  getMyOrgUsersWithPaging(
+    getMyOrgUsersWithOffsetPagingData: BaseOffsetPagingInput
+  ): UserSummaryPagination
+  adminUserListFeed(query: UserQuery): UserPagination
 }
 
 type Mutation {
-    updateUserInfoData(userInfoData: UserInfoInput!): UserInfo
-    signUpByEmail(email: String!, password: String!): AuthPayload
-    loginByEmail(email: String!, password: String!): AuthPayload
-    logout: Boolean
-    refreshUserAccessToken(refresh: String): AuthPayload
-    requestResetPassword(email: String!, recaptchaKey: String!): String
-    setPasswordByToken(token: String!, password: String!): String
-    changePassword(currentPassword: String!, newPassword: String!): AuthPayload
-    deleteMyUser(reason: String, recaptchaKey: String!): Boolean
+  updateUserInfoData(userInfoData: UserInfoInput!): UserInfo
+  signUpByEmail(email: String!, password: String!): AuthPayload
+  loginByEmail(email: String!, password: String!): AuthPayload
+  logout: Boolean
+  refreshUserAccessToken(refresh: String): AuthPayload
+  requestResetPassword(email: String!, recaptchaKey: String!): String
+  setPasswordByToken(token: String!, password: String!): String
+  changePassword(currentPassword: String!, newPassword: String!): AuthPayload
+  deleteMyUser(reason: String, recaptchaKey: String!): Boolean
 }

@@ -50,9 +50,9 @@ function encryptPhoneNumber(userInfo: UserInfoDTO): UserInfoDTO {
     ...userInfo,
     phoneNumber: !isEmpty(userInfo.phoneNumber)
       ? EncryptByAesCBCPassword(
-        userInfo.phoneNumber,
-        process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
-      )
+          userInfo.phoneNumber,
+          process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
+        )
       : userInfo.phoneNumber,
   };
 }
@@ -70,8 +70,7 @@ export class UsersService {
     private redisCacheService: RedisCacheService,
     private authService: AuthService,
     private organizationsService: OrganizationsService,
-  ) {
-  }
+  ) {}
 
   async isUserInMyContactList(
     userId: string,
@@ -89,15 +88,14 @@ export class UsersService {
     );
   }
 
-
   async getAllUsersWithOffsetPaging(
-    whereQuery: object,
+    whereQuery: any,
     pageSize: number,
     offset?: any,
-    orderBy: object = { id: 'desc' },
-    include?: object,
+    orderBy: any = { id: 'desc' },
+    include?: any,
   ): Promise<OffsetPaginationDTO<UserSummary>> {
-    let pagingHandler = new OffsetPagingHandler(
+    const pagingHandler = new OffsetPagingHandler(
       whereQuery,
       pageSize,
       orderBy,
@@ -108,16 +106,14 @@ export class UsersService {
     return pagingHandler.getPage(offset);
   }
 
-
-
   async getAllUsersByOrgIdWithOffsetPaging(
     orgId,
     pageSize: number,
     offset?: any,
-    orderBy?: object,
-    include?: object,
+    orderBy?: any,
+    include?: any,
   ): Promise<OffsetPaginationDTO<UserSummary>> {
-    let whereQuery = {
+    const whereQuery = {
       orgsThisUserBelongTo: {
         some: {
           orgId: orgId,
@@ -137,7 +133,7 @@ export class UsersService {
   async getUserDetailData(
     userId: string,
     isDisableEncryptPhoneNumber = false,
-    include?: object,
+    include?: any,
   ): Promise<UserInfoDTO> {
     if (!userId) {
       return null;
@@ -166,7 +162,7 @@ export class UsersService {
       if (userDetail['currentOrgId'] && include['currentOrgDetail']) {
         userDetail[
           'currentOrgDetail'
-          ] = await this.organizationsService.getOrgSummaryCache(
+        ] = await this.organizationsService.getOrgSummaryCache(
           userDetail['currentOrgId'],
         );
       }
@@ -177,7 +173,7 @@ export class UsersService {
       : (userDetail as UserInfoDTO);
   }
 
-  async getUserById(userId: string, include?: object): Promise<User> {
+  async getUserById(userId: string, include?: any): Promise<User> {
     return this.prismaService.user.findUnique({
       where: { id: userId },
       include,
@@ -425,7 +421,7 @@ export class UsersService {
     const updateData: any = {};
 
     for (let i = 0; i < ALLOW_UPDATE_FIELDS.length; i++) {
-      let field = ALLOW_UPDATE_FIELDS[i];
+      const field = ALLOW_UPDATE_FIELDS[i];
 
       switch (field) {
         case 'displayName':

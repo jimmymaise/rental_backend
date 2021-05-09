@@ -1,5 +1,4 @@
 import { StoragePublicDTO } from '../storages/storage-public.dto';
-import { Permission } from '@modules/auth/permission/permission.enum';
 import { User } from '@prisma/client';
 import { OrganizationSummaryCacheDto } from '@modules/organizations/organizations.dto';
 
@@ -13,6 +12,7 @@ export interface UserInfoDTO {
   coverImage: StoragePublicDTO;
   email?: string;
   phoneNumber?: string;
+  authPhoneNumber?: string;
   lastSignedIn?: number;
   createdDate?: number;
   isDeleted?: boolean;
@@ -51,7 +51,7 @@ export interface UserInfoInputDTO {
 export interface QueryWithOffsetPagingDTO {
   pageSize: number;
   offset: number;
-  orderBy: object;
+  orderBy: any;
 }
 
 export interface QueryWithCursorPagingDTO {
