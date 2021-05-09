@@ -7,7 +7,7 @@ import {
 
 export interface IncludeNestFieldDTO {
   fieldName: string;
-  fieldPath: string;
+  fieldPath?: string;
 }
 
 export class GraphQLFieldHandler {
@@ -49,12 +49,15 @@ export class GraphQLFieldHandler {
     return include;
   }
 
-  isFieldExistsInGraphQLFieldPath(fieldName, fieldPath: string) {
+  isFieldExistsInGraphQLFieldPath(fieldName, fieldPath?: string) {
+    if (!fieldPath) {
+      return this.simplifiedInfo.fields.hasOwnProperty(fieldName);
+    }
+
     const fieldPathArray = fieldPath.split('.');
     let checkObject = this.simplifiedInfo.fields;
     for (const key of fieldPathArray) {
       const isHasKeyDirectly = !!checkObject.hasOwnProperty(key);
-
       if (isHasKeyDirectly === true) {
         checkObject = checkObject[key];
         continue;
@@ -70,6 +73,7 @@ export class GraphQLFieldHandler {
       }
       return false;
     }
+
     return checkObject.hasOwnProperty(fieldName);
   }
 }
