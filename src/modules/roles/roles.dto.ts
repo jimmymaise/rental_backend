@@ -18,8 +18,8 @@ export class UpdateRoleDto {
   @Transform(sanitizeHtml)
   name: string;
   description: string;
-  permissionsAdded: string[];
-  permissionsRemoved: string[];
+  addPermissionsToRole: string[];
+  removePermissionsFromRole: string[];
   addUsersToRole: string[];
   removeUsersFromRole: string[];
 }

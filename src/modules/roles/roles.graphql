@@ -28,9 +28,10 @@ input UpdateRoleInput {
   id: ID!
   name: String
   description: String
-  avatarImage: PublicStorageFileInput
   addUsersToRole: [String]
   removeUsersFromRole: [String]
+  addPermissionsToRole: [String]
+  removePermissionsFromRole: [String]
 }
 
 type Query {

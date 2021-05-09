@@ -103,7 +103,7 @@ export class RolesService {
     );
 
     const permissionsRemoved = (
-      updateRoleData['removePermissionsToRole'] || []
+      updateRoleData['removePermissionsFromRole'] || []
     ).map((permission) => {
       return { name: permission };
     });
@@ -143,7 +143,7 @@ export class RolesService {
     delete updateRoleData['addPermissionsToRole'];
     delete updateRoleData['addUsersToRole'];
     delete updateRoleData['removeUsersFromRole'];
-    delete updateRoleData['removePermissionsToRole'];
+    delete updateRoleData['removePermissionsFromRole'];
 
     return await this.prismaService.role.update({
       include: include,
