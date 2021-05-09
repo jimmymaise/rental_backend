@@ -13,6 +13,7 @@ import { QueryWithOffsetPagingDTO } from '@modules/users/user-info.dto';
 import { Role } from '@prisma/client';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { OffsetPaginationDTO } from '@app/models';
+import { RoleDTO } from './roles.dto';
 
 @Resolver('Role')
 export class RolesResolvers {
@@ -65,12 +66,20 @@ export class RolesResolvers {
     @CurrentUser() user: GuardUserPayload,
     @Args('getMyOrgRolesWithOffsetPagingData')
     getMyOrgRolesWithOffsetPagingData: QueryWithOffsetPagingDTO,
-  ): Promise<OffsetPaginationDTO<Role>> {
+  ): Promise<OffsetPaginationDTO<RoleDTO>> {
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      { fieldName: 'users', fieldPath: 'items.RoleInfo' },
+      { fieldName: 'org', fieldPath: 'items.RoleInfo' },
+      { fieldName: 'permissions', fieldPath: 'items.RoleInfo' },
+    ]);
+
     return this.rolesService.getRolesByOrgIdWithOffsetPaging(
       user.currentOrgId,
       getMyOrgRolesWithOffsetPagingData.pageSize,
       getMyOrgRolesWithOffsetPagingData.offset,
       getMyOrgRolesWithOffsetPagingData.orderBy,
+      include,
     );
   }
 }

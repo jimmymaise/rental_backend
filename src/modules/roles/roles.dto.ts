@@ -1,7 +1,9 @@
-import { StoragePublicDTO } from '../storages/storage-public.dto';
-import { sanitize } from './helpers';
-
+import { Permission } from '@prisma/client';
 import { Transform } from 'class-transformer';
+
+import { StoragePublicDTO } from '../storages/storage-public.dto';
+import { UserInfoDTO } from '../users/user-info.dto';
+import { sanitize } from './helpers';
 
 export class CreateRoleDto {
   name: string;
@@ -21,4 +23,14 @@ export class UpdateRoleDto {
   permissionsRemoved: string[];
   addUsersToRole: string[];
   removeUsersFromRole: string[];
+}
+
+export class RoleDTO {
+  id: string;
+  @Transform(sanitize)
+  name: string;
+  @Transform(sanitize)
+  description: string;
+  permissions: Permission[];
+  users: UserInfoDTO[];
 }

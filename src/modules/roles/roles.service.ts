@@ -4,7 +4,7 @@ import { Role } from '@prisma/client';
 import { OrgCheckHandler } from '@helpers/handlers/org-check-handler';
 import { PrismaService } from '../prisma/prisma.service';
 import { OffsetPaginationDTO } from '@app/models';
-import { CreateRoleDto, UpdateRoleDto } from './roles.dto';
+import { CreateRoleDto, UpdateRoleDto, RoleDTO } from './roles.dto';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 
 @Injectable()
@@ -166,7 +166,7 @@ export class RolesService {
     offset?: any,
     orderBy?: any,
     include?: any,
-  ): Promise<OffsetPaginationDTO<Role>> {
+  ): Promise<OffsetPaginationDTO<RoleDTO>> {
     const whereQuery = {
       orgId: orgId,
     };
@@ -186,7 +186,7 @@ export class RolesService {
     offset?: any,
     orderBy: any = { id: 'desc' },
     include?: any,
-  ): Promise<OffsetPaginationDTO<Role>> {
+  ): Promise<OffsetPaginationDTO<RoleDTO>> {
     const pagingHandler = new OffsetPagingHandler(
       whereQuery,
       pageSize,

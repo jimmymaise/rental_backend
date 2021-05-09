@@ -3,28 +3,28 @@ import { OffsetPaginationDTO } from '@app/models';
 
 class OffsetPageQueryDto {
   take: number;
-  where: object;
-  orderBy: object;
+  where: any;
+  orderBy: any;
   skip?: number;
-  include?: object;
+  include?: any;
 }
 
 export class OffsetPagingHandler {
-  where: object;
+  where: any;
   pageSize: number;
-  orderBy: object;
+  orderBy: any;
   query: OffsetPageQueryDto;
   prismaService: PrismaService;
   table: string;
-  include?: object;
+  include?: any;
 
   constructor(
-    where: object,
+    where: any,
     pageSize: number,
-    orderBy: object,
+    orderBy: any,
     prismaService: PrismaService,
     table: string,
-    include?: object,
+    include?: any,
   ) {
     this.where = where;
     this.pageSize = pageSize;
@@ -39,20 +39,20 @@ export class OffsetPagingHandler {
     };
   }
 
-  getPageQuery(offset: number = 0): OffsetPageQueryDto {
+  getPageQuery(offset = 0): OffsetPageQueryDto {
     return {
       skip: offset,
       ...this.query,
     };
   }
 
-  async getPage(offset: number = 0): Promise<OffsetPaginationDTO<any>> {
-    let totalItem = await this.prismaService[this.table].count({
+  async getPage(offset = 0): Promise<OffsetPaginationDTO<any>> {
+    const totalItem = await this.prismaService[this.table].count({
       where: this.where,
     });
 
-    let pageQuery = this.getPageQuery(offset);
-    let pageResult = await this.prismaService[this.table].findMany({
+    const pageQuery = this.getPageQuery(offset);
+    const pageResult = await this.prismaService[this.table].findMany({
       ...pageQuery,
     });
     return {
