@@ -32,7 +32,7 @@ export class RolesService {
     });
     const permissionsAdded = (createRoleData['permissions'] || []).map(
       (permission) => {
-        return { id: permission };
+        return { name: permission };
       },
     );
 
@@ -98,14 +98,14 @@ export class RolesService {
 
     const permissionsAdded = (updateRoleData['addPermissionsToRole'] || []).map(
       (permission) => {
-        return { id: permission };
+        return { name: permission };
       },
     );
 
     const permissionsRemoved = (
       updateRoleData['removePermissionsToRole'] || []
     ).map((permission) => {
-      return { id: permission };
+      return { name: permission };
     });
 
     if (usersAdded.length > 0) {

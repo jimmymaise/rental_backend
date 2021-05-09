@@ -17,14 +17,14 @@ type RolePagination {
   offset: Int
 }
 
-input createRoleInput {
+input CreateRoleInput {
   name: String
   description: String
   permissions: [String]
   users: [String]
 }
 
-input updateRoleInput {
+input UpdateRoleInput {
   id: ID!
   name: String
   description: String
@@ -41,6 +41,6 @@ type Query {
 }
 
 type Mutation {
-  updateRole(updateRoleInput: updateRoleInput!): RoleInfo
-  createRole(createRoleInput: createRoleInput!): RoleInfo
+  updateRole(updateRoleInput: UpdateRoleInput!): RoleInfo
+  createRole(createRoleInput: CreateRoleInput!): RoleInfo
 }
