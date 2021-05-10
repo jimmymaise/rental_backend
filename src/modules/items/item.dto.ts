@@ -7,6 +7,7 @@ import { Permission } from './permission.enum';
 import { SystemPermission } from '@app/system-permission';
 export interface ItemDTO {
   id: string;
+  sku?: string;
   name: string;
   slug: string;
   description?: any;

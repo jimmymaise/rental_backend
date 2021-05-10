@@ -39,6 +39,7 @@ export class ItemsService {
     orgId?: string,
   ): Promise<Item> {
     const {
+      sku,
       name,
       description,
       termAndCondition,
@@ -69,6 +70,7 @@ export class ItemsService {
     const slug = stringToSlug(actualName);
     const createData: any = {
       data: {
+        sku,
         name: actualName,
         slug: slug.replace(/[^a-z0-9\-]/g, '-').replace(/-+/g, '-'),
         description:
@@ -79,12 +81,6 @@ export class ItemsService {
           termAndCondition && typeof termAndCondition === 'object'
             ? termAndCondition
             : sanitizeHtml(termAndCondition),
-        categories: {
-          connect: categoryIds.map((id) => ({ id })),
-        },
-        areas: {
-          connect: areaIds.map((id) => ({ id })),
-        },
         images: images,
         checkBeforeRentDocuments: checkBeforeRentDocuments,
         keepWhileRentingDocuments: keepWhileRentingDocuments,
@@ -110,6 +106,19 @@ export class ItemsService {
       },
       include: include,
     };
+
+    if (categoryIds && categoryIds?.length) {
+      createData['categories'] = {
+        connect: categoryIds.map((id) => ({ id })),
+      };
+    }
+
+    if (areaIds && areaIds?.length) {
+      createData['areas'] = {
+        connect: areaIds.map((id) => ({ id })),
+      };
+    }
+
     if (orgId) {
       createData['data']['org'] = {
         connect: {

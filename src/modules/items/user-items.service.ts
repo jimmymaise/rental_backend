@@ -7,6 +7,7 @@ import { OffsetPaginationDTO } from '../../models';
 import { StoragesService } from '../storages/storages.service';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers/common';
+import { forEach } from 'lodash';
 
 @Injectable()
 export class UserItemsService {
@@ -201,8 +202,10 @@ export class UserItemsService {
     data: ItemUserInputDTO,
   ): Promise<Item> {
     const allowUpdateFields = [
+      'sku',
       'name',
       'description',
+      'areas',
       'categories',
       'termAndCondition',
       'images',
@@ -225,7 +228,7 @@ export class UserItemsService {
     const foundItem = await this.prismaService.item.findUnique({ where });
 
     for (let i = 0; i < allowUpdateFields.length; i++) {
-      let field = allowUpdateFields[i];
+      const field = allowUpdateFields[i];
       const isVerified = process.env.NODE_ENV === 'production' ? false : true;
 
       switch (field) {
