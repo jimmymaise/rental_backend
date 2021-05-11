@@ -3,14 +3,14 @@ import { OffsetPaginationDTO } from '@app/models';
 
 class PageQueryDto {
   take: number;
-  where: object;
-  orderBy: object;
+  where: any;
+  orderBy: any;
   skip?: number;
-  include?: object;
+  include?: any;
 }
 
 export class CursorPagingHandler {
-  where: object;
+  where: any;
   pageSize: number;
   orderByColumn: string;
   orderByType: 'asc' | 'desc';
@@ -18,17 +18,17 @@ export class CursorPagingHandler {
   query: PageQueryDto;
   prismaService: PrismaService;
   table: string;
-  include?: object;
+  include?: any;
 
   constructor(
-    where: object,
+    where: any,
     pageSize: number,
-    orderByColumn: string = 'id',
+    orderByColumn = 'id',
     orderByType: 'asc' | 'desc',
     prismaService: PrismaService,
     table: string,
     initCursor?: any,
-    include?: object,
+    include?: any,
   ) {
     this.where = where;
     this.pageSize = pageSize;
@@ -68,15 +68,15 @@ export class CursorPagingHandler {
     table,
     cursor?: string | number,
   ): Promise<OffsetPaginationDTO<any>> {
-    let totalItem = await this.prismaService.user.count({
+    const totalItem = await this.prismaService.user.count({
       where: this.where,
     });
 
-    let pageQuery = this.getPageQuery(cursor);
-    let pageResult = await this.prismaService[table].findMany({
+    const pageQuery = this.getPageQuery(cursor);
+    const pageResult = await this.prismaService[table].findMany({
       ...pageQuery,
     });
-    let lastItemId =
+    const lastItemId =
       pageResult.length > 0 ? pageResult[pageResult.length - 1].id : null;
     return {
       items: pageResult,

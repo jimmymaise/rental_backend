@@ -45,4 +45,5 @@ type Query {
 type Mutation {
   updateRole(updateRoleInput: UpdateRoleInput!): RoleInfo
   createRole(createRoleInput: CreateRoleInput!): RoleInfo
+  deleteRole(id: ID!): RoleInfo
 }

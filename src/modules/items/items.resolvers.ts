@@ -5,6 +5,7 @@ import { ItemStatus } from '@prisma/client';
 import { ItemsService } from './items.service';
 import { UserItemsService } from './user-items.service';
 import { AdminItemsService } from './admin-items.service';
+import { OrgItemsService } from './org-items.service';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { ItemDTO, toItemDTO } from './item.dto';
 import {
@@ -33,6 +34,7 @@ export class ItemsResolvers {
     private adminItemService: AdminItemsService,
     private searchKeywordService: SearchKeywordService,
     private wishingItemService: WishingItemsService,
+    private orgItemsService: OrgItemsService,
   ) {}
 
   @Mutation()
@@ -312,6 +314,62 @@ export class ItemsResolvers {
     return enhancedItem;
   }
 
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_ITEM)
+  @UseGuards(GqlAuthGuard)
+  async feedOrgItemDetail(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+  ): Promise<ItemDTO> {
+    const item = await this.orgItemsService.findDetailForOrg(
+      id,
+      user.currentOrgId,
+    );
+
+    const enhancedItem = toItemDTO(item, user.id);
+
+    return enhancedItem;
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_ITEM)
+  @UseGuards(GqlAuthGuard)
+  async updateOrgItem(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+    @Args('itemData') itemData: ItemUserInputDTO,
+  ): Promise<ItemDTO> {
+    return new Promise((resolve, reject) => {
+      this.orgItemsService
+        .updateOrgItem(id, user.currentOrgId, itemData)
+        .then((item) => {
+          resolve(toItemDTO(item, user.id));
+        })
+        .catch(reject);
+    });
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.DELETE_ITEM)
+  @UseGuards(GqlAuthGuard)
+  async deleteOrgItem(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+  ): Promise<ItemDTO> {
+    return new Promise((resolve, reject) => {
+      this.orgItemsService
+        .softDeleteOrgItem(id, user.id)
+        .then((item) => {
+          if (!item) {
+            throw new Error('Item is not existing!');
+          }
+
+          resolve(toItemDTO(item, user.id));
+        })
+        .catch(reject);
+    });
+  }
+
   @Mutation()
   @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
@@ -354,7 +412,7 @@ export class ItemsResolvers {
   // FOR ADMIN ONLY
 
   @Query()
-  @Permissions(Permission.NEED_LOGIN)
+  @Permissions(Permission.ORG_MASTER, Permission.GET_ITEM)
   @UseGuards(GqlAuthGuard)
   async getMyOrgItemsWithPaging(
     @Info() info: GraphQLResolveInfo,

@@ -46,5 +46,29 @@
     "description": "",
     "isInternal": false,
     "order": 23
+  },
+  "GET_ITEM": {
+    "name": "GET_ITEM",
+    "description": "",
+    "isInternal": false,
+    "order": 30
+  },
+  "CREATE_ITEM": {
+    "name": "CREATE_ITEM",
+    "description": "",
+    "isInternal": false,
+    "order": 33
+  },
+  "DELETE_ITEM": {
+    "name": "DELETE_ITEM",
+    "description": "",
+    "isInternal": false,
+    "order": 35
+  },
+  "UPDATE_ITEM": {
+    "name": "UPDATE_ITEM",
+    "description": "",
+    "isInternal": false,
+    "order": 37
   }
 }

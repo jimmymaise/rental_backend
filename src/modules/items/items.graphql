@@ -1,118 +1,123 @@
 scalar JSON
 
 enum ItemStatus {
-    Draft
-    Blocked
-    Published
+  Draft
+  Blocked
+  Published
 }
 
 type Item {
-    id: ID!
-    pid: Int!
-    name: String!
-    slug: String!
-    description: JSON
-    termAndCondition: JSON
-    categories: [Category]
-    areas: [Area]
-    images: [PublicStorageFile]
-    roughtAddress: String,
-    orgId: String,
-    org:OrganizationInfo,
-    checkBeforeRentDocuments: [PublicRentingMandatoryVerifyDocument]
-    keepWhileRentingDocuments: [PublicRentingMandatoryVerifyDocument]
-    unavailableForRentDays: [Float]
-    currentOriginalPrice: Float
-    sellPrice: Float
-    hidePrice: Boolean
-    rentPricePerDay: Float
-    rentPricePerWeek: Float
-    rentPricePerMonth: Float
-    currencyCode: String
-    summaryReviewCore: Float
-    summaryReviewCount: Float
-    availableQuantity: Int
-    totalQuantity: Int
-    isVerified: Boolean
-    status: ItemStatus
-    note: String
-    isInMyWishList: Boolean
-    createdDate: Float
-    updatedDate: Float
-    createdBy: UserInfo
-    permissions: [String]
+  id: ID!
+  pid: Int!
+  sku: String
+  name: String!
+  slug: String!
+  description: JSON
+  termAndCondition: JSON
+  categories: [Category]
+  areas: [Area]
+  images: [PublicStorageFile]
+  roughtAddress: String
+  orgId: String
+  org: OrganizationInfo
+  checkBeforeRentDocuments: [PublicRentingMandatoryVerifyDocument]
+  keepWhileRentingDocuments: [PublicRentingMandatoryVerifyDocument]
+  unavailableForRentDays: [Float]
+  currentOriginalPrice: Float
+  sellPrice: Float
+  hidePrice: Boolean
+  rentPricePerDay: Float
+  rentPricePerWeek: Float
+  rentPricePerMonth: Float
+  currencyCode: String
+  summaryReviewCore: Float
+  summaryReviewCount: Float
+  availableQuantity: Int
+  totalQuantity: Int
+  isVerified: Boolean
+  status: ItemStatus
+  note: String
+  isInMyWishList: Boolean
+  createdDate: Float
+  updatedDate: Float
+  createdBy: UserInfo
+  permissions: [String]
 }
 
 type ItemPagination {
-    items: [Item]
-    total: Int
-    limit: Int
-    offset: Int
+  items: [Item]
+  total: Int
+  limit: Int
+  offset: Int
 }
 
 input ItemUserInput {
-
-    name: String!
-    description: JSON
-    termAndCondition: JSON
-    categoryIds: [String]
-    areaIds: [String]
-    images: [PublicStorageFileInput]
-    roughtAddress: String
-    checkBeforeRentDocuments: [PublicRentingMandatoryVerifyDocumentInput]
-    keepWhileRentingDocuments: [PublicRentingMandatoryVerifyDocumentInput]
-    unavailableForRentDays: [Float]
-    currentOriginalPrice: Float
-    sellPrice: Float
-    rentPricePerDay: Float
-    rentPricePerWeek: Float
-    rentPricePerMonth: Float
-    note: String
-    status: String
-    hidePrice: Boolean
+  sku: String
+  name: String!
+  description: JSON
+  termAndCondition: JSON
+  categoryIds: [String]
+  areaIds: [String]
+  images: [PublicStorageFileInput]
+  roughtAddress: String
+  checkBeforeRentDocuments: [PublicRentingMandatoryVerifyDocumentInput]
+  keepWhileRentingDocuments: [PublicRentingMandatoryVerifyDocumentInput]
+  unavailableForRentDays: [Float]
+  currentOriginalPrice: Float
+  sellPrice: Float
+  rentPricePerDay: Float
+  rentPricePerWeek: Float
+  rentPricePerMonth: Float
+  note: String
+  status: String
+  hidePrice: Boolean
 }
 
 input ItemQuery {
-    search: String
-    offset: Int
-    limit: Int
-    categoryId: String
-    areaId: String
-    includes: [String]
-    sortByFields: [String]
-    checkWishList: Boolean
+  search: String
+  offset: Int
+  limit: Int
+  categoryId: String
+  areaId: String
+  includes: [String]
+  sortByFields: [String]
+  checkWishList: Boolean
 }
 
 input MyItemQuery {
-    search: String
-    offset: Int
-    limit: Int
-    includes: [String]
-    checkWishList: Boolean
+  search: String
+  offset: Int
+  limit: Int
+  includes: [String]
+  checkWishList: Boolean
 }
 
 type Mutation {
-    listingNewItem(itemData: ItemUserInput!, includes: [String]): Item
-    updateMyItem(id: String!, itemData: ItemUserInput!): Item
-    deleteMyItem(id: String!): Item
+  listingNewItem(itemData: ItemUserInput!, includes: [String]): Item
+  updateMyItem(id: String!, itemData: ItemUserInput!): Item
+  deleteMyItem(id: String!): Item
 
-    updateItemStatus(id: String!, status: ItemStatus!): Item
-    changeVerifyStatus(id: String!, isVerified: Boolean!): Item
+  updateOrgItem(id: String!, itemData: ItemUserInput!): Item
+  deleteOrgItem(id: String!): Item
+
+  updateItemStatus(id: String!, status: ItemStatus!): Item
+  changeVerifyStatus(id: String!, isVerified: Boolean!): Item
 }
 
 type Query {
-    feed(query: ItemQuery): ItemPagination
-    feedDetailByPID(pid: Int!, includes: [String], checkWishList: Boolean): Item
-    feedDetail(id: String!, includes: [String], checkWishList: Boolean): Item
-    feedMyItems(query: MyItemQuery): ItemPagination
-    feedUserPublicItems(userId: String!, query: ItemQuery): ItemPagination
-    feedMyItemDetail(
-        id: String!
-        includes: [String]
-        checkWishList: Boolean
-    ): Item
-    adminFeed(query: ItemQuery): ItemPagination
-    getMyOrgItemsWithPaging(
-        getMyOrgItemsWithOffsetPagingData: BaseOffsetPagingInput
-    ): ItemPagination
+  feed(query: ItemQuery): ItemPagination
+  feedDetailByPID(pid: Int!, includes: [String], checkWishList: Boolean): Item
+  feedDetail(id: String!, includes: [String], checkWishList: Boolean): Item
+  feedMyItems(query: MyItemQuery): ItemPagination
+  feedUserPublicItems(userId: String!, query: ItemQuery): ItemPagination
+  feedMyItemDetail(
+    id: String!
+    includes: [String]
+    checkWishList: Boolean
+  ): Item
+  adminFeed(query: ItemQuery): ItemPagination
+  getMyOrgItemsWithPaging(
+    getMyOrgItemsWithOffsetPagingData: BaseOffsetPagingInput
+  ): ItemPagination
+  feedOrgItemDetail(id: String!): Item
 }

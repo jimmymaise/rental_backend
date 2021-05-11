@@ -2,6 +2,7 @@ import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { RentingMandatoryVerifyDocumentPublicDTO } from '../renting-mandatory-verify-documents/renting-mandatory-verify-document-public.dto';
 
 export interface ItemUserInputDTO {
+  sku: string;
   name: string;
   description?: string;
   termAndCondition?: string;
