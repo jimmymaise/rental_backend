@@ -337,6 +337,7 @@ export class ItemsService {
   ): Promise<OffsetPaginationDTO<ItemDTO>> {
     const whereQuery = {
       orgId: orgId,
+      isDeleted: false,
     };
 
     return this.getAllItemsWithOffsetPaging(
