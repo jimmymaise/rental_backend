@@ -114,7 +114,7 @@ export class UsersService {
     include?: any,
   ): Promise<OffsetPaginationDTO<UserSummary>> {
     const whereQuery = {
-      orgsThisUserBelongTo: {
+      employees: {
         some: {
           orgId: orgId,
         },
@@ -144,7 +144,7 @@ export class UsersService {
 
     if (!userDetail) {
       const userData = await this.getUserById(userId, {
-        orgsThisUserBelongTo: true,
+        employees: true,
       });
       const userInfoData = await this.getUserInfoById(userId);
 
@@ -194,7 +194,7 @@ export class UsersService {
       data: { email: sanitizeHtml(email), passwordHash },
       include: {
         roles: true,
-        orgsThisUserBelongTo: true,
+        employeesThisUserBecome: true,
       },
     });
   }
@@ -245,7 +245,7 @@ export class UsersService {
       where: { facebookId },
       include: {
         roles: true,
-        orgsThisUserBelongTo: true,
+        employeesThisUserBecome: true,
       },
     });
   }
@@ -264,7 +264,7 @@ export class UsersService {
       where: { email },
       include: {
         roles: true,
-        orgsThisUserBelongTo: true,
+        employeesThisUserBecome: true,
       },
     });
   }

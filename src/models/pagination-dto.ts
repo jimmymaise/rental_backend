@@ -4,3 +4,8 @@ export interface OffsetPaginationDTO<T> {
   offset: number | string;
   limit: number;
 }
+export interface QueryWithOffsetPagingDTO {
+  pageSize: number;
+  offset: number;
+  orderBy: any;
+}

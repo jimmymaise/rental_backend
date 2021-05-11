@@ -9,7 +9,7 @@ export class OrgCheckHandler {
 
   async isAllUsersInOrg(orgId, users) {
     let uniqueUsers = [...new Set(users)];
-    const countUsersInOrg = await this.prismaService.userOrganizations.count({
+    const countUsersInOrg = await this.prismaService.employee.count({
       where: {
         orgId: orgId,
         userId: { in: users },

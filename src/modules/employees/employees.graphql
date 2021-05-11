@@ -1,0 +1,42 @@
+scalar JSON
+
+
+type EmployeeInfo {
+    id: ID!
+    orgId: String
+    userId: String
+    isOwner: Boolean,
+    userInfo:DBUserInfoForEmployee
+}
+
+
+
+
+
+type DBUserInfoForEmployee {
+    displayName: String
+    bio: String
+    avatarImage: PublicStorageFile
+    coverImage: PublicStorageFile
+    phoneNumber: String
+    createdDate: Float
+    userId: String
+}
+
+type EmployeePagination {
+    items: [EmployeeInfo]
+    total: Int
+    limit: Int
+    offset: Int
+}
+
+
+
+type Query {
+    getMyOrgEmployeesWithPaging(
+        getMyOrgEmployeesWithOffsetPagingData: BaseOffsetPagingInput
+    ): EmployeePagination
+
+}
+
+

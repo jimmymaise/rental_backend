@@ -26,16 +26,13 @@ export class UpdateMyOrganizationDto {
   @Transform(sanitize)
   description: string;
   slug: string;
-  addUsersToOrg: string[];
-  removeUsersFromOrg: string[];
-  setOwner: setOwner;
+  addEmployeesToOrgByUserId: string[];
+  removeEmployeesFromOrgByUserId: string[];
+  setOwner: SetOwner;
 }
 
-class setOwner {
+class SetOwner {
   userId: string;
   isOwner: boolean;
 }
 
-export class AddUserToMyOrganizationDto {
-  userId: string;
-}

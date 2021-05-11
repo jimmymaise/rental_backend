@@ -40,7 +40,7 @@ export class OrganizationsService {
         data: {
           ...createOrganizationData,
           createdBy: userId,
-          users: {
+          employees: {
             create: [{ userId: userId, isOwner: true }],
           },
         },
@@ -79,40 +79,38 @@ export class OrganizationsService {
     orgId: string,
     include?: any,
   ): Promise<Organization> {
-    const usersAdded = (updateMyOrganizationData['addEmployeesToOrg'] || []).map(
-      (user) => {
-        // return { userId: user };
-
+    const employeesAdded = (updateMyOrganizationData['addEmployeesToOrgByUserId'] || []).map(
+      (employeeUserId) => {
         return {
-          create: { userId: user },
+          create: { userId: employeeUserId },
           where: {
-            userId_orgId: { userId: user, orgId: orgId },
+            userId_orgId: { userId: employeeUserId, orgId: orgId },
           },
         };
       },
     );
-    const usersRemoved = (
-      updateMyOrganizationData['removeEmployeesFromOrg'] || []
-    ).map((user) => {
-      return { userId_orgId: { userId: user, orgId: orgId } };
+    const employeesRemoved = (
+      updateMyOrganizationData['removeEmployeesFromOrgByUserId'] || []
+    ).map((employeeUserId) => {
+      return { userId_orgId: { userId: employeeUserId, orgId: orgId } };
     });
     const setOwner = updateMyOrganizationData['setOwner'];
-    delete updateMyOrganizationData['addEmployeesToOrg'];
-    delete updateMyOrganizationData['removeEmployeesFromOrg'];
+    delete updateMyOrganizationData['addEmployeesToOrgByUserId'];
+    delete updateMyOrganizationData['removeEmployeesFromOrgByUserId'];
     delete updateMyOrganizationData['setOwner'];
 
-    const userOrgUpdateCommand = {};
+    const employeeUpdateCommand = {};
 
-    if (usersAdded.length > 0) {
-      userOrgUpdateCommand['connectOrCreate'] = usersAdded;
+    if (employeesAdded.length > 0) {
+      employeeUpdateCommand['connectOrCreate'] = employeesAdded;
     }
 
-    if (usersRemoved.length > 0) {
-      userOrgUpdateCommand['delete'] = usersRemoved;
+    if (employeesRemoved.length > 0) {
+      employeeUpdateCommand['delete'] = employeesRemoved;
     }
 
     if (setOwner) {
-      userOrgUpdateCommand['update'] = {
+      employeeUpdateCommand['update'] = {
         where: {
           userId: setOwner.userId, orgId: orgId,
         },
@@ -127,8 +125,8 @@ export class OrganizationsService {
       where: { id: orgId },
       data: {
         ...updateMyOrganizationData,
-        users: {
-          ...userOrgUpdateCommand,
+        employees: {
+          ...employeeUpdateCommand,
         },
       },
     });

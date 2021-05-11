@@ -1,5 +1,5 @@
 import { User, UserInfo } from '@prisma/client';
-import { UserInfoDTO } from './user-info.dto';
+import { EmployeeDto } from './employee.dto';
 import { Organization } from '@prisma/client';
 
 const DEFAULT_AVATAR_URL =
@@ -12,7 +12,7 @@ const DEFAULT_DISPLAY_NAME = 'Former User';
 export function toUserInfoDTO(
   user: User | any,
   userInfo: UserInfo | any,
-): UserInfoDTO {
+): EmployeeDto {
   if (!user) {
     return null;
   }

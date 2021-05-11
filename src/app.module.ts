@@ -6,6 +6,7 @@ import { GqlPermissionsGuard } from './modules/auth/permission/gql-permissions.g
 import { APP_GUARD } from '@nestjs/core';
 import {
   AuthModule,
+  EmployeesModule,
   OrganizationsModule,
   AreasModule,
   CategoriesModule,
@@ -120,6 +121,7 @@ import { AppService } from './app.service';
     OrganizationsModule,
     RolesModule,
     PermissionsModule,
+    EmployeesModule
   ],
   controllers: [AppController],
   providers: [

@@ -7,10 +7,10 @@ type OrganizationInfo {
   createdDate: Float
   updatedDate: Float
   createdBy: String
-  users: [UserOrgInfo]
+  employees: [EmployeeInfo]
 }
 
-type UserOrgInfo {
+type EmployeeInfo {
   userId: String
   isOwner: Boolean
   orgId: String
@@ -44,11 +44,11 @@ input UpdateMyOrganizationInput {
   avatarImage: PublicStorageFileInput
   slug: String
   users: [String]
-  addUsersToOrg: [String]
-  removeUsersFromOrg: [String]
-  setOwner: setOwner
+  addEmployeesToOrgByUserId: [String]
+  removeEmployeesFromOrgByUserId: [String]
+  setOwner: SetOwner
 }
-input setOwner {
+input SetOwner {
   userId: String
   isOwner: Boolean
 }

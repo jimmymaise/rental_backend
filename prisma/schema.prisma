@@ -23,6 +23,7 @@ model Organization {
   createdByUser      User?               @relation("CreatedByUser", fields: [createdBy], references: [id])
   createdBy          String?
   employees          Employee[]
+  customers          Customer[]
   items              Item[]              @relation("ItemBelongToOrg")
 }
 
@@ -70,7 +71,8 @@ model User {
   isDeleted                    Boolean?             @default(false)
   systemNote                   String?
   orgsThisUserCreate           Organization[]       @relation("CreatedByUser")
-  employee                     Employee[]
+  employeesThisUserBecome      Employee[]
+  customersThisUserBecome      Customer[]
   ownerItemReview              ItemReview[]         @relation("OwnerItemReview")
   ownerUserRentingItemRequest  RentingItemRequest[] @relation("OwnerRequest")
   lenderUserRentingItemRequest RentingItemRequest[] @relation("LenderOfRequest")

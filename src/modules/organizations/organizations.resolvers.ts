@@ -36,7 +36,7 @@ export class OrganizationsResolvers {
   ): Promise<Organization> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
-      'users',
+      'employees',
     ]);
     return this.organizationsService.getOrganization(
       user.currentOrgId,
@@ -56,7 +56,7 @@ export class OrganizationsResolvers {
   ): Promise<Organization> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
-      'users',
+      'employees',
     ]);
     const createOrgResult = await this.organizationsService.createOrganization(
       createOrganizationData,
@@ -82,7 +82,7 @@ export class OrganizationsResolvers {
   ): Promise<Organization> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
-      'users',
+      'employees',
     ]);
     return this.organizationsService.updateOrganization(
       updateMyOrganizationData,

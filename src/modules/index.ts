@@ -17,3 +17,5 @@ export * from './redis-cache';
 export * from './organizations';
 export * from './roles';
 export * from './permissions';
+export * from './employees';
+
