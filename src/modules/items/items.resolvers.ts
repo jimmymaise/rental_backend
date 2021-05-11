@@ -358,7 +358,7 @@ export class ItemsResolvers {
   ): Promise<ItemDTO> {
     return new Promise((resolve, reject) => {
       this.orgItemsService
-        .softDeleteOrgItem(id, user.id)
+        .softDeleteOrgItem(id, user.currentOrgId)
         .then((item) => {
           if (!item) {
             throw new Error('Item is not existing!');
