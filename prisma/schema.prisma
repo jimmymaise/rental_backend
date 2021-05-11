@@ -22,20 +22,31 @@ model Organization {
   rolesThisOrgHaving Role[]
   createdByUser      User?               @relation("CreatedByUser", fields: [createdBy], references: [id])
   createdBy          String?
-  users              UserOrganizations[]
+  employees          Employee[]
   items              Item[]              @relation("ItemBelongToOrg")
 }
 
-model UserOrganizations {
-  user         User         @relation(fields: [userId], references: [id])
-  organization Organization @relation(fields: [orgId], references: [id])
-  userId       String
-  orgId        String
-  isOwner      Boolean      @default(false)
-  createdDate  DateTime?    @default(now())
-  updatedDate  DateTime?    @updatedAt
+model Employee {
+  id                String       @id @default(uuid())
+  user              User         @relation(fields: [userId], references: [id])
+  organization      Organization @relation(fields: [orgId], references: [id])
+  userId            String
+  orgId             String
+  isOwner           Boolean      @default(false)
+  createdDate       DateTime?    @default(now())
+  updatedDate       DateTime?    @updatedAt
+  @@unique([userId, orgId])
+}
 
-  @@id([userId, orgId])
+model Customer {
+  id                String       @id @default(uuid())
+  user              User         @relation(fields: [userId], references: [id])
+  organization      Organization @relation(fields: [orgId], references: [id])
+  userId            String
+  orgId             String
+  createdDate       DateTime?    @default(now())
+  updatedDate       DateTime?    @updatedAt
+  @@unique([userId, orgId])
 }
 
 model User {
@@ -59,7 +70,7 @@ model User {
   isDeleted                    Boolean?             @default(false)
   systemNote                   String?
   orgsThisUserCreate           Organization[]       @relation("CreatedByUser")
-  orgsThisUserBelongTo         UserOrganizations[]
+  employee                     Employee[]
   ownerItemReview              ItemReview[]         @relation("OwnerItemReview")
   ownerUserRentingItemRequest  RentingItemRequest[] @relation("OwnerRequest")
   lenderUserRentingItemRequest RentingItemRequest[] @relation("LenderOfRequest")

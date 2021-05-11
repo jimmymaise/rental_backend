@@ -18,7 +18,8 @@ export class OrganizationsService {
     private prismaService: PrismaService,
     public authService: AuthService,
     public redisCacheService: RedisCacheService,
-  ) {}
+  ) {
+  }
 
   async getOrganization(orgId: string, include: any): Promise<Organization> {
     return this.prismaService.organization.findUnique({
@@ -78,7 +79,7 @@ export class OrganizationsService {
     orgId: string,
     include?: any,
   ): Promise<Organization> {
-    const usersAdded = (updateMyOrganizationData['addUsersToOrg'] || []).map(
+    const usersAdded = (updateMyOrganizationData['addEmployeesToOrg'] || []).map(
       (user) => {
         // return { userId: user };
 
@@ -91,13 +92,13 @@ export class OrganizationsService {
       },
     );
     const usersRemoved = (
-      updateMyOrganizationData['removeUsersFromOrg'] || []
+      updateMyOrganizationData['removeEmployeesFromOrg'] || []
     ).map((user) => {
       return { userId_orgId: { userId: user, orgId: orgId } };
     });
     const setOwner = updateMyOrganizationData['setOwner'];
-    delete updateMyOrganizationData['addUsersToOrg'];
-    delete updateMyOrganizationData['removeUsersFromOrg'];
+    delete updateMyOrganizationData['addEmployeesToOrg'];
+    delete updateMyOrganizationData['removeEmployeesFromOrg'];
     delete updateMyOrganizationData['setOwner'];
 
     const userOrgUpdateCommand = {};
@@ -113,7 +114,7 @@ export class OrganizationsService {
     if (setOwner) {
       userOrgUpdateCommand['update'] = {
         where: {
-          userId_orgId: { userId: setOwner.userId, orgId: orgId },
+          userId: setOwner.userId, orgId: orgId,
         },
         data: {
           isOwner: setOwner.isOwner,
