@@ -97,6 +97,9 @@ type Mutation {
   updateMyItem(id: String!, itemData: ItemUserInput!): Item
   deleteMyItem(id: String!): Item
 
+  updateOrgItem(id: String!, itemData: ItemUserInput!): Item
+  deleteOrgItem(id: String!): Item
+
   updateItemStatus(id: String!, status: ItemStatus!): Item
   changeVerifyStatus(id: String!, isVerified: Boolean!): Item
 }
@@ -116,4 +119,5 @@ type Query {
   getMyOrgItemsWithPaging(
     getMyOrgItemsWithOffsetPagingData: BaseOffsetPagingInput
   ): ItemPagination
+  feedOrgItemDetail(id: String!): Item
 }

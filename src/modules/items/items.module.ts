@@ -4,6 +4,7 @@ import { AuthModule } from '@modules/auth';
 import { ItemsService } from './items.service';
 import { UserItemsService } from './user-items.service';
 import { AdminItemsService } from './admin-items.service';
+import { OrgItemsService } from './org-items.service';
 import { ItemsResolvers } from './items.resolvers';
 import { StoragesModule } from '../storages/storages.module';
 import { UsersModule } from '../users/users.module';
@@ -25,6 +26,7 @@ import { RedisCacheModule } from '../redis-cache/redis-cache.module';
     UserItemsService,
     AdminItemsService,
     ItemsResolvers,
+    OrgItemsService,
   ],
 })
 export class ItemsModule {}

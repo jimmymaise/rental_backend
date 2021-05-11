@@ -3,158 +3,20 @@ import sanitizeHtml from 'sanitize-html';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { Item, ItemStatus } from '@prisma/client';
-import { OffsetPaginationDTO } from '../../models';
 import { StoragesService } from '../storages/storages.service';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers/common';
 
 @Injectable()
-export class UserItemsService {
+export class OrgItemsService {
   constructor(
     private prismaService: PrismaService,
     private storageService: StoragesService,
   ) {}
 
-  async findAllItemsCreatedByUser({
-    createdBy,
-    searchValue = '',
-    offset = 0,
-    limit = 10,
-    includes,
-  }): Promise<OffsetPaginationDTO<Item>> {
-    const mandatoryWhere = {
-      isDeleted: false,
-      status: {
-        not: ItemStatus.Blocked,
-      },
-      ownerUserId: createdBy,
-    };
-
-    const validIncludeMap = {
-      categories: true,
-      areas: true,
-    };
-
-    const include = (includes || []).reduce((result, cur) => {
-      if (validIncludeMap[cur]) {
-        result[cur] = true;
-      }
-      return result;
-    }, {});
-
-    const where = searchValue
-      ? {
-          AND: [
-            {
-              ...mandatoryWhere,
-            },
-            {
-              OR: [{ keyword: { contains: searchValue, mode: 'insensitive' } }],
-            },
-          ],
-        }
-      : {
-          ...mandatoryWhere,
-        };
-
-    const findCondition: any = {
-      where,
-      skip: offset,
-      take: limit,
-      orderBy: [
-        {
-          updatedDate: 'desc',
-        },
-      ],
-    };
-
-    if (Object.keys(include).length) {
-      findCondition.include = include;
-    }
-
-    const items = await this.prismaService.item.findMany(findCondition);
-    const count = await this.prismaService.item.count({
-      where: findCondition.where,
-    });
-
-    return {
-      items,
-      total: count,
-      offset,
-      limit,
-    };
-  }
-
-  async findAllPublicItemsCreatedByUser({
-    createdBy,
-    searchValue = '',
-    offset = 0,
-    limit = 10,
-    includes,
-  }): Promise<OffsetPaginationDTO<Item>> {
-    const mandatoryWhere = {
-      isDeleted: false,
-      status: ItemStatus.Published,
-      ownerUserId: createdBy,
-      isVerified: true,
-    };
-
-    const validIncludeMap = {
-      categories: true,
-      areas: true,
-    };
-
-    const include = (includes || []).reduce((result, cur) => {
-      if (validIncludeMap[cur]) {
-        result[cur] = true;
-      }
-      return result;
-    }, {});
-
-    const where = searchValue
-      ? {
-          AND: [
-            {
-              ...mandatoryWhere,
-            },
-            {
-              OR: [{ keyword: { contains: searchValue, mode: 'insensitive' } }],
-            },
-          ],
-        }
-      : {
-          ...mandatoryWhere,
-        };
-
-    const findCondition: any = {
-      where,
-      skip: offset,
-      take: limit,
-      orderBy: {
-        updatedDate: 'desc',
-      },
-    };
-
-    if (Object.keys(include).length) {
-      findCondition.include = include;
-    }
-
-    const items = await this.prismaService.item.findMany(findCondition);
-    const count = await this.prismaService.item.count({
-      where: findCondition.where,
-    });
-
-    return {
-      items,
-      total: count,
-      offset,
-      limit,
-    };
-  }
-
-  async findOneDetailForEdit(
+  async findDetailForOrg(
     id: string,
-    createdBy: string,
+    orgId: string,
     includes?: string[],
   ): Promise<Item> {
     const validIncludeMap = {
@@ -187,7 +49,7 @@ export class UserItemsService {
       item &&
       (item.isDeleted ||
         item.status === ItemStatus.Blocked ||
-        item.ownerUserId !== createdBy)
+        item.orgId !== orgId)
     ) {
       return null;
     }
@@ -195,9 +57,9 @@ export class UserItemsService {
     return item;
   }
 
-  async updateMyItem(
+  async updateOrgItem(
     id: string,
-    createdBy: string,
+    orgId: string,
     data: ItemUserInputDTO,
   ): Promise<Item> {
     const allowUpdateFields = [
@@ -306,7 +168,7 @@ export class UserItemsService {
       foundItem &&
       (foundItem.isDeleted ||
         foundItem.status === ItemStatus.Blocked ||
-        foundItem.ownerUserId !== createdBy)
+        foundItem.orgId !== orgId)
     ) {
       return null;
     }
@@ -317,7 +179,7 @@ export class UserItemsService {
     });
   }
 
-  async softDeleteMyItem(id: string, createdBy: string): Promise<Item> {
+  async softDeleteOrgItem(id: string, orgId: string): Promise<Item> {
     const where = {
       id,
     };
@@ -326,7 +188,7 @@ export class UserItemsService {
       foundItem &&
       (foundItem.isDeleted ||
         foundItem.status === ItemStatus.Blocked ||
-        foundItem.ownerUserId !== createdBy)
+        foundItem.orgId !== orgId)
     ) {
       return null;
     }
