@@ -120,6 +120,7 @@ export class StoragesResolvers {
       fileFullUrl,
       contentType,
       user.id,
+      user.currentOrgId,
     );
 
     if (imageData?.includes?.includes('small')) {
