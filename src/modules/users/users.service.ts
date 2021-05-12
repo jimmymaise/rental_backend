@@ -144,7 +144,7 @@ export class UsersService {
 
     if (!userDetail) {
       const userData = await this.getUserById(userId, {
-        employees: true,
+        employeesThisUserBecome: true,
       });
       const userInfoData = await this.getUserInfoById(userId);
 

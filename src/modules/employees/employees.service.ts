@@ -19,10 +19,6 @@ import { OffsetPaginationDTO } from '@app/models';
 export class EmployeesService {
   constructor(
     private prismaService: PrismaService,
-    private storageService: StoragesService,
-    private redisCacheService: RedisCacheService,
-    private authService: AuthService,
-    private organizationsService: OrganizationsService,
   ) {
   }
 
@@ -39,7 +35,7 @@ export class EmployeesService {
       pageSize,
       orderBy,
       this.prismaService,
-      'employees',
+      'employee',
       include,
     );
     return pagingHandler.getPage(offset);

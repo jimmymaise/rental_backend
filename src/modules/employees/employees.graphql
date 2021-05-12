@@ -6,7 +6,7 @@ type EmployeeInfo {
     orgId: String
     userId: String
     isOwner: Boolean,
-    userInfo:DBUserInfoForEmployee
+    user:DBUserInfoForEmployee
 }
 
 
@@ -14,13 +14,10 @@ type EmployeeInfo {
 
 
 type DBUserInfoForEmployee {
-    displayName: String
-    bio: String
-    avatarImage: PublicStorageFile
-    coverImage: PublicStorageFile
-    phoneNumber: String
+    phoneNumber: String,
+    email: String,
     createdDate: Float
-    userId: String
+    userInfo: DBUserInfo
 }
 
 type EmployeePagination {

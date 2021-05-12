@@ -32,13 +32,10 @@ import { ErrorMap } from '@app/constants';
 import { EmailService } from '@modules/mail/mail.service';
 import { GraphQLResolveInfo } from 'graphql';
 
-@Resolver('User')
+@Resolver('Employee')
 export class EmployeesResolvers {
   constructor(
     private readonly employeeService: EmployeesService,
-    private readonly authService: AuthService,
-    private readonly emailService: EmailService,
-    private readonly adminemployeeService: AdminUsersService,
   ) {
   }
 
@@ -50,18 +47,26 @@ export class EmployeesResolvers {
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('getMyOrgEmployeesWithOffsetPagingData')
-      getMyOrgUsersWithOffsetPagingData: QueryWithOffsetPagingDTO,
+      getMyOrgEmployeesWithOffsetPagingData: QueryWithOffsetPagingDTO,
   ): Promise<OffsetPaginationDTO<EmployeeDto>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
-      { fieldName: 'userInfo', fieldPath: 'items.EmployeeInfo' },
+      { fieldName: 'user', fieldPath: 'items.EmployeeInfo' },
     ]);
+    const userInfoInclude = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      { fieldName: 'userInfo', fieldPath: 'items.EmployeeInfo.user.DBUserInfoForEmployee' },
+    ]);
+    if (userInfoInclude['userInfo']) {
+      include['user'] = {
+        include: userInfoInclude,
+      };
+    }
 
     return this.employeeService.getEmployeesByOrgIdWithOffsetPaging(
       user.currentOrgId,
-      getMyOrgUsersWithOffsetPagingData.pageSize,
-      getMyOrgUsersWithOffsetPagingData.offset,
-      getMyOrgUsersWithOffsetPagingData.orderBy,
+      getMyOrgEmployeesWithOffsetPagingData.pageSize,
+      getMyOrgEmployeesWithOffsetPagingData.offset,
+      getMyOrgEmployeesWithOffsetPagingData.orderBy,
       include,
     );
   }
