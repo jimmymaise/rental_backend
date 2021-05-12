@@ -182,6 +182,7 @@ export class StoragesService {
     url: string,
     contentType: string,
     createdBy: string,
+    orgId: string,
   ): Promise<FileStorage> {
     return this.prismaService.fileStorage.create({
       data: {
@@ -191,6 +192,7 @@ export class StoragesService {
         bucketName: DEFAULT_BUCKET_NAME,
         folderName,
         createdBy,
+        orgId,
         usingLocate: FileUsingLocate.ItemPreviewImage,
       },
     });

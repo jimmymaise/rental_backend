@@ -12,18 +12,21 @@ generator client {
 }
 
 model Organization {
-  id                 String              @id @default(uuid())
-  name               String?
-  description        String?
-  avatarImage        Json?
-  slug               String?             @unique
-  createdDate        DateTime?           @default(now())
-  updatedDate        DateTime?           @updatedAt
-  rolesThisOrgHaving Role[]
-  createdByUser      User?               @relation("CreatedByUser", fields: [createdBy], references: [id])
-  createdBy          String?
-  users              UserOrganizations[]
-  items              Item[]              @relation("ItemBelongToOrg")
+  id                  String               @id @default(uuid())
+  name                String?
+  description         String?
+  avatarImage         Json?
+  slug                String?              @unique
+  createdDate         DateTime?            @default(now())
+  updatedDate         DateTime?            @updatedAt
+  rolesThisOrgHaving  Role[]
+  createdByUser       User?                @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdBy           String?
+  users               UserOrganizations[]
+  items               Item[]               @relation("ItemBelongToOrg")
+  sellingOrder        SellingOrder[]       @relation("SellingOrderBelongToOrg")
+  rentingOrderItems   RentingOrderItem[]   @relation("SellingOrderItemBelongToOrg")
+  rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToOrg")
 }
 
 model UserOrganizations {
@@ -69,6 +72,10 @@ model User {
   myUserContact                MyUserContact[]
   userNotifications            UserNotification[]   @relation("ForUserNotification")
   roles                        Role[]
+  sellingOrders                SellingOrder[]       @relation("SellingOrderBelongToCustomer")
+  rentingOrderItems            RentingOrderItem[]   @relation("RentingOrderItemBelongToCustomer")
+
+  rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToCustomer")
 }
 
 model Role {
@@ -160,6 +167,7 @@ enum FileUsingLocate {
   ItemPreviewImage
   UserAvatarImage
   UserCoverImage
+  UserRentingDocuments
 }
 
 model FileStorage {
@@ -174,6 +182,7 @@ model FileStorage {
   createdBy       String
   createdDate     DateTime         @default(now())
   isDeleted       Boolean?         @default(false)
+  orgId           String?
 
   @@index(fields: [folderName, createdBy], name: "file_storage_main_index")
 }
@@ -226,6 +235,7 @@ model Item {
   ItemReview  ItemReview[]
   WishingItem WishingItem[]
 
+  rentingOrderItems RentingOrderItem[] @relation("RentingOrderItemBelongToItem")
   @@index(fields: [status, isDeleted, isVerified, keyword], name: "item_main_index")
   @@index(fields: [createdDate], name: "item_created_date_index")
   @@index(fields: [keyword], name: "item_keyword_index")
@@ -452,6 +462,125 @@ model ChatMessage {
   createdDate DateTime @default(now())
 
   @@index(fields: [replyToId, id], name: "user_chat_message_index")
+}
+
+enum SellingOrderSystemStatusType {
+  New
+  InProgress
+  Completed
+}
+
+model SellingOrder {
+  id             String                       @id @default(uuid())
+  orderCustomId  String?                      @unique
+  org            Organization                 @relation("SellingOrderBelongToOrg", fields: [orgId], references: [id])
+  orgId          String
+  totalAmount    Float?                       @default(0)
+  note           String?
+  customerUser   User                         @relation("SellingOrderBelongToCustomer", fields: [customerUserId], references: [id])
+  customerUserId String
+  isDeleted      Boolean?                     @default(false)
+  createdDate    DateTime                     @default(now())
+  updatedDate    DateTime                     @updatedAt
+  updatedBy      String
+  systemStatus   SellingOrderSystemStatusType
+  status         String
+  attachedFiles  Json?
+
+  rentingOrderItems   RentingOrderItem[]   @relation("RentingOrderItemBelongToSellingOrder")
+  rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToSellingOrder")
+
+  @@index(fields: [orgId, isDeleted], name: "selling_order_no_delete_index")
+  @@index(fields: [orgId, status, isDeleted], name: "selling_order_status_no_delete_index")
+}
+
+enum RentingOrderItemStatusType {
+  New
+  InProgress
+  Completed
+}
+
+model RentingOrderItem {
+  id   String  @id @default(uuid())
+  sku  String?
+  name String
+  note String?
+
+  amount            Float?                     @default(0)
+  quantity          Int?                       @default(0)
+  pickupDateTime    DateTime?
+  returningDateTime DateTime?
+  systemStatus      RentingOrderItemStatusType
+  status            String
+  unitPrice         Float?                     @default(0)
+  unitPricePerDay   Float?                     @default(0)
+  unitPricePerWeek  Float?                     @default(0)
+  unitPricePerMonth Float?                     @default(0)
+  attachedFiles     Json?
+
+  isDeleted           Boolean?             @default(false)
+  createdDate         DateTime             @default(now())
+  updatedDate         DateTime             @updatedAt
+  updatedBy           String
+  item                Item?                @relation("RentingOrderItemBelongToItem", fields: [itemId], references: [id])
+  itemId              String?
+  org                 Organization         @relation("SellingOrderItemBelongToOrg", fields: [orgId], references: [id])
+  orgId               String
+  sellingOrder        SellingOrder         @relation("RentingOrderItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
+  sellingOrderId      String
+  rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToRentingOrderItem")
+  customerUser        User                 @relation("RentingOrderItemBelongToCustomer", fields: [customerUserId], references: [id])
+  customerUserId      String
+  order               Int?                 @default(0)
+}
+
+enum RentingDepositItemSystemStatusType {
+  New
+  InProgress
+  Returned
+}
+
+model RentingDepositItem {
+  id            String                             @id @default(uuid())
+  type          String
+  note          String?
+  valueAmount   Float?                             @default(0)
+  isMoney       Boolean?                           @default(false)
+  attachedFiles Json?
+  systemStatus  RentingDepositItemSystemStatusType
+  status        String
+  isReturned    Boolean?                           @default(false) // Da hoan tra phan coc cho nguoi thue
+
+  sellingOrder       SellingOrder?     @relation("RentingDepositItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
+  sellingOrderId     String?
+  rentingOrderItem   RentingOrderItem? @relation("RentingDepositItemBelongToRentingOrderItem", fields: [rentingOrderItemId], references: [id])
+  rentingOrderItemId String?
+  org                Organization      @relation("RentingDepositItemBelongToOrg", fields: [orgId], references: [id])
+  orgId              String
+  customerUser       User              @relation("RentingDepositItemBelongToCustomer", fields: [customerUserId], references: [id])
+  customerUserId     String
+  order              Int?              @default(0)
+}
+
+enum CommonValuesType {
+  SellingOrderStatus
+  SellingOrderItemStatus
+  RentingDepositItemStatus
+  RentingDepositItemType
+}
+
+model CommonValuesConfig {
+  id                 String           @id @default(uuid())
+  description        String?
+  value              String // Value khong duoc thay doi, sau khi da tao
+  label              String
+  type               CommonValuesType
+  customConfigs      Json?
+  mapWithSystemValue String?
+  isDisabled         Boolean?         @default(false)
+  isDeleted          Boolean?
+  isDefault          Boolean?         @default(false)
+  order              Int?             @default(0)
 }
 
 // Item Reviews?
