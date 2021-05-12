@@ -148,6 +148,15 @@ DOCKER BUILD must use
 host.docker.internal insteal localhost in .env
 ```
 
+```
+Drop all connection sessions to a Database
+
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = 'thuedo-dev-2' -- ← change this to your DB
+  AND pid <> pg_backend_pid();
+```
+
 ## TODO:
 
 [] Request Activities
