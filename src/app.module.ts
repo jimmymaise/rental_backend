@@ -25,6 +25,7 @@ import {
   RedisCacheModule,
   RolesModule,
   PermissionsModule,
+  CustomAttributesModule,
 } from './modules';
 
 import { rootContants } from './constants';
@@ -121,7 +122,8 @@ import { AppService } from './app.service';
     OrganizationsModule,
     RolesModule,
     PermissionsModule,
-    EmployeesModule
+    EmployeesModule,
+    CustomAttributesModule,
   ],
   controllers: [AppController],
   providers: [

@@ -12,22 +12,23 @@ generator client {
 }
 
 model Organization {
-  id                  String               @id @default(uuid())
-  name                String?
-  description         String?
-  avatarImage         Json?
-  slug                String?              @unique
-  createdDate         DateTime?            @default(now())
-  updatedDate         DateTime?            @updatedAt
-  rolesThisOrgHaving  Role[]
-  createdByUser       User?                @relation("CreatedByUser", fields: [createdBy], references: [id])
-  createdBy           String?
-  employees           Employee[]
-  customers           Customer[]
-  items               Item[]               @relation("ItemBelongToOrg")
-  sellingOrder        SellingOrder[]       @relation("SellingOrderBelongToOrg")
-  rentingOrderItems   RentingOrderItem[]   @relation("SellingOrderItemBelongToOrg")
-  rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToOrg")
+  id                      String                   @id @default(uuid())
+  name                    String?
+  description             String?
+  avatarImage             Json?
+  slug                    String?                  @unique
+  createdDate             DateTime?                @default(now())
+  updatedDate             DateTime?                @updatedAt
+  rolesThisOrgHaving      Role[]
+  createdByUser           User?                    @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdBy               String?
+  employees               Employee[]
+  customers               Customer[]
+  items                   Item[]                   @relation("ItemBelongToOrg")
+  sellingOrder            SellingOrder[]           @relation("SellingOrderBelongToOrg")
+  rentingOrderItems       RentingOrderItem[]       @relation("SellingOrderItemBelongToOrg")
+  rentingDepositItems     RentingDepositItem[]     @relation("RentingDepositItemBelongToOrg")
+  commonAttributesConfigs CommonAttributesConfig[] @relation("CommonAttributesConfigBelongToOrg")
 }
 
 model Employee {
@@ -483,6 +484,7 @@ enum SellingOrderSystemStatusType {
   New
   InProgress
   Completed
+  Cancelled
 }
 
 model SellingOrder {
@@ -513,6 +515,7 @@ enum RentingOrderItemStatusType {
   New
   InProgress
   Completed
+  Cancelled
 }
 
 model RentingOrderItem {
@@ -596,6 +599,8 @@ model CommonAttributesConfig {
   isDeleted          Boolean?
   isDefault          Boolean?             @default(false)
   order              Int?                 @default(0)
+  org                Organization         @relation("CommonAttributesConfigBelongToOrg", fields: [orgId], references: [id])
+  orgId              String
 }
 
 // Item Reviews?

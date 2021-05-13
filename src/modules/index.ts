@@ -18,4 +18,4 @@ export * from './organizations';
 export * from './roles';
 export * from './permissions';
 export * from './employees';
-
+export * from './custom-attributes';

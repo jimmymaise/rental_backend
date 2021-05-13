@@ -70,5 +70,29 @@
     "description": "",
     "isInternal": false,
     "order": 37
+  },
+  "GET_CUSTOM_ATTRIBUTES": {
+    "name": "GET_CUSTOM_ATTRIBUTES",
+    "description": "",
+    "isInternal": false,
+    "order": 40
+  },
+  "CREATE_CUSTOM_ATTRIBUTES": {
+    "name": "CREATE_CUSTOM_ATTRIBUTES",
+    "description": "",
+    "isInternal": false,
+    "order": 43
+  },
+  "DELETE_CUSTOM_ATTRIBUTES": {
+    "name": "DELETE_CUSTOM_ATTRIBUTES",
+    "description": "",
+    "isInternal": false,
+    "order": 45
+  },
+  "UPDATE_CUSTOM_ATTRIBUTES": {
+    "name": "UPDATE_CUSTOM_ATTRIBUTES",
+    "description": "",
+    "isInternal": false,
+    "order": 47
   }
 }

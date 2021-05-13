@@ -20,7 +20,6 @@ import { SearchKeywordService } from '../search-keyword/search-keyword.service';
 import { WishingItemsService } from '../wishing-items/wishing-items.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
-import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
 import { GraphQLResolveInfo } from 'graphql';
 import { QueryWithOffsetPagingDTO } from '@modules/users/user-info.dto';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
@@ -38,7 +37,6 @@ export class ItemsResolvers {
   ) {}
 
   @Mutation()
-  @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   @Permissions(Permission.NEED_LOGIN)
   async listingNewItem(
@@ -439,7 +437,6 @@ export class ItemsResolvers {
 
   @Query()
   @Permissions('ROOT')
-  @UseGuards(GqlPermissionsGuard)
   @UseGuards(GqlAuthGuard)
   async adminFeed(
     @CurrentUser() user: GuardUserPayload,
@@ -499,7 +496,6 @@ export class ItemsResolvers {
 
   @Mutation()
   @Permissions('ROOT')
-  @UseGuards(GqlPermissionsGuard)
   async updateItemStatus(
     @Args('id') id: string,
     @Args('status') status: ItemStatus,
@@ -511,7 +507,6 @@ export class ItemsResolvers {
 
   @Mutation()
   @Permissions('ROOT')
-  @UseGuards(GqlPermissionsGuard)
   async changeVerifyStatus(
     @Args('id') id: string,
     @Args('isVerified') isVerified: boolean,

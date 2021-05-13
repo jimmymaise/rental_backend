@@ -1,0 +1,16 @@
+type SellingOrderStatus {
+  id: ID!
+  value: String
+  label: String
+  description: String
+  color: String
+  isDefault: Boolean
+  isDisabled: Boolean
+  mapWithSystemStatus: SellingOrderStatus
+  order: Int
+}
+
+type Query {
+  feedAllSellingStatusCustomAttributes: [SellingOrderStatus]
+  feedAllSystemSellingStatusCustomAttributes: [SellingOrderStatus]
+}
