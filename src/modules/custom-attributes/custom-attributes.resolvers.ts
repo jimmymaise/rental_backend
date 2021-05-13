@@ -1,11 +1,14 @@
 import { UseGuards } from '@nestjs/common';
-import { Resolver, Query } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
 import { CustomAttributesService } from './custom-attributes.service';
-import { SellingOrderStatusModel } from './models';
+import {
+  SellingOrderStatusModel,
+  SellingOrderStatusCreateModel,
+} from './models';
 
 @Resolver('CustomAttributes')
 export class CustomAttributesResolvers {
@@ -29,5 +32,46 @@ export class CustomAttributesResolvers {
     SellingOrderStatusModel[]
   > {
     return this.customAttributeService.getAllSystemSellingOrderStatus();
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.CREATE_CUSTOM_ATTRIBUTES)
+  @UseGuards(GqlAuthGuard)
+  async createSellingOrderStatusCustomAttribute(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: SellingOrderStatusCreateModel,
+  ): Promise<SellingOrderStatusModel> {
+    return this.customAttributeService.createSellingOrderStatusCustomAttribute(
+      user.currentOrgId,
+      data,
+    );
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_CUSTOM_ATTRIBUTES)
+  @UseGuards(GqlAuthGuard)
+  async updateSellingOrderStatusCustomAttribute(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+    @Args('data') data: SellingOrderStatusCreateModel,
+  ): Promise<SellingOrderStatusModel> {
+    return this.customAttributeService.updateSellingOrderStatusCustomAttribute(
+      id,
+      user.currentOrgId,
+      data,
+    );
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.DELETE_CUSTOM_ATTRIBUTES)
+  @UseGuards(GqlAuthGuard)
+  async deleteSellingOrderStatusCustomAttribute(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+  ): Promise<SellingOrderStatusModel> {
+    return this.customAttributeService.deleteSellingOrderStatusCustomAttribute(
+      id,
+      user.currentOrgId,
+    );
   }
 }

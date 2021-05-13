@@ -1,5 +1,5 @@
 type SellingOrderStatus {
-  id: ID!
+  id: ID
   value: String
   label: String
   description: String
@@ -8,6 +8,27 @@ type SellingOrderStatus {
   isDisabled: Boolean
   mapWithSystemStatus: SellingOrderStatus
   order: Int
+}
+
+input SellingOrderStatusCreateInput {
+  value: String!
+  label: String!
+  description: String
+  color: String
+  isDisabled: Boolean
+  mapWithSystemStatus: String
+  order: Int
+}
+
+type Mutation {
+  createSellingOrderStatusCustomAttribute(
+    data: SellingOrderStatusCreateInput!
+  ): SellingOrderStatus
+  updateSellingOrderStatusCustomAttribute(
+    id: ID!
+    data: SellingOrderStatusCreateInput!
+  ): SellingOrderStatus
+  deleteSellingOrderStatusCustomAttribute(id: ID!): SellingOrderStatus
 }
 
 type Query {
