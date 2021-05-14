@@ -13,6 +13,7 @@ export class SellingOrderStatusCreateModel {
 
   public static toCommonAttributesConfig(
     orgId: string,
+    userId: string,
     data: SellingOrderStatusCreateModel,
   ): CommonAttributesConfig {
     return {
@@ -24,10 +25,14 @@ export class SellingOrderStatusCreateModel {
         color: data.color,
       },
       isDefault: false,
-      isDeleted: false,
       isDisabled: data.isDisabled,
       mapWithSystemValue: data.mapWithSystemStatus,
-      orgId,
+      org: {
+        connect: {
+          id: orgId,
+        },
+      },
+      updatedBy: userId,
     } as any;
   }
 }

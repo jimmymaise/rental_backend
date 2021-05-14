@@ -35,10 +35,15 @@ export class CustomAttributesService {
 
   async createSellingOrderStatusCustomAttribute(
     orgId: string,
+    userId: string,
     data: SellingOrderStatusCreateModel,
   ): Promise<SellingOrderStatusModel> {
     const result = await this.prismaService.commonAttributesConfig.create({
-      data: SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, data),
+      data: SellingOrderStatusCreateModel.toCommonAttributesConfig(
+        orgId,
+        userId,
+        data,
+      ),
     });
 
     return SellingOrderStatusModel.fromCommonAttributesConfig(result);
@@ -47,6 +52,7 @@ export class CustomAttributesService {
   async updateSellingOrderStatusCustomAttribute(
     value: string,
     orgId: string,
+    userId: string,
     data: SellingOrderStatusCreateModel,
   ): Promise<SellingOrderStatusModel> {
     const result = await this.prismaService.commonAttributesConfig.update({
@@ -57,7 +63,11 @@ export class CustomAttributesService {
           type: data.type as CommonAttributesType,
         },
       },
-      data: SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, data),
+      data: SellingOrderStatusCreateModel.toCommonAttributesConfig(
+        orgId,
+        userId,
+        data,
+      ),
     });
 
     return SellingOrderStatusModel.fromCommonAttributesConfig(result);

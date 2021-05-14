@@ -43,6 +43,7 @@ export class CustomAttributesResolvers {
   ): Promise<SellingOrderStatusModel> {
     return this.customAttributeService.createSellingOrderStatusCustomAttribute(
       user.currentOrgId,
+      user.id,
       data,
     );
   }
@@ -58,6 +59,7 @@ export class CustomAttributesResolvers {
     return this.customAttributeService.updateSellingOrderStatusCustomAttribute(
       value,
       user.currentOrgId,
+      user.id,
       data,
     );
   }
