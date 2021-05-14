@@ -588,7 +588,6 @@ enum CommonAttributesType {
 }
 
 model CommonAttributesConfig {
-  id                 String               @id @default(uuid())
   description        String?
   value              String // Value khong duoc thay doi, sau khi da tao
   label              String
@@ -596,11 +595,17 @@ model CommonAttributesConfig {
   customConfigs      Json?
   mapWithSystemValue String?
   isDisabled         Boolean?             @default(false)
-  isDeleted          Boolean?
   isDefault          Boolean?             @default(false)
   order              Int?                 @default(0)
   org                Organization         @relation("CommonAttributesConfigBelongToOrg", fields: [orgId], references: [id])
   orgId              String
+  createdDate        DateTime             @default(now())
+  updatedDate        DateTime             @updatedAt
+  updatedBy          String
+
+  @@id([orgId, type, value])
+  @@index(fields: [orgId, type], name: "common_attributes_org_type_index")
+  @@index(fields: [orgId, mapWithSystemValue], name: "common_attributes_map_system_value_index")
 }
 
 // Item Reviews?

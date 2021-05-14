@@ -8,6 +8,7 @@ export class SellingOrderStatusCreateModel {
   public isDefault?: boolean;
   public isDisabled?: boolean;
   public mapWithSystemStatus?: string;
+  public type?: string;
   public order?: number;
 
   public static toCommonAttributesConfig(

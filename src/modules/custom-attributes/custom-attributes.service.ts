@@ -24,7 +24,6 @@ export class CustomAttributesService {
         where: {
           orgId,
           type: CommonAttributesType.SellingOrderStatus,
-          isDeleted: false,
         },
       },
     );
@@ -46,21 +45,17 @@ export class CustomAttributesService {
   }
 
   async updateSellingOrderStatusCustomAttribute(
-    id: string,
+    value: string,
     orgId: string,
     data: SellingOrderStatusCreateModel,
   ): Promise<SellingOrderStatusModel> {
-    const record = await this.prismaService.commonAttributesConfig.findUnique({
-      where: { id },
-    });
-
-    if (record.orgId !== orgId || record.isDeleted) {
-      throw new Error('OrgId not match or this record is deleted');
-    }
-
     const result = await this.prismaService.commonAttributesConfig.update({
       where: {
-        id,
+        orgId_type_value: {
+          orgId,
+          value,
+          type: data.type as CommonAttributesType,
+        },
       },
       data: SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, data),
     });
@@ -69,20 +64,13 @@ export class CustomAttributesService {
   }
 
   async deleteSellingOrderStatusCustomAttribute(
-    id: string,
+    value: string,
     orgId: string,
+    type: string,
   ): Promise<SellingOrderStatusModel> {
-    const record = await this.prismaService.commonAttributesConfig.findUnique({
-      where: { id },
-    });
-
-    if (record.orgId !== orgId || record.isDeleted) {
-      throw new Error('OrgId not match or this record is deleted');
-    }
-
     const result = await this.prismaService.commonAttributesConfig.delete({
       where: {
-        id,
+        orgId_type_value: { orgId, value, type: type as CommonAttributesType },
       },
     });
 

@@ -1,5 +1,4 @@
 type SellingOrderStatus {
-  id: ID
   value: String
   label: String
   description: String
@@ -17,6 +16,7 @@ input SellingOrderStatusCreateInput {
   color: String
   isDisabled: Boolean
   mapWithSystemStatus: String
+  type: String
   order: Int
 }
 
@@ -25,7 +25,7 @@ type Mutation {
     data: SellingOrderStatusCreateInput!
   ): SellingOrderStatus
   updateSellingOrderStatusCustomAttribute(
-    id: ID!
+    value: ID!
     data: SellingOrderStatusCreateInput!
   ): SellingOrderStatus
   deleteSellingOrderStatusCustomAttribute(id: ID!): SellingOrderStatus

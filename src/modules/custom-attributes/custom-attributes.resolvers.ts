@@ -52,11 +52,11 @@ export class CustomAttributesResolvers {
   @UseGuards(GqlAuthGuard)
   async updateSellingOrderStatusCustomAttribute(
     @CurrentUser() user: GuardUserPayload,
-    @Args('id') id: string,
+    @Args('value') value: string,
     @Args('data') data: SellingOrderStatusCreateModel,
   ): Promise<SellingOrderStatusModel> {
     return this.customAttributeService.updateSellingOrderStatusCustomAttribute(
-      id,
+      value,
       user.currentOrgId,
       data,
     );
@@ -67,11 +67,13 @@ export class CustomAttributesResolvers {
   @UseGuards(GqlAuthGuard)
   async deleteSellingOrderStatusCustomAttribute(
     @CurrentUser() user: GuardUserPayload,
-    @Args('id') id: string,
+    @Args('value') value: string,
+    @Args('type') type: string,
   ): Promise<SellingOrderStatusModel> {
     return this.customAttributeService.deleteSellingOrderStatusCustomAttribute(
-      id,
+      value,
       user.currentOrgId,
+      type,
     );
   }
 }
