@@ -55,19 +55,27 @@ export class CustomAttributesService {
     userId: string,
     data: SellingOrderStatusCreateModel,
   ): Promise<SellingOrderStatusModel> {
+    const updatedData = SellingOrderStatusCreateModel.toCommonAttributesConfig(
+      orgId,
+      userId,
+      data,
+    );
     const result = await this.prismaService.commonAttributesConfig.update({
       where: {
         orgId_type_value: {
           orgId,
           value,
-          type: data.type as CommonAttributesType,
+          type: CommonAttributesType.SellingOrderStatus,
         },
       },
-      data: SellingOrderStatusCreateModel.toCommonAttributesConfig(
-        orgId,
-        userId,
-        data,
-      ),
+      data: {
+        label: updatedData.label,
+        customConfigs: updatedData.customConfigs,
+        isDisabled: updatedData.isDisabled,
+        description: updatedData.description,
+        mapWithSystemValue: updatedData.mapWithSystemValue,
+        order: updatedData.order,
+      },
     });
 
     return SellingOrderStatusModel.fromCommonAttributesConfig(result);

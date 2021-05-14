@@ -16,7 +16,15 @@ input SellingOrderStatusCreateInput {
   color: String
   isDisabled: Boolean
   mapWithSystemStatus: String
-  type: String
+  order: Int
+}
+
+input SellingOrderStatusEditInput {
+  label: String!
+  description: String
+  color: String
+  isDisabled: Boolean
+  mapWithSystemStatus: String
   order: Int
 }
 
@@ -26,7 +34,7 @@ type Mutation {
   ): SellingOrderStatus
   updateSellingOrderStatusCustomAttribute(
     value: ID!
-    data: SellingOrderStatusCreateInput!
+    data: SellingOrderStatusEditInput!
   ): SellingOrderStatus
   deleteSellingOrderStatusCustomAttribute(id: ID!): SellingOrderStatus
 }
