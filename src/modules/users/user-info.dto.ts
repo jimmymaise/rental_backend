@@ -22,6 +22,7 @@ export interface UserInfoDTO {
 
 export interface PublicUserInfoDTO {
   id: string;
+  email?: string;
   displayName: string;
   currentOrgId?: string;
   orgIds?: string[];

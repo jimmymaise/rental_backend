@@ -58,6 +58,7 @@ type UserSummaryPagination {
 
 type PublicUserInfo {
   id: ID!
+  email: String
   displayName: String
   currentOrgId: String
   orgIds: [String]

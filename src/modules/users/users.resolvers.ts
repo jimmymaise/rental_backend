@@ -385,6 +385,7 @@ export class UsersResolvers {
 
     return result.map((user: UserInfoDTO) => ({
       id: user.id,
+      email: user.email,
       displayName: user.displayName,
       avatarImage: user.avatarImage,
       createdDate: user.createdDate,
