@@ -489,7 +489,7 @@ enum SellingOrderSystemStatusType {
 
 model SellingOrder {
   id             String                       @id @default(uuid())
-  orderCustomId  String?                      @unique
+  orderCustomId  String?
   org            Organization                 @relation("SellingOrderBelongToOrg", fields: [orgId], references: [id])
   orgId          String
   totalAmount    Float?                       @default(0)
@@ -536,20 +536,19 @@ model RentingOrderItem {
   unitPricePerMonth Float?                     @default(0)
   attachedFiles     Json?
 
-  isDeleted           Boolean?             @default(false)
-  createdDate         DateTime             @default(now())
-  updatedDate         DateTime             @updatedAt
-  updatedBy           String
-  item                Item?                @relation("RentingOrderItemBelongToItem", fields: [itemId], references: [id])
-  itemId              String?
-  org                 Organization         @relation("SellingOrderItemBelongToOrg", fields: [orgId], references: [id])
-  orgId               String
-  sellingOrder        SellingOrder         @relation("RentingOrderItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
-  sellingOrderId      String
-  rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToRentingOrderItem")
-  customerUser        User                 @relation("RentingOrderItemBelongToCustomer", fields: [customerUserId], references: [id])
-  customerUserId      String
-  order               Int?                 @default(0)
+  isDeleted      Boolean?     @default(false)
+  createdDate    DateTime     @default(now())
+  updatedDate    DateTime     @updatedAt
+  updatedBy      String
+  item           Item?        @relation("RentingOrderItemBelongToItem", fields: [itemId], references: [id])
+  itemId         String?
+  org            Organization @relation("SellingOrderItemBelongToOrg", fields: [orgId], references: [id])
+  orgId          String
+  sellingOrder   SellingOrder @relation("RentingOrderItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
+  sellingOrderId String
+  customerUser   User         @relation("RentingOrderItemBelongToCustomer", fields: [customerUserId], references: [id])
+  customerUserId String
+  order          Int?         @default(0)
 }
 
 enum RentingDepositItemSystemStatusType {
@@ -569,15 +568,13 @@ model RentingDepositItem {
   status        String
   isReturned    Boolean?                           @default(false) // Da hoan tra phan coc cho nguoi thue
 
-  sellingOrder       SellingOrder?     @relation("RentingDepositItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
-  sellingOrderId     String?
-  rentingOrderItem   RentingOrderItem? @relation("RentingDepositItemBelongToRentingOrderItem", fields: [rentingOrderItemId], references: [id])
-  rentingOrderItemId String?
-  org                Organization      @relation("RentingDepositItemBelongToOrg", fields: [orgId], references: [id])
-  orgId              String
-  customerUser       User              @relation("RentingDepositItemBelongToCustomer", fields: [customerUserId], references: [id])
-  customerUserId     String
-  order              Int?              @default(0)
+  sellingOrder   SellingOrder? @relation("RentingDepositItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
+  sellingOrderId String?
+  org            Organization  @relation("RentingDepositItemBelongToOrg", fields: [orgId], references: [id])
+  orgId          String
+  customerUser   User          @relation("RentingDepositItemBelongToCustomer", fields: [customerUserId], references: [id])
+  customerUserId String
+  order          Int?          @default(0)
 }
 
 enum CommonAttributesType {
