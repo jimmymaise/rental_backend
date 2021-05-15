@@ -369,8 +369,8 @@ export class UsersResolvers {
     @Args('searchValue') searchValue: string,
   ): Promise<PublicUserInfoDTO[]> {
     // avoid crawl data
-    if (searchValue.length < 5) {
-      throw new Error('Seach Value at least 5 characters');
+    if (searchValue.length < 3) {
+      return [];
     }
 
     // avoid crawl data

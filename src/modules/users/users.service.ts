@@ -636,8 +636,14 @@ export class UsersService {
   ): Promise<UserInfoDTO[]> {
     const users = await this.prismaService.user.findMany({
       where: {
-        email: { contains: emailOrPhoneNumber, mode: 'insensitive' },
-        phoneNumber: { contains: emailOrPhoneNumber, mode: 'insensitive' },
+        OR: [
+          {
+            email: { contains: emailOrPhoneNumber, mode: 'insensitive' },
+          },
+          {
+            phoneNumber: { contains: emailOrPhoneNumber, mode: 'insensitive' },
+          },
+        ],
         isDeleted: false,
       },
       take: 5,
