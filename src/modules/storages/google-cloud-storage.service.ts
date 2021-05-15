@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { IStorageService } from '@modules/storages/storage.service.interface';
 
 import * as googleStorage from '@google-cloud/storage';
 
 @Injectable()
-export class GoogleCloudStorageService {
+export class GoogleCloudStorageService implements IStorageService {
   private storage: googleStorage.Storage;
 
   constructor(private configService: ConfigService) {
@@ -40,24 +41,11 @@ export class GoogleCloudStorageService {
   //     .then(() => exports.getPublicUrl(bucketName, gcsName));
   // };
 
-  public async generateV4ReadSignedUrl(
+  public async getPreSignedUrlForDownload(
     fileName: string,
     bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME'),
   ): Promise<string> {
-    // These options will allow temporary read access to the file
-    const options: any = {
-      version: 'v4',
-      action: 'read',
-      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-    };
-
-    // Get a v4 signed URL for reading the file
-    const [url] = await this.storage
-      .bucket(bucketName)
-      .file(fileName)
-      .getSignedUrl(options);
-
-    return url;
+    return this.generateV4ReadSignedUrl(fileName, bucketName);
   }
 
   // https://www.codota.com/code/javascript/functions/%40google-cloud%2Fstorage/File/getSignedUrl
@@ -82,6 +70,26 @@ export class GoogleCloudStorageService {
 
     // const signedUrl = this.maskSignedUrl(response[0], bucketName);
     return response[0];
+  }
+
+  public async generateV4ReadSignedUrl(
+    fileName: string,
+    bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME'),
+  ): Promise<string> {
+    // These options will allow temporary read access to the file
+    const options: any = {
+      version: 'v4',
+      action: 'read',
+      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+    };
+
+    // Get a v4 signed URL for reading the file
+    const [url] = await this.storage
+      .bucket(bucketName)
+      .file(fileName)
+      .getSignedUrl(options);
+
+    return url;
   }
 
   public async makePublic(
@@ -139,6 +147,15 @@ export class GoogleCloudStorageService {
     });
   };
 
+  public sendFileToCloudByStream = (
+    stream: any,
+    filename: string,
+    mimetype: string,
+    bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME'),
+  ): Promise<string> => {
+    return this.sendFileToGCSByStream(stream, filename, mimetype, bucketName);
+  };
+
   public sendFileToGCSByStream = (
     stream: any,
     filename: string,
@@ -158,11 +175,11 @@ export class GoogleCloudStorageService {
             },
           }),
         )
-        .on('error', function (err) {
+        .on('error', function(err) {
           bucketFile.cloudStorageError = err;
           reject(err);
         })
-        .on('finish', function () {
+        .on('finish', function() {
           bucketFile.cloudStorageObject = gcsFileName;
 
           return bucketFile.makePublic().then(() => {

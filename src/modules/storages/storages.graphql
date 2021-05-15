@@ -1,57 +1,57 @@
 scalar Upload
 
 input PublicStorageFileInput {
-  id: String!
-  url: String!
-  imageSizes: [String]
-  isUploadField: Boolean
+    id: String!
+    url: String!
+    imageSizes: [String]
+    isUploadField: Boolean
 }
 
 input FileSizeMapInput {
-  original: Int
-  small: Int
-  medium: Int
-  large: Int
+    original: Int
+    small: Int
+    medium: Int
+    large: Int
 }
 
 input PreSignedUrlFileInput {
-  name: String!
-  contentType: String!
-  includes: [String]
-  fileSizeMap: FileSizeMapInput!
+    name: String!
+    contentType: String!
+    cloudName: String
+    fileSizeMap: FileSizeMapInput!
 }
 
 type PreSignedUrlImageData {
-  id: String!
-  preSignedUrl: String
-  mediumPreSignedUrl: String
-  smallPreSignedUrl: String
-  imageUrl: String
+    id: String!
+    preSignedUrl: String
+    mediumPreSignedUrl: String
+    smallPreSignedUrl: String
+    imageUrl: String
 }
 
 type PublicStorageFileSignedUrl {
-  url: String
-  smallUrl: String
-  mediumUrl: String
+    url: String
+    smallUrl: String
+    mediumUrl: String
 }
 
 type PublicStorageFile {
-  id: String
-  url: String
-  signedUrl: PublicStorageFileSignedUrl
+    id: String
+    url: String
+    signedUrl: PublicStorageFileSignedUrl
 }
 
 type StorageFile {
-  id: String!
-  url: String!
-  name: String
-  bucketName: String
-  folderName: String
-  contentType: String
+    id: String!
+    url: String!
+    name: String
+    bucketName: String
+    folderName: String
+    contentType: String
 }
 
 # uploadItemImage(file: Upload!): StorageFile!
 type Mutation {
-  generateImageFile(imageData: PreSignedUrlFileInput!): PreSignedUrlImageData!
-  deleteFileForListingItem(fileId: String!): String!
+    generateImageFile(imageData: PreSignedUrlFileInput!): PreSignedUrlImageData!
+    deleteFileForListingItem(fileId: String!): String!
 }

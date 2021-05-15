@@ -7,3 +7,17 @@ export interface StorageDTO {
   contentType: string;
   createdBy: string;
 }
+
+export class ImagePreSignedUploadInput {
+
+  name: string;
+  cloudName?: 'aws' | 'gc';
+  contentType: string;
+  fileSizeMap?: FileSizeMap;
+}
+
+export class FileSizeMap {
+  small?: number;
+  medium?: number;
+  original?: number;
+}

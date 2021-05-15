@@ -1,5 +1,5 @@
 import { UseGuards, BadRequestException } from '@nestjs/common';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
 // import * as sharp from 'sharp'
 import * as mime from 'mime-types';
 import { FileUsingLocate } from '@prisma/client';
@@ -9,10 +9,12 @@ import { GoogleCloudStorageService } from './google-cloud-storage.service';
 import { GqlAuthGuard } from '../auth/gpl-auth.guard';
 import { GuardUserPayload } from '../auth/auth.dto';
 import { CurrentUser } from '../auth/current-user.decorator';
-// import { StorageDTO } from './storage.dto';
+import { ImagePreSignedUploadInput } from './storage.dto';
 import { ErrorMap } from '@app/constants';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
+import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 
 interface PreSignedImageUrlData {
   id: string;
@@ -27,7 +29,8 @@ export class StoragesResolvers {
   constructor(
     private storagesService: StoragesService,
     private googleStorageService: GoogleCloudStorageService,
-  ) {}
+  ) {
+  }
 
   // @Mutation(() => Boolean)
   // async uploadItemImage(
@@ -73,26 +76,22 @@ export class StoragesResolvers {
   // }
 
   // Pre Generation Image File Signed URL for upload
+  á;
+
   @Mutation()
   @Permissions(Permission.NEED_LOGIN)
   @UseGuards(GqlAuthGuard)
   async generateImageFile(
+    @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('imageData')
-    imageData: {
-      name: string;
-      contentType: string;
-      includes?: string[]; // medium, small
-      fileSizeMap?: {
-        small?: number;
-        medium?: number;
-        original?: number;
-      };
-    },
+      imageData: ImagePreSignedUploadInput,
   ): Promise<PreSignedImageUrlData> {
-    let smallPreSignedUrl;
-    let mediumPreSignedUrl;
-    let preSignedUrl;
+    const cloudName = imageData['cloudName'] || 'gc';
+    this.storagesService.setCloudService(cloudName);
+    const imageTypes = ['small', 'medium', 'original'];
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const imageTypesInclude = graphQLFieldHandler.getIncludeForRelationalFields(imageTypes);
 
     const contentType = imageData.contentType;
     const fileSizeMap = imageData.fileSizeMap;
@@ -122,36 +121,23 @@ export class StoragesResolvers {
       user.id,
       user.currentOrgId,
     );
-
-    if (imageData?.includes?.includes('small')) {
-      smallPreSignedUrl = await this.storagesService.generateUploadImageSignedUrl(
-        `${folderName}/small-${fileName}`,
-        contentType,
-        fileSizeMap.small,
-      );
+    let imagePreSignedUrl = {};
+    for (let type in imageTypesInclude) {
+      if (imageTypes[type] === true) {
+        imagePreSignedUrl[type] = await this.storagesService.generateUploadImageSignedUrl(
+          `${folderName}/${type}-${fileName}`,
+          contentType,
+          fileSizeMap[type],
+        );
+      }
     }
 
-    if (imageData?.includes?.includes('medium')) {
-      mediumPreSignedUrl = await this.storagesService.generateUploadImageSignedUrl(
-        `${folderName}/medium-${fileName}`,
-        contentType,
-        fileSizeMap.medium,
-      );
-    }
-
-    if (imageData?.includes?.includes('original')) {
-      preSignedUrl = await this.storagesService.generateUploadImageSignedUrl(
-        `${folderName}/${fileName}`,
-        contentType,
-        fileSizeMap.original,
-      );
-    }
 
     return {
       id: storageInfo.id,
-      preSignedUrl,
-      mediumPreSignedUrl,
-      smallPreSignedUrl,
+      preSignedUrl: imagePreSignedUrl['original'],
+      mediumPreSignedUrl: imagePreSignedUrl['medium'],
+      smallPreSignedUrl: imagePreSignedUrl['small'],
       imageUrl: fileFullUrl,
     };
   }
@@ -179,7 +165,8 @@ export class StoragesResolvers {
         fileData.name,
         fileData.bucketName,
       );
-    } catch {}
+    } catch {
+    }
 
     try {
       this.googleStorageService.deleteFile(
@@ -187,7 +174,8 @@ export class StoragesResolvers {
         `small-${fileData.name}`,
         fileData.bucketName,
       );
-    } catch {}
+    } catch {
+    }
 
     try {
       this.googleStorageService.deleteFile(
@@ -195,7 +183,8 @@ export class StoragesResolvers {
         `medium-${fileData.name}`,
         fileData.bucketName,
       );
-    } catch {}
+    } catch {
+    }
 
     return fileId;
   }

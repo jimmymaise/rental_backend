@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { GoogleCloudStorageService } from './google-cloud-storage.service';
+import { S3StorageService } from './aws-s3-storage.service';
+
 import { PrismaService } from '../prisma/prisma.service';
 import { FileStorage, FileUsingLocate } from '@prisma/client';
 
@@ -12,20 +14,36 @@ export class StoragesService {
   constructor(
     private prismaService: PrismaService,
     private googleStorageService: GoogleCloudStorageService,
-  ) {}
+    private s3StorageService: S3StorageService,
+    private cloudStorageService: GoogleCloudStorageService | S3StorageService,
+  ) {
+  }
+
+  public setCloudService(cloudName) {
+    switch (cloudName) {
+      case 'gc':
+        this.cloudStorageService = this.googleStorageService;
+        return this;
+      case 'aws':
+        this.cloudStorageService = this.s3StorageService;
+        return this;
+      default:
+        throw Error('invalid cloud name');
+    }
+  }
 
   public getPublicUrl = (
     bucketName: string,
     folderName: string,
     fileName: string,
-  ) => this.googleStorageService.getPublicUrl(bucketName, folderName, fileName);
+  ) => this.cloudStorageService.getPublicUrl(bucketName, folderName, fileName);
 
   public getImagePublicUrl(folderName: string, fileName: string): string {
     return this.getPublicUrl(DEFAULT_BUCKET_NAME, folderName, fileName);
   }
 
   public async generateReadSignedUrl(fileName: string): Promise<string> {
-    return await this.googleStorageService.generateV4ReadSignedUrl(
+    return await this.cloudStorageService.getPreSignedUrlForDownload(
       fileName,
       DEFAULT_BUCKET_NAME,
     );
@@ -36,7 +54,7 @@ export class StoragesService {
     contentType: string,
     size: number,
   ): Promise<string> {
-    return this.googleStorageService.getPreSignedUrlForUpload(
+    return this.cloudStorageService.getPreSignedUrlForUpload(
       fileName,
       contentType,
       size,
@@ -59,28 +77,31 @@ export class StoragesService {
     let mediumUrl;
 
     try {
-      url = await this.googleStorageService.generateV4ReadSignedUrl(
+      url = await this.cloudStorageService.getPreSignedUrlForDownload(
         `${folderName}/${fileName}`,
         bucketName,
       );
-    } catch (err) {}
+    } catch (err) {
+    }
 
     if (includes.includes('small')) {
       try {
-        smallUrl = await this.googleStorageService.generateV4ReadSignedUrl(
+        smallUrl = await this.cloudStorageService.getPreSignedUrlForDownload(
           `${folderName}/small-${fileName}`,
           bucketName,
         );
-      } catch (err) {}
+      } catch (err) {
+      }
     }
 
     if (includes.includes('medium')) {
       try {
-        mediumUrl = await this.googleStorageService.generateV4ReadSignedUrl(
+        mediumUrl = await this.cloudStorageService.getPreSignedUrlForDownload(
           `${folderName}/medium-${fileName}`,
           bucketName,
         );
-      } catch (err) {}
+      } catch (err) {
+      }
     }
 
     return {
@@ -107,32 +128,35 @@ export class StoragesService {
     if (fileDb) {
       if (includes.includes('original')) {
         try {
-          await this.googleStorageService.makePublic(
+          await this.cloudStorageService.makePublic(
             fileDb.folderName,
             fileDb.name,
             fileDb.bucketName,
           );
-        } catch (err) {}
+        } catch (err) {
+        }
       }
 
       if (includes.includes('small')) {
         try {
-          await this.googleStorageService.makePublic(
+          await this.cloudStorageService.makePublic(
             fileDb.folderName,
             `small-${fileDb.name}`,
             fileDb.bucketName,
           );
-        } catch (err) {}
+        } catch (err) {
+        }
       }
 
       if (includes.includes('medium')) {
         try {
-          await this.googleStorageService.makePublic(
+          await this.cloudStorageService.makePublic(
             fileDb.folderName,
             `medium-${fileDb.name}`,
             fileDb.bucketName,
           );
-        } catch (err) {}
+        } catch (err) {
+        }
       }
     }
 
@@ -153,7 +177,7 @@ export class StoragesService {
     filename: string,
     mimetype: string,
   ): Promise<string> {
-    return this.googleStorageService.sendFileToGCSByStream(
+    return this.cloudStorageService.sendFileToCloudByStream(
       stream,
       filename,
       mimetype,
