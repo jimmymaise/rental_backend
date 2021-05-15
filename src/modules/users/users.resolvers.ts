@@ -20,8 +20,6 @@ import {
   UserInfoInputDTO,
   UserInfoDTO,
   PublicUserInfoDTO,
-  QueryWithOffsetPagingDTO,
-  UserSummary,
 } from './user-info.dto';
 import { OffsetPaginationDTO } from '../../models';
 import { Permission } from '@modules/auth/permission/permission.enum';
@@ -57,29 +55,6 @@ export class UsersResolvers {
     ]);
 
     return this.userService.getUserDetailData(user.id, true, include);
-  }
-
-  @Query()
-  @Permissions(Permission.NEED_LOGIN)
-  @UseGuards(GqlAuthGuard)
-  async getMyOrgUsersWithPaging(
-    @Info() info: GraphQLResolveInfo,
-    @CurrentUser() user: GuardUserPayload,
-    @Args('getMyOrgUsersWithOffsetPagingData')
-    getMyOrgUsersWithOffsetPagingData: QueryWithOffsetPagingDTO,
-  ): Promise<OffsetPaginationDTO<UserSummary>> {
-    const graphQLFieldHandler = new GraphQLFieldHandler(info);
-    const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
-      { fieldName: 'userInfo', fieldPath: 'items.UserSummary' },
-    ]);
-
-    return this.userService.getAllUsersByOrgIdWithOffsetPaging(
-      user.currentOrgId,
-      getMyOrgUsersWithOffsetPagingData.pageSize,
-      getMyOrgUsersWithOffsetPagingData.offset,
-      getMyOrgUsersWithOffsetPagingData.orderBy,
-      include,
-    );
   }
 
   @Query()
@@ -385,5 +360,35 @@ export class UsersResolvers {
       offset: offset || 0,
       limit: actualLimit,
     };
+  }
+
+  @Query()
+  @UseGuards(GqlAuthGuard)
+  @Permissions(Permission.ORG_MASTER, Permission.FIND_USER_INFO)
+  async findUserInfoByEmailPhoneNumber(
+    @Args('searchValue') searchValue: string,
+  ): Promise<PublicUserInfoDTO[]> {
+    // avoid crawl data
+    if (searchValue.length < 5) {
+      throw new Error('Seach Value at least 5 characters');
+    }
+
+    // avoid crawl data
+    const finalSearchValue = searchValue.replace(
+      /\@gmail|\.com|\.vn|\.net|\@yahoo|\@live/gi,
+      '',
+    );
+
+    const result = await this.userService.findByEmailOrPhoneNumber(
+      finalSearchValue,
+    );
+
+    return result.map((user: UserInfoDTO) => ({
+      id: user.id,
+      displayName: user.displayName,
+      avatarImage: user.avatarImage,
+      createdDate: user.createdDate,
+      phoneNumber: user.phoneNumber,
+    }));
   }
 }

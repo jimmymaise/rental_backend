@@ -98,10 +98,8 @@ type UserAuth {
 type Query {
   whoAmI: UserInfo
   userPublicProfile(userId: String!): PublicUserInfo
-  getMyOrgUsersWithPaging(
-    getMyOrgUsersWithOffsetPagingData: BaseOffsetPagingInput
-  ): UserSummaryPagination
   adminUserListFeed(query: UserQuery): UserPagination
+  findUserInfoByEmailPhoneNumber(searchValue: String!): [PublicUserInfo]
 }
 
 type Mutation {

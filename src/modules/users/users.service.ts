@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import sample from 'lodash/sample';
 import isEmpty from 'lodash/isEmpty';
@@ -20,7 +20,6 @@ import { AuthService } from '@modules/auth/auth.service';
 import { OrganizationsService } from '@modules/organizations/organizations.service';
 
 import { AuthDTO } from '@modules/auth/auth.dto';
-import { CursorPagingHandler } from '@helpers/handlers/cursor-paging-handler';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 
 import { OffsetPaginationDTO } from '@app/models';
@@ -104,30 +103,6 @@ export class UsersService {
       include,
     );
     return pagingHandler.getPage(offset);
-  }
-
-  async getAllUsersByOrgIdWithOffsetPaging(
-    orgId,
-    pageSize: number,
-    offset?: any,
-    orderBy?: any,
-    include?: any,
-  ): Promise<OffsetPaginationDTO<UserSummary>> {
-    const whereQuery = {
-      employees: {
-        some: {
-          orgId: orgId,
-        },
-      },
-    };
-
-    return this.getAllUsersWithOffsetPaging(
-      whereQuery,
-      pageSize,
-      offset,
-      orderBy,
-      include,
-    );
   }
 
   async getUserDetailData(
@@ -587,11 +562,7 @@ export class UsersService {
     return this.authService.generateNewToken(null, userId, orgId);
   }
 
-  async loginByEmail(
-    email: string,
-    password: string,
-    orgId?: string,
-  ): Promise<AuthDTO> {
+  async loginByEmail(email: string, password: string): Promise<AuthDTO> {
     return this.authService.loginByEmail(email, password);
   }
 
@@ -658,5 +629,41 @@ export class UsersService {
 
     const cacheKey = getUserCacheKey(userId);
     await this.redisCacheService.del(cacheKey);
+  }
+
+  async findByEmailOrPhoneNumber(
+    emailOrPhoneNumber: string,
+  ): Promise<UserInfoDTO[]> {
+    const users = await this.prismaService.user.findMany({
+      where: {
+        email: { contains: emailOrPhoneNumber, mode: 'insensitive' },
+        phoneNumber: { contains: emailOrPhoneNumber, mode: 'insensitive' },
+        isDeleted: false,
+      },
+      take: 5,
+    });
+    const result: UserInfoDTO[] = [];
+
+    for (let i = 0; i < users.length; i++) {
+      const userId = users[i].id;
+
+      const cacheKey = getUserCacheKey(userId);
+      let userDetail = await this.redisCacheService.get(cacheKey);
+
+      if (!userDetail) {
+        const userData = await this.getUserById(userId, {
+          employeesThisUserBecome: true,
+        });
+        const userInfoData = await this.getUserInfoById(userId);
+
+        userDetail = toUserInfoDTO(userData, userInfoData);
+
+        await this.redisCacheService.set(cacheKey, userDetail || {}, 3600);
+      }
+
+      result.push(userDetail as UserInfoDTO);
+    }
+
+    return result;
   }
 }

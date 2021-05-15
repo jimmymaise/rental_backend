@@ -94,5 +94,11 @@
     "description": "",
     "isInternal": false,
     "order": 47
+  },
+  "FIND_USER_INFO": {
+    "name": "FIND_USER_INFO",
+    "description": "",
+    "isInternal": false,
+    "order": 47
   }
 }

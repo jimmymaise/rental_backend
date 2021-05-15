@@ -26,6 +26,8 @@ export const Permission = {
   UPDATE_CUSTOM_ATTRIBUTES: permissions.UPDATE_CUSTOM_ATTRIBUTES.name,
   DELETE_CUSTOM_ATTRIBUTES: permissions.DELETE_CUSTOM_ATTRIBUTES.name,
   CREATE_CUSTOM_ATTRIBUTES: permissions.CREATE_CUSTOM_ATTRIBUTES.name,
+
+  FIND_USER_INFO: permissions.FIND_USER_INFO.name,
 };
 
 export default Permission;

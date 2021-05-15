@@ -9,7 +9,7 @@ export interface UserInfoDTO {
   orgIds?: string[];
   bio?: string;
   avatarImage: StoragePublicDTO;
-  coverImage: StoragePublicDTO;
+  coverImage?: StoragePublicDTO;
   email?: string;
   phoneNumber?: string;
   authPhoneNumber?: string;
@@ -25,12 +25,12 @@ export interface PublicUserInfoDTO {
   displayName: string;
   currentOrgId?: string;
   orgIds?: string[];
-  bio: string;
+  bio?: string;
   avatarImage: StoragePublicDTO;
-  coverImage: StoragePublicDTO;
+  coverImage?: StoragePublicDTO;
   createdDate: number;
   phoneNumber?: string;
-  permissions: string[];
+  permissions?: string[];
 }
 
 export interface UserSummary {
