@@ -1,16 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { AuthModule } from '../auth/auth.module';
+import { AuthModule } from '@modules/auth/auth.module';
 import { OrganizationsModule } from '@modules/organizations/organizations.module';
 
-import { RedisCacheModule } from '../redis-cache/redis-cache.module';
+import { RedisCacheModule } from '@modules/redis-cache/redis-cache.module';
 
 import { EmployeesService } from './employees.service';
-import { AdminUsersService } from './admin-users.service';
-import { StoragesModule } from '../storages/storages.module';
+import { StoragesModule } from '@modules/storages/storages.module';
 import { EmployeesResolvers } from './employees.resolvers';
-import { MailModule } from '../mail/mail.module';
+import { MailModule } from '@modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -21,7 +20,8 @@ import { MailModule } from '../mail/mail.module';
     RedisCacheModule,
     OrganizationsModule,
   ],
-  providers: [EmployeesService, AdminUsersService, EmployeesResolvers],
+  providers: [EmployeesService, EmployeesResolvers],
   exports: [EmployeesService],
 })
-export class EmployeesModule {}
+export class EmployeesModule {
+}
