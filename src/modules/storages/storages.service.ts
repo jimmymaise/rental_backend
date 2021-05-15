@@ -11,11 +11,12 @@ const DEFAULT_BUCKET_NAME =
 
 @Injectable()
 export class StoragesService {
+  private cloudStorageService: GoogleCloudStorageService | S3StorageService;
+
   constructor(
     private prismaService: PrismaService,
     private googleStorageService: GoogleCloudStorageService,
     private s3StorageService: S3StorageService,
-    private cloudStorageService: GoogleCloudStorageService | S3StorageService,
   ) {
   }
 
