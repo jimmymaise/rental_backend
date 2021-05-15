@@ -415,8 +415,10 @@ export class ItemsResolvers {
   async getMyOrgItemsWithPaging(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
-    @Args('getMyOrgItemsWithOffsetPagingData')
-    getMyOrgItemsWithOffsetPagingData: QueryWithOffsetPagingDTO,
+    @Args('search')
+    search: string,
+    @Args('paging')
+    paging: QueryWithOffsetPagingDTO,
   ): Promise<OffsetPaginationDTO<ItemDTO>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
@@ -426,13 +428,14 @@ export class ItemsResolvers {
       { fieldName: 'rentingItemRequests', fieldPath: 'items.Item' },
     ]);
 
-    return this.itemService.getAllItemsByOrgIdWithOffsetPaging(
-      user.currentOrgId,
-      getMyOrgItemsWithOffsetPagingData.pageSize,
-      getMyOrgItemsWithOffsetPagingData.offset,
-      getMyOrgItemsWithOffsetPagingData.orderBy,
+    return this.itemService.getAllItemsByOrgIdWithOffsetPaging({
+      searchValue: search,
+      orgId: user.currentOrgId,
+      pageSize: paging.pageSize,
+      offset: paging.offset,
+      orderBy: paging.orderBy,
       include,
-    );
+    });
   }
 
   @Query()

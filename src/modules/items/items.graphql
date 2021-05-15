@@ -117,7 +117,8 @@ type Query {
   ): Item
   adminFeed(query: ItemQuery): ItemPagination
   getMyOrgItemsWithPaging(
-    getMyOrgItemsWithOffsetPagingData: BaseOffsetPagingInput
+    search: String
+    paging: BaseOffsetPagingInput
   ): ItemPagination
   feedOrgItemDetail(id: String!): Item
 }

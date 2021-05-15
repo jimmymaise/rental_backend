@@ -328,17 +328,29 @@ export class ItemsService {
     return item;
   }
 
-  async getAllItemsByOrgIdWithOffsetPaging(
+  async getAllItemsByOrgIdWithOffsetPaging({
+    searchValue,
     orgId,
-    pageSize: number,
-    offset?: any,
-    orderBy?: any,
-    include?: any,
-  ): Promise<OffsetPaginationDTO<ItemDTO>> {
+    pageSize,
+    offset,
+    orderBy,
+    include,
+  }: {
+    searchValue?: string;
+    orgId: string;
+    pageSize: number;
+    offset?: number;
+    orderBy?: string;
+    include?: any;
+  }): Promise<OffsetPaginationDTO<ItemDTO>> {
     const whereQuery = {
       orgId: orgId,
       isDeleted: false,
     };
+
+    if (searchValue?.length) {
+      whereQuery['keyword'] = { contains: searchValue, mode: 'insensitive' };
+    }
 
     return this.getAllItemsWithOffsetPaging(
       whereQuery,
