@@ -18,8 +18,7 @@ export class OrganizationsService {
     private prismaService: PrismaService,
     public authService: AuthService,
     public redisCacheService: RedisCacheService,
-  ) {
-  }
+  ) {}
 
   async getOrganization(orgId: string, include: any): Promise<Organization> {
     return this.prismaService.organization.findUnique({
@@ -79,16 +78,16 @@ export class OrganizationsService {
     orgId: string,
     include?: any,
   ): Promise<Organization> {
-    const employeesAdded = (updateMyOrganizationData['addEmployeesToOrgByUserId'] || []).map(
-      (employeeUserId) => {
-        return {
-          create: { userId: employeeUserId },
-          where: {
-            userId_orgId: { userId: employeeUserId, orgId: orgId },
-          },
-        };
-      },
-    );
+    const employeesAdded = (
+      updateMyOrganizationData['addEmployeesToOrgByUserId'] || []
+    ).map((employeeUserId) => {
+      return {
+        create: { userId: employeeUserId },
+        where: {
+          userId_orgId: { userId: employeeUserId, orgId: orgId },
+        },
+      };
+    });
     const employeesRemoved = (
       updateMyOrganizationData['removeEmployeesFromOrgByUserId'] || []
     ).map((employeeUserId) => {
@@ -112,7 +111,8 @@ export class OrganizationsService {
     if (setOwner) {
       employeeUpdateCommand['update'] = {
         where: {
-          userId: setOwner.userId, orgId: orgId,
+          userId: setOwner.userId,
+          orgId: orgId,
         },
         data: {
           isOwner: setOwner.isOwner,

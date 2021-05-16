@@ -23,5 +23,4 @@ import { MailModule } from '@modules/mail/mail.module';
   providers: [EmployeesService, EmployeesResolvers],
   exports: [EmployeesService],
 })
-export class EmployeesModule {
-}
+export class EmployeesModule {}

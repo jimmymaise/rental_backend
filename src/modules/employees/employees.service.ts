@@ -1,23 +1,15 @@
 import { Injectable } from '@nestjs/common';
 
-
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  EmployeeDto,
-} from './employee.dto';
+import { EmployeeDto } from './employee.dto';
 
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 
 import { OffsetPaginationDTO } from '@app/models';
 
-
 @Injectable()
 export class EmployeesService {
-  constructor(
-    private prismaService: PrismaService,
-  ) {
-  }
-
+  constructor(private prismaService: PrismaService) {}
 
   async getEmployeesWithOffsetPaging(
     whereQuery: any,
@@ -56,6 +48,4 @@ export class EmployeesService {
       include,
     );
   }
-
-
 }

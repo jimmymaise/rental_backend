@@ -1,39 +1,29 @@
 scalar JSON
 
-
 type EmployeeInfo {
-    id: ID!
-    orgId: String
-    userId: String
-    isOwner: Boolean,
-    user:DBUserInfoForEmployee
+  id: ID!
+  orgId: String
+  userId: String
+  isOwner: Boolean
+  user: DBUserInfoForEmployee
 }
 
-
-
-
-
 type DBUserInfoForEmployee {
-    phoneNumber: String,
-    email: String,
-    createdDate: Float
-    userInfo: DBUserInfo
+  phoneNumber: String
+  email: String
+  createdDate: Float
+  userInfo: DBUserInfo
 }
 
 type EmployeePagination {
-    items: [EmployeeInfo]
-    total: Int
-    limit: Int
-    offset: Int
+  items: [EmployeeInfo]
+  total: Int
+  limit: Int
+  offset: Int
 }
-
-
 
 type Query {
-    getMyOrgEmployeesWithPaging(
-        getMyOrgEmployeesWithOffsetPagingData: BaseOffsetPagingInput
-    ): EmployeePagination
-
+  getMyOrgEmployeesWithPaging(
+    getMyOrgEmployeesWithOffsetPagingData: BaseOffsetPagingInput
+  ): EmployeePagination
 }
-
-

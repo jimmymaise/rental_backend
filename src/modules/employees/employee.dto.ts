@@ -7,9 +7,8 @@ export interface EmployeeDto {
   orgId: string;
   userId: string;
   isOwner: boolean;
-  userInfo: EmployeeUserInfo
+  userInfo: EmployeeUserInfo;
 }
-
 
 export interface EmployeeUserInfo {
   id: string;

@@ -17,8 +17,7 @@ export class StoragesService {
     private prismaService: PrismaService,
     private googleStorageService: GoogleCloudStorageService,
     private s3StorageService: S3StorageService,
-  ) {
-  }
+  ) {}
 
   public setCloudService(cloudName) {
     switch (cloudName) {
@@ -39,8 +38,8 @@ export class StoragesService {
     fileName: string,
   ) => this.cloudStorageService.getPublicUrl(bucketName, folderName, fileName);
 
-  public getImagePublicUrl(folderName: string, fileName: string): string {
-    return this.getPublicUrl(DEFAULT_BUCKET_NAME, folderName, fileName);
+  public getImagePublicUrl(folderPath: string, fileName: string): string {
+    return this.getPublicUrl(DEFAULT_BUCKET_NAME, folderPath, fileName);
   }
 
   public async generateReadSignedUrl(fileName: string): Promise<string> {
@@ -82,8 +81,7 @@ export class StoragesService {
         `${folderName}/${fileName}`,
         bucketName,
       );
-    } catch (err) {
-    }
+    } catch (err) {}
 
     if (includes.includes('small')) {
       try {
@@ -91,8 +89,7 @@ export class StoragesService {
           `${folderName}/small-${fileName}`,
           bucketName,
         );
-      } catch (err) {
-      }
+      } catch (err) {}
     }
 
     if (includes.includes('medium')) {
@@ -101,8 +98,7 @@ export class StoragesService {
           `${folderName}/medium-${fileName}`,
           bucketName,
         );
-      } catch (err) {
-      }
+      } catch (err) {}
     }
 
     return {
@@ -134,8 +130,7 @@ export class StoragesService {
             fileDb.name,
             fileDb.bucketName,
           );
-        } catch (err) {
-        }
+        } catch (err) {}
       }
 
       if (includes.includes('small')) {
@@ -145,8 +140,7 @@ export class StoragesService {
             `small-${fileDb.name}`,
             fileDb.bucketName,
           );
-        } catch (err) {
-        }
+        } catch (err) {}
       }
 
       if (includes.includes('medium')) {
@@ -156,8 +150,7 @@ export class StoragesService {
             `medium-${fileDb.name}`,
             fileDb.bucketName,
           );
-        } catch (err) {
-        }
+        } catch (err) {}
       }
     }
 

@@ -9,7 +9,6 @@ export interface StorageDTO {
 }
 
 export class ImagePreSignedUploadInput {
-
   name: string;
   cloudName?: 'aws' | 'gc';
   contentType: string;

@@ -29,8 +29,7 @@ export class StoragesResolvers {
   constructor(
     private storagesService: StoragesService,
     private googleStorageService: GoogleCloudStorageService,
-  ) {
-  }
+  ) {}
 
   // @Mutation(() => Boolean)
   // async uploadItemImage(
@@ -85,13 +84,15 @@ export class StoragesResolvers {
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('imageData')
-      imageData: ImagePreSignedUploadInput,
+    imageData: ImagePreSignedUploadInput,
   ): Promise<PreSignedImageUrlData> {
     const cloudName = imageData['cloudName'] || 'gc';
     this.storagesService.setCloudService(cloudName);
     const imageTypes = ['small', 'medium', 'original'];
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
-    const imageTypesInclude = graphQLFieldHandler.getIncludeForRelationalFields(imageTypes);
+    const imageTypesInclude = graphQLFieldHandler.getIncludeForRelationalFields(
+      imageTypes,
+    );
 
     const contentType = imageData.contentType;
     const fileSizeMap = imageData.fileSizeMap;
@@ -124,14 +125,15 @@ export class StoragesResolvers {
     let imagePreSignedUrl = {};
     for (let type in imageTypesInclude) {
       if (imageTypes[type] === true) {
-        imagePreSignedUrl[type] = await this.storagesService.generateUploadImageSignedUrl(
+        imagePreSignedUrl[
+          type
+        ] = await this.storagesService.generateUploadImageSignedUrl(
           `${folderName}/${type}-${fileName}`,
           contentType,
           fileSizeMap[type],
         );
       }
     }
-
 
     return {
       id: storageInfo.id,
@@ -165,8 +167,7 @@ export class StoragesResolvers {
         fileData.name,
         fileData.bucketName,
       );
-    } catch {
-    }
+    } catch {}
 
     try {
       this.googleStorageService.deleteFile(
@@ -174,8 +175,7 @@ export class StoragesResolvers {
         `small-${fileData.name}`,
         fileData.bucketName,
       );
-    } catch {
-    }
+    } catch {}
 
     try {
       this.googleStorageService.deleteFile(
@@ -183,8 +183,7 @@ export class StoragesResolvers {
         `medium-${fileData.name}`,
         fileData.bucketName,
       );
-    } catch {
-    }
+    } catch {}
 
     return fileId;
   }

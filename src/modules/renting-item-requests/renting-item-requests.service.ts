@@ -600,8 +600,7 @@ export class RentingItemRequetsService {
           },
         },
         comment,
-        files:
-          files && files.length ? files : [],
+        files: files && files.length ? files : [],
         type: RequestActivityTypeMap[status],
         createdBy: updatedBy,
         updatedBy,
@@ -627,10 +626,7 @@ export class RentingItemRequetsService {
             },
           },
           comment,
-          files:
-            files && files.length
-              ? files
-              : [],
+          files: files && files.length ? files : [],
           type: RentingItemRequestActivityType.Comment,
           createdBy: updatedBy,
           updatedBy,

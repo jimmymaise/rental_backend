@@ -13,7 +13,7 @@ import { StoragesResolvers } from './storages.resolvers';
     S3StorageService,
     ConfigService,
     StoragesService,
-    StoragesResolvers
+    StoragesResolvers,
   ],
   exports: [StoragesService],
 })

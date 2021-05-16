@@ -35,4 +35,3 @@ class SetOwner {
   userId: string;
   isOwner: boolean;
 }
-
