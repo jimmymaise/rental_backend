@@ -1,6 +1,6 @@
 export interface IStorageService {
   getPreSignedUrlForUpload(
-    filename: string,
+    filePath: string,
     contentType: string,
     size: number,
     bucketName: string,
@@ -8,7 +8,7 @@ export interface IStorageService {
   ): Promise<string>;
 
   getPreSignedUrlForDownload(
-    filename: string,
+    filePath: string,
     bucketName: string,
     otherOptions?: any,
   ): Promise<string>;
