@@ -19,10 +19,10 @@ export class GoogleCloudStorageService implements IStorageService {
 
   public getPublicUrl = (
     bucketName: string,
-    folderName: string,
+    folderPath: string,
     fileName: string,
   ) =>
-    `${process.env.GOOGLE_CLOUD_STORAGE_HOST}${bucketName}/${folderName}/${fileName}`;
+    `${process.env.GOOGLE_CLOUD_STORAGE_HOST}${bucketName}/${folderPath}/${fileName}`;
 
   private maskSignedUrl = (orginalUrl: string, bucketName: string) =>
     orginalUrl.replace(
@@ -42,21 +42,21 @@ export class GoogleCloudStorageService implements IStorageService {
   // };
 
   public async getPreSignedUrlForDownload(
-    fileName: string,
+    filePath: string,
     bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME'),
   ): Promise<string> {
-    return this.generateV4ReadSignedUrl(fileName, bucketName);
+    return this.generateV4ReadSignedUrl(filePath, bucketName);
   }
 
   // https://www.codota.com/code/javascript/functions/%40google-cloud%2Fstorage/File/getSignedUrl
   public async getPreSignedUrlForUpload(
-    fileName: string,
+    filePath: string,
     contentType: string,
     size: number,
     bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME'),
   ): Promise<string> {
     const bucket = this.storage.bucket(bucketName);
-    const file = bucket.file(fileName);
+    const file = bucket.file(filePath);
 
     const response = await file.getSignedUrl({
       action: 'write',
@@ -73,7 +73,7 @@ export class GoogleCloudStorageService implements IStorageService {
   }
 
   public async generateV4ReadSignedUrl(
-    fileName: string,
+    filePath: string,
     bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME'),
   ): Promise<string> {
     // These options will allow temporary read access to the file
@@ -86,37 +86,37 @@ export class GoogleCloudStorageService implements IStorageService {
     // Get a v4 signed URL for reading the file
     const [url] = await this.storage
       .bucket(bucketName)
-      .file(fileName)
+      .file(filePath)
       .getSignedUrl(options);
 
     return url;
   }
 
   public async makePublic(
-    folderName: string,
+    folderPath: string,
     fileName: string,
     bucketName: string,
   ): Promise<void> {
     const bucket = this.storage.bucket(bucketName);
-    const file = bucket.file(`${folderName}/${fileName}`);
+    const file = bucket.file(`${folderPath}/${fileName}`);
 
     await file.makePublic();
   }
 
   public async deleteFile(
-    folderName: string,
+    folderPath: string,
     fileName: string,
     bucketName: string,
   ): Promise<void> {
     const bucket = this.storage.bucket(bucketName);
-    const file = bucket.file(`${folderName}/${fileName}`);
+    const file = bucket.file(`${folderPath}/${fileName}`);
 
     await file.delete();
   }
 
   public sendFileToGCS = (
     file: any,
-    folderName: string = 'custom-folder',
+    folderPath: string = 'custom-folder',
     bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME'),
   ): Promise<any> => {
     return new Promise((resolve, reject) => {
@@ -139,7 +139,7 @@ export class GoogleCloudStorageService implements IStorageService {
         bucketFile.cloudStorageObject = gcsFileName;
 
         return bucketFile.makePublic().then(() => {
-          resolve(this.getPublicUrl(bucketName, folderName, gcsFileName));
+          resolve(this.getPublicUrl(bucketName, folderPath, gcsFileName));
         });
       });
 
@@ -149,22 +149,22 @@ export class GoogleCloudStorageService implements IStorageService {
 
   public sendFileToCloudByStream = (
     stream: any,
-    filename: string,
+    filePath: string,
     mimetype: string,
     bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME'),
   ): Promise<string> => {
-    return this.sendFileToGCSByStream(stream, filename, mimetype, bucketName);
+    return this.sendFileToGCSByStream(stream, filePath, mimetype, bucketName);
   };
 
   public sendFileToGCSByStream = (
     stream: any,
-    filename: string,
+    filePath: string,
     mimetype: string,
     bucketName: string = this.configService.get('DEFAULT_BUCKET_NAME'),
   ): Promise<string> => {
     return new Promise((resolve, reject) => {
       const bucket = this.storage.bucket(bucketName);
-      const gcsFileName = filename;
+      const gcsFileName = filePath;
       const bucketFile: any = bucket.file(gcsFileName);
 
       stream
@@ -175,11 +175,11 @@ export class GoogleCloudStorageService implements IStorageService {
             },
           }),
         )
-        .on('error', function(err) {
+        .on('error', function (err) {
           bucketFile.cloudStorageError = err;
           reject(err);
         })
-        .on('finish', function() {
+        .on('finish', function () {
           bucketFile.cloudStorageObject = gcsFileName;
 
           return bucketFile.makePublic().then(() => {
