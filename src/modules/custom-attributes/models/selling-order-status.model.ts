@@ -1,30 +1,20 @@
 import { CommonAttributesConfig } from '@prisma/client';
 
+import { BaseCustomModel } from './base-custom-attribute.model';
 import { SellingOrderSystemStatusTypesMap } from '../constants/selling-order-system-status-types';
 
-export class SellingOrderStatusModel {
-  public value: string;
-  public label: string;
-  public description?: string;
+export class SellingOrderStatusModel extends BaseCustomModel {
   public color: string;
-  public isDefault?: boolean;
-  public isDisabled?: boolean;
   public mapWithSystemStatus?: SellingOrderStatusModel;
-  public order?: number;
 
   public static fromCommonAttributesConfig(
     data: CommonAttributesConfig,
   ): SellingOrderStatusModel {
     return {
-      value: data.value,
-      label: data.label,
-      description: data.description,
+      ...BaseCustomModel.fromCommonAttributesConfig(data),
       color: data.customConfigs ? data.customConfigs['color'] : null,
-      isDefault: data.isDefault,
-      isDisabled: data.isDisabled,
       mapWithSystemStatus:
         SellingOrderSystemStatusTypesMap[data.mapWithSystemValue],
-      order: data.order,
     };
   }
 }

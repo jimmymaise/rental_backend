@@ -1,14 +1,10 @@
 import { CommonAttributesConfig, CommonAttributesType } from '@prisma/client';
 
-export class SellingOrderStatusCreateModel {
-  public value: string;
-  public label: string;
-  public description?: string;
+import { BaseCustomAttributeCreateModel } from './base-custom-attribute-create.model';
+
+export class SellingOrderStatusCreateModel extends BaseCustomAttributeCreateModel {
   public color: string;
-  public isDefault?: boolean;
-  public isDisabled?: boolean;
   public mapWithSystemStatus?: string;
-  public order?: number;
 
   public static toCommonAttributesConfig(
     orgId: string,
@@ -16,22 +12,17 @@ export class SellingOrderStatusCreateModel {
     data: SellingOrderStatusCreateModel,
   ): CommonAttributesConfig {
     return {
-      description: data.description,
-      value: data.value,
-      label: data.label,
+      ...BaseCustomAttributeCreateModel.toCommonAttributesConfig(
+        orgId,
+        userId,
+        data,
+      ),
       type: CommonAttributesType.SellingOrderStatus,
       customConfigs: {
         color: data.color,
       },
-      isDefault: false,
-      isDisabled: data.isDisabled,
+
       mapWithSystemValue: data.mapWithSystemStatus,
-      org: {
-        connect: {
-          id: orgId,
-        },
-      },
-      updatedBy: userId,
     } as any;
   }
 }
