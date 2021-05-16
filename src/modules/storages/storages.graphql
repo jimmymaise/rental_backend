@@ -17,7 +17,8 @@ input FileSizeMapInput {
 input PreSignedUrlFileInput {
     name: String!
     contentType: String!
-    cloudName: String
+    cloudName: String,
+    includes: [String]
     fileSizeMap: FileSizeMapInput!
 }
 
