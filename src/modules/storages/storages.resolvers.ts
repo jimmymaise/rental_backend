@@ -14,7 +14,6 @@ import { ErrorMap } from '@app/constants';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GraphQLResolveInfo } from 'graphql';
-import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 
 interface PreSignedImageUrlData {
   id: string;
@@ -76,7 +75,6 @@ export class StoragesResolvers {
   // }
 
   // Pre Generation Image File Signed URL for upload
-  á;
 
   @Mutation()
   @Permissions(Permission.NEED_LOGIN)
