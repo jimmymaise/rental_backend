@@ -15,6 +15,7 @@ import {
 import { SellingOrderSystemStatusTypes } from './constants/selling-order-system-status-types';
 import { RentingOrderItemStatusTypes } from './constants/renting-order-item-system-status-types';
 import { RentingDepositItemSystemStatusTypes } from './constants/renting-deposit-item-system-status-types';
+import { RentingDepositItemSystemTypeTypes } from './constants/renting-deposit-item-system-type-types';
 
 @Injectable()
 export class CustomAttributesService {
@@ -274,7 +275,7 @@ export class CustomAttributesService {
 
   // Renting Deposit Item Type
   getAllSystemRentingDepositItemType(): RentingDepositItemTypeModel[] {
-    return RentingDepositItemSystemStatusTypes;
+    return RentingDepositItemSystemTypeTypes;
   }
 
   async getAllRentingDepositItemTypeCustomAttributes(
