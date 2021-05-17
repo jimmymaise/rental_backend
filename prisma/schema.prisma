@@ -482,6 +482,7 @@ model ChatMessage {
 
 enum SellingOrderSystemStatusType {
   New
+  Approved
   InProgress
   Completed
   Cancelled
@@ -513,6 +514,7 @@ model SellingOrder {
 
 enum RentingOrderItemStatusType {
   New
+  Approved
   InProgress
   Completed
   Cancelled
@@ -553,8 +555,15 @@ model RentingOrderItem {
 
 enum RentingDepositItemSystemStatusType {
   New
-  InProgress
+  Approved
   Returned
+}
+
+enum RentingDepositItemSystemType {
+  Money
+  Document
+  Item
+  Other
 }
 
 model RentingDepositItem {
@@ -562,11 +571,9 @@ model RentingDepositItem {
   type          String
   note          String?
   valueAmount   Float?                             @default(0)
-  isMoney       Boolean?                           @default(false)
   attachedFiles Json?
   systemStatus  RentingDepositItemSystemStatusType
   status        String
-  isReturned    Boolean?                           @default(false) // Da hoan tra phan coc cho nguoi thue
 
   sellingOrder   SellingOrder? @relation("RentingDepositItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
   sellingOrderId String?
