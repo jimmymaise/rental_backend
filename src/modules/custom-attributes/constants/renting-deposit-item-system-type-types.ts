@@ -3,23 +3,19 @@ import { RentingDepositItemSystemType } from '@prisma/client';
 export const RentingDepositItemSystemTypeTypesMap = {
   [RentingDepositItemSystemType.Money]: {
     value: RentingDepositItemSystemType.Money,
-    label: 'NEW',
-    color: '#17b7ff',
+    label: 'MONEY',
   },
   [RentingDepositItemSystemType.Document]: {
     value: RentingDepositItemSystemType.Document,
-    label: 'APPROVED',
-    color: '#38d9a9',
+    label: 'DOCUMENT',
   },
   [RentingDepositItemSystemType.Item]: {
     value: RentingDepositItemSystemType.Item,
-    label: 'RETURNED',
-    color: '#2FCC71',
+    label: 'ITEM',
   },
   [RentingDepositItemSystemType.Other]: {
     value: RentingDepositItemSystemType.Other,
-    label: 'RETURNED',
-    color: '#2FCC71',
+    label: 'OTHER',
   },
 };
 
