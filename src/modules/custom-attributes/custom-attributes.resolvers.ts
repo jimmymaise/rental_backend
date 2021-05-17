@@ -12,6 +12,8 @@ import {
   RentingOrderItemStatusModel,
   RentingDepositItemStatusModel,
   RentingDepositItemStatusCreateModel,
+  RentingDepositItemTypeCreateModel,
+  RentingDepositItemTypeModel,
 } from './models';
 
 @Resolver('CustomAttributes')
@@ -210,6 +212,72 @@ export class CustomAttributesResolvers {
     @Args('type') type: string,
   ): Promise<RentingDepositItemStatusModel> {
     return this.customAttributeService.deleteRentingDepositItemStatusCustomAttribute(
+      value,
+      user.currentOrgId,
+      type,
+    );
+  }
+
+  // Renting Deposit Item Type
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_CUSTOM_ATTRIBUTES)
+  @UseGuards(GqlAuthGuard)
+  async feedAllRentingDepositItemTypeCustomAttributes(
+    @CurrentUser() user: GuardUserPayload,
+  ): Promise<RentingDepositItemTypeModel[]> {
+    return this.customAttributeService.getAllRentingDepositItemTypeCustomAttributes(
+      user.currentOrgId,
+    );
+  }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_CUSTOM_ATTRIBUTES)
+  @UseGuards(GqlAuthGuard)
+  async feedAllSystemRentingDepositItemTypeCustomAttributes(): Promise<
+    RentingDepositItemTypeModel[]
+  > {
+    return this.customAttributeService.getAllSystemRentingDepositItemType();
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.CREATE_CUSTOM_ATTRIBUTES)
+  @UseGuards(GqlAuthGuard)
+  async createRentingDepositItemTypeCustomAttribute(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: RentingDepositItemTypeCreateModel,
+  ): Promise<RentingDepositItemTypeModel> {
+    return this.customAttributeService.createRentingDepositItemTypeCustomAttribute(
+      user.currentOrgId,
+      user.id,
+      data,
+    );
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_CUSTOM_ATTRIBUTES)
+  @UseGuards(GqlAuthGuard)
+  async updateRentingDepositItemTypeCustomAttribute(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('value') value: string,
+    @Args('data') data: RentingDepositItemTypeCreateModel,
+  ): Promise<RentingDepositItemTypeModel> {
+    return this.customAttributeService.updateRentingDepositItemTypeCustomAttribute(
+      value,
+      user.currentOrgId,
+      user.id,
+      data,
+    );
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.DELETE_CUSTOM_ATTRIBUTES)
+  @UseGuards(GqlAuthGuard)
+  async deleteRentingDepositItemTypeCustomAttribute(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('value') value: string,
+    @Args('type') type: string,
+  ): Promise<RentingDepositItemTypeModel> {
+    return this.customAttributeService.deleteRentingDepositItemTypeCustomAttribute(
       value,
       user.currentOrgId,
       type,
