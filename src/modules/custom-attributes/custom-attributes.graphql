@@ -60,6 +60,37 @@ input RentingOrderItemStatusEditInput {
   order: Int
 }
 
+# Renting Deposit Item
+type RentingDepositItemStatus {
+  value: String
+  label: String
+  description: String
+  color: String
+  isDefault: Boolean
+  isDisabled: Boolean
+  mapWithSystemStatus: RentingDepositItemStatus
+  order: Int
+}
+
+input RentingDepositItemStatusCreateInput {
+  value: String!
+  label: String!
+  description: String
+  color: String
+  isDisabled: Boolean
+  mapWithSystemStatus: String
+  order: Int
+}
+
+input RentingDepositItemStatusEditInput {
+  label: String!
+  description: String
+  color: String
+  isDisabled: Boolean
+  mapWithSystemStatus: String
+  order: Int
+}
+
 type Mutation {
   # Selling Order Status
   createSellingOrderStatusCustomAttribute(
@@ -79,6 +110,17 @@ type Mutation {
     data: RentingOrderItemStatusEditInput!
   ): RentingOrderItemStatus
   deleteRentingOrderItemStatusCustomAttribute(id: ID!): RentingOrderItemStatus
+  # Renting Deposit Item Status
+  createRentingDepositItemStatusCustomAttribute(
+    data: RentingDepositItemStatusCreateInput!
+  ): RentingDepositItemStatus
+  updateRentingDepositItemStatusCustomAttribute(
+    value: ID!
+    data: RentingDepositItemStatusEditInput!
+  ): RentingDepositItemStatus
+  deleteRentingDepositItemStatusCustomAttribute(
+    id: ID!
+  ): RentingDepositItemStatus
 }
 
 type Query {
@@ -88,4 +130,7 @@ type Query {
   # Renting Order Item Status
   feedAllRentingOrderItemStatusCustomAttributes: [RentingOrderItemStatus]
   feedAllSystemRentingOrderItemStatusCustomAttributes: [RentingOrderItemStatus]
+  # Renting Deposit Item Status
+  feedAllRentingDepositItemStatusCustomAttributes: [RentingDepositItemStatus]
+  feedAllSystemRentingDepositItemStatusCustomAttributes: [RentingDepositItemStatus]
 }

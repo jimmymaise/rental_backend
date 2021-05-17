@@ -7,9 +7,12 @@ import {
   SellingOrderStatusCreateModel,
   RentingOrderItemStatusModel,
   RentingOrderItemStatusCreateModel,
+  RentingDepositItemStatusCreateModel,
+  RentingDepositItemStatusModel,
 } from './models';
 import { SellingOrderSystemStatusTypes } from './constants/selling-order-system-status-types';
 import { RentingOrderItemStatusTypes } from './constants/renting-order-item-system-status-types';
+import { RentingDepositItemSystemStatusTypes } from './constants/renting-deposit-item-system-status-types';
 
 @Injectable()
 export class CustomAttributesService {
@@ -181,5 +184,89 @@ export class CustomAttributesService {
     });
 
     return RentingOrderItemStatusModel.fromCommonAttributesConfig(result);
+  }
+
+  // Renting Deposit Item Status
+  getAllSystemRentingDepositItemStatus(): RentingDepositItemStatusModel[] {
+    return RentingDepositItemSystemStatusTypes;
+  }
+
+  async getAllRentingDepositItemStatusCustomAttributes(
+    orgId: string,
+  ): Promise<RentingDepositItemStatusModel[]> {
+    const queryResult = await this.prismaService.commonAttributesConfig.findMany(
+      {
+        where: {
+          orgId,
+          type: CommonAttributesType.RentingDepositItemStatus,
+        },
+      },
+    );
+
+    return queryResult.map((record) =>
+      RentingDepositItemStatusModel.fromCommonAttributesConfig(record),
+    );
+  }
+
+  async createRentingDepositItemStatusCustomAttribute(
+    orgId: string,
+    userId: string,
+    data: RentingDepositItemStatusCreateModel,
+  ): Promise<RentingDepositItemStatusModel> {
+    const result = await this.prismaService.commonAttributesConfig.create({
+      data: RentingDepositItemStatusCreateModel.toCommonAttributesConfig(
+        orgId,
+        userId,
+        data,
+      ),
+    });
+
+    return RentingDepositItemStatusModel.fromCommonAttributesConfig(result);
+  }
+
+  async updateRentingDepositItemStatusCustomAttribute(
+    value: string,
+    orgId: string,
+    userId: string,
+    data: RentingDepositItemStatusCreateModel,
+  ): Promise<RentingDepositItemStatusModel> {
+    const updatedData = RentingDepositItemStatusCreateModel.toCommonAttributesConfig(
+      orgId,
+      userId,
+      data,
+    );
+    const result = await this.prismaService.commonAttributesConfig.update({
+      where: {
+        orgId_type_value: {
+          orgId,
+          value,
+          type: CommonAttributesType.RentingDepositItemStatus,
+        },
+      },
+      data: {
+        label: updatedData.label,
+        customConfigs: updatedData.customConfigs,
+        isDisabled: updatedData.isDisabled,
+        description: updatedData.description,
+        mapWithSystemValue: updatedData.mapWithSystemValue,
+        order: updatedData.order,
+      },
+    });
+
+    return RentingDepositItemStatusModel.fromCommonAttributesConfig(result);
+  }
+
+  async deleteRentingDepositItemStatusCustomAttribute(
+    value: string,
+    orgId: string,
+    type: string,
+  ): Promise<RentingDepositItemStatusModel> {
+    const result = await this.prismaService.commonAttributesConfig.delete({
+      where: {
+        orgId_type_value: { orgId, value, type: type as CommonAttributesType },
+      },
+    });
+
+    return RentingDepositItemStatusModel.fromCommonAttributesConfig(result);
   }
 }
