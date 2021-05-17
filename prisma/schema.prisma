@@ -569,6 +569,7 @@ enum RentingDepositItemSystemType {
 model RentingDepositItem {
   id            String                             @id @default(uuid())
   type          String
+  systemType    RentingDepositItemSystemType
   note          String?
   valueAmount   Float?                             @default(0)
   attachedFiles Json?
