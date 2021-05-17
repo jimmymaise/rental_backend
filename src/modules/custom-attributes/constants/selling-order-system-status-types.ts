@@ -6,6 +6,16 @@ export const SellingOrderSystemStatusTypesMap = {
     label: 'NEW',
     color: '#17b7ff',
   },
+  [SellingOrderSystemStatusType.Approved]: {
+    value: SellingOrderSystemStatusType.Approved,
+    label: 'APPROVED',
+    color: '#38d9a9',
+  },
+  [SellingOrderSystemStatusType.InProgress]: {
+    value: SellingOrderSystemStatusType.InProgress,
+    label: 'IN_PROGRESS',
+    color: '#ffae63',
+  },
   [SellingOrderSystemStatusType.InProgress]: {
     value: SellingOrderSystemStatusType.InProgress,
     label: 'IN_PROGRESS',
@@ -25,6 +35,7 @@ export const SellingOrderSystemStatusTypesMap = {
 
 export const SellingOrderSystemStatusTypes = [
   SellingOrderSystemStatusTypesMap.New,
+  SellingOrderSystemStatusTypesMap.Approved,
   SellingOrderSystemStatusTypesMap.InProgress,
   SellingOrderSystemStatusTypesMap.Completed,
   SellingOrderSystemStatusTypesMap.Cancelled,
