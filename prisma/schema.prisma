@@ -586,7 +586,7 @@ model RentingDepositItem {
 
 enum CommonAttributesType {
   SellingOrderStatus
-  SellingOrderItemStatus
+  RentingOrderItemStatus
   RentingDepositItemStatus
   RentingDepositItemType
 }
