@@ -16,11 +16,6 @@ export const RentingOrderItemSystemStatusTypesMap = {
     label: 'IN_PROGRESS',
     color: '#ffae63',
   },
-  [RentingOrderItemStatusType.InProgress]: {
-    value: RentingOrderItemStatusType.InProgress,
-    label: 'IN_PROGRESS',
-    color: '#ffae63',
-  },
   [RentingOrderItemStatusType.Completed]: {
     value: RentingOrderItemStatusType.Completed,
     label: 'COMPLETED',

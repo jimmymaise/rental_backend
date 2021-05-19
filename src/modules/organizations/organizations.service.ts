@@ -11,6 +11,7 @@ import {
 } from './organizations.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
+import { DataInitilizeService } from '@modules/data-initialize/data-initialize.service';
 
 @Injectable()
 export class OrganizationsService {
@@ -18,6 +19,7 @@ export class OrganizationsService {
     private prismaService: PrismaService,
     public authService: AuthService,
     public redisCacheService: RedisCacheService,
+    public dataInitilizeService: DataInitilizeService,
   ) {}
 
   async getOrganization(orgId: string, include: any): Promise<Organization> {
@@ -46,29 +48,11 @@ export class OrganizationsService {
       },
     );
 
-    // Create default Role
-    await this.prismaService.role.create({
-      data: {
-        name: 'Admin',
-        description: 'Admin',
-        isDefault: true,
-        org: {
-          connect: {
-            id: organizationCreatedResult.id,
-          },
-        },
-        users: {
-          connect: {
-            id: userId,
-          },
-        },
-        permissions: {
-          connect: {
-            name: Permission.ORG_MASTER,
-          },
-        },
-      },
-    });
+    // Create default Data
+    await this.dataInitilizeService.initDefaultDataForNewOrg(
+      organizationCreatedResult.id,
+      userId,
+    );
 
     return organizationCreatedResult;
   }

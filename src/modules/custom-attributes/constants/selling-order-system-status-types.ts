@@ -16,11 +16,6 @@ export const SellingOrderSystemStatusTypesMap = {
     label: 'IN_PROGRESS',
     color: '#ffae63',
   },
-  [SellingOrderSystemStatusType.InProgress]: {
-    value: SellingOrderSystemStatusType.InProgress,
-    label: 'IN_PROGRESS',
-    color: '#ffae63',
-  },
   [SellingOrderSystemStatusType.Completed]: {
     value: SellingOrderSystemStatusType.Completed,
     label: 'COMPLETED',
