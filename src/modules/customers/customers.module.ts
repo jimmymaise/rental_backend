@@ -5,12 +5,12 @@ import { AuthModule } from '@modules/auth/auth.module';
 
 import { RedisCacheModule } from '@modules/redis-cache/redis-cache.module';
 
-import { EmployeesService } from './employees.service';
+import { CustomersService } from './customers.service';
 import { StoragesModule } from '@modules/storages/storages.module';
-import { EmployeesResolvers } from './employees.resolvers';
+import { CustomersResolvers } from './customers.resolvers';
 
 @Module({
   imports: [AuthModule, ConfigModule, StoragesModule, RedisCacheModule],
-  providers: [EmployeesService, EmployeesResolvers],
+  providers: [CustomersService, CustomersResolvers],
 })
-export class EmployeesModule {}
+export class CustomersModule {}

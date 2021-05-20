@@ -1,14 +1,14 @@
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 
-export interface EmployeeDto {
+export interface CustomerDto {
   id: string;
   orgId: string;
   userId: string;
   isOwner: boolean;
-  userInfo: EmployeeUserInfo;
+  userInfo: CustomerUserInfo;
 }
 
-export interface EmployeeUserInfo {
+export interface CustomerUserInfo {
   id: string;
   displayName?: string;
   bio?: string;

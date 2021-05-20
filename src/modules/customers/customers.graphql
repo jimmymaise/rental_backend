@@ -1,0 +1,29 @@
+scalar JSON
+
+type CustomerInfo {
+  id: ID!
+  orgId: String
+  userId: String
+  isOwner: Boolean
+  user: DBUserInfoForCustomer
+}
+
+type DBUserInfoForCustomer {
+  phoneNumber: String
+  email: String
+  createdDate: Float
+  userInfo: DBUserInfo
+}
+
+type CustomerPagination {
+  items: [CustomerInfo]
+  total: Int
+  limit: Int
+  offset: Int
+}
+
+type Query {
+  getMyOrgCustomersWithPaging(
+    getMyOrgCustomersWithOffsetPagingData: BaseOffsetPagingInput
+  ): CustomerPagination
+}
