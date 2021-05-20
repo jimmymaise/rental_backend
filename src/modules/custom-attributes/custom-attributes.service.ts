@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CommonAttributesType } from '@prisma/client';
+import {
+  CommonAttributesType,
+  RentingDepositItemSystemStatusType,
+  RentingOrderItemStatusType,
+  SellingOrderSystemStatusType,
+} from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -355,5 +360,93 @@ export class CustomAttributesService {
     });
 
     return RentingDepositItemTypeModel.fromCommonAttributesConfig(result);
+  }
+
+  async getListCustomSellingOrderStatus(
+    orgId: string,
+    systemStatus: SellingOrderSystemStatusType,
+  ): Promise<SellingOrderStatusModel[]> {
+    const result = await this.prismaService.commonAttributesConfig.findMany({
+      where: {
+        orgId,
+        type: CommonAttributesType.SellingOrderStatus,
+        mapWithSystemValue: systemStatus,
+      },
+    });
+
+    if (!result?.length) {
+      throw new Error(
+        `getListCustomSellingOrderStatus: Default of ${systemStatus} not existing`,
+      );
+    }
+
+    return result.map((item) =>
+      SellingOrderStatusModel.fromCommonAttributesConfig(item),
+    );
+  }
+
+  async getListCustomRentingOrderItemStatus(
+    orgId: string,
+    systemStatus: RentingOrderItemStatusType,
+  ): Promise<RentingOrderItemStatusModel[]> {
+    const result = await this.prismaService.commonAttributesConfig.findMany({
+      where: {
+        orgId,
+        type: CommonAttributesType.RentingOrderItemStatus,
+        mapWithSystemValue: systemStatus,
+      },
+    });
+
+    if (!result?.length) {
+      throw new Error(
+        `getListCustomRentingOrderItemStatus: Default of ${systemStatus} not existing`,
+      );
+    }
+
+    return result.map((item) =>
+      RentingOrderItemStatusModel.fromCommonAttributesConfig(item),
+    );
+  }
+
+  async getListCustomRentingDepositItemStatus(
+    orgId: string,
+    systemStatus: RentingDepositItemSystemStatusType,
+  ): Promise<RentingDepositItemStatusModel[]> {
+    const result = await this.prismaService.commonAttributesConfig.findMany({
+      where: {
+        orgId,
+        type: CommonAttributesType.RentingDepositItemStatus,
+        mapWithSystemValue: systemStatus,
+      },
+    });
+
+    if (!result?.length) {
+      throw new Error(
+        `getListCustomRentingDepositItemStatus: Default of ${systemStatus} not existing`,
+      );
+    }
+
+    return result.map((item) =>
+      RentingDepositItemStatusModel.fromCommonAttributesConfig(item),
+    );
+  }
+
+  async getListCustomRentingDepositItemType(
+    orgId: string,
+  ): Promise<RentingDepositItemTypeModel[]> {
+    const result = await this.prismaService.commonAttributesConfig.findMany({
+      where: {
+        orgId,
+        type: CommonAttributesType.RentingDepositItemType,
+      },
+    });
+
+    if (!result?.length) {
+      throw new Error(`getListCustomRentingDepositItemType not existing`);
+    }
+
+    return result.map((item) =>
+      RentingDepositItemTypeModel.fromCommonAttributesConfig(item),
+    );
   }
 }

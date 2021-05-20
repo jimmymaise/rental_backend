@@ -99,6 +99,30 @@
     "name": "FIND_USER_INFO",
     "description": "",
     "isInternal": false,
-    "order": 47
+    "order": 49
+  },
+  "GET_SELLING_ORDER": {
+    "name": "GET_SELLING_ORDER",
+    "description": "",
+    "isInternal": false,
+    "order": 50
+  },
+  "CREATE_SELLING_ORDER": {
+    "name": "CREATE_SELLING_ORDER",
+    "description": "",
+    "isInternal": false,
+    "order": 53
+  },
+  "DELETE_SELLING_ORDER": {
+    "name": "DELETE_SELLING_ORDER",
+    "description": "",
+    "isInternal": false,
+    "order": 55
+  },
+  "UPDATE_SELLING_ORDER": {
+    "name": "UPDATE_SELLING_ORDER",
+    "description": "",
+    "isInternal": false,
+    "order": 57
   }
 }

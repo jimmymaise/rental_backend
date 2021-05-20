@@ -9,5 +9,6 @@ import { CustomAttributesResolvers } from './custom-attributes.resolvers';
 @Module({
   imports: [AuthModule, ConfigModule],
   providers: [CustomAttributesService, CustomAttributesResolvers],
+  exports: [CustomAttributesService],
 })
 export class CustomAttributesModule {}

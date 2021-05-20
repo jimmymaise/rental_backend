@@ -20,3 +20,4 @@ export * from './permissions';
 export * from './employees';
 export * from './custom-attributes';
 export * from './data-initialize';
+export * from './selling-orders';

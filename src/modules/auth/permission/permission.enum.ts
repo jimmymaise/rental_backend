@@ -28,6 +28,11 @@ export const Permission = {
   CREATE_CUSTOM_ATTRIBUTES: permissions.CREATE_CUSTOM_ATTRIBUTES.name,
 
   FIND_USER_INFO: permissions.FIND_USER_INFO.name,
+
+  GET_SELLING_ORDER: permissions.GET_SELLING_ORDER.name,
+  UPDATE_SELLING_ORDER: permissions.UPDATE_SELLING_ORDER.name,
+  DELETE_SELLING_ORDER: permissions.DELETE_SELLING_ORDER.name,
+  CREATE_SELLING_ORDER: permissions.CREATE_SELLING_ORDER.name,
 };
 
 export default Permission;

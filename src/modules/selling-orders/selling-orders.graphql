@@ -1,0 +1,73 @@
+input RentingDepositItemCreateInput {
+  type: String!
+  note: String
+  valueAmount: Float
+  attachedFiles: [PublicStorageFileInput]
+}
+
+type RentingDepositItem {
+  id: String!
+  type: String
+  note: String
+  valueAmount: Float
+  attachedFiles: [PublicStorageFile]
+}
+
+input RentingOrderItemCreateInput {
+  sku: String
+  name: String
+  note: String
+  amount: Float
+  quantity: Int
+  pickupDateTime: Float
+  returningDateTime: Float
+  unitPrice: Float
+  unitPricePerDay: Float
+  unitPricePerWeek: Float
+  unitPricePerMonth: Float
+  attachedFiles: [PublicStorageFileInput]
+  itemId: String!
+}
+
+type RentingOrderItem {
+  id: String!
+  sku: String
+  name: String
+  note: String
+  amount: Float
+  quantity: Int
+  pickupDateTime: Float
+  returningDateTime: Float
+  unitPrice: Float
+  unitPricePerDay: Float
+  unitPricePerWeek: Float
+  unitPricePerMonth: Float
+  attachedFiles: [PublicStorageFile]
+  itemId: String!
+}
+
+input SellingOrderCreateInput {
+  orderCustomId: String
+  totalAmount: Float
+  note: String
+  customUserId: String
+  attachedFiles: [PublicStorageFileInput]
+  rentingOrderItems: [RentingOrderItemCreateInput]
+  rentingDepositItems: [RentingDepositItemCreateInput]
+}
+
+type SellingOrder {
+  id: String!
+  orderCustomId: String
+  totalAmount: Float
+  note: String
+  customUserId: String
+  attachedFiles: [PublicStorageFile]
+  rentingOrderItems: [RentingOrderItem]
+  rentingDepositItems: [RentingDepositItem]
+}
+
+type Mutation {
+  # Selling Order Status
+  createSellingOrder(data: SellingOrderCreateInput!): SellingOrder
+}
