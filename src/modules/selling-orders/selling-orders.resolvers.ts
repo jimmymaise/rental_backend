@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Query, Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args } from '@nestjs/graphql';
 
 import { SellingOrdersService } from './selling-orders.service';
 import { Permission } from '@modules/auth/permission/permission.enum';

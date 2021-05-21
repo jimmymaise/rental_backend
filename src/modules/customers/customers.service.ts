@@ -59,7 +59,6 @@ export class CustomersService {
     orgId,
     data,
   }: {
-    creatorId: string;
     orgId: string;
     data: CustomerCreateModel;
   }): Promise<CustomerModel> {

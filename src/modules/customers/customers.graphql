@@ -22,8 +22,35 @@ type CustomerPagination {
   offset: Int
 }
 
+input CustomerCreateInput {
+  email: String
+  phoneNumber: String
+  address: String
+  birthday: Float
+  displayName: String
+  gender: String
+}
+
+type Customer {
+  id: String!
+  userId: String
+  userInfo: DBUserInfo
+  email: String
+  phoneNumber: String
+  address: String
+  birthday: Float
+  displayName: String
+  gender: String
+}
+
 type Query {
   getMyOrgCustomersWithPaging(
     getMyOrgCustomersWithOffsetPagingData: BaseOffsetPagingInput
   ): CustomerPagination
+  getCustomerDetail(id: ID!): Customer
+}
+
+type Mutation {
+  createCustomer(data: CustomerCreateInput!): Customer
+  updateCustomer(id: ID!, data: CustomerCreateInput!): Customer
 }

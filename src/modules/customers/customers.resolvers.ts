@@ -1,7 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { QueryWithOffsetPagingDTO } from '@app/models';
 
-import { Args, Resolver, Query, Info } from '@nestjs/graphql';
+import { Args, Resolver, Query, Info, Mutation } from '@nestjs/graphql';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 
 import { CustomersService } from './customers.service';
@@ -14,13 +14,14 @@ import { Permission } from '@modules/auth/permission/permission.enum';
 // Internal for only UI UserPermission
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GraphQLResolveInfo } from 'graphql';
+import { CustomerModel, CustomerCreateModel } from './models';
 
 @Resolver('Customer')
 export class CustomersResolvers {
   constructor(private readonly customerService: CustomersService) {}
 
   @Query()
-  @Permissions(Permission.NEED_LOGIN)
+  @Permissions(Permission.ORG_MASTER, Permission.GET_CUSTOMER)
   @UseGuards(GqlAuthGuard)
   async getMyOrgCustomersWithPaging(
     @Info() info: GraphQLResolveInfo,
@@ -53,5 +54,46 @@ export class CustomersResolvers {
       getMyOrgCustomersWithOffsetPagingData.orderBy,
       include,
     );
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.CREATE_CUSTOMER)
+  @UseGuards(GqlAuthGuard)
+  async createCustomer(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: CustomerCreateModel,
+  ): Promise<CustomerModel> {
+    return this.customerService.createCustomer({
+      orgId: user.currentOrgId,
+      data,
+    });
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_CUSTOMER)
+  @UseGuards(GqlAuthGuard)
+  async updateCustomer(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+    @Args('data') data: CustomerCreateModel,
+  ): Promise<CustomerModel> {
+    return this.customerService.updateCustomer({
+      id,
+      orgId: user.currentOrgId,
+      data,
+    });
+  }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_CUSTOMER)
+  @UseGuards(GqlAuthGuard)
+  async getCustomerDetail(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+  ): Promise<CustomerModel> {
+    return this.customerService.getCustomerDetail({
+      id,
+      orgId: user.currentOrgId,
+    });
   }
 }

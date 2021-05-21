@@ -33,6 +33,11 @@ export const Permission = {
   UPDATE_SELLING_ORDER: permissions.UPDATE_SELLING_ORDER.name,
   DELETE_SELLING_ORDER: permissions.DELETE_SELLING_ORDER.name,
   CREATE_SELLING_ORDER: permissions.CREATE_SELLING_ORDER.name,
+
+  GET_CUSTOMER: permissions.GET_CUSTOMER.name,
+  UPDATE_CUSTOMER: permissions.UPDATE_CUSTOMER.name,
+  DELETE_CUSTOMER: permissions.DELETE_CUSTOMER.name,
+  CREATE_CUSTOMER: permissions.CREATE_CUSTOMER.name,
 };
 
 export default Permission;

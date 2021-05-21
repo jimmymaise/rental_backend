@@ -124,5 +124,29 @@
     "description": "",
     "isInternal": false,
     "order": 57
+  },
+  "GET_CUSTOMER": {
+    "name": "GET_CUSTOMER",
+    "description": "",
+    "isInternal": false,
+    "order": 60
+  },
+  "CREATE_CUSTOMER": {
+    "name": "CREATE_CUSTOMER",
+    "description": "",
+    "isInternal": false,
+    "order": 63
+  },
+  "DELETE_CUSTOMER": {
+    "name": "DELETE_CUSTOMER",
+    "description": "",
+    "isInternal": false,
+    "order": 65
+  },
+  "UPDATE_CUSTOMER": {
+    "name": "UPDATE_CUSTOMER",
+    "description": "",
+    "isInternal": false,
+    "order": 67
   }
 }

@@ -68,6 +68,5 @@ type SellingOrder {
 }
 
 type Mutation {
-  # Selling Order Status
   createSellingOrder(data: SellingOrderCreateInput!): SellingOrder
 }
