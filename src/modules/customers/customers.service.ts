@@ -172,4 +172,34 @@ export class CustomersService {
 
     return CustomerModel.fromCustomer(customer);
   }
+
+  public async getOrCreateCustomerByUserId({
+    userId,
+    orgId,
+  }: {
+    userId: string;
+    orgId: string;
+  }): Promise<CustomerModel> {
+    const customer = await this.prismaService.customer.findUnique({
+      where: {
+        userId_orgId: {
+          userId,
+          orgId,
+        },
+      },
+    });
+
+    if (customer) {
+      return CustomerModel.fromCustomer(customer);
+    }
+
+    const userInfo = await this.usersService.getUserInfoById(userId);
+    return this.createCustomer({
+      orgId,
+      data: {
+        displayName: userInfo.displayName,
+        phoneNumber: userInfo.phoneNumber,
+      },
+    });
+  }
 }

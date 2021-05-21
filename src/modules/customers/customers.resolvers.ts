@@ -96,4 +96,17 @@ export class CustomersResolvers {
       orgId: user.currentOrgId,
     });
   }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_CUSTOMER)
+  @UseGuards(GqlAuthGuard)
+  async getOrCreateCustomerByUserId(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('userId') userId: string,
+  ): Promise<CustomerModel> {
+    return this.customerService.getOrCreateCustomerByUserId({
+      userId,
+      orgId: user.currentOrgId,
+    });
+  }
 }
