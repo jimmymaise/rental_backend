@@ -50,6 +50,8 @@ model Customer {
   organization Organization @relation(fields: [orgId], references: [id])
   userId       String
   orgId        String
+  displayName  String?
+  gender       String?
   email        String?
   phoneNumber  String?
   address      String?
