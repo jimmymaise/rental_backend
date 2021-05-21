@@ -50,6 +50,10 @@ model Customer {
   organization Organization @relation(fields: [orgId], references: [id])
   userId       String
   orgId        String
+  email        String?
+  phoneNumber  String?
+  address      String?
+  birthday     DateTime?
   createdDate  DateTime?    @default(now())
   updatedDate  DateTime?    @updatedAt
 
