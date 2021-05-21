@@ -153,7 +153,14 @@ export class UsersService {
       where: { id: userId },
       include,
     });
-    // throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND);
+  }
+
+  public getSimpleUserByEmail(email: string): Promise<User> {
+    return this.prismaService.user.findUnique({ where: { email } });
+  }
+
+  public getSimpleUserByPhoneNumber(phoneNumber: string): Promise<User> {
+    return this.prismaService.user.findUnique({ where: { phoneNumber } });
   }
 
   async getUserInfoById(userId: string): Promise<UserInfo> {
@@ -167,6 +174,20 @@ export class UsersService {
     const passwordHash = await bcrypt.hash(password, 10);
     return this.prismaService.user.create({
       data: { email: sanitizeHtml(email), passwordHash },
+      include: {
+        roles: true,
+        employeesThisUserBecome: true,
+      },
+    });
+  }
+
+  async createUserByPhonePassword(
+    phoneNumber: string,
+    password: string,
+  ): Promise<UserInfoForMakingToken> {
+    const passwordHash = await bcrypt.hash(password, 10);
+    return this.prismaService.user.create({
+      data: { phoneNumber: sanitizeHtml(phoneNumber), passwordHash },
       include: {
         roles: true,
         employeesThisUserBecome: true,
@@ -234,6 +255,7 @@ export class UsersService {
     });
   }
 
+  // TODO: check employeesThisUserBecome, where using it? roles must be the parameters
   async getUserByEmail(email: string): Promise<UserInfoForMakingToken> {
     return this.prismaService.user.findUnique({
       where: { email },
@@ -361,7 +383,7 @@ export class UsersService {
 
   async createTheProfileForUser(
     userId: string,
-    info: UserInfo,
+    info: Partial<UserInfo>,
   ): Promise<UserInfo> {
     return await this.prismaService.userInfo.create({
       data: {

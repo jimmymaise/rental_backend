@@ -154,7 +154,7 @@ export class AuthService {
     user?: UserInfoForMakingToken,
     userId?: string,
     orgId?: string,
-    otherTokenPayloadParams: object = {},
+    otherTokenPayloadParams: any = {},
   ): Promise<AuthDTO> {
     if (!user) {
       user = await this.prismaService.user.findUnique({
@@ -162,8 +162,8 @@ export class AuthService {
         include: { roles: true, employeesThisUserBecome: true },
       });
     }
-    let orgIds = user.employeesThisUserBecome.map((org) => org.orgId);
-    let firstOrg = orgIds.length > 0 ? orgIds[0] : undefined;
+    const orgIds = user.employeesThisUserBecome.map((org) => org.orgId);
+    const firstOrg = orgIds.length > 0 ? orgIds[0] : undefined;
     orgId = orgId || user.currentOrgId || firstOrg;
     let currentOrgPermissionNames = [];
     let isOwner;
@@ -171,7 +171,7 @@ export class AuthService {
       isOwner = user.employeesThisUserBecome.filter(
         (org) => org.orgId == orgId,
       )[0].isOwner;
-      let roleIds = user.roles.map((role) => role.id);
+      const roleIds = user.roles.map((role) => role.id);
       currentOrgPermissionNames = await this.getOrgPermissionNameByRoleIds(
         roleIds,
         orgId,
@@ -233,7 +233,7 @@ export class AuthService {
     roleIds: string[],
     orgId: string,
   ): Promise<string[]> {
-    let permissions = await this.prismaService.permission.findMany({
+    const permissions = await this.prismaService.permission.findMany({
       where: {
         roles: {
           some: {
