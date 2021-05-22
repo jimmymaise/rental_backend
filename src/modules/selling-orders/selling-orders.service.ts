@@ -118,7 +118,7 @@ export class SellingOrdersService {
           orgId,
           status: defaultDepositItemStatus.value,
           systemStatus: RentingDepositItemSystemStatusType.New,
-          systemType: depositItemTypeDetail.mapWithSystemValue
+          systemType: depositItemTypeDetail.mapWithSystemType
             .value as RentingDepositItemSystemType,
           type: depositItem.type,
           attachedFiles: depositItem.attachedFiles,

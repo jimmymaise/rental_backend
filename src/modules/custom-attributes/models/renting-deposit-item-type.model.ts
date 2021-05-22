@@ -1,18 +1,18 @@
 import { CommonAttributesConfig } from '@prisma/client';
 
 import { BaseCustomModel } from './base-custom-attribute.model';
-import { RentingOrderItemSystemStatusTypesMap } from '../constants/renting-order-item-system-status-types';
+import { RentingDepositItemSystemTypeTypesMap } from '../constants/renting-deposit-item-system-type-types';
 
 export class RentingDepositItemTypeModel extends BaseCustomModel {
-  public mapWithSystemValue?: RentingDepositItemTypeModel;
+  public mapWithSystemType?: RentingDepositItemTypeModel;
 
   public static fromCommonAttributesConfig(
     data: CommonAttributesConfig,
   ): RentingDepositItemTypeModel {
     return {
       ...BaseCustomModel.fromCommonAttributesConfig(data),
-      mapWithSystemValue:
-        RentingOrderItemSystemStatusTypesMap[data.mapWithSystemValue],
+      mapWithSystemType:
+        RentingDepositItemSystemTypeTypesMap[data.mapWithSystemValue],
     };
   }
 }
