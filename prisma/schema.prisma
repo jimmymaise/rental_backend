@@ -504,7 +504,6 @@ model SellingOrder {
   note           String?
   customerUser   User                         @relation("SellingOrderBelongToCustomer", fields: [customerUserId], references: [id])
   customerUserId String
-  isDeleted      Boolean?                     @default(false)
   createdDate    DateTime                     @default(now())
   updatedDate    DateTime                     @updatedAt
   updatedBy      String
@@ -515,8 +514,7 @@ model SellingOrder {
   rentingOrderItems   RentingOrderItem[]   @relation("RentingOrderItemBelongToSellingOrder")
   rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToSellingOrder")
 
-  @@index(fields: [orgId, isDeleted], name: "selling_order_no_delete_index")
-  @@index(fields: [orgId, status, isDeleted], name: "selling_order_status_no_delete_index")
+  @@index(fields: [orgId, status], name: "selling_order_status_index")
 }
 
 enum RentingOrderItemStatusType {
@@ -545,7 +543,6 @@ model RentingOrderItem {
   unitPricePerMonth Float?                     @default(0)
   attachedFiles     Json?
 
-  isDeleted      Boolean?     @default(false)
   createdDate    DateTime     @default(now())
   updatedDate    DateTime     @updatedAt
   updatedBy      String
