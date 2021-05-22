@@ -193,12 +193,14 @@ export class CustomersService {
       return CustomerModel.fromCustomer(customer);
     }
 
+    const user = await this.usersService.getUserById(userId);
     const userInfo = await this.usersService.getUserInfoById(userId);
     return this.createCustomer({
       orgId,
       data: {
         displayName: userInfo.displayName,
-        phoneNumber: userInfo.phoneNumber,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
       },
     });
   }
