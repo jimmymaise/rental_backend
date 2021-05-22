@@ -1,11 +1,18 @@
 image: ubuntu:16.04
 
-stages:
-  - dockerfile
-  - deploy
+before_script:
+  - apk add --no-cache curl jq python py-pip
+  - pip install awscli
+  #  - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  #  - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  #  - aws configure set region $AWS_DEFAULT_REGION
+  - $(aws ecr get-login --no-include-email --region "${AWS_DEFAULT_REGION}")
+  - IMAGE_TAG="$(echo $CI_COMMIT_SHA | head -c 8)"
 
-Dockerfile-Staging:
-  stage: dockerfile
+build:
+  stage: build
+  tags:
+    - ecs_ecr
   environment: staging
   services:
     - name: docker:dind
@@ -14,88 +21,27 @@ Dockerfile-Staging:
     # - cat .env
     - sh ./scripts/build-ubuntu.sh
     - node ./scripts/generate-env-from-system.js
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-    - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
-    - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
-    - docker push registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
-    - docker rmi registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
-    - docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH)
+    - echo "Building image..."
+      - docker build -t $REPOSITORY_URL:latest .
+      - echo "Tagging image..."
+      - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$IMAGE_TAG
+      - echo "Pushing image..."
+      - docker push $REPOSITORY_URL:latest
+      - docker push $REPOSITORY_URL:$IMAGE_TAG
   only:
-    - /^release-v\d+\.\d+\.\d+$/
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-
-Deploy-Staging:
-  stage: deploy
-  image: docker:stable
-  environment: staging
-  script:
-    - echo "====== Deploy to production server ======"
-    - apk update && apk upgrade
-    - apk add git openssh bash
-    # Add target server`s secret key
-    - mkdir ~/.ssh
-    - echo $TARGET_SERVER_SECRET_KEY_BASE64 | base64 -d > ~/.ssh/id_rsa
-    - chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
-    - echo "Test ssh connection"
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST"
-
-    # Deploy to server
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker login registry.gitlab.com -u thuedo-stag-depoy -p $GITLAB_DEPLOY_TOKEN"
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA"
-    # Delete old containers
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true"
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host" --restart always  --name thuedo_api_app --add-host=host.docker.internal:127.0.0.1 registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA"
-    # Delete old images
-    # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images -q registry.gitlab.com/thuedo1/web-api/staging)" || true
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker image prune -a -f" || true
-  only:
-    - /^release-v\d+\.\d+\.\d+$/
-
-Dockerfile-Production:
-  stage: dockerfile
-  environment: production
-  services:
-    - name: docker:dind
-  script:
     # Deploy to Docker Registry
     # - cat .env
-    - sh ./scripts/build-ubuntu.sh
-    - node ./scripts/generate-env-from-system.js
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-    - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
-    - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
-    - docker push registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
-    - docker rmi registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
-    - docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH)
-  only:
-    - /^v\d+\.\d+\.\d+$/
-  variables:
-    DOCKER_HOST: tcp://docker:2375
+    - test_deploy_ecr
 
-Deploy-Production:
+deploy:
   stage: deploy
-  image: docker:stable
-  environment: production
   script:
-    - echo "====== Deploy to production server ======"
-    - apk update && apk upgrade
-    - apk add git openssh bash
-    # Add target server`s secret key
-    - mkdir ~/.ssh
-    - echo $TARGET_SERVER_SECRET_KEY_BASE64 | base64 -d > ~/.ssh/id_rsa
-    - chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
-    - echo "Test ssh connection"
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST"
-
-    # Deploy to server
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker login registry.gitlab.com -u thuedo-deploy -p $GITLAB_DEPLOY_TOKEN"
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
-    # Delete old containers
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true"
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host" --restart always  --name thuedo_api_app --add-host=host.docker.internal:127.0.0.1 registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
-    # Delete old images
-    # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images -q registry.gitlab.com/thuedo1/web-api/production)" || true
-    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker image prune -a -f" || true
+    - echo $REPOSITORY_URL:$IMAGE_TAG
+    - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINITION_NAME" --region "${AWS_DEFAULT_REGION}")
+    - NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "$REPOSITORY_URL:$IMAGE_TAG" '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition.containerDefinitions[0]')
+    - echo "Registering new container definition..."
+    - aws ecs register-task-definition --region "${AWS_DEFAULT_REGION}" --family "${TASK_DEFINITION_NAME}" --container-definitions "${NEW_CONTAINER_DEFINTIION}"
+    - echo "Updating the service..."
+    - aws ecs update-service --region "${AWS_DEFAULT_REGION}" --cluster "${CLUSTER_NAME}" --service "${SERVICE_NAME}"  --task-definition "${TASK_DEFINITION_NAME}"
   only:
-    - /^v\d+\.\d+\.\d+$/
+    - master

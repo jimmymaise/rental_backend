@@ -1,0 +1,101 @@
+image: ubuntu:16.04
+
+stages:
+  - dockerfile
+  - deploy
+
+Dockerfile-Staging:
+  stage: dockerfile
+  environment: staging
+  services:
+    - name: docker:dind
+  script:
+    # Deploy to Docker Registry
+    # - cat .env
+    - sh ./scripts/build-ubuntu.sh
+    - node ./scripts/generate-env-from-system.js
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
+    - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
+    - docker push registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
+    - docker rmi registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA
+    - docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH)
+  only:
+    - /^release-v\d+\.\d+\.\d+$/
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+
+Deploy-Staging:
+  stage: deploy
+  image: docker:stable
+  environment: staging
+  script:
+    - echo "====== Deploy to production server ======"
+    - apk update && apk upgrade
+    - apk add git openssh bash
+    # Add target server`s secret key
+    - mkdir ~/.ssh
+    - echo $TARGET_SERVER_SECRET_KEY_BASE64 | base64 -d > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
+    - echo "Test ssh connection"
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST"
+
+    # Deploy to server
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker login registry.gitlab.com -u thuedo-stag-depoy -p $GITLAB_DEPLOY_TOKEN"
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA"
+    # Delete old containers
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true"
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host" --restart always  --name thuedo_api_app --add-host=host.docker.internal:127.0.0.1 registry.gitlab.com/$CI_PROJECT_PATH/staging:$CI_COMMIT_SHA"
+    # Delete old images
+    # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images -q registry.gitlab.com/thuedo1/web-api/staging)" || true
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker image prune -a -f" || true
+  only:
+    - /^release-v\d+\.\d+\.\d+$/
+
+Dockerfile-Production:
+  stage: dockerfile
+  environment: production
+  services:
+    - name: docker:dind
+  script:
+    # Deploy to Docker Registry
+    # - cat .env
+    - sh ./scripts/build-ubuntu.sh
+    - node ./scripts/generate-env-from-system.js
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker build -t registry.gitlab.com/$CI_PROJECT_PATH .
+    - docker tag registry.gitlab.com/$CI_PROJECT_PATH registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
+    - docker push registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
+    - docker rmi registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA
+    - docker rmi $(docker images -q registry.gitlab.com/$CI_PROJECT_PATH)
+  only:
+    - /^v\d+\.\d+\.\d+$/
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+
+Deploy-Production:
+  stage: deploy
+  image: docker:stable
+  environment: production
+  script:
+    - echo "====== Deploy to production server ======"
+    - apk update && apk upgrade
+    - apk add git openssh bash
+    # Add target server`s secret key
+    - mkdir ~/.ssh
+    - echo $TARGET_SERVER_SECRET_KEY_BASE64 | base64 -d > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
+    - echo "Test ssh connection"
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST"
+
+    # Deploy to server
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker login registry.gitlab.com -u thuedo-deploy -p $GITLAB_DEPLOY_TOKEN"
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker pull registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
+    # Delete old containers
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker stop thuedo_api_app || true && docker rm thuedo_api_app || true"
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker run -d --net="host" --restart always  --name thuedo_api_app --add-host=host.docker.internal:127.0.0.1 registry.gitlab.com/$CI_PROJECT_PATH/production:$CI_COMMIT_SHA"
+    # Delete old images
+    # - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker rmi $(docker images -q registry.gitlab.com/thuedo1/web-api/production)" || true
+    - ssh -o StrictHostKeyChecking=no -T "thuedo@$TARGET_SERVER_HOST" "docker image prune -a -f" || true
+  only:
+    - /^v\d+\.\d+\.\d+$/
