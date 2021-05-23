@@ -1,7 +1,7 @@
 image: docker:stable
 
 before_script:
-  - apk add --update --no-cache curl py-pip
+  - apk add --update --no-cache  nodejs npm yarn curl py-pip
   - pip install awscli
   #  - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
   #  - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
@@ -20,7 +20,6 @@ build:
   script:
     # Deploy to Docker Registry
     # - cat .env
-    - sh ./scripts/build-ubuntu.sh
     - node ./scripts/generate-env-from-system.js
     - echo "Building image..."
       - docker build -t $REPOSITORY_URL:latest .
