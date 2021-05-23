@@ -1,5 +1,11 @@
 image: docker:stable
 
+variables:
+  REPOSITORY_URL: 332832652621.dkr.ecr.us-west-2.amazonaws.com/rentalapp_web_api
+  TASK_DEFINITION_NAME: rentalapp-web-api
+  CLUSTER_NAME: rentalapp
+  SERVICE_NAME: rentalapp-web-api
+
 before_script:
   - apk add --update --no-cache  nodejs npm yarn curl py-pip
   - pip install awscli
@@ -44,4 +50,4 @@ deploy:
     - echo "Updating the service..."
     - aws ecs update-service --region "${AWS_DEFAULT_REGION}" --cluster "${CLUSTER_NAME}" --service "${SERVICE_NAME}"  --task-definition "${TASK_DEFINITION_NAME}"
   only:
-    - master
+    - test_deploy_ecr
