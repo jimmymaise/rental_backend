@@ -28,12 +28,12 @@ build:
     # - cat .env
     - node ./scripts/generate-env-from-system.js
     - echo "Building image..."
-      - docker build -t $REPOSITORY_URL:latest .
-      - echo "Tagging image..."
-      - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$IMAGE_TAG
-      - echo "Pushing image..."
-      - docker push $REPOSITORY_URL:latest
-      - docker push $REPOSITORY_URL:$IMAGE_TAG
+    - docker build -t $REPOSITORY_URL:latest .
+    - echo "Tagging image..."
+    - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$IMAGE_TAG
+    - echo "Pushing image..."
+    - docker push $REPOSITORY_URL:latest
+    - docker push $REPOSITORY_URL:$IMAGE_TAG
   only:
     # Deploy to Docker Registry
     # - cat .env
@@ -41,6 +41,8 @@ build:
 
 deploy:
   stage: deploy
+  tags:
+    - ecs_ecr
   script:
     - echo $REPOSITORY_URL:$IMAGE_TAG
     - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINITION_NAME" --region "${AWS_DEFAULT_REGION}")
