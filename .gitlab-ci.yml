@@ -5,6 +5,10 @@ variables:
   TASK_DEFINITION_NAME: rentalapp-web-api
   CLUSTER_NAME: rentalapp
   SERVICE_NAME: rentalapp-web-api
+  DOCKER_TLS_CERTDIR: "/certs"
+
+services:
+  - docker:19.03.12-dind
 
 before_script:
   - apk add --update --no-cache  nodejs npm yarn curl py-pip
@@ -20,8 +24,6 @@ build:
   tags:
     - ecs_ecr
   environment: staging
-  services:
-    - name: docker:dind
   script:
     # Deploy to Docker Registry
     # - cat .env
