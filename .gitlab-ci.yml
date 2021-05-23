@@ -1,4 +1,4 @@
-image: docker:stable
+image: docker:19.03.12
 
 variables:
   REPOSITORY_URL: 332832652621.dkr.ecr.us-west-2.amazonaws.com/rentalapp_web_api
@@ -17,7 +17,6 @@ before_script:
 
 build:
   stage: build
-  image: docker:stable
   tags:
     - ecs_ecr
   environment: staging
