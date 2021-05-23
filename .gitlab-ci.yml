@@ -3,7 +3,7 @@ image: docker:19.03.12
 variables:
   REPOSITORY_URL: 332832652621.dkr.ecr.us-west-2.amazonaws.com/rentalapp_web_api
   TASK_DEFINITION_NAME: web-api
-  CLUSTER_NAME: rentalapp
+  CLUSTER_NAME: rentalapp-web-api
   SERVICE_NAME: rentalapp-web-api
   DOCKER_TLS_CERTDIR: "/certs"
 
