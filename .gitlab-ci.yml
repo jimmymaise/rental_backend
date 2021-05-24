@@ -12,6 +12,7 @@ services:
   - docker:19.03.12-dind
 
 before_script:
+  - apk add --update coreutils
   - apk add --update --no-cache  nodejs npm yarn curl jq py-pip
   - pip install awscli
   - pip install json-dotenv
