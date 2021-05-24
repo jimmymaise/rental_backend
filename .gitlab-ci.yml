@@ -7,12 +7,14 @@ variables:
   SERVICE_NAME: rentalapp-web-api
   DOCKER_TLS_CERTDIR: "/certs"
 
+
 services:
   - docker:19.03.12-dind
 
 before_script:
   - apk add --update --no-cache  nodejs npm yarn curl jq py-pip
   - pip install awscli
+  - pip install json-dotenv
   #  - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
   #  - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
   #  - aws configure set region $AWS_DEFAULT_REGION
@@ -23,11 +25,8 @@ build:
   stage: build
   tags:
     - ecs_ecr
-  environment: staging
   script:
     # Deploy to Docker Registry
-    # - cat .env
-    - node ./scripts/generate-env-from-system.js
     - echo "Building image..."
     - docker build -t $REPOSITORY_URL:latest .
     - echo "Tagging image..."
@@ -36,18 +35,19 @@ build:
     - docker push $REPOSITORY_URL:latest
     - docker push $REPOSITORY_URL:$IMAGE_TAG
   only:
-    # Deploy to Docker Registry
-    # - cat .env
     - test_deploy_ecr
 
 deploy:
   stage: deploy
+  environment: staging
   tags:
     - ecs_ecr
   script:
+    - echo $STAG_ENV_FILE | base64 --decode > .env;
+    - NEW_ENV= echo "$(json-dotenv list -f .env)"
     - echo $REPOSITORY_URL:$IMAGE_TAG
     - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "${TASK_DEFINITION_NAME}" --region "${AWS_DEFAULT_REGION}")
-    - NEW_TASK_DEFINTIION=$(echo $TASK_DEFINITION |  jq --arg IMAGE "$REPOSITORY_URL:$IMAGE_TAG" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.requiresAttributes) | del(.registeredAt) | del(.registeredBy) | del(.taskDefinitionArn) | del(.revision) | del(.status) | .+{"requiresCompatibilities":.compatibilities} | del(.compatibilities)')
+    - NEW_TASK_DEFINTIION=$(echo $TASK_DEFINITION |  jq   --argjson NEW_ENV "$NEW_ENV" --arg IMAGE "$REPOSITORY_URL:$IMAGE_TAG" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.requiresAttributes) | del(.registeredAt) | del(.registeredBy) | del(.taskDefinitionArn) | del(.revision) | del(.status) | .+{"requiresCompatibilities":.compatibilities} | del(.compatibilities) | .+{"environment":[$NEW_ENV}')
     - echo "Registering new task definition..."
     - echo $NEW_TASK_DEFINTIION
     - aws ecs register-task-definition --region "${AWS_DEFAULT_REGION}" --cli-input-json "${NEW_TASK_DEFINTIION}"
