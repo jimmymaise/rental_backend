@@ -46,10 +46,10 @@ deploy:
   script:
     - echo $STAG_ENV_FILE | base64 --decode > .env;
     - NEW_ENV="$(json-dotenv list -f .env)"
-    - NEW_ENV=$(echo $NEW_ENV | jq 'to_entries[] | [{"name":.key, "value":.value}]')
+    - NEW_ENV_BY_NAME_VALUE=$(echo $NEW_ENV | jq 'to_entries|map({name:.key,value:.value})')
     - echo $REPOSITORY_URL:$IMAGE_TAG
     - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "${TASK_DEFINITION_NAME}" --region "${AWS_DEFAULT_REGION}")
-    - NEW_TASK_DEFINTIION=$(echo $TASK_DEFINITION |  jq   --argjson NEW_ENV "$NEW_ENV" --arg IMAGE "$REPOSITORY_URL:$IMAGE_TAG" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.requiresAttributes) | del(.registeredAt) | del(.registeredBy) | del(.taskDefinitionArn) | del(.revision) | del(.status) | .+{"requiresCompatibilities":.compatibilities} | del(.compatibilities) |.containerDefinitions[0].environment = $NEW_ENV')
+    - NEW_TASK_DEFINTIION=$(echo $TASK_DEFINITION |  jq   --argjson NEW_ENV_BY_NAME_VALUE "$NEW_ENV_BY_NAME_VALUE" --arg IMAGE "$REPOSITORY_URL:$IMAGE_TAG" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.requiresAttributes) | del(.registeredAt) | del(.registeredBy) | del(.taskDefinitionArn) | del(.revision) | del(.status) | .+{"requiresCompatibilities":.compatibilities} | del(.compatibilities) |.containerDefinitions[0].environment = $NEW_ENV_BY_NAME_VALUE')
     - echo "Registering new task definition..."
     - echo $NEW_TASK_DEFINTIION
     - aws ecs register-task-definition --region "${AWS_DEFAULT_REGION}" --cli-input-json "${NEW_TASK_DEFINTIION}"
