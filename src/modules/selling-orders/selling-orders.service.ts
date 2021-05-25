@@ -78,7 +78,7 @@ export class SellingOrdersService {
         note: rentingOrderItem.note,
         amount: rentingOrderItem.amount,
         quantity: rentingOrderItem.quantity,
-        pickupDataTime: rentingOrderItem.pickupDateTime
+        pickupDateTime: rentingOrderItem.pickupDateTime
           ? new Date(rentingOrderItem.pickupDateTime)
           : null,
         returningDateTime: rentingOrderItem.returningDateTime
@@ -107,7 +107,7 @@ export class SellingOrdersService {
     const depositItemTypes = await this.commonAttributeService.getListCustomRentingDepositItemType(
       orgId,
     );
-    this.prismaService.rentingDepositItem.createMany({
+    await this.prismaService.rentingDepositItem.createMany({
       data: data.rentingDepositItems.map((depositItem) => {
         const depositItemTypeDetail = depositItemTypes.find(
           (typeItem) => typeItem.value === depositItem.type,

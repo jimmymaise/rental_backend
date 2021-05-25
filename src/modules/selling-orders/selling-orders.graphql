@@ -50,7 +50,7 @@ input SellingOrderCreateInput {
   orderCustomId: String
   totalAmount: Float
   note: String
-  customUserId: String
+  customerUserId: String
   attachedFiles: [PublicStorageFileInput]
   rentingOrderItems: [RentingOrderItemCreateInput]
   rentingDepositItems: [RentingDepositItemCreateInput]
@@ -61,7 +61,7 @@ type SellingOrder {
   orderCustomId: String
   totalAmount: Float
   note: String
-  customUserId: String
+  customerUserId: String
   attachedFiles: [PublicStorageFile]
   rentingOrderItems: [RentingOrderItem]
   rentingDepositItems: [RentingDepositItem]
