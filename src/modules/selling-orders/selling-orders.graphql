@@ -65,6 +65,21 @@ type SellingOrder {
   attachedFiles: [PublicStorageFile]
   rentingOrderItems: [RentingOrderItem]
   rentingDepositItems: [RentingDepositItem]
+  createdDate: Float
+  updatedDate: Float
+}
+
+type SellingOrderPagination {
+  items: [SellingOrder]
+  total: Int
+  limit: Int
+  offset: Int
+}
+
+type Query {
+  getMyOrgSellingOrdersWithPaging(
+    paginationData: BaseOffsetPagingInput
+  ): SellingOrderPagination
 }
 
 type Mutation {

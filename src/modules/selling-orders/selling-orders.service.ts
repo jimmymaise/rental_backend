@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
+import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
+import { OffsetPaginationDTO } from '@app/models';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   SellingOrderSystemStatusType,
@@ -128,5 +130,54 @@ export class SellingOrdersService {
     });
 
     return SellingOrderModel.fromDatabase(createSellingOrderResult, [], []);
+  }
+
+  public async getSellingOrdersWithOffsetPaging(
+    whereQuery: any,
+    pageSize: number,
+    offset?: any,
+    orderBy: any = { id: 'desc' },
+    include?: any,
+  ): Promise<OffsetPaginationDTO<SellingOrderModel>> {
+    const pagingHandler = new OffsetPagingHandler(
+      whereQuery,
+      pageSize,
+      orderBy,
+      this.prismaService,
+      'sellingOrder',
+      include,
+    );
+    const result = await pagingHandler.getPage(offset);
+
+    return {
+      ...result,
+      items: result.items.map((item) =>
+        SellingOrderModel.fromDatabase(
+          item,
+          item.rentingOrderItems || [],
+          item.rentingDepositItems || [],
+        ),
+      ),
+    };
+  }
+
+  public async getSellingOrdersByOrgIdWithOffsetPaging(
+    orgId,
+    pageSize: number,
+    offset?: any,
+    orderBy?: any,
+    include?: any,
+  ): Promise<OffsetPaginationDTO<SellingOrderModel>> {
+    const whereQuery = {
+      orgId: orgId,
+    };
+
+    return this.getSellingOrdersWithOffsetPaging(
+      whereQuery,
+      pageSize,
+      offset,
+      orderBy,
+      include,
+    );
   }
 }

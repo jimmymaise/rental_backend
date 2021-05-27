@@ -20,6 +20,9 @@ export class SellingOrderModel {
   public rentingOrderItems?: RentingOrderItemModel[];
   public rentingDepositItems?: RentingDepositItemModel[];
 
+  public createdDate?: number;
+  public updatedDate?: number;
+
   public static fromDatabase(
     data: SellingOrder,
     rentingOrderItems: RentingOrderItem[],
@@ -39,6 +42,8 @@ export class SellingOrderModel {
       rentingOrderItems: (rentingOrderItems || []).map((rentingOrderItem) =>
         RentingOrderItemModel.fromDatabase(rentingOrderItem),
       ),
+      createdDate: data?.createdDate ? data.createdDate.getTime() : null,
+      updatedDate: data?.updatedDate ? data.updatedDate.getTime() : null,
     };
   }
 }
