@@ -77,9 +77,8 @@ type SellingOrderPagination {
 }
 
 type Query {
-  getMyOrgSellingOrdersWithPaging(
-    paginationData: BaseOffsetPagingInput
-  ): SellingOrderPagination
+  getMyOrgSellingOrdersWithPaging(paginationData: BaseOffsetPagingInput): SellingOrderPagination
+  getMyOrgSellingOrderDetail(id: ID!): SellingOrder
 }
 
 type Mutation {

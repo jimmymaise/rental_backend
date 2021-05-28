@@ -4,6 +4,7 @@ import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 import { OffsetPaginationDTO } from '@app/models';
 import { PrismaService } from '../prisma/prisma.service';
 import {
+  SellingOrder,
   SellingOrderSystemStatusType,
   RentingDepositItemSystemType,
   RentingDepositItemSystemStatusType,
@@ -178,6 +179,27 @@ export class SellingOrdersService {
       offset,
       orderBy,
       include,
+    );
+  }
+
+  public async getOrderDetail(
+    id: string,
+    orgId: string,
+    include?: any,
+  ): Promise<SellingOrderModel> {
+    const item: any = await this.prismaService.sellingOrder.findUnique({
+      where: { id },
+      include,
+    });
+
+    if (item.orgId !== orgId) {
+      throw new Error('Record not exist');
+    }
+
+    return SellingOrderModel.fromDatabase(
+      item,
+      item.rentingOrderItems || [],
+      item.rentingDepositItems || [],
     );
   }
 }

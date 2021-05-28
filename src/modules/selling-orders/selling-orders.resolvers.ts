@@ -56,4 +56,28 @@ export class SellingOrderResolvers {
       include,
     );
   }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_SELLING_ORDER)
+  @UseGuards(GqlAuthGuard)
+  async getMyOrgSellingOrderDetail(
+    @Info() info: GraphQLResolveInfo,
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id')
+    id: string,
+  ): Promise<SellingOrderModel> {
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      { fieldName: 'rentingOrderItems' },
+      {
+        fieldName: 'rentingDepositItems',
+      },
+    ]);
+
+    return this.sellingOrdersService.getOrderDetail(
+      id,
+      user.currentOrgId,
+      include,
+    );
+  }
 }
