@@ -88,6 +88,28 @@ export class SellingOrderResolvers {
       },
     ]);
 
+    include[
+      'rentingDepositItem'
+    ] = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      {
+        fieldName: 'statusDetail',
+        fieldPath: 'rentingDepositItems.RentingDepositItem',
+      },
+      {
+        fieldName: 'typeDetail',
+        fieldPath: 'rentingDepositItems.RentingDepositItem',
+      },
+    ]);
+
+    include[
+      'rentingOrderItem'
+    ] = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      {
+        fieldName: 'statusDetail',
+        fieldPath: 'rentingOrderItems.RentingOrderItem',
+      },
+    ]);
+
     return this.sellingOrdersService.getOrderDetail(
       id,
       user.currentOrgId,

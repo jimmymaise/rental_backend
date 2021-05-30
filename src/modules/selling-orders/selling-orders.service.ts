@@ -221,13 +221,41 @@ export class SellingOrdersService {
     include?: any,
   ): Promise<SellingOrderModel> {
     let statuses;
+    let rentingOrderItemStatuses;
+    let rentingDepositItemTypes;
+    let rentingDepositItemStatuses;
+
     if (include.statusDetail) {
       statuses = await this.customAttributeService.getAllSellingOrderStatusCustomAttributes(
         orgId,
       );
     }
-
     delete include['statusDetail'];
+
+    if (include.rentingDepositItem) {
+      if (include.rentingDepositItem.statusDetail) {
+        rentingDepositItemStatuses = await this.customAttributeService.getAllRentingDepositItemStatusCustomAttributes(
+          orgId,
+        );
+      }
+
+      if (include.rentingDepositItem.typeDetail) {
+        rentingDepositItemTypes = await this.customAttributeService.getAllRentingDepositItemTypeCustomAttributes(
+          orgId,
+        );
+      }
+    }
+    delete include['rentingDepositItem'];
+
+    if (include.rentingOrderItem) {
+      if (include.rentingOrderItem.statusDetail) {
+        rentingOrderItemStatuses = await this.customAttributeService.getAllRentingOrderItemStatusCustomAttributes(
+          orgId,
+        );
+      }
+    }
+    delete include['rentingOrderItem'];
+
     const item: any = await this.prismaService.sellingOrder.findUnique({
       where: { id },
       include,
@@ -255,6 +283,9 @@ export class SellingOrdersService {
       rentingDepositItems: item.rentingDepositItems || [],
       orgCustomerInfo: customerInfo,
       statuses,
+      rentingOrderItemStatuses,
+      rentingDepositItemTypes,
+      rentingDepositItemStatuses,
     });
   }
 }

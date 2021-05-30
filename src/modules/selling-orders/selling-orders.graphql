@@ -8,9 +8,12 @@ input RentingDepositItemCreateInput {
 type RentingDepositItem {
   id: String!
   type: String
+  status: String
   note: String
   valueAmount: Float
   attachedFiles: [PublicStorageFile]
+  statusDetail: RentingDepositItemStatus
+  typeDetail: RentingDepositItemType
 }
 
 input RentingOrderItemCreateInput {
@@ -33,6 +36,7 @@ type RentingOrderItem {
   id: String!
   sku: String
   name: String
+  status: String
   note: String
   amount: Float
   quantity: Int
@@ -44,6 +48,7 @@ type RentingOrderItem {
   unitPricePerMonth: Float
   attachedFiles: [PublicStorageFile]
   itemId: String!
+  statusDetail: RentingOrderItemStatus
 }
 
 input SellingOrderCreateInput {

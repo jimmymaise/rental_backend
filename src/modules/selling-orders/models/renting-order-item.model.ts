@@ -2,6 +2,7 @@ import { RentingOrderItem } from '@prisma/client';
 
 import { StoragePublicDTO } from '../../storages/storage-public.dto';
 import { ItemDTO } from '../../items/item.dto';
+import { RentingOrderItemStatusModel } from '../../custom-attributes/models/renting-order-item-status.model';
 
 export class RentingOrderItemModel {
   public id: string;
@@ -19,8 +20,24 @@ export class RentingOrderItemModel {
   public attachedFiles?: StoragePublicDTO[];
   public itemId: string;
   public item?: ItemDTO;
+  public status?: string;
+  public statusDetail?: RentingOrderItemStatusModel;
 
-  public static fromDatabase(data: RentingOrderItem): RentingOrderItemModel {
+  public static fromDatabase(
+    data: RentingOrderItem,
+    {
+      rentingOrderItemStatuses,
+    }: { rentingOrderItemStatuses?: RentingOrderItemStatusModel[] } = {
+      rentingOrderItemStatuses: [],
+    },
+  ): RentingOrderItemModel {
+    let statusDetail: RentingOrderItemStatusModel;
+    if (rentingOrderItemStatuses?.length) {
+      statusDetail = rentingOrderItemStatuses.find(
+        (status) => status.value === data.status,
+      );
+    }
+
     return {
       id: data.id,
       itemId: data.itemId,
@@ -40,6 +57,7 @@ export class RentingOrderItemModel {
       unitPricePerDay: data.unitPricePerDay,
       unitPricePerWeek: data.unitPricePerWeek,
       unitPricePerMonth: data.unitPricePerMonth,
+      statusDetail,
     };
   }
 }
