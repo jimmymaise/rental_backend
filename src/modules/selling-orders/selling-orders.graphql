@@ -62,11 +62,14 @@ type SellingOrder {
   totalAmount: Float
   note: String
   customerUserId: String
+  customerUser: Customer
   attachedFiles: [PublicStorageFile]
   rentingOrderItems: [RentingOrderItem]
   rentingDepositItems: [RentingDepositItem]
   createdDate: Float
   updatedDate: Float
+  status: String
+  statusDetail: SellingOrderStatus
 }
 
 type SellingOrderPagination {
@@ -77,7 +80,9 @@ type SellingOrderPagination {
 }
 
 type Query {
-  getMyOrgSellingOrdersWithPaging(paginationData: BaseOffsetPagingInput): SellingOrderPagination
+  getMyOrgSellingOrdersWithPaging(
+    paginationData: BaseOffsetPagingInput
+  ): SellingOrderPagination
   getMyOrgSellingOrderDetail(id: ID!): SellingOrder
 }
 

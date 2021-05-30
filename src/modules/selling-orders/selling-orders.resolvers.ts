@@ -41,10 +41,18 @@ export class SellingOrderResolvers {
   ): Promise<OffsetPaginationDTO<SellingOrderModel>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
-      { fieldName: 'rentingOrderItems', fieldPath: 'items.rentingOrderItems' },
+      { fieldName: 'rentingOrderItems', fieldPath: 'items.SellingOrder' },
       {
         fieldName: 'rentingDepositItems',
-        fieldPath: 'items.rentingDepositItems',
+        fieldPath: 'items.SellingOrder',
+      },
+      {
+        fieldName: 'customerUser',
+        fieldPath: 'items.SellingOrder',
+      },
+      {
+        fieldName: 'statusDetail',
+        fieldPath: 'items.SellingOrder',
       },
     ]);
 
@@ -71,6 +79,12 @@ export class SellingOrderResolvers {
       { fieldName: 'rentingOrderItems' },
       {
         fieldName: 'rentingDepositItems',
+      },
+      {
+        fieldName: 'customerUser',
+      },
+      {
+        fieldName: 'statusDetail',
       },
     ]);
 

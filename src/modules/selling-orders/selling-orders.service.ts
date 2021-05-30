@@ -19,7 +19,7 @@ import { CustomAttributesService } from '@modules/custom-attributes/custom-attri
 export class SellingOrdersService {
   constructor(
     private prismaService: PrismaService,
-    private commonAttributeService: CustomAttributesService,
+    private customAttributeService: CustomAttributesService,
   ) {}
 
   public async createRentingOrder({
@@ -35,7 +35,7 @@ export class SellingOrdersService {
 
     // ----> Create Selling Order
     // GET Order new status
-    const sellingOrderNewStatuses = await this.commonAttributeService.getListCustomSellingOrderStatus(
+    const sellingOrderNewStatuses = await this.customAttributeService.getListCustomSellingOrderStatus(
       orgId,
       SellingOrderSystemStatusType.New,
     );
@@ -67,7 +67,7 @@ export class SellingOrdersService {
 
     // ----> Create Renting Order Item
     // GET Renting Item new status
-    const rentingItemNewStatuses = await this.commonAttributeService.getListCustomRentingOrderItemStatus(
+    const rentingItemNewStatuses = await this.customAttributeService.getListCustomRentingOrderItemStatus(
       orgId,
       RentingOrderItemStatusType.New,
     );
@@ -102,12 +102,12 @@ export class SellingOrdersService {
     });
 
     // Create Deposit Item
-    const depositItemStatuses = await this.commonAttributeService.getListCustomRentingDepositItemStatus(
+    const depositItemStatuses = await this.customAttributeService.getListCustomRentingDepositItemStatus(
       orgId,
       RentingDepositItemSystemStatusType.New,
     );
     const defaultDepositItemStatus = depositItemStatuses[0];
-    const depositItemTypes = await this.commonAttributeService.getListCustomRentingDepositItemType(
+    const depositItemTypes = await this.customAttributeService.getListCustomRentingDepositItemType(
       orgId,
     );
     await this.prismaService.rentingDepositItem.createMany({
@@ -130,7 +130,7 @@ export class SellingOrdersService {
       }),
     });
 
-    return SellingOrderModel.fromDatabase(createSellingOrderResult, [], []);
+    return SellingOrderModel.fromDatabase({ data: createSellingOrderResult });
   }
 
   public async getSellingOrdersWithOffsetPaging(
@@ -140,6 +140,15 @@ export class SellingOrdersService {
     orderBy: any = { id: 'desc' },
     include?: any,
   ): Promise<OffsetPaginationDTO<SellingOrderModel>> {
+    let statuses;
+
+    if (include.statusDetail) {
+      statuses = await this.customAttributeService.getAllSellingOrderStatusCustomAttributes(
+        whereQuery.orgId,
+      );
+    }
+    delete include['statusDetail'];
+
     const pagingHandler = new OffsetPagingHandler(
       whereQuery,
       pageSize,
@@ -150,15 +159,39 @@ export class SellingOrdersService {
     );
     const result = await pagingHandler.getPage(offset);
 
+    const items = [];
+    const tmpCachedCustomer = {};
+
+    for (let i = 0; i < result.items.length; i++) {
+      const item = result.items[i];
+      let customerInfo = tmpCachedCustomer[item.customerUserId];
+      if (include.customerUser && !customerInfo) {
+        customerInfo = await this.prismaService.customer.findUnique({
+          where: {
+            userId_orgId: {
+              userId: item.customerUserId,
+              orgId: whereQuery.orgId,
+            },
+          },
+        });
+
+        tmpCachedCustomer[item.customerUserId] = customerInfo;
+      }
+
+      items.push(
+        SellingOrderModel.fromDatabase({
+          data: item,
+          rentingOrderItems: item.rentingOrderItems || [],
+          rentingDepositItems: item.rentingDepositItems || [],
+          orgCustomerInfo: customerInfo,
+          statuses,
+        }),
+      );
+    }
+
     return {
       ...result,
-      items: result.items.map((item) =>
-        SellingOrderModel.fromDatabase(
-          item,
-          item.rentingOrderItems || [],
-          item.rentingDepositItems || [],
-        ),
-      ),
+      items,
     };
   }
 
@@ -187,6 +220,14 @@ export class SellingOrdersService {
     orgId: string,
     include?: any,
   ): Promise<SellingOrderModel> {
+    let statuses;
+    if (include.statusDetail) {
+      statuses = await this.customAttributeService.getAllSellingOrderStatusCustomAttributes(
+        orgId,
+      );
+    }
+
+    delete include['statusDetail'];
     const item: any = await this.prismaService.sellingOrder.findUnique({
       where: { id },
       include,
@@ -196,10 +237,24 @@ export class SellingOrdersService {
       throw new Error('Record not exist');
     }
 
-    return SellingOrderModel.fromDatabase(
-      item,
-      item.rentingOrderItems || [],
-      item.rentingDepositItems || [],
-    );
+    let customerInfo;
+    if (include.customerUser) {
+      customerInfo = await this.prismaService.customer.findUnique({
+        where: {
+          userId_orgId: {
+            userId: item.customerUserId,
+            orgId,
+          },
+        },
+      });
+    }
+
+    return SellingOrderModel.fromDatabase({
+      data: item,
+      rentingOrderItems: item.rentingOrderItems || [],
+      rentingDepositItems: item.rentingDepositItems || [],
+      orgCustomerInfo: customerInfo,
+      statuses,
+    });
   }
 }
