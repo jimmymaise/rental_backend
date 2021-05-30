@@ -267,6 +267,7 @@ export class UserItemsService {
               this.storageService.handleUploadImageBySignedUrlComplete(
                 image.id,
                 ['small', 'medium'],
+                true,
               );
             });
             updateData[field] = images;

@@ -111,6 +111,7 @@ export class StoragesService {
   public async handleUploadImageBySignedUrlComplete(
     fileId: string,
     includes: string[] = [],
+    makePublic?: boolean,
   ): Promise<FileStorage> {
     const fileDb = await this.prismaService.fileStorage.findUnique({
       where: {
@@ -122,7 +123,7 @@ export class StoragesService {
       return fileDb;
     }
 
-    if (fileDb) {
+    if (makePublic) {
       if (includes.includes('original')) {
         try {
           await this.cloudStorageService.makePublic(

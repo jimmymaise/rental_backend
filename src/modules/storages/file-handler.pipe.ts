@@ -13,6 +13,7 @@ export class UploadFilePipe implements PipeTransform {
         this.storagesService.handleUploadImageBySignedUrlComplete(
           field_value['id'],
           field_value['imageSizes'],
+          field_value['isPublicFile'],
         );
       }
     }

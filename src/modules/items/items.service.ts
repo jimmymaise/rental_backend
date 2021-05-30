@@ -60,10 +60,11 @@ export class ItemsService {
 
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
-      await this.storageService.handleUploadImageBySignedUrlComplete(image.id, [
-        'small',
-        'medium',
-      ]);
+      await this.storageService.handleUploadImageBySignedUrlComplete(
+        image.id,
+        ['small', 'medium'],
+        true,
+      );
     }
 
     const actualName = sanitizeHtml(name);

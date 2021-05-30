@@ -129,6 +129,7 @@ export class OrgItemsService {
               this.storageService.handleUploadImageBySignedUrlComplete(
                 image.id,
                 ['small', 'medium'],
+                true,
               );
             });
             updateData[field] = images;

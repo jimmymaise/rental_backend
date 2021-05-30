@@ -432,6 +432,7 @@ export class UsersService {
             this.storageService.handleUploadImageBySignedUrlComplete(
               data[field].id,
               ['small', 'medium'],
+              true,
             );
             updateData[field] = data[field];
           }
@@ -440,6 +441,7 @@ export class UsersService {
           if (data[field]) {
             await this.storageService.handleUploadImageBySignedUrlComplete(
               data[field].id,
+              true,
             );
             updateData[field] = data[field];
           }
