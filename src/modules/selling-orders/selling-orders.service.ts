@@ -48,6 +48,7 @@ export class SellingOrdersService {
           status: defaultSellingOrderNew.value,
           systemStatus: SellingOrderSystemStatusType.New,
           updatedBy: creatorId,
+          orderCustomId: data.orderCustomId,
           attachedFiles: data.attachedFiles,
           customerUser: {
             connect: {
