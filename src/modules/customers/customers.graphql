@@ -4,8 +4,14 @@ type CustomerInfo {
   id: ID!
   orgId: String
   userId: String
-  isOwner: Boolean
+  displayName: String
+  gender: String
+  email: String
+  phoneNumber: String
+  address: String
+  birthday: Float
   user: DBUserInfoForCustomer
+  createdDate: Float
 }
 
 type DBUserInfoForCustomer {
@@ -44,9 +50,7 @@ type Customer {
 }
 
 type Query {
-  getMyOrgCustomersWithPaging(
-    getMyOrgCustomersWithOffsetPagingData: BaseOffsetPagingInput
-  ): CustomerPagination
+  getMyOrgCustomersWithPaging(data: BaseOffsetPagingInput): CustomerPagination
   getCustomerDetail(id: ID!): Customer
 }
 

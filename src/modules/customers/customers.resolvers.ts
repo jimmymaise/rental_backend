@@ -26,8 +26,8 @@ export class CustomersResolvers {
   async getMyOrgCustomersWithPaging(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
-    @Args('getMyOrgCustomersWithOffsetPagingData')
-    getMyOrgCustomersWithOffsetPagingData: QueryWithOffsetPagingDTO,
+    @Args('data')
+    data: QueryWithOffsetPagingDTO,
   ): Promise<OffsetPaginationDTO<CustomerDto>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
@@ -49,9 +49,9 @@ export class CustomersResolvers {
 
     return this.customerService.getCustomersByOrgIdWithOffsetPaging(
       user.currentOrgId,
-      getMyOrgCustomersWithOffsetPagingData.pageSize,
-      getMyOrgCustomersWithOffsetPagingData.offset,
-      getMyOrgCustomersWithOffsetPagingData.orderBy,
+      data.pageSize,
+      data.offset,
+      data.orderBy,
       include,
     );
   }
