@@ -441,6 +441,7 @@ export class UsersService {
           if (data[field]) {
             await this.storageService.handleUploadImageBySignedUrlComplete(
               data[field].id,
+              ['original'],
               true,
             );
             updateData[field] = data[field];
