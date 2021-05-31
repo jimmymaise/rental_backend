@@ -29,6 +29,7 @@ model Organization {
   rentingOrderItems       RentingOrderItem[]       @relation("SellingOrderItemBelongToOrg")
   rentingDepositItems     RentingDepositItem[]     @relation("RentingDepositItemBelongToOrg")
   commonAttributesConfigs CommonAttributesConfig[] @relation("CommonAttributesConfigBelongToOrg")
+  orgCategories           OrgCategory[]            @relation("OrgCategoryBelongToOrg")
 }
 
 model Employee {
@@ -228,6 +229,7 @@ model Item {
   description               Json?
   termAndCondition          Json?
   categories                Category[]           @relation(references: [id])
+  orgCategories             OrgCategory[]        @relation(references: [id])
   areas                     Area[]               @relation(references: [id])
   rentingItemRequests       RentingItemRequest[]
   images                    Json?
@@ -617,6 +619,24 @@ model CommonAttributesConfig {
   @@index(fields: [orgId, type], name: "common_attributes_org_type_index")
   @@index(fields: [orgId, parentAttributeValue], name: "common_attributes_org_parent_attribute_index")
   @@index(fields: [orgId, mapWithSystemValue], name: "common_attributes_map_system_value_index")
+}
+
+model OrgCategory {
+  id               String       @id @default(uuid())
+  name             String
+  slug             String
+  image            Json?
+  coverImage       Json?
+  parentCategoryId String?
+  order            Int?         @default(0)
+  isDisabled       Boolean?     @default(false)
+  items            Item[]       @relation(references: [id])
+  seoTitle         String?
+  seoDescription   String?
+  org              Organization @relation("OrgCategoryBelongToOrg", fields: [orgId], references: [id])
+  orgId            String
+
+  @@unique([orgId, slug])
 }
 
 // Item Reviews?
