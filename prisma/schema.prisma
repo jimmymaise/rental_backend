@@ -171,20 +171,21 @@ model Area {
 }
 
 model Category {
-  id               String   @id @default(uuid())
+  id               String        @id @default(uuid())
   name             String
-  slug             String   @unique
+  slug             String        @unique
   imageUrl         String?
   coverImageUrl    String?
   parentCategoryId String?
-  order            Int?     @default(0)
-  isDefault        Boolean? @default(false)
-  isDisabled       Boolean? @default(false)
-  isDeleted        Boolean? @default(false)
-  items            Item[]   @relation(references: [id])
+  order            Int?          @default(0)
+  isDefault        Boolean?      @default(false)
+  isDisabled       Boolean?      @default(false)
+  isDeleted        Boolean?      @default(false)
+  items            Item[]        @relation(references: [id])
+  orgCategories    OrgCategory[] @relation("OrgCategoryBelongToCategory")
   seoTitle         String?
   seoDescription   String?
-  isFeatured       Boolean? @default(false)
+  isFeatured       Boolean?      @default(false)
 }
 
 enum FileUsingLocate {
@@ -582,13 +583,13 @@ model RentingDepositItem {
   systemStatus  RentingDepositItemSystemStatusType
   status        String
 
-  sellingOrder   SellingOrder? @relation("RentingDepositItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
-  sellingOrderId String?
-  org            Organization  @relation("RentingDepositItemBelongToOrg", fields: [orgId], references: [id])
+  sellingOrder   SellingOrder @relation("RentingDepositItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
+  sellingOrderId String
+  org            Organization @relation("RentingDepositItemBelongToOrg", fields: [orgId], references: [id])
   orgId          String
-  customerUser   User          @relation("RentingDepositItemBelongToCustomer", fields: [customerUserId], references: [id])
+  customerUser   User         @relation("RentingDepositItemBelongToCustomer", fields: [customerUserId], references: [id])
   customerUserId String
-  order          Int?          @default(0)
+  order          Int?         @default(0)
 }
 
 enum CommonAttributesType {
@@ -635,6 +636,8 @@ model OrgCategory {
   seoDescription   String?
   org              Organization @relation("OrgCategoryBelongToOrg", fields: [orgId], references: [id])
   orgId            String
+  category         Category?    @relation("OrgCategoryBelongToCategory", fields: [categoryId], references: [id])
+  categoryId       String?
 
   @@unique([orgId, slug])
 }
@@ -646,9 +649,6 @@ model OrgCategory {
 
 // Log Search Keywork
 // Log User Signed In
-// Item Yeu Thich
-// Luu danh ba nguoi cho thue
-// User Notifications
 // Log user sharing
 
 // Trust User?
