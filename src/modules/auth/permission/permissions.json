@@ -148,5 +148,29 @@
     "description": "",
     "isInternal": false,
     "order": 67
+  },
+  "GET_ORG_CATEGORY": {
+    "name": "GET_ORG_CATEGORY",
+    "description": "",
+    "isInternal": false,
+    "order": 70
+  },
+  "CREATE_ORG_CATEGORY": {
+    "name": "CREATE_ORG_CATEGORY",
+    "description": "",
+    "isInternal": false,
+    "order": 73
+  },
+  "DELETE_ORG_CATEGORY": {
+    "name": "DELETE_ORG_CATEGORY",
+    "description": "",
+    "isInternal": false,
+    "order": 75
+  },
+  "UPDATE_ORG_CATEGORY": {
+    "name": "UPDATE_ORG_CATEGORY",
+    "description": "",
+    "isInternal": false,
+    "order": 77
   }
 }

@@ -29,6 +29,7 @@ import {
   DataInitilizeModule,
   SellingOrderModule,
   CustomersModule,
+  OrgCategoriesModule,
 } from './modules';
 
 import { rootContants } from './constants';
@@ -130,6 +131,7 @@ import { AppService } from './app.service';
     DataInitilizeModule,
     SellingOrderModule,
     CustomersModule,
+    OrgCategoriesModule,
   ],
   controllers: [AppController],
   providers: [

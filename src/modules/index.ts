@@ -22,3 +22,4 @@ export * from './custom-attributes';
 export * from './data-initialize';
 export * from './selling-orders';
 export * from './customers';
+export * from './org-categories';

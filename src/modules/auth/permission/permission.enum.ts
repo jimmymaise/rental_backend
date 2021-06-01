@@ -38,6 +38,11 @@ export const Permission = {
   UPDATE_CUSTOMER: permissions.UPDATE_CUSTOMER.name,
   DELETE_CUSTOMER: permissions.DELETE_CUSTOMER.name,
   CREATE_CUSTOMER: permissions.CREATE_CUSTOMER.name,
+
+  GET_ORG_CATEGORY: permissions.GET_ORG_CATEGORY.name,
+  UPDATE_ORG_CATEGORY: permissions.UPDATE_ORG_CATEGORY.name,
+  DELETE_ORG_CATEGORY: permissions.DELETE_ORG_CATEGORY.name,
+  CREATE_ORG_CATEGORY: permissions.CREATE_ORG_CATEGORY.name,
 };
 
 export default Permission;
