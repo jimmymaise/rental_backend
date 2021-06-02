@@ -3,10 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { OrgCategory } from '@prisma/client';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
-
-function getCacheKey(orgId: string): string {
-  return `ORG_CATEGORY_LIST_${orgId}`;
-}
+import { stringToSlug } from '../../helpers/common';
 
 @Injectable()
 export class OrgCategoriesService {
@@ -41,12 +38,18 @@ export class OrgCategoriesService {
   }
 
   async create(orgId: string, data: OrgCategory): Promise<OrgCategory> {
+    const slug = data.slug || stringToSlug(data.name);
     return this.prismaService.orgCategory.create({
       data: {
         ...data,
-        orgId,
+        slug,
+        org: {
+          connect: {
+            id: orgId,
+          },
+        },
       },
-    });
+    } as any);
   }
 
   async getDetail(id: string): Promise<OrgCategory> {
@@ -62,13 +65,17 @@ export class OrgCategoriesService {
     orgId: string,
     data: OrgCategory,
   ): Promise<OrgCategory> {
+    const slug = data.slug || stringToSlug(data.name);
     const detail = await this.getDetail(id);
     if (detail.orgId !== orgId) {
       throw new Error('Org Category Not Exist');
     }
 
     return this.prismaService.orgCategory.update({
-      data,
+      data: {
+        ...data,
+        slug,
+      },
       where: {
         id,
       },

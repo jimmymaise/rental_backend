@@ -22,6 +22,7 @@ export class OrgCategoriesResolvers {
 
   @Query()
   @Permissions(Permission.ORG_MASTER, Permission.GET_ORG_CATEGORY)
+  @UseGuards(GqlAuthGuard)
   async getAllOrgCategories(
     @CurrentUser() user: GuardUserPayload,
   ): Promise<OrgCategory[]> {

@@ -27,12 +27,12 @@ input OrgCategoryCreateInput {
 
 type Mutation {
   createOrgCategory(data: OrgCategoryCreateInput!): OrgCategory
-  updateOrgCategory(id: String!, data: OrgCategoryCreateInput!): OrgCategory
-  deleteOrgCategory(id: String!): OrgCategory
+  updateOrgCategory(id: ID!, data: OrgCategoryCreateInput!): OrgCategory
+  deleteOrgCategory(id: ID!): OrgCategory
 }
 
 type Query {
   getAllAvailableOrgCategories: [OrgCategory]
   getAllOrgCategories: [OrgCategory]
-  getOrgCategoryDetail(id: String!): OrgCategory
+  getOrgCategoryDetail(id: ID!): OrgCategory
 }

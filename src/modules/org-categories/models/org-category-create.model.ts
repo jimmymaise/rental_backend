@@ -35,7 +35,11 @@ export class OrgCategoryCreateModel {
       seoDescription,
       order,
       isDisabled,
-      categoryId,
+      category: {
+        connect: {
+          id: categoryId,
+        },
+      },
     } as any;
   }
 }
