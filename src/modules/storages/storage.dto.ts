@@ -12,7 +12,7 @@ export class ImagePreSignedUploadInput {
   name: string;
   cloudName?: 'aws' | 'gc';
   contentType: string;
-  includes: string[]
+  includes: string[];
   fileSizeMap?: FileSizeMap;
 }
 

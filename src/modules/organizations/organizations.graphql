@@ -70,4 +70,5 @@ type Mutation {
     updateMyOrganizationInput: UpdateMyOrganizationInput!
   ): OrganizationInfo
   createOrg(createOrganizationInput: CreateOrganizationInput!): OrganizationInfo
+  switchMyOrg(newOrgId: String!): AuthPayload
 }

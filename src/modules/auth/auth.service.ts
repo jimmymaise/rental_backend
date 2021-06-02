@@ -199,6 +199,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
+        currentOrgId: orgId,
       },
     };
   }
@@ -227,6 +228,7 @@ export class AuthService {
       tokenResult.refreshToken,
       context,
     );
+    return tokenResult;
   }
 
   async getOrgPermissionNameByRoleIds(

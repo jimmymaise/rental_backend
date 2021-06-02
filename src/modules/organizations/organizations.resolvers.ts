@@ -1,4 +1,5 @@
 import { UseGuards } from '@nestjs/common';
+
 import {
   Info,
   Args,
@@ -10,7 +11,7 @@ import {
 import { GraphQLResolveInfo } from 'graphql';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 import { OrganizationsService } from './organizations.service';
-import { GuardUserPayload } from '@modules/auth/auth.dto';
+import { GuardUserPayload, AuthDTO } from '@modules/auth/auth.dto';
 import { EveryoneGqlAuthGuard, GqlAuthGuard } from '@app/modules';
 import { CurrentUser } from '@app/modules';
 import {
@@ -41,6 +42,23 @@ export class OrganizationsResolvers {
     return this.organizationsService.getOrganization(
       user.currentOrgId,
       include,
+    );
+  }
+
+  @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
+  async switchMyOrg(
+    @Info() info: GraphQLResolveInfo,
+    @Context() context: any, // GraphQLExecutionContext
+    @CurrentUser() user: GuardUserPayload,
+    @Args('newOrgId')
+    newOrgId: string,
+  ): Promise<AuthDTO> {
+    return this.organizationsService.authService.updateUserCurrentOrg(
+      user.id,
+      newOrgId,
+      context,
     );
   }
 

@@ -94,6 +94,7 @@ type AuthPayload {
 type UserAuth {
   id: ID!
   email: String!
+  currentOrgId: String
 }
 
 type Query {

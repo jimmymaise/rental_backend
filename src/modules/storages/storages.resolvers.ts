@@ -28,8 +28,7 @@ export class StoragesResolvers {
   constructor(
     private storagesService: StoragesService,
     private googleStorageService: GoogleCloudStorageService,
-  ) {
-  }
+  ) {}
 
   // @Mutation(() => Boolean)
   // async uploadItemImage(
@@ -83,7 +82,7 @@ export class StoragesResolvers {
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('imageData')
-      imageData: ImagePreSignedUploadInput,
+    imageData: ImagePreSignedUploadInput,
   ): Promise<PreSignedImageUrlData> {
     const cloudName = imageData['cloudName'] || 'gc';
     this.storagesService.setCloudService(cloudName);
@@ -120,12 +119,11 @@ export class StoragesResolvers {
     for (let type of imageData['includes']) {
       imagePreSignedUrl[
         type
-        ] = await this.storagesService.generateUploadImageSignedUrl(
+      ] = await this.storagesService.generateUploadImageSignedUrl(
         `${folderName}/${type}-${fileName}`,
         contentType,
         fileSizeMap[type],
       );
-
     }
 
     return {
@@ -160,8 +158,7 @@ export class StoragesResolvers {
         fileData.name,
         fileData.bucketName,
       );
-    } catch {
-    }
+    } catch {}
 
     try {
       this.googleStorageService.deleteFile(
@@ -169,8 +166,7 @@ export class StoragesResolvers {
         `small-${fileData.name}`,
         fileData.bucketName,
       );
-    } catch {
-    }
+    } catch {}
 
     try {
       this.googleStorageService.deleteFile(
@@ -178,8 +174,7 @@ export class StoragesResolvers {
         `medium-${fileData.name}`,
         fileData.bucketName,
       );
-    } catch {
-    }
+    } catch {}
 
     return fileId;
   }
