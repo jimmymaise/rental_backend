@@ -29,14 +29,14 @@ export class UserController {
     private configService: ConfigService,
   ) {}
 
-  @UseGuards(GqlPermissionsGuard)
+  @Permissions(Permission.NO_NEED_LOGIN)
   @Get('/facebook')
   @UseGuards(AuthGuard('facebook'))
   async facebookLogin(): Promise<any> {
     return HttpStatus.OK;
   }
 
-  @UseGuards(GqlPermissionsGuard)
+  @Permissions(Permission.NO_NEED_LOGIN)
   @Get('/facebook/redirect')
   @UseGuards(AuthGuard('facebook'))
   async facebookLoginRedirect(@Req() req: any, @Res() res: any): Promise<any> {
