@@ -1,7 +1,7 @@
 type OrganizationInfo {
   id: ID!
   name: String
-  avatarImage: JSON
+  avatarImage: PublicStorageFile
   description: String
   slug: String
   createdDate: Float
@@ -19,7 +19,7 @@ type EmployeeInfo {
 type OrgSummaryCache {
   id: ID!
   name: String
-  avatarImage: JSON
+  avatarImage: PublicStorageFile
   description: String
   slug: String
 }
