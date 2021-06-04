@@ -7,6 +7,7 @@ export interface ItemUserInputDTO {
   description?: string;
   termAndCondition?: string;
   categoryIds?: string[];
+  orgCategoryIds?: string[];
   areaIds?: string[];
   images?: StoragePublicDTO[];
   roughAddress?: string;

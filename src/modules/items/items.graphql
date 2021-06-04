@@ -15,6 +15,7 @@ type Item {
   description: JSON
   termAndCondition: JSON
   categories: [Category]
+  orgCategories: [OrgCategory]
   areas: [Area]
   images: [PublicStorageFile]
   roughtAddress: String
@@ -57,6 +58,7 @@ input ItemUserInput {
   description: JSON
   termAndCondition: JSON
   categoryIds: [String]
+  orgCategoryIds: [String]
   areaIds: [String]
   images: [PublicStorageFileInput]
   roughtAddress: String

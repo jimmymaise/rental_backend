@@ -17,20 +17,8 @@ export class OrgItemsService {
   async findDetailForOrg(
     id: string,
     orgId: string,
-    includes?: string[],
+    include: any,
   ): Promise<Item> {
-    const validIncludeMap = {
-      categories: true,
-      areas: true,
-    };
-
-    const include = (includes || []).reduce((result, cur) => {
-      if (validIncludeMap[cur]) {
-        result[cur] = true;
-      }
-      return result;
-    }, {});
-
     const where = {
       id,
     };
@@ -81,12 +69,16 @@ export class OrgItemsService {
       'rentPricePerMonth',
       'totalQuantity',
       'status',
+      'orgCategoryIds',
     ];
     const updateData: any = {};
     const where = {
       id,
     };
-    const foundItem = await this.prismaService.item.findUnique({ where });
+    const foundItem = await this.prismaService.item.findUnique({
+      where,
+      include: { orgCategories: { select: { id: true } } },
+    });
 
     for (let i = 0; i < allowUpdateFields.length; i++) {
       const field = allowUpdateFields[i];
@@ -108,6 +100,14 @@ export class OrgItemsService {
             updateData['keyword'] = `${actualName} ${slug}`;
             updateData['isVerified'] = isVerified;
           }
+          break;
+        case 'orgCategoryIds':
+          const newCategoryIds = data['orgCategoryIds'] || [];
+          updateData['orgCategories'] = {
+            set: newCategoryIds.map((orgCategoryId) => ({
+              id: orgCategoryId,
+            })),
+          };
           break;
         case 'termAndCondition':
         case 'description':

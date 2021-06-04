@@ -32,7 +32,7 @@ type Mutation {
 }
 
 type Query {
-  getAllAvailableOrgCategories: [OrgCategory]
+  getAllAvailableOrgCategories(orgId: String!): [OrgCategory]
   getAllOrgCategories: [OrgCategory]
   getOrgCategoryDetail(id: ID!): OrgCategory
 }

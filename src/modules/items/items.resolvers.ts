@@ -316,12 +316,19 @@ export class ItemsResolvers {
   @Permissions(Permission.ORG_MASTER, Permission.GET_ITEM)
   @UseGuards(GqlAuthGuard)
   async feedOrgItemDetail(
+    @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('id') id: string,
   ): Promise<ItemDTO> {
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      { fieldName: 'orgCategories' },
+    ]);
+
     const item = await this.orgItemsService.findDetailForOrg(
       id,
       user.currentOrgId,
+      include,
     );
 
     const enhancedItem = toItemDTO(item, user.id);

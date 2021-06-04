@@ -31,6 +31,7 @@ export class UserItemsService {
     };
 
     const validIncludeMap = {
+      orgCategories: true,
       categories: true,
       areas: true,
     };
@@ -100,6 +101,7 @@ export class UserItemsService {
     };
 
     const validIncludeMap = {
+      orgCategories: true,
       categories: true,
       areas: true,
     };
@@ -158,6 +160,7 @@ export class UserItemsService {
     includes?: string[],
   ): Promise<Item> {
     const validIncludeMap = {
+      orgCategories: true,
       categories: true,
       areas: true,
     };
@@ -206,6 +209,7 @@ export class UserItemsService {
       'description',
       'areas',
       'categories',
+      'orgCategories',
       'termAndCondition',
       'images',
       'checkBeforeRentDocuments',

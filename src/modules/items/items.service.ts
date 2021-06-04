@@ -44,6 +44,7 @@ export class ItemsService {
       description,
       termAndCondition,
       categoryIds,
+      orgCategoryIds,
       areaIds,
       images,
       checkBeforeRentDocuments,
@@ -111,6 +112,12 @@ export class ItemsService {
     if (categoryIds && categoryIds?.length) {
       createData['categories'] = {
         connect: categoryIds.map((id) => ({ id })),
+      };
+    }
+
+    if (orgCategoryIds && orgCategoryIds?.length) {
+      createData['orgCategories'] = {
+        connect: orgCategoryIds.map((id) => ({ id })),
       };
     }
 
