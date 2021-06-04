@@ -6,6 +6,7 @@ export class BaseCustomModel {
   public isDefault?: boolean;
   public isDisabled?: boolean;
   public order?: number;
+  public parentAttributeValue?: string;
 
   public static fromCommonAttributesConfig(
     data: CommonAttributesConfig,
@@ -17,6 +18,7 @@ export class BaseCustomModel {
       isDefault: data.isDefault,
       isDisabled: data.isDisabled,
       order: data.order,
+      parentAttributeValue: data.parentAttributeValue,
     };
   }
 }

@@ -75,6 +75,7 @@ type SellingOrder {
   updatedDate: Float
   status: String
   statusDetail: SellingOrderStatus
+  allowChangeToStatuses: [SellingOrderStatus]
 }
 
 type SellingOrderPagination {

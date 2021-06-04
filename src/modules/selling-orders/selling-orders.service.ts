@@ -226,12 +226,13 @@ export class SellingOrdersService {
     let rentingDepositItemTypes;
     let rentingDepositItemStatuses;
 
-    if (include.statusDetail) {
+    if (include.statusDetail || include.allowChangeToStatuses) {
       statuses = await this.customAttributeService.getAllSellingOrderStatusCustomAttributes(
         orgId,
       );
     }
     delete include['statusDetail'];
+    delete include['allowChangeToStatuses'];
 
     if (include.rentingDepositItem) {
       if (include.rentingDepositItem.statusDetail) {

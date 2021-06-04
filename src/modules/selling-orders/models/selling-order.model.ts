@@ -27,6 +27,7 @@ export class SellingOrderModel {
 
   public rentingOrderItems?: RentingOrderItemModel[];
   public rentingDepositItems?: RentingDepositItemModel[];
+  public allowChangeToStatuses?: SellingOrderStatusModel[];
 
   public createdDate?: number;
   public updatedDate?: number;
@@ -51,8 +52,12 @@ export class SellingOrderModel {
     rentingOrderItemStatuses?: RentingOrderItemStatusModel[];
   }): SellingOrderModel {
     let statusDetail: SellingOrderStatusModel;
+    let allowChangeToStatuses: SellingOrderStatusModel[] = [];
     if (statuses?.length) {
       statusDetail = statuses.find((status) => status.value === data.status);
+      allowChangeToStatuses = statuses.filter(
+        (status) => status.parentAttributeValue === data.status,
+      );
     }
 
     return {
@@ -80,6 +85,7 @@ export class SellingOrderModel {
         ? CustomerModel.fromCustomer(orgCustomerInfo)
         : null,
       statusDetail,
+      allowChangeToStatuses,
     };
   }
 }

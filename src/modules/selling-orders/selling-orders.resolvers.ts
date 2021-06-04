@@ -81,6 +81,9 @@ export class SellingOrderResolvers {
         fieldName: 'rentingDepositItems',
       },
       {
+        fieldName: 'allowChangeToStatuses',
+      },
+      {
         fieldName: 'customerUser',
       },
       {
