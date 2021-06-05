@@ -5,6 +5,7 @@ input PublicStorageFileInput {
   url: String!
   imageSizes: [String]
   isUploadField: Boolean
+  isPublicFile: Boolean
 }
 
 input FileSizeMapInput {
