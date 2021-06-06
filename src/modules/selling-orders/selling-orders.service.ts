@@ -4,7 +4,6 @@ import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 import { OffsetPaginationDTO } from '@app/models';
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  SellingOrder,
   SellingOrderSystemStatusType,
   RentingDepositItemSystemType,
   RentingDepositItemSystemStatusType,
@@ -12,6 +11,7 @@ import {
 } from '@prisma/client';
 import { SellingOrderModel } from './models/selling-order.model';
 import { SellingOrderCreateModel } from './models/selling-order-create.model';
+import { StoragesService } from '@modules/storages/storages.service';
 
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
 
@@ -19,6 +19,7 @@ import { CustomAttributesService } from '@modules/custom-attributes/custom-attri
 export class SellingOrdersService {
   constructor(
     private prismaService: PrismaService,
+    private storagesService: StoragesService,
     private customAttributeService: CustomAttributesService,
   ) {}
 
@@ -73,9 +74,17 @@ export class SellingOrdersService {
       RentingOrderItemStatusType.New,
     );
     const defaultRentingItemNew = rentingItemNewStatuses[0];
-    // Create list Renting Item in Order
-    await this.prismaService.rentingOrderItem.createMany({
-      data: data.rentingOrderItems.map((rentingOrderItem) => ({
+    const createManyRentingOrderItemData = [];
+    data.rentingOrderItems.forEach((rentingOrderItem) => {
+      (rentingOrderItem.attachedFiles || []).forEach((file) => {
+        this.storagesService.handleUploadImageBySignedUrlComplete(
+          file.id,
+          file.imageSizes,
+          false,
+        );
+      });
+
+      createManyRentingOrderItemData.push({
         customerUserId: data.customerUserId,
         name: rentingOrderItem.name,
         sku: rentingOrderItem.sku,
@@ -99,7 +108,11 @@ export class SellingOrdersService {
         status: defaultRentingItemNew.value,
         systemStatus: RentingOrderItemStatusType.New,
         updatedBy: creatorId,
-      })),
+      });
+    });
+    // Create list Renting Item in Order
+    await this.prismaService.rentingOrderItem.createMany({
+      data: createManyRentingOrderItemData,
     });
 
     // Create Deposit Item
@@ -111,24 +124,35 @@ export class SellingOrdersService {
     const depositItemTypes = await this.customAttributeService.getListCustomRentingDepositItemType(
       orgId,
     );
-    await this.prismaService.rentingDepositItem.createMany({
-      data: data.rentingDepositItems.map((depositItem) => {
-        const depositItemTypeDetail = depositItemTypes.find(
-          (typeItem) => typeItem.value === depositItem.type,
-        );
 
-        return {
-          customerUserId: data.customerUserId,
-          orgId,
-          status: defaultDepositItemStatus.value,
-          systemStatus: RentingDepositItemSystemStatusType.New,
-          systemType: depositItemTypeDetail.mapWithSystemType
-            .value as RentingDepositItemSystemType,
-          type: depositItem.type,
-          attachedFiles: depositItem.attachedFiles,
-          sellingOrderId: createSellingOrderResult.id,
-        };
-      }),
+    const createRentingDepositItemsManyData = [];
+    data.rentingDepositItems.forEach((depositItem) => {
+      (depositItem.attachedFiles || []).forEach((file) => {
+        this.storagesService.handleUploadImageBySignedUrlComplete(
+          file.id,
+          file.imageSizes,
+          false,
+        );
+      });
+
+      const depositItemTypeDetail = depositItemTypes.find(
+        (typeItem) => typeItem.value === depositItem.type,
+      );
+
+      createRentingDepositItemsManyData.push({
+        customerUserId: data.customerUserId,
+        orgId,
+        status: defaultDepositItemStatus.value,
+        systemStatus: RentingDepositItemSystemStatusType.New,
+        systemType: depositItemTypeDetail.mapWithSystemType
+          .value as RentingDepositItemSystemType,
+        type: depositItem.type,
+        attachedFiles: depositItem.attachedFiles,
+        sellingOrderId: createSellingOrderResult.id,
+      });
+    });
+    await this.prismaService.rentingDepositItem.createMany({
+      data: createRentingDepositItemsManyData,
     });
 
     return SellingOrderModel.fromDatabase({ data: createSellingOrderResult });

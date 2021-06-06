@@ -99,7 +99,7 @@ export class StoragesResolvers {
 
     const fileExtension = mime.extension(contentType);
 
-    const folderName = user.id;
+    const folderName = user.currentOrgId || user.id;
     const fileNamePaths = imageData.name.split('.');
     const fileName = `${Date.now()}-${encodeURIComponent(
       fileNamePaths[0],
@@ -108,15 +108,16 @@ export class StoragesResolvers {
       folderName,
       fileName,
     );
-    const storageInfo = await this.storagesService.saveItemImageStorageInfo(
+    const storageInfo = await this.storagesService.saveItemImageStorageInfo({
       folderName,
-      fileName,
-      fileFullUrl,
+      name: fileName,
+      url: fileFullUrl,
       contentType,
-      user.id,
-      user.currentOrgId,
-      imageData['includes'],
-    );
+      createdBy: user.id,
+      orgId: user.currentOrgId,
+      fileSizes: imageData['includes'],
+      usingLocate: imageData.usingLocate,
+    });
     const imagePreSignedUrl = {};
     for (const type of imageData['includes']) {
       imagePreSignedUrl[

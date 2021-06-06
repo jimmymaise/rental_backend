@@ -14,18 +14,18 @@ input UpdateItemRequestStatusInput {
 type RentingItemCachedInfo {
   name: String
   images: [PublicStorageFile]
-  rentPricePerDay: Int
-  rentPricePerWeek: Int
-  rentPricePerMonth: Int
+  rentPricePerDay: Float
+  rentPricePerWeek: Float
+  rentPricePerMonth: Float
 }
 
 type RentingItemRequest {
   id: String
   rentingItem: Item
   itemId: String
-  totalAmount: Int
-  actualTotalAmount: Int
-  rentTotalQuantity: Int
+  totalAmount: Float
+  actualTotalAmount: Float
+  rentTotalQuantity: Float
   fromDate: Float
   toDate: Float
   status: String
@@ -77,28 +77,28 @@ type RentingItemRequestActivityPagination {
 }
 
 input CalcAmountInput {
-  rentPricePerDay: Int
-  rentPricePerWeek: Int
-  rentPricePerMonth: Int
+  rentPricePerDay: Float
+  rentPricePerWeek: Float
+  rentPricePerMonth: Float
   fromDate: Float
   toDate: Float
-  quantity: Int
+  quantity: Float
 }
 
 type CalcAmountResult {
   fromDate: Float
   toDate: Float
-  rentPricePerDay: Int
-  rentPricePerWeek: Int
-  rentPricePerMonth: Int
+  rentPricePerDay: Float
+  rentPricePerWeek: Float
+  rentPricePerMonth: Float
   quantity: Int
   countOfDay: Int
   countOfWeek: Int
   countOfMonth: Int
-  totalAmount: Int
-  dayAmount: Int
-  weekAmount: Int
-  monthAmount: Int
+  totalAmount: Float
+  dayAmount: Float
+  weekAmount: Float
+  monthAmount: Float
 }
 
 type Mutation {

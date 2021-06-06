@@ -1,5 +1,16 @@
 scalar Upload
 
+enum FileUsingLocate {
+  ItemPreviewImage
+  UserAvatarImage
+  UserCoverImage
+  OrgAvatarImage
+  RentingOrderItemImage
+  RentingDepositItemImage
+  SellingOrderActivityImage
+  BookingActivityImage
+}
+
 input PublicStorageFileInput {
   id: String!
   url: String!
@@ -21,6 +32,7 @@ input PreSignedUrlFileInput {
   cloudName: String
   includes: [String]
   fileSizeMap: FileSizeMapInput!
+  usingLocate: FileUsingLocate!
 }
 
 type PreSignedUrlImageData {

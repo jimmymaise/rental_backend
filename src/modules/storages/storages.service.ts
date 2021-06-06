@@ -195,15 +195,25 @@ export class StoragesService {
     });
   }
 
-  async saveItemImageStorageInfo(
-    folderName: string,
-    name: string,
-    url: string,
-    contentType: string,
-    createdBy: string,
-    orgId: string,
-    fileSizes: string[] = [],
-  ): Promise<FileStorage> {
+  async saveItemImageStorageInfo({
+    folderName,
+    name,
+    url,
+    contentType,
+    createdBy,
+    orgId,
+    fileSizes = [],
+    usingLocate,
+  }: {
+    folderName: string;
+    name: string;
+    url: string;
+    contentType: string;
+    createdBy: string;
+    orgId: string;
+    fileSizes: string[];
+    usingLocate: FileUsingLocate;
+  }): Promise<FileStorage> {
     return this.prismaService.fileStorage.create({
       data: {
         url,
@@ -214,7 +224,7 @@ export class StoragesService {
         createdBy,
         orgId,
         sizes: fileSizes,
-        usingLocate: FileUsingLocate.ItemPreviewImage,
+        usingLocate,
       },
     });
   }

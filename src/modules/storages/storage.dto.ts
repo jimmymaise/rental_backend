@@ -1,3 +1,5 @@
+import { FileUsingLocate } from '@prisma/client';
+
 export interface StorageDTO {
   id: string;
   url: string;
@@ -14,6 +16,7 @@ export class ImagePreSignedUploadInput {
   contentType: string;
   includes: string[];
   fileSizeMap?: FileSizeMap;
+  usingLocate: FileUsingLocate;
 }
 
 export class FileSizeMap {
