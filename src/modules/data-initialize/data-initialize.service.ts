@@ -12,8 +12,7 @@ import {
 
 @Injectable()
 export class DataInitilizeService {
-  constructor(private prismaService: PrismaService) {
-  }
+  constructor(private prismaService: PrismaService) {}
 
   public async initDefaultDataForNewOrg(
     orgId: string,

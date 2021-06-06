@@ -20,7 +20,6 @@ export class AppController {
   @Get()
   @Permissions(Permission.NO_NEED_LOGIN)
   @UseGuards(GqlPermissionsGuard)
-
   getHello(): string {
     return this.appService.getHello();
   }

@@ -1,51 +1,51 @@
 scalar JSON
 
 type EmployeeInfo {
-    id: ID!
-    orgId: String
-    userId: String
-    isOwner: Boolean
-    user: DBUserInfoForEmployee
-    roles: [RoleInfo]
+  id: ID!
+  orgId: String
+  userId: String
+  isOwner: Boolean
+  user: DBUserInfoForEmployee
+  roles: [RoleInfo]
 }
 
 type DBUserInfoForEmployee {
-    phoneNumber: String
-    email: String
-    createdDate: Float
-    userInfo: DBUserInfo
+  phoneNumber: String
+  email: String
+  createdDate: Float
+  userInfo: DBUserInfo
 }
 
 type EmployeePagination {
-    items: [EmployeeInfo]
-    total: Int
-    limit: Int
-    offset: Int
+  items: [EmployeeInfo]
+  total: Int
+  limit: Int
+  offset: Int
 }
 
 input AddEmployeeByUserIdInput {
-    userId: String,
-    roleIds: [String]
+  userId: String
+  roleIds: [String]
 }
 
 input AddRemoveEmployeeRoleByUserIdInput {
-    userId: String,
-    roleIds: [String]
+  userId: String
+  roleIds: [String]
 }
 
 type Query {
-    getMyOrgEmployeesWithPaging(
-        getMyOrgEmployeesWithOffsetPagingData: BaseOffsetPagingInput
-    ): EmployeePagination
+  getMyOrgEmployeesWithPaging(
+    getMyOrgEmployeesWithOffsetPagingData: BaseOffsetPagingInput
+  ): EmployeePagination
 }
 type Mutation {
-    addEmployeeToOrganization(
-        addEmployeeByUserIdData: AddEmployeeByUserIdInput!
-    ): EmployeeInfo
-    removeEmployeeRoles(
-        removeEmployeeRolesByUserIdData: AddRemoveEmployeeRoleByUserIdInput!
-    ): EmployeeInfo
-    addEmployeeRoles(
-        addEmployeeRolesByUserIdData: AddRemoveEmployeeRoleByUserIdInput!
-    ): EmployeeInfo
+  addEmployeeToOrganization(
+    addEmployeeByUserIdData: AddEmployeeByUserIdInput!
+  ): EmployeeInfo
+  removeEmployeeRoles(
+    removeEmployeeRolesByUserIdData: AddRemoveEmployeeRoleByUserIdInput!
+  ): EmployeeInfo
+  addEmployeeRoles(
+    addEmployeeRolesByUserIdData: AddRemoveEmployeeRoleByUserIdInput!
+  ): EmployeeInfo
 }

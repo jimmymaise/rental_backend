@@ -15,13 +15,14 @@ import { Permission } from '@modules/auth/permission/permission.enum';
 // Internal for only UI UserPermission
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GraphQLResolveInfo } from 'graphql';
-import { AddEmployeeByUserIdDTO,AddRemoveEmployeeRolesByUserIdDTO } from '@modules/employees/employee.dto';
+import {
+  AddEmployeeByUserIdDTO,
+  AddRemoveEmployeeRolesByUserIdDTO,
+} from '@modules/employees/employee.dto';
 
 @Resolver('Employee')
 export class EmployeesResolvers {
-  constructor(private readonly employeeService: EmployeesService) {
-  }
-
+  constructor(private readonly employeeService: EmployeesService) {}
 
   @Query()
   @Permissions(Permission.NEED_LOGIN)
@@ -30,7 +31,7 @@ export class EmployeesResolvers {
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('getMyOrgEmployeesWithOffsetPagingData')
-      getMyOrgEmployeesWithOffsetPagingData: QueryWithOffsetPagingDTO,
+    getMyOrgEmployeesWithOffsetPagingData: QueryWithOffsetPagingDTO,
   ): Promise<OffsetPaginationDTO<EmployeeDto>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
@@ -65,7 +66,8 @@ export class EmployeesResolvers {
   async addEmployeeToOrganization(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
-    @Args('addEmployeeByUserIdData') addEmployeeByUserIdData: AddEmployeeByUserIdDTO,
+    @Args('addEmployeeByUserIdData')
+    addEmployeeByUserIdData: AddEmployeeByUserIdDTO,
   ): Promise<Employee> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
@@ -79,14 +81,14 @@ export class EmployeesResolvers {
     );
   }
 
-
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @Permissions(Permission.NEED_LOGIN)
   async addEmployeeRoles(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
-    @Args('addEmployeeRolesByUserIdData') addEmployeeRoleByUserIdData: AddRemoveEmployeeRolesByUserIdDTO,
+    @Args('addEmployeeRolesByUserIdData')
+    addEmployeeRoleByUserIdData: AddRemoveEmployeeRolesByUserIdDTO,
   ): Promise<Employee> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
@@ -100,14 +102,14 @@ export class EmployeesResolvers {
     );
   }
 
-
   @Mutation()
   @UseGuards(GqlAuthGuard)
   @Permissions(Permission.NEED_LOGIN)
   async removeEmployeeRoles(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
-    @Args('removeEmployeeRolesByUserIdData') removeEmployeeRoleByUserIdData: AddRemoveEmployeeRolesByUserIdDTO,
+    @Args('removeEmployeeRolesByUserIdData')
+    removeEmployeeRoleByUserIdData: AddRemoveEmployeeRolesByUserIdDTO,
   ): Promise<Employee> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields([

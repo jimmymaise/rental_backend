@@ -9,8 +9,7 @@ import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 
 @Injectable()
 export class RolesService {
-  constructor(private prismaService: PrismaService) {
-  }
+  constructor(private prismaService: PrismaService) {}
 
   async getRole(roleId: string, include: any): Promise<Role> {
     return this.prismaService.role.findUnique({
@@ -68,7 +67,6 @@ export class RolesService {
     ).map((permission) => {
       return { name: permission };
     });
-
 
     if (permissionsAdded.length > 0) {
       addedCommand['permissions']['connect'] = permissionsAdded;

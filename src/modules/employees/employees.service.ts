@@ -10,8 +10,7 @@ import { OffsetPaginationDTO } from '@app/models';
 
 @Injectable()
 export class EmployeesService {
-  constructor(private prismaService: PrismaService) {
-  }
+  constructor(private prismaService: PrismaService) {}
 
   async getEmployeesWithOffsetPaging(
     whereQuery: any,
@@ -57,7 +56,6 @@ export class EmployeesService {
     roleIds,
     include,
   ): Promise<Employee> {
-
     return this.prismaService.employee.create({
       include: include,
       data: {
@@ -72,11 +70,7 @@ export class EmployeesService {
     });
   }
 
-  async removeEmployeeByUserId(
-    orgId,
-    userId,
-  ): Promise<any> {
-
+  async removeEmployeeByUserId(orgId, userId): Promise<any> {
     return this.prismaService.employee.delete({
       where: {
         userId_orgId: {
@@ -93,7 +87,6 @@ export class EmployeesService {
     roleIds,
     include,
   ): Promise<Employee> {
-
     return await this.prismaService.employee.update({
       include: include,
       where: {
@@ -118,7 +111,6 @@ export class EmployeesService {
     roleIds,
     include,
   ): Promise<Employee> {
-
     return await this.prismaService.employee.update({
       include: include,
       where: {
