@@ -175,7 +175,6 @@ export class UsersService {
     return this.prismaService.user.create({
       data: { email: sanitizeHtml(email), passwordHash },
       include: {
-        roles: true,
         employeesThisUserBecome: true,
       },
     });
@@ -189,7 +188,6 @@ export class UsersService {
     return this.prismaService.user.create({
       data: { phoneNumber: sanitizeHtml(phoneNumber), passwordHash },
       include: {
-        roles: true,
         employeesThisUserBecome: true,
       },
     });
@@ -209,9 +207,6 @@ export class UsersService {
 
     return this.prismaService.user.update({
       where: { id: userId },
-      include: {
-        roles: true,
-      },
       data,
     });
   }
@@ -240,7 +235,6 @@ export class UsersService {
     return this.prismaService.user.findUnique({
       where: { facebookId },
       include: {
-        roles: true,
         employeesThisUserBecome: true,
       },
     });
@@ -249,9 +243,6 @@ export class UsersService {
   async getUserByGoogleId(googleId: string): Promise<User> {
     return await this.prismaService.user.findUnique({
       where: { googleId },
-      include: {
-        roles: true,
-      },
     });
   }
 
@@ -260,7 +251,6 @@ export class UsersService {
     return this.prismaService.user.findUnique({
       where: { email },
       include: {
-        roles: true,
         employeesThisUserBecome: true,
       },
     });

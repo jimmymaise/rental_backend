@@ -21,7 +21,8 @@ export class AuthService {
     private prismaService: PrismaService,
     private configService: ConfigService,
     private redisCacheService: RedisCacheService,
-  ) {}
+  ) {
+  }
 
   public getAccessToken(payload: TokenPayload): string {
     return this.jwtService.sign(payload, {
@@ -93,21 +94,21 @@ export class AuthService {
     // With Credential = True
     return rootContants.isProduction
       ? `Authentication=${accessToken}; HttpOnly; Secure; Path=/; Max-Age=${this.configService.get(
-          'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-        )}; SameSite=None;`
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}; SameSite=None;`
       : `Authentication=${accessToken}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-          'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-        )}; SameSite=Lax;`;
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}; SameSite=Lax;`;
   }
 
   getCookieWithJwtRefreshToken(refreshToken: string) {
     return rootContants.isProduction
       ? `Refresh=${refreshToken}; HttpOnly; Secure; Path=/; Max-Age=${this.configService.get(
-          'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-        )}; SameSite=None;`
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}; SameSite=None;`
       : `Refresh=${refreshToken}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-          'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-        )}; SameSite=Lax;`;
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}; SameSite=Lax;`;
   }
 
   getCookieForLogout(): string[] {
@@ -159,7 +160,9 @@ export class AuthService {
     if (!user) {
       user = await this.prismaService.user.findUnique({
         where: { id: userId },
-        include: { roles: true, employeesThisUserBecome: true },
+        include: {
+          employeesThisUserBecome: { include: { roles: true } },
+        },
       });
     }
     const orgIds = user.employeesThisUserBecome.map((org) => org.orgId);
@@ -171,7 +174,10 @@ export class AuthService {
       isOwner = user.employeesThisUserBecome.filter(
         (org) => org.orgId == orgId,
       )[0].isOwner;
-      const roleIds = user.roles.map((role) => role.id);
+      const roles = user.employeesThisUserBecome.filter(
+        (org) => org.orgId == orgId,
+      )[0].roles;
+      const roleIds = roles.map((role) => role.id);
       currentOrgPermissionNames = await this.getOrgPermissionNameByRoleIds(
         roleIds,
         orgId,
@@ -252,15 +258,12 @@ export class AuthService {
   async getUserByEmailPassword(
     email: string,
     password: string,
-  ): Promise<
-    User & {
-      roles: any;
-      employeesThisUserBecome: any;
-    }
-  > {
+  ): Promise<User & {
+    employeesThisUserBecome: any;
+  }> {
     const user = await this.prismaService.user.findUnique({
       where: { email },
-      include: { employeesThisUserBecome: true, roles: true },
+      include: { employeesThisUserBecome: true },
     });
 
     if (!user) {

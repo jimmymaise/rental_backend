@@ -5,7 +5,6 @@ type RoleInfo {
   createdDate: Float
   updatedDate: Float
   isDefault: Boolean
-  users: [PublicUserInfo]
   orgId: String
   permissions: [PermissionInfo]
 }
@@ -21,15 +20,12 @@ input CreateRoleInput {
   name: String
   description: String
   permissions: [String]
-  users: [String]
 }
 
 input UpdateRoleInput {
   id: ID!
   name: String
   description: String
-  addUsersToRole: [String]
-  removeUsersFromRole: [String]
   addPermissionsToRole: [String]
   removePermissionsFromRole: [String]
 }

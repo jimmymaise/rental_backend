@@ -10,7 +10,6 @@ export class CreateRoleDto {
   description: string;
   orgId!: string;
   permissions: string[];
-  users: string[];
 }
 
 export class UpdateRoleDto {
@@ -20,8 +19,6 @@ export class UpdateRoleDto {
   description: string;
   addPermissionsToRole: string[];
   removePermissionsFromRole: string[];
-  addUsersToRole: string[];
-  removeUsersFromRole: string[];
 }
 
 export class RoleDTO {

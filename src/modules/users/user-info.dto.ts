@@ -61,6 +61,5 @@ export interface QueryWithCursorPagingDTO {
 }
 
 export type UserInfoForMakingToken = User & {
-  roles: any[];
   employeesThisUserBecome: any[];
 };
