@@ -98,6 +98,7 @@ export class CustomersService {
 
       await this.usersService.createTheProfileForUser(user.id, {
         displayName: data.displayName,
+        phoneNumber: data.phoneNumber,
         bio: '',
       });
     }

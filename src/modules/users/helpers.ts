@@ -49,6 +49,7 @@ export function toUserInfoDTO(
     displayName,
     email,
     currentOrgId,
+    phoneNumber: userInfo.phoneNumer || user.phoneNumber,
     isDeleted: user.isDeleted,
   };
 }
