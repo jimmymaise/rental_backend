@@ -100,8 +100,9 @@ export class StoragesResolvers {
     const fileExtension = mime.extension(contentType);
 
     const folderName = user.id;
+    const fileNamePaths = imageData.name.split('.');
     const fileName = `${Date.now()}-${encodeURIComponent(
-      imageData.name,
+      fileNamePaths[0],
     )}.${fileExtension}`;
     const fileFullUrl = this.storagesService.getImagePublicUrl(
       folderName,
@@ -114,6 +115,7 @@ export class StoragesResolvers {
       contentType,
       user.id,
       user.currentOrgId,
+      imageData['includes'],
     );
     const imagePreSignedUrl = {};
     for (const type of imageData['includes']) {

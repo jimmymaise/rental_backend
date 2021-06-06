@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   S3Client,
   PutObjectCommand,
-  PutBucketAclCommand,
+  PutObjectAclCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { IStorageService } from '@modules/storages/storage.service.interface';
@@ -13,7 +13,9 @@ export class S3StorageService implements IStorageService {
   private readonly s3Client: S3Client;
 
   constructor(private configService: ConfigService) {
-    this.s3Client = new S3Client({ region: 'REGION' });
+    this.s3Client = new S3Client({
+      region: this.configService.get('AWS_REGION'),
+    });
   }
 
   public async getPreSignedUrlForUpload(
@@ -30,7 +32,7 @@ export class S3StorageService implements IStorageService {
     };
     const command = new PutObjectCommand(params);
     return await getSignedUrl(this.s3Client, command, {
-      expiresIn: 3600,
+      expiresIn: 900,
     });
   }
 
@@ -47,7 +49,7 @@ export class S3StorageService implements IStorageService {
 
     const command = new PutObjectCommand(params);
     return await getSignedUrl(this.s3Client, command, {
-      expiresIn: Date.now() + 15 * 60 * 1000, // 15 minutes,
+      expiresIn: 900, // 15 minutes,
     });
   }
 
@@ -55,7 +57,8 @@ export class S3StorageService implements IStorageService {
     bucketName: string,
     folderPath: string,
     fileName: string,
-  ) => `${process.env.AWS_S3_HOST}${bucketName}/${folderPath}/${fileName}`;
+  ) =>
+    `https://${bucketName}.${process.env.AWS_S3_HOST}/${folderPath}/${fileName}`;
 
   public sendFileToCloudByStream = (
     stream: any,
@@ -66,13 +69,20 @@ export class S3StorageService implements IStorageService {
     throw new Error('not Implemented');
   };
 
-  public async makePublic(filePath: string, bucketName: string): Promise<void> {
+  public async makePublic(
+    folderPath: string,
+    fileName: string,
+    bucketName: string,
+  ): Promise<void> {
+    const filePath = `${folderPath}/${fileName}`;
+
     const params = {
       Bucket: bucketName,
       Key: filePath,
       ACL: 'public-read',
     };
-    const command = new PutBucketAclCommand(params);
+
+    const command = new PutObjectAclCommand(params);
     await this.s3Client.send(command);
   }
 }

@@ -106,6 +106,8 @@ import { AppService } from './app.service';
         ENV_NAME: Joi.string().required(),
         ENCRYPT_PHONE_NUMBER_PASSWORD: Joi.string().required(),
         GOOGLE_CLOUD_STORAGE_HOST: Joi.string().required(),
+        AWS_S3_HOST: Joi.string().required(),
+        AWS_REGION: Joi.string().required(),
       }),
     }),
     LoggingModule,

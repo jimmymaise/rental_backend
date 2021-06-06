@@ -202,6 +202,7 @@ export class StoragesService {
     contentType: string,
     createdBy: string,
     orgId: string,
+    fileSizes: string[] = [],
   ): Promise<FileStorage> {
     return this.prismaService.fileStorage.create({
       data: {
@@ -212,6 +213,7 @@ export class StoragesService {
         folderName,
         createdBy,
         orgId,
+        sizes: fileSizes,
         usingLocate: FileUsingLocate.ItemPreviewImage,
       },
     });

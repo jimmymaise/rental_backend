@@ -33,6 +33,8 @@ const ALLOWED_KEYS = [
   'SENTRY_DSN',
   'ENCRYPT_PHONE_NUMBER_PASSWORD',
   'GOOGLE_CLOUD_STORAGE_HOST',
+  'AWS_S3_HOST',
+  'AWS_REGION'
 ];
 
 console.log('ENV_NAME = ' + process.env['ENV_NAME']);
