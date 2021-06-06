@@ -12,7 +12,8 @@ import {
 
 @Injectable()
 export class DataInitilizeService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) {
+  }
 
   public async initDefaultDataForNewOrg(
     orgId: string,
@@ -29,9 +30,18 @@ export class DataInitilizeService {
             id: orgId,
           },
         },
-        users: {
-          connect: {
-            id: userId,
+        employees: {
+          connectOrCreate: {
+            where: {
+              userId_orgId: {
+                userId: userId,
+                orgId: orgId,
+              },
+            },
+            create: {
+              userId: userId,
+              orgId: orgId,
+            },
           },
         },
         permissions: {

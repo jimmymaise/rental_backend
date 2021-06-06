@@ -38,6 +38,7 @@ model Employee {
   organization Organization @relation(fields: [orgId], references: [id])
   userId       String
   orgId        String
+  roles        Role[]
   isOwner      Boolean      @default(false)
   createdDate  DateTime?    @default(now())
   updatedDate  DateTime?    @updatedAt
@@ -95,7 +96,6 @@ model User {
   item                         Item[]
   myUserContact                MyUserContact[]
   userNotifications            UserNotification[]   @relation("ForUserNotification")
-  roles                        Role[]
   sellingOrders                SellingOrder[]       @relation("SellingOrderBelongToCustomer")
   rentingOrderItems            RentingOrderItem[]   @relation("RentingOrderItemBelongToCustomer")
 
@@ -108,8 +108,8 @@ model Role {
   description String?
   org         Organization @relation(fields: [orgId], references: [id])
   orgId       String
+  employees   Employee[]
   isDefault   Boolean      @default(false)
-  users       User[]
   permissions Permission[]
   order       Int?         @default(0)
   createdDate DateTime     @default(now())

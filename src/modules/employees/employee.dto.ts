@@ -21,3 +21,12 @@ export interface EmployeeUserInfo {
   createdDate?: number;
   isDeleted?: boolean;
 }
+export interface AddEmployeeByUserIdDTO {
+  userId: string;
+  roleIds: [string];
+}
+
+export interface AddRemoveEmployeeRolesByUserIdDTO {
+  userId: string;
+  roleIds: [string];
+}
