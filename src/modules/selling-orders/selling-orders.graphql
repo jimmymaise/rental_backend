@@ -1,7 +1,7 @@
 input RentingDepositItemCreateInput {
   type: String!
   note: String
-  valueAmount: Float
+  valueAmount: Int
   attachedFiles: [PublicStorageFileInput]
 }
 
@@ -10,7 +10,7 @@ type RentingDepositItem {
   type: String
   status: String
   note: String
-  valueAmount: Float
+  valueAmount: Int
   attachedFiles: [PublicStorageFile]
   statusDetail: RentingDepositItemStatus
   typeDetail: RentingDepositItemType
@@ -20,14 +20,14 @@ input RentingOrderItemCreateInput {
   sku: String
   name: String
   note: String
-  amount: Float
+  amount: Int
   quantity: Int
   pickupDateTime: Float
   returningDateTime: Float
-  unitPrice: Float
-  unitPricePerDay: Float
-  unitPricePerWeek: Float
-  unitPricePerMonth: Float
+  unitPrice: Int
+  unitPricePerDay: Int
+  unitPricePerWeek: Int
+  unitPricePerMonth: Int
   attachedFiles: [PublicStorageFileInput]
   itemId: String!
 }
@@ -38,14 +38,14 @@ type RentingOrderItem {
   name: String
   status: String
   note: String
-  amount: Float
+  amount: Int
   quantity: Int
   pickupDateTime: Float
   returningDateTime: Float
-  unitPrice: Float
-  unitPricePerDay: Float
-  unitPricePerWeek: Float
-  unitPricePerMonth: Float
+  unitPrice: Int
+  unitPricePerDay: Int
+  unitPricePerWeek: Int
+  unitPricePerMonth: Int
   attachedFiles: [PublicStorageFile]
   itemId: String!
   statusDetail: RentingOrderItemStatus
@@ -53,7 +53,7 @@ type RentingOrderItem {
 
 input SellingOrderCreateInput {
   orderCustomId: String
-  totalAmount: Float
+  totalAmount: Int
   note: String
   customerUserId: String
   attachedFiles: [PublicStorageFileInput]
@@ -64,7 +64,7 @@ input SellingOrderCreateInput {
 type SellingOrder {
   id: String!
   orderCustomId: String
-  totalAmount: Float
+  totalAmount: Int
   note: String
   customerUserId: String
   customerUser: Customer

@@ -242,12 +242,12 @@ model Item {
   checkBeforeRentDocuments  Json?
   keepWhileRentingDocuments Json?
   unavailableForRentDays    DateTime[]
-  currentOriginalPrice      Float?
-  sellPrice                 Float?
+  currentOriginalPrice      Int?
+  sellPrice                 Int?
   hidePrice                 Boolean?             @default(false)
-  rentPricePerDay           Float?
-  rentPricePerWeek          Float?
-  rentPricePerMonth         Float?
+  rentPricePerDay           Int?
+  rentPricePerWeek          Int?
+  rentPricePerMonth         Int?
   currencyCode              String?
   summaryReviewCore         Float?
   summaryReviewCount        Float?
@@ -298,13 +298,13 @@ model RentingItemRequest {
   id                         String                       @id @default(uuid())
   rentingItem                Item                         @relation(fields: [itemId], references: [id])
   itemId                     String
-  totalAmount                Float?                       @default(0)
-  actualTotalAmount          Float?                       @default(0)
+  totalAmount                Int?                         @default(0)
+  actualTotalAmount          Int?                         @default(0)
   rentTotalQuantity          Int?                         @default(1)
   hidePrice                  Boolean?                     @default(false)
-  rentPricePerDay            Float?
-  rentPricePerWeek           Float?
-  rentPricePerMonth          Float?
+  rentPricePerDay            Int?
+  rentPricePerWeek           Int?
+  rentPricePerMonth          Int?
   fromDate                   DateTime
   toDate                     DateTime
   status                     RentingItemRequestStatus?
@@ -508,7 +508,7 @@ model SellingOrder {
   orderCustomId  String?
   org            Organization                 @relation("SellingOrderBelongToOrg", fields: [orgId], references: [id])
   orgId          String
-  totalAmount    Float?                       @default(0)
+  totalAmount    Int?                         @default(0)
   note           String?
   customerUser   User                         @relation("SellingOrderBelongToCustomer", fields: [customerUserId], references: [id])
   customerUserId String
@@ -539,16 +539,16 @@ model RentingOrderItem {
   name String
   note String?
 
-  amount            Float?                     @default(0)
+  amount            Int?                       @default(0)
   quantity          Int?                       @default(0)
   pickupDateTime    DateTime?
   returningDateTime DateTime?
   systemStatus      RentingOrderItemStatusType
   status            String
-  unitPrice         Float?                     @default(0)
-  unitPricePerDay   Float?                     @default(0)
-  unitPricePerWeek  Float?                     @default(0)
-  unitPricePerMonth Float?                     @default(0)
+  unitPrice         Int?                       @default(0)
+  unitPricePerDay   Int?                       @default(0)
+  unitPricePerWeek  Int?                       @default(0)
+  unitPricePerMonth Int?                       @default(0)
   attachedFiles     Json?
 
   createdDate    DateTime     @default(now())
@@ -583,7 +583,7 @@ model RentingDepositItem {
   type          String
   systemType    RentingDepositItemSystemType
   note          String?
-  valueAmount   Float?                             @default(0)
+  valueAmount   Int?                               @default(0)
   attachedFiles Json?
   systemStatus  RentingDepositItemSystemStatusType
   status        String

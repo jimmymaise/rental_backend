@@ -27,9 +27,9 @@ type Item {
   currentOriginalPrice: Float
   sellPrice: Float
   hidePrice: Boolean
-  rentPricePerDay: Float
-  rentPricePerWeek: Float
-  rentPricePerMonth: Float
+  rentPricePerDay: Int
+  rentPricePerWeek: Int
+  rentPricePerMonth: Int
   currencyCode: String
   summaryReviewCore: Float
   summaryReviewCount: Float
@@ -65,11 +65,11 @@ input ItemUserInput {
   checkBeforeRentDocuments: [PublicRentingMandatoryVerifyDocumentInput]
   keepWhileRentingDocuments: [PublicRentingMandatoryVerifyDocumentInput]
   unavailableForRentDays: [Float]
-  currentOriginalPrice: Float
-  sellPrice: Float
-  rentPricePerDay: Float
-  rentPricePerWeek: Float
-  rentPricePerMonth: Float
+  currentOriginalPrice: Int
+  sellPrice: Int
+  rentPricePerDay: Int
+  rentPricePerWeek: Int
+  rentPricePerMonth: Int
   note: String
   status: String
   hidePrice: Boolean
