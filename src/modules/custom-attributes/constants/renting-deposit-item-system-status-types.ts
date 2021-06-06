@@ -6,8 +6,8 @@ export const RentingDepositItemSystemStatusTypesMap = {
     label: 'NEW',
     color: '#17b7ff',
   },
-  [RentingDepositItemSystemStatusType.Approved]: {
-    value: RentingDepositItemSystemStatusType.Approved,
+  [RentingDepositItemSystemStatusType.PickedUp]: {
+    value: RentingDepositItemSystemStatusType.PickedUp,
     label: 'APPROVED',
     color: '#ffae63',
   },
@@ -20,6 +20,6 @@ export const RentingDepositItemSystemStatusTypesMap = {
 
 export const RentingDepositItemSystemStatusTypes = [
   RentingDepositItemSystemStatusTypesMap.New,
-  RentingDepositItemSystemStatusTypesMap.Approved,
+  RentingDepositItemSystemStatusTypesMap.PickedUp,
   RentingDepositItemSystemStatusTypesMap.Returned,
 ];

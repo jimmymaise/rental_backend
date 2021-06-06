@@ -6,19 +6,19 @@ export const SellingOrderSystemStatusTypesMap = {
     label: 'NEW',
     color: '#17b7ff',
   },
-  [SellingOrderSystemStatusType.Approved]: {
-    value: SellingOrderSystemStatusType.Approved,
-    label: 'APPROVED',
+  [SellingOrderSystemStatusType.Reserved]: {
+    value: SellingOrderSystemStatusType.Reserved,
+    label: 'RESERVED',
     color: '#38d9a9',
   },
-  [SellingOrderSystemStatusType.InProgress]: {
-    value: SellingOrderSystemStatusType.InProgress,
-    label: 'IN_PROGRESS',
+  [SellingOrderSystemStatusType.PickedUp]: {
+    value: SellingOrderSystemStatusType.PickedUp,
+    label: 'PICKED_UP',
     color: '#ffae63',
   },
-  [SellingOrderSystemStatusType.Completed]: {
-    value: SellingOrderSystemStatusType.Completed,
-    label: 'COMPLETED',
+  [SellingOrderSystemStatusType.Returned]: {
+    value: SellingOrderSystemStatusType.Returned,
+    label: 'RETURNED',
     color: '#2FCC71',
   },
   [SellingOrderSystemStatusType.Cancelled]: {
@@ -30,8 +30,8 @@ export const SellingOrderSystemStatusTypesMap = {
 
 export const SellingOrderSystemStatusTypes = [
   SellingOrderSystemStatusTypesMap.New,
-  SellingOrderSystemStatusTypesMap.Approved,
-  SellingOrderSystemStatusTypesMap.InProgress,
-  SellingOrderSystemStatusTypesMap.Completed,
+  SellingOrderSystemStatusTypesMap.Reserved,
+  SellingOrderSystemStatusTypesMap.PickedUp,
+  SellingOrderSystemStatusTypesMap.Returned,
   SellingOrderSystemStatusTypesMap.Cancelled,
 ];

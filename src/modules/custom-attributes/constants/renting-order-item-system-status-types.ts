@@ -6,19 +6,19 @@ export const RentingOrderItemSystemStatusTypesMap = {
     label: 'NEW',
     color: '#17b7ff',
   },
-  [RentingOrderItemStatusType.Approved]: {
-    value: RentingOrderItemStatusType.Approved,
-    label: 'APPROVED',
+  [RentingOrderItemStatusType.Reserved]: {
+    value: RentingOrderItemStatusType.Reserved,
+    label: 'RESERVED',
     color: '#38d9a9',
   },
-  [RentingOrderItemStatusType.InProgress]: {
-    value: RentingOrderItemStatusType.InProgress,
-    label: 'IN_PROGRESS',
+  [RentingOrderItemStatusType.PickedUp]: {
+    value: RentingOrderItemStatusType.PickedUp,
+    label: 'PICKED_UP',
     color: '#ffae63',
   },
-  [RentingOrderItemStatusType.Completed]: {
-    value: RentingOrderItemStatusType.Completed,
-    label: 'COMPLETED',
+  [RentingOrderItemStatusType.Returned]: {
+    value: RentingOrderItemStatusType.Returned,
+    label: 'RETURNED',
     color: '#2FCC71',
   },
   [RentingOrderItemStatusType.Cancelled]: {
@@ -30,8 +30,8 @@ export const RentingOrderItemSystemStatusTypesMap = {
 
 export const RentingOrderItemStatusTypes = [
   RentingOrderItemSystemStatusTypesMap.New,
-  RentingOrderItemSystemStatusTypesMap.Approved,
-  RentingOrderItemSystemStatusTypesMap.InProgress,
-  RentingOrderItemSystemStatusTypesMap.Completed,
+  RentingOrderItemSystemStatusTypesMap.Reserved,
+  RentingOrderItemSystemStatusTypesMap.PickedUp,
+  RentingOrderItemSystemStatusTypesMap.Returned,
   RentingOrderItemSystemStatusTypesMap.Cancelled,
 ];
