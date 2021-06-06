@@ -492,9 +492,9 @@ model ChatMessage {
 
 enum SellingOrderSystemStatusType {
   New
-  Approved
-  InProgress
-  Completed
+  Reserved
+  PickedUp
+  Returned
   Cancelled
 }
 
@@ -522,9 +522,9 @@ model SellingOrder {
 
 enum RentingOrderItemStatusType {
   New
-  Approved
-  InProgress
-  Completed
+  Reserved
+  PickedUp
+  Returned
   Cancelled
 }
 
@@ -562,7 +562,7 @@ model RentingOrderItem {
 
 enum RentingDepositItemSystemStatusType {
   New
-  Approved
+  PickedUp
   Returned
 }
 
