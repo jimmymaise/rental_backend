@@ -100,9 +100,9 @@ export class StoragesResolvers {
     const fileExtension = mime.extension(contentType);
 
     const folderName = user.id;
-    const fileName = `${Date.now()}-${Buffer.from(imageData.name.slice(0, 10))
-      .toString('base64')
-      .toLowerCase()}-thue-do-vn.${fileExtension}`;
+    const fileName = `${Date.now()}-${encodeURIComponent(
+      imageData.name,
+    )}.${fileExtension}`;
     const fileFullUrl = this.storagesService.getImagePublicUrl(
       folderName,
       fileName,
@@ -115,8 +115,8 @@ export class StoragesResolvers {
       user.id,
       user.currentOrgId,
     );
-    let imagePreSignedUrl = {};
-    for (let type of imageData['includes']) {
+    const imagePreSignedUrl = {};
+    for (const type of imageData['includes']) {
       imagePreSignedUrl[
         type
       ] = await this.storagesService.generateUploadImageSignedUrl(

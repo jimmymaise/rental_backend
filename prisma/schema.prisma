@@ -192,7 +192,11 @@ enum FileUsingLocate {
   ItemPreviewImage
   UserAvatarImage
   UserCoverImage
-  UserRentingDocuments
+  OrgAvatarImage
+  RentingOrderItemImage
+  RentingDepositItemImage
+  SellingOrderActivityImage
+  BookingActivityImage
 }
 
 model FileStorage {
@@ -202,6 +206,7 @@ model FileStorage {
   bucketName      String
   folderName      String
   contentType     String
+  sizes           String[]
   usingLocate     FileUsingLocate?
   isUploadSuccess Boolean?         @default(false)
   createdBy       String
