@@ -52,9 +52,9 @@ export class DataInitilizeService {
         order: 0,
       }),
       SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
-        label: 'Đã được duyệt',
+        label: 'Đặt giữ',
         description:
-          'Đơn hàng đã được duyệt và sản phẩm cho thuê được đặt lịch đã được khoá',
+          'Đơn hàng đã được đặt giữ và sản phẩm cho thuê được đặt lịch đã được khoá',
         color: '#38d9a9',
         value: 'RESERVED',
         mapWithSystemStatus: 'Reserved',
@@ -62,7 +62,7 @@ export class DataInitilizeService {
         order: 1,
       }),
       SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
-        label: 'Đang thuê',
+        label: 'Đã nhận hàng',
         description:
           'Khách hàng đã nhận được sản phẩm cho thuê và đang sử dụng',
         color: '#ffae63',
@@ -72,7 +72,7 @@ export class DataInitilizeService {
         order: 2,
       }),
       SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
-        label: 'Hoàn thành',
+        label: 'Đã trả hàng',
         description:
           'Kết thúc hợp đồng cho thuê, khách hàng đã trả lại sản phẩm',
         color: '#2FCC71',
@@ -109,7 +109,7 @@ export class DataInitilizeService {
         orgId,
         userId,
         {
-          label: 'Đã được duyệt',
+          label: 'Đặt giữ',
           description: 'Nhân viên đã xác nhận sản phẩm có thể cho thuê',
           color: '#38d9a9',
           value: 'RESERVED',
@@ -122,7 +122,7 @@ export class DataInitilizeService {
         orgId,
         userId,
         {
-          label: 'Đang thuê',
+          label: 'Đã nhận hàng',
           description:
             'Khách hàng đã nhận được sản phẩm cho thuê và đang sử dụng',
           color: '#ffae63',
@@ -136,7 +136,7 @@ export class DataInitilizeService {
         orgId,
         userId,
         {
-          label: 'Hoàn thành',
+          label: 'Đã trả hàng',
           description:
             'Kết thúc hợp đồng cho thuê, khách hàng đã trả lại sản phẩm',
           color: '#2FCC71',
@@ -192,7 +192,7 @@ export class DataInitilizeService {
         orgId,
         userId,
         {
-          label: 'Trả cọc',
+          label: 'Đã trả cọc',
           description:
             'Kết thúc hợp đồng cho thuê, cửa hàng đã trả lại cọc cho khách hàng',
           color: '#2FCC71',
