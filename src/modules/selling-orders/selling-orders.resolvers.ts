@@ -4,20 +4,25 @@ import { GraphQLResolveInfo } from 'graphql';
 
 import { QueryWithOffsetPagingDTO } from '@app/models';
 import { SellingOrdersService } from './selling-orders.service';
+import { SellingOrdersStatusService } from './selling-orders-status.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
 import { SellingOrderCreateModel } from './models/selling-order-create.model';
+import { SellingOrderUpdateStatusModel } from './models/selling-order-update-status.model';
 import { SellingOrderModel } from './models/selling-order.model';
 import { OffsetPaginationDTO } from '../../models';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 
 @Resolver('SellingOrder')
 export class SellingOrderResolvers {
-  constructor(private readonly sellingOrdersService: SellingOrdersService) {}
+  constructor(
+    private readonly sellingOrdersService: SellingOrdersService,
+    private sellingOrdersStatusService: SellingOrdersStatusService,
+  ) {}
 
   @Mutation()
-  @Permissions(Permission.ORG_MASTER, Permission.CREATE_CUSTOM_ATTRIBUTES)
+  @Permissions(Permission.ORG_MASTER, Permission.CREATE_SELLING_ORDER)
   @UseGuards(GqlAuthGuard)
   async createSellingOrder(
     @CurrentUser() user: GuardUserPayload,
@@ -27,6 +32,61 @@ export class SellingOrderResolvers {
       creatorId: user.id,
       orgId: user.currentOrgId,
       data,
+    });
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_SELLING_ORDER)
+  @UseGuards(GqlAuthGuard)
+  async changeSellingOrderStatus(
+    @Info() info: GraphQLResolveInfo,
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+    @Args('data') data: SellingOrderUpdateStatusModel,
+  ): Promise<SellingOrderModel> {
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      { fieldName: 'rentingOrderItems' },
+      {
+        fieldName: 'rentingDepositItems',
+      },
+      {
+        fieldName: 'allowChangeToStatuses',
+      },
+      {
+        fieldName: 'customerUser',
+      },
+      {
+        fieldName: 'statusDetail',
+      },
+    ]);
+
+    include[
+      'rentingDepositItem'
+    ] = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      {
+        fieldName: 'statusDetail',
+        fieldPath: 'rentingDepositItems.RentingDepositItem',
+      },
+      {
+        fieldName: 'typeDetail',
+        fieldPath: 'rentingDepositItems.RentingDepositItem',
+      },
+    ]);
+
+    include[
+      'rentingOrderItem'
+    ] = graphQLFieldHandler.getIncludeForNestedRelationalFields([
+      {
+        fieldName: 'statusDetail',
+        fieldPath: 'rentingOrderItems.RentingOrderItem',
+      },
+    ]);
+
+    return this.sellingOrdersStatusService.changeSellingOrderStatus({
+      id,
+      newStatus: data.newStatus,
+      orgId: user.currentOrgId,
     });
   }
 

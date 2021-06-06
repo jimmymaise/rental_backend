@@ -61,6 +61,10 @@ input SellingOrderCreateInput {
   rentingDepositItems: [RentingDepositItemCreateInput]
 }
 
+input ChangeSellingOrderStatusInput {
+  newStatus: String
+}
+
 type SellingOrder {
   id: String!
   orderCustomId: String
@@ -94,4 +98,8 @@ type Query {
 
 type Mutation {
   createSellingOrder(data: SellingOrderCreateInput!): SellingOrder
+  changeSellingOrderStatus(
+    id: ID!
+    data: ChangeSellingOrderStatusInput!
+  ): SellingOrder
 }
