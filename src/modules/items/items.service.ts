@@ -110,19 +110,19 @@ export class ItemsService {
     };
 
     if (categoryIds && categoryIds?.length) {
-      createData['categories'] = {
+      createData['data']['categories'] = {
         connect: categoryIds.map((id) => ({ id })),
       };
     }
 
     if (orgCategoryIds && orgCategoryIds?.length) {
-      createData['orgCategories'] = {
+      createData['data']['orgCategories'] = {
         connect: orgCategoryIds.map((id) => ({ id })),
       };
     }
 
     if (areaIds && areaIds?.length) {
-      createData['areas'] = {
+      createData['data']['areas'] = {
         connect: areaIds.map((id) => ({ id })),
       };
     }
