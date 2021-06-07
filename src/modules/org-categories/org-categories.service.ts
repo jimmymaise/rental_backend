@@ -12,6 +12,10 @@ export class OrgCategoriesService {
     private redisCacheService: RedisCacheService,
   ) {}
 
+  getCategoryListCacheKey(orgId: string) {
+    return `CATEGORY_LIST_${orgId}`;
+  }
+
   async findAll(orgId: string): Promise<OrgCategory[]> {
     return this.prismaService.orgCategory.findMany({
       where: { orgId },
@@ -20,7 +24,7 @@ export class OrgCategoriesService {
   }
 
   async findAllAvailable(orgId: string): Promise<OrgCategory[]> {
-    const cachedKey = `CATEGORY_LIST_${orgId}`;
+    const cachedKey = this.getCategoryListCacheKey(orgId);
 
     let result = (await this.redisCacheService.get(cachedKey)) as OrgCategory[];
 
@@ -38,6 +42,9 @@ export class OrgCategoriesService {
   }
 
   async create(orgId: string, data: OrgCategory): Promise<OrgCategory> {
+    const cachedKey = this.getCategoryListCacheKey(orgId);
+    this.redisCacheService.del(cachedKey);
+
     const slug = data.slug || stringToSlug(data.name);
     return this.prismaService.orgCategory.create({
       data: {
@@ -65,6 +72,9 @@ export class OrgCategoriesService {
     orgId: string,
     data: OrgCategory,
   ): Promise<OrgCategory> {
+    const cachedKey = this.getCategoryListCacheKey(orgId);
+    this.redisCacheService.del(cachedKey);
+
     const slug = data.slug || stringToSlug(data.name);
     const detail = await this.getDetail(id);
     if (detail.orgId !== orgId) {
@@ -83,6 +93,9 @@ export class OrgCategoriesService {
   }
 
   async delete(id: string, orgId: string): Promise<OrgCategory> {
+    const cachedKey = this.getCategoryListCacheKey(orgId);
+    this.redisCacheService.del(cachedKey);
+
     const detail = await this.getDetail(id);
     if (detail.orgId !== orgId) {
       throw new Error('Org Category Not Exist');
