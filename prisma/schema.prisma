@@ -525,30 +525,22 @@ model SellingOrder {
   @@index(fields: [orgId, status], name: "selling_order_status_index")
 }
 
-enum RentingOrderItemStatusType {
-  New
-  Reserved
-  PickedUp
-  Returned
-  Cancelled
-}
-
 model RentingOrderItem {
   id   String  @id @default(uuid())
   sku  String?
   name String
   note String?
 
-  amount            Int?                       @default(0)
-  quantity          Int?                       @default(0)
+  amount            Int?                         @default(0)
+  quantity          Int?                         @default(0)
   pickupDateTime    DateTime?
   returningDateTime DateTime?
-  systemStatus      RentingOrderItemStatusType
+  systemStatus      SellingOrderSystemStatusType
   status            String
-  unitPrice         Int?                       @default(0)
-  unitPricePerDay   Int?                       @default(0)
-  unitPricePerWeek  Int?                       @default(0)
-  unitPricePerMonth Int?                       @default(0)
+  unitPrice         Int?                         @default(0)
+  unitPricePerDay   Int?                         @default(0)
+  unitPricePerWeek  Int?                         @default(0)
+  unitPricePerMonth Int?                         @default(0)
   attachedFiles     Json?
 
   createdDate    DateTime     @default(now())

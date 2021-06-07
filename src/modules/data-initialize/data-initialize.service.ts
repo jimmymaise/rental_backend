@@ -5,7 +5,6 @@ import { Permission } from '@modules/auth/permission/permission.enum';
 import { CommonAttributesConfig } from '@prisma/client';
 import {
   SellingOrderStatusCreateModel,
-  RentingOrderItemStatusCreateModel,
   RentingDepositItemStatusCreateModel,
   RentingDepositItemTypeCreateModel,
 } from '@modules/custom-attributes/models';
@@ -99,76 +98,6 @@ export class DataInitilizeService {
         mapWithSystemStatus: 'Cancelled',
         order: 4,
       }),
-    ];
-
-    const defaultOrderItemStatuses: CommonAttributesConfig[] = [
-      RentingOrderItemStatusCreateModel.toCommonAttributesConfig(
-        orgId,
-        userId,
-        {
-          label: 'Mới',
-          description: 'Sản phẩm mới được thêm vào đơn hàng',
-          color: '#17b7ff',
-          value: 'NEW',
-          mapWithSystemStatus: 'New',
-          order: 0,
-        },
-      ),
-      RentingOrderItemStatusCreateModel.toCommonAttributesConfig(
-        orgId,
-        userId,
-        {
-          label: 'Đặt giữ',
-          description: 'Nhân viên đã xác nhận sản phẩm có thể cho thuê',
-          color: '#38d9a9',
-          value: 'RESERVED',
-          parentAttributeValue: 'NEW',
-          mapWithSystemStatus: 'Reserved',
-          order: 1,
-        },
-      ),
-      RentingOrderItemStatusCreateModel.toCommonAttributesConfig(
-        orgId,
-        userId,
-        {
-          label: 'Đã nhận hàng',
-          description:
-            'Khách hàng đã nhận được sản phẩm cho thuê và đang sử dụng',
-          color: '#ffae63',
-          value: 'PICKED_UP',
-          parentAttributeValue: 'RESERVED',
-          mapWithSystemStatus: 'PickedUp',
-          order: 2,
-        },
-      ),
-      RentingOrderItemStatusCreateModel.toCommonAttributesConfig(
-        orgId,
-        userId,
-        {
-          label: 'Đã trả hàng',
-          description:
-            'Kết thúc hợp đồng cho thuê, khách hàng đã trả lại sản phẩm',
-          color: '#2FCC71',
-          value: 'RETURNED',
-          parentAttributeValue: 'PICKED_UP',
-          mapWithSystemStatus: 'Returned',
-          order: 3,
-        },
-      ),
-      RentingOrderItemStatusCreateModel.toCommonAttributesConfig(
-        orgId,
-        userId,
-        {
-          label: 'Huỷ',
-          description:
-            'Vì một lý do nào đó hợp đồng cho thuê sản phẩm đã bị huỷ',
-          color: '#dd5252',
-          value: 'CANCELLED',
-          parentAttributeValue: 'RESERVED',
-          mapWithSystemStatus: 'Cancelled',
-          order: 4,
-        },
-      ),
     ];
 
     const defaultDepositItemStatuses: CommonAttributesConfig[] = [
@@ -274,7 +203,6 @@ export class DataInitilizeService {
     await this.prismaService.commonAttributesConfig.createMany({
       data: [
         ...defaultOrderStatuses,
-        ...defaultOrderItemStatuses,
         ...defaultDepositItemStatuses,
         ...defaultDepositTypes,
       ].map((item) => ({

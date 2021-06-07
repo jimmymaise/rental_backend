@@ -4,8 +4,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SellingOrderModel } from './models/selling-order.model';
 
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
-import { SellingOrderStatusModel } from '../custom-attributes/models';
-import { SellingOrderSystemStatusTypesMap } from '../custom-attributes/constants/selling-order-system-status-types';
 
 @Injectable()
 export class SellingOrdersStatusService {
@@ -25,7 +23,6 @@ export class SellingOrdersStatusService {
     include?: any;
     newStatus: string;
   }): Promise<SellingOrderModel> {
-    let rentingOrderItemStatuses;
     let rentingDepositItemTypes;
     let rentingDepositItemStatuses;
 
@@ -55,13 +52,6 @@ export class SellingOrdersStatusService {
       delete include['rentingDepositItem'];
     }
 
-    if (include?.rentingOrderItem) {
-      if (include?.rentingOrderItem.statusDetail) {
-        rentingOrderItemStatuses = await this.customAttributeService.getAllRentingOrderItemStatusCustomAttributes(
-          orgId,
-        );
-      }
-    }
     if (include) {
       delete include['rentingOrderItem'];
     }
@@ -107,7 +97,6 @@ export class SellingOrdersStatusService {
       rentingDepositItems: item.rentingDepositItems || [],
       orgCustomerInfo: customerInfo,
       statuses,
-      rentingOrderItemStatuses,
       rentingDepositItemTypes,
       rentingDepositItemStatuses,
     });

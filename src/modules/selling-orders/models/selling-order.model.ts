@@ -12,7 +12,6 @@ import { CustomerModel } from '../../customers/models/customer.model';
 import { SellingOrderStatusModel } from '../../custom-attributes/models/selling-order-status.model';
 import { RentingDepositItemTypeModel } from '../../custom-attributes/models/renting-deposit-item-type.model';
 import { RentingDepositItemStatusModel } from '../../custom-attributes/models/renting-deposit-item-status.model';
-import { RentingOrderItemStatusModel } from '../../custom-attributes/models/renting-order-item-status.model';
 
 export class SellingOrderModel {
   public id: string;
@@ -40,7 +39,6 @@ export class SellingOrderModel {
     statuses,
     rentingDepositItemTypes,
     rentingDepositItemStatuses,
-    rentingOrderItemStatuses,
   }: {
     data: SellingOrder;
     rentingOrderItems?: RentingOrderItem[];
@@ -49,7 +47,6 @@ export class SellingOrderModel {
     statuses?: SellingOrderStatusModel[];
     rentingDepositItemTypes?: RentingDepositItemTypeModel[];
     rentingDepositItemStatuses?: RentingDepositItemStatusModel[];
-    rentingOrderItemStatuses?: RentingOrderItemStatusModel[];
   }): SellingOrderModel {
     let statusDetail: SellingOrderStatusModel;
     let allowChangeToStatuses: SellingOrderStatusModel[] = [];
@@ -76,7 +73,7 @@ export class SellingOrderModel {
       ),
       rentingOrderItems: (rentingOrderItems || []).map((rentingOrderItem) =>
         RentingOrderItemModel.fromDatabase(rentingOrderItem, {
-          rentingOrderItemStatuses,
+          sellingOrderStatuses: statuses,
         }),
       ),
       createdDate: data?.createdDate ? data.createdDate.getTime() : null,

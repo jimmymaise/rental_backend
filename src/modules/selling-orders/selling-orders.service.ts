@@ -7,7 +7,6 @@ import {
   SellingOrderSystemStatusType,
   RentingDepositItemSystemType,
   RentingDepositItemSystemStatusType,
-  RentingOrderItemStatusType,
 } from '@prisma/client';
 import { SellingOrderModel } from './models/selling-order.model';
 import { SellingOrderCreateModel } from './models/selling-order-create.model';
@@ -69,11 +68,6 @@ export class SellingOrdersService {
 
     // ----> Create Renting Order Item
     // GET Renting Item new status
-    const rentingItemNewStatuses = await this.customAttributeService.getListCustomRentingOrderItemStatus(
-      orgId,
-      RentingOrderItemStatusType.New,
-    );
-    const defaultRentingItemNew = rentingItemNewStatuses[0];
     const createManyRentingOrderItemData = [];
     data.rentingOrderItems.forEach((rentingOrderItem) => {
       (rentingOrderItem.attachedFiles || []).forEach((file) => {
@@ -105,8 +99,8 @@ export class SellingOrdersService {
         itemId: rentingOrderItem.itemId,
         orgId,
         sellingOrderId: createSellingOrderResult.id,
-        status: defaultRentingItemNew.value,
-        systemStatus: RentingOrderItemStatusType.New,
+        status: defaultSellingOrderNew.value,
+        systemStatus: SellingOrderSystemStatusType.New,
         updatedBy: creatorId,
       });
     });
@@ -246,17 +240,24 @@ export class SellingOrdersService {
     include?: any,
   ): Promise<SellingOrderModel> {
     let statuses;
-    let rentingOrderItemStatuses;
     let rentingDepositItemTypes;
     let rentingDepositItemStatuses;
 
-    if (include.statusDetail || include.allowChangeToStatuses) {
+    if (
+      include.statusDetail ||
+      include.allowChangeToStatuses ||
+      include.rentingOrderItem?.statusDetail
+    ) {
       statuses = await this.customAttributeService.getAllSellingOrderStatusCustomAttributes(
         orgId,
       );
     }
-    delete include['statusDetail'];
-    delete include['allowChangeToStatuses'];
+
+    if (include) {
+      delete include['statusDetail'];
+      delete include['allowChangeToStatuses'];
+      delete include['rentingOrderItem'];
+    }
 
     if (include.rentingDepositItem) {
       if (include.rentingDepositItem.statusDetail) {
@@ -272,15 +273,6 @@ export class SellingOrdersService {
       }
     }
     delete include['rentingDepositItem'];
-
-    if (include.rentingOrderItem) {
-      if (include.rentingOrderItem.statusDetail) {
-        rentingOrderItemStatuses = await this.customAttributeService.getAllRentingOrderItemStatusCustomAttributes(
-          orgId,
-        );
-      }
-    }
-    delete include['rentingOrderItem'];
 
     const item: any = await this.prismaService.sellingOrder.findUnique({
       where: { id },
@@ -309,7 +301,6 @@ export class SellingOrdersService {
       rentingDepositItems: item.rentingDepositItems || [],
       orgCustomerInfo: customerInfo,
       statuses,
-      rentingOrderItemStatuses,
       rentingDepositItemTypes,
       rentingDepositItemStatuses,
     });

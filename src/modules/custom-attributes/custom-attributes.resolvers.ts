@@ -8,8 +8,6 @@ import { CustomAttributesService } from './custom-attributes.service';
 import {
   SellingOrderStatusModel,
   SellingOrderStatusCreateModel,
-  RentingOrderItemStatusCreateModel,
-  RentingOrderItemStatusModel,
   RentingDepositItemStatusModel,
   RentingDepositItemStatusCreateModel,
   RentingDepositItemTypeCreateModel,
@@ -80,72 +78,6 @@ export class CustomAttributesResolvers {
     @Args('type') type: string,
   ): Promise<SellingOrderStatusModel> {
     return this.customAttributeService.deleteSellingOrderStatusCustomAttribute(
-      value,
-      user.currentOrgId,
-      type,
-    );
-  }
-
-  // Renting Order Item Status
-  @Query()
-  @Permissions(Permission.ORG_MASTER, Permission.GET_CUSTOM_ATTRIBUTES)
-  @UseGuards(GqlAuthGuard)
-  async feedAllRentingOrderItemStatusCustomAttributes(
-    @CurrentUser() user: GuardUserPayload,
-  ): Promise<RentingOrderItemStatusModel[]> {
-    return this.customAttributeService.getAllRentingOrderItemStatusCustomAttributes(
-      user.currentOrgId,
-    );
-  }
-
-  @Query()
-  @Permissions(Permission.ORG_MASTER, Permission.GET_CUSTOM_ATTRIBUTES)
-  @UseGuards(GqlAuthGuard)
-  async feedAllSystemRentingOrderItemStatusCustomAttributes(): Promise<
-    RentingOrderItemStatusModel[]
-  > {
-    return this.customAttributeService.getAllSystemRentingOrderItemStatus();
-  }
-
-  @Mutation()
-  @Permissions(Permission.ORG_MASTER, Permission.CREATE_CUSTOM_ATTRIBUTES)
-  @UseGuards(GqlAuthGuard)
-  async createRentingOrderItemStatusCustomAttribute(
-    @CurrentUser() user: GuardUserPayload,
-    @Args('data') data: RentingOrderItemStatusCreateModel,
-  ): Promise<RentingOrderItemStatusModel> {
-    return this.customAttributeService.createRentingOrderItemStatusCustomAttribute(
-      user.currentOrgId,
-      user.id,
-      data,
-    );
-  }
-
-  @Mutation()
-  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_CUSTOM_ATTRIBUTES)
-  @UseGuards(GqlAuthGuard)
-  async updateRentingOrderItemStatusCustomAttribute(
-    @CurrentUser() user: GuardUserPayload,
-    @Args('value') value: string,
-    @Args('data') data: RentingOrderItemStatusCreateModel,
-  ): Promise<RentingOrderItemStatusModel> {
-    return this.customAttributeService.updateRentingOrderItemStatusCustomAttribute(
-      value,
-      user.currentOrgId,
-      user.id,
-      data,
-    );
-  }
-
-  @Mutation()
-  @Permissions(Permission.ORG_MASTER, Permission.DELETE_CUSTOM_ATTRIBUTES)
-  @UseGuards(GqlAuthGuard)
-  async deleteRentingOrderItemStatusCustomAttribute(
-    @CurrentUser() user: GuardUserPayload,
-    @Args('value') value: string,
-    @Args('type') type: string,
-  ): Promise<RentingOrderItemStatusModel> {
-    return this.customAttributeService.deleteRentingOrderItemStatusCustomAttribute(
       value,
       user.currentOrgId,
       type,
