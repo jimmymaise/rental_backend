@@ -25,6 +25,7 @@ export class AppController {
   }
 
   @Get('health-check')
+  @Permissions(Permission.NO_NEED_LOGIN)
   async healthCheck(): Promise<any> {
     const isRedisWorkig = await this.redisCacheService.ping();
     let isDatabaseWorking = false;
@@ -40,6 +41,7 @@ export class AppController {
   }
 
   @Get('sitemap-data')
+  @Permissions(Permission.NO_NEED_LOGIN)
   async siteMapData(@Req() request: Request): Promise<any> {
     const SITE_MAP_DATA_CACHE_KEY = 'SITE_MAP_DATA';
     const cachedSiteMapData = await this.redisCacheService.get(
