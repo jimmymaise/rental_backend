@@ -218,7 +218,9 @@ export class UsersResolvers {
     @Context() context: any,
     @CurrentUser() currentUser: GuardUserPayload,
   ) {
-    await this.userService.removeRefreshToken(currentUser.id);
+    try {
+      await this.userService.removeRefreshToken(currentUser.id);
+    } catch {}
 
     const tokenHeaderCookie = this.authService.getCookieForLogout();
     context.res.setHeader('Set-Cookie', tokenHeaderCookie);
