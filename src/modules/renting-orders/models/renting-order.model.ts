@@ -1,5 +1,5 @@
 import {
-  SellingOrder,
+  RentingOrder,
   RentingOrderItem,
   RentingDepositItem,
   Customer,
@@ -9,11 +9,11 @@ import { RentingOrderItemModel } from './renting-order-item.model';
 import { StoragePublicDTO } from '../../storages/storage-public.dto';
 import { RentingDepositItemModel } from './renting-deposit-item.model';
 import { CustomerModel } from '../../customers/models/customer.model';
-import { SellingOrderStatusModel } from '../../custom-attributes/models/selling-order-status.model';
+import { RentingOrderStatusModel } from '../../custom-attributes/models/renting-order-status.model';
 import { RentingDepositItemTypeModel } from '../../custom-attributes/models/renting-deposit-item-type.model';
 import { RentingDepositItemStatusModel } from '../../custom-attributes/models/renting-deposit-item-status.model';
 
-export class SellingOrderModel {
+export class RentingOrderModel {
   public id: string;
   public orderCustomId: string;
   public totalAmount?: number;
@@ -22,11 +22,11 @@ export class SellingOrderModel {
   public customerUser?: CustomerModel;
   public attachedFiles?: StoragePublicDTO[];
   public status: string;
-  public statusDetail?: SellingOrderStatusModel;
+  public statusDetail?: RentingOrderStatusModel;
 
   public rentingOrderItems?: RentingOrderItemModel[];
   public rentingDepositItems?: RentingDepositItemModel[];
-  public allowChangeToStatuses?: SellingOrderStatusModel[];
+  public allowChangeToStatuses?: RentingOrderStatusModel[];
 
   public createdDate?: number;
   public updatedDate?: number;
@@ -40,16 +40,16 @@ export class SellingOrderModel {
     rentingDepositItemTypes,
     rentingDepositItemStatuses,
   }: {
-    data: SellingOrder;
+    data: RentingOrder;
     rentingOrderItems?: RentingOrderItem[];
     rentingDepositItems?: RentingDepositItem[];
     orgCustomerInfo?: Customer;
-    statuses?: SellingOrderStatusModel[];
+    statuses?: RentingOrderStatusModel[];
     rentingDepositItemTypes?: RentingDepositItemTypeModel[];
     rentingDepositItemStatuses?: RentingDepositItemStatusModel[];
-  }): SellingOrderModel {
-    let statusDetail: SellingOrderStatusModel;
-    let allowChangeToStatuses: SellingOrderStatusModel[] = [];
+  }): RentingOrderModel {
+    let statusDetail: RentingOrderStatusModel;
+    let allowChangeToStatuses: RentingOrderStatusModel[] = [];
     if (statuses?.length) {
       statusDetail = statuses.find((status) => status.value === data.status);
       allowChangeToStatuses = statuses.filter(
@@ -73,7 +73,7 @@ export class SellingOrderModel {
       ),
       rentingOrderItems: (rentingOrderItems || []).map((rentingOrderItem) =>
         RentingOrderItemModel.fromDatabase(rentingOrderItem, {
-          sellingOrderStatuses: statuses,
+          rentingOrderStatuses: statuses,
         }),
       ),
       createdDate: data?.createdDate ? data.createdDate.getTime() : null,

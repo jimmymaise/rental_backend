@@ -25,8 +25,8 @@ model Organization {
   employees               Employee[]
   customers               Customer[]
   items                   Item[]                   @relation("ItemBelongToOrg")
-  sellingOrder            SellingOrder[]           @relation("SellingOrderBelongToOrg")
-  rentingOrderItems       RentingOrderItem[]       @relation("SellingOrderItemBelongToOrg")
+  rentingOrder            RentingOrder[]           @relation("RentingOrderBelongToOrg")
+  rentingOrderItems       RentingOrderItem[]       @relation("RentingOrderItemBelongToOrg")
   rentingDepositItems     RentingDepositItem[]     @relation("RentingDepositItemBelongToOrg")
   commonAttributesConfigs CommonAttributesConfig[] @relation("CommonAttributesConfigBelongToOrg")
   orgCategories           OrgCategory[]            @relation("OrgCategoryBelongToOrg")
@@ -96,7 +96,7 @@ model User {
   item                         Item[]
   myUserContact                MyUserContact[]
   userNotifications            UserNotification[]   @relation("ForUserNotification")
-  sellingOrders                SellingOrder[]       @relation("SellingOrderBelongToCustomer")
+  rentingOrders                RentingOrder[]       @relation("RentingOrderBelongToCustomer")
   rentingOrderItems            RentingOrderItem[]   @relation("RentingOrderItemBelongToCustomer")
 
   rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToCustomer")
@@ -195,7 +195,7 @@ enum FileUsingLocate {
   OrgAvatarImage
   RentingOrderItemImage
   RentingDepositItemImage
-  SellingOrderActivityImage
+  RentingOrderActivityImage
   BookingActivityImage
 }
 
@@ -495,7 +495,7 @@ model ChatMessage {
   @@index(fields: [replyToId, id], name: "user_chat_message_index")
 }
 
-enum SellingOrderSystemStatusType {
+enum RentingOrderSystemStatusType {
   New
   Reserved
   PickedUp
@@ -503,24 +503,24 @@ enum SellingOrderSystemStatusType {
   Cancelled
 }
 
-model SellingOrder {
+model RentingOrder {
   id             String                       @id @default(uuid())
   orderCustomId  String?
-  org            Organization                 @relation("SellingOrderBelongToOrg", fields: [orgId], references: [id])
+  org            Organization                 @relation("RentingOrderBelongToOrg", fields: [orgId], references: [id])
   orgId          String
   totalAmount    Int?                         @default(0)
   note           String?
-  customerUser   User                         @relation("SellingOrderBelongToCustomer", fields: [customerUserId], references: [id])
+  customerUser   User                         @relation("RentingOrderBelongToCustomer", fields: [customerUserId], references: [id])
   customerUserId String
   createdDate    DateTime                     @default(now())
   updatedDate    DateTime                     @updatedAt
   updatedBy      String
-  systemStatus   SellingOrderSystemStatusType
+  systemStatus   RentingOrderSystemStatusType
   status         String
   attachedFiles  Json?
 
-  rentingOrderItems   RentingOrderItem[]   @relation("RentingOrderItemBelongToSellingOrder")
-  rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToSellingOrder")
+  rentingOrderItems   RentingOrderItem[]   @relation("RentingOrderItemBelongToRentingOrder")
+  rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToRentingOrder")
 
   @@index(fields: [orgId, status], name: "selling_order_status_index")
 }
@@ -535,7 +535,7 @@ model RentingOrderItem {
   quantity          Int?                         @default(0)
   pickupDateTime    DateTime?
   returningDateTime DateTime?
-  systemStatus      SellingOrderSystemStatusType
+  systemStatus      RentingOrderSystemStatusType
   status            String
   unitPrice         Int?                         @default(0)
   unitPricePerDay   Int?                         @default(0)
@@ -548,10 +548,10 @@ model RentingOrderItem {
   updatedBy      String
   item           Item?        @relation("RentingOrderItemBelongToItem", fields: [itemId], references: [id])
   itemId         String?
-  org            Organization @relation("SellingOrderItemBelongToOrg", fields: [orgId], references: [id])
+  org            Organization @relation("RentingOrderItemBelongToOrg", fields: [orgId], references: [id])
   orgId          String
-  sellingOrder   SellingOrder @relation("RentingOrderItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
-  sellingOrderId String
+  rentingOrder   RentingOrder @relation("RentingOrderItemBelongToRentingOrder", fields: [rentingOrderId], references: [id])
+  rentingOrderId String
   customerUser   User         @relation("RentingOrderItemBelongToCustomer", fields: [customerUserId], references: [id])
   customerUserId String
   order          Int?         @default(0)
@@ -580,8 +580,8 @@ model RentingDepositItem {
   systemStatus  RentingDepositItemSystemStatusType
   status        String
 
-  sellingOrder   SellingOrder @relation("RentingDepositItemBelongToSellingOrder", fields: [sellingOrderId], references: [id])
-  sellingOrderId String
+  rentingOrder   RentingOrder @relation("RentingDepositItemBelongToRentingOrder", fields: [rentingOrderId], references: [id])
+  rentingOrderId String
   org            Organization @relation("RentingDepositItemBelongToOrg", fields: [orgId], references: [id])
   orgId          String
   customerUser   User         @relation("RentingDepositItemBelongToCustomer", fields: [customerUserId], references: [id])
@@ -590,7 +590,7 @@ model RentingDepositItem {
 }
 
 enum CommonAttributesType {
-  SellingOrderStatus
+  RentingOrderStatus
   RentingOrderItemStatus
   RentingDepositItemStatus
   RentingDepositItemType

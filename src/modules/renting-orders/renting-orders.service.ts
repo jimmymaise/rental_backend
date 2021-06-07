@@ -4,18 +4,18 @@ import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 import { OffsetPaginationDTO } from '@app/models';
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  SellingOrderSystemStatusType,
+  RentingOrderSystemStatusType,
   RentingDepositItemSystemType,
   RentingDepositItemSystemStatusType,
 } from '@prisma/client';
-import { SellingOrderModel } from './models/selling-order.model';
-import { SellingOrderCreateModel } from './models/selling-order-create.model';
+import { RentingOrderModel } from './models/renting-order.model';
+import { RentingOrderCreateModel } from './models/renting-order-create.model';
 import { StoragesService } from '@modules/storages/storages.service';
 
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
 
 @Injectable()
-export class SellingOrdersService {
+export class RentingOrdersService {
   constructor(
     private prismaService: PrismaService,
     private storagesService: StoragesService,
@@ -29,24 +29,24 @@ export class SellingOrdersService {
   }: {
     creatorId: string;
     orgId: string;
-    data: SellingOrderCreateModel;
-  }): Promise<SellingOrderModel> {
+    data: RentingOrderCreateModel;
+  }): Promise<RentingOrderModel> {
     // TODO: Hien tai chi support 1 SystemStatus map voi 1 Custom Status
 
     // ----> Create Selling Order
     // GET Order new status
-    const sellingOrderNewStatuses = await this.customAttributeService.getListCustomSellingOrderStatus(
+    const rentingOrderNewStatuses = await this.customAttributeService.getListCustomRentingOrderStatus(
       orgId,
-      SellingOrderSystemStatusType.New,
+      RentingOrderSystemStatusType.New,
     );
-    const defaultSellingOrderNew = sellingOrderNewStatuses[0];
+    const defaultRentingOrderNew = rentingOrderNewStatuses[0];
 
     // Create Selling Order
-    const createSellingOrderResult = await this.prismaService.sellingOrder.create(
+    const createRentingOrderResult = await this.prismaService.rentingOrder.create(
       {
         data: {
-          status: defaultSellingOrderNew.value,
-          systemStatus: SellingOrderSystemStatusType.New,
+          status: defaultRentingOrderNew.value,
+          systemStatus: RentingOrderSystemStatusType.New,
           updatedBy: creatorId,
           orderCustomId: data.orderCustomId,
           attachedFiles: data.attachedFiles,
@@ -98,9 +98,9 @@ export class SellingOrdersService {
         attachedFiles: rentingOrderItem.attachedFiles,
         itemId: rentingOrderItem.itemId,
         orgId,
-        sellingOrderId: createSellingOrderResult.id,
-        status: defaultSellingOrderNew.value,
-        systemStatus: SellingOrderSystemStatusType.New,
+        rentingOrderId: createRentingOrderResult.id,
+        status: defaultRentingOrderNew.value,
+        systemStatus: RentingOrderSystemStatusType.New,
         updatedBy: creatorId,
       });
     });
@@ -142,27 +142,27 @@ export class SellingOrdersService {
           .value as RentingDepositItemSystemType,
         type: depositItem.type,
         attachedFiles: depositItem.attachedFiles,
-        sellingOrderId: createSellingOrderResult.id,
+        rentingOrderId: createRentingOrderResult.id,
       });
     });
     await this.prismaService.rentingDepositItem.createMany({
       data: createRentingDepositItemsManyData,
     });
 
-    return SellingOrderModel.fromDatabase({ data: createSellingOrderResult });
+    return RentingOrderModel.fromDatabase({ data: createRentingOrderResult });
   }
 
-  public async getSellingOrdersWithOffsetPaging(
+  public async getRentingOrdersWithOffsetPaging(
     whereQuery: any,
     pageSize: number,
     offset?: any,
     orderBy: any = { id: 'desc' },
     include?: any,
-  ): Promise<OffsetPaginationDTO<SellingOrderModel>> {
+  ): Promise<OffsetPaginationDTO<RentingOrderModel>> {
     let statuses;
 
     if (include.statusDetail) {
-      statuses = await this.customAttributeService.getAllSellingOrderStatusCustomAttributes(
+      statuses = await this.customAttributeService.getAllRentingOrderStatusCustomAttributes(
         whereQuery.orgId,
       );
     }
@@ -173,7 +173,7 @@ export class SellingOrdersService {
       pageSize,
       orderBy,
       this.prismaService,
-      'sellingOrder',
+      'rentingOrder',
       include,
     );
     const result = await pagingHandler.getPage(offset);
@@ -198,7 +198,7 @@ export class SellingOrdersService {
       }
 
       items.push(
-        SellingOrderModel.fromDatabase({
+        RentingOrderModel.fromDatabase({
           data: item,
           rentingOrderItems: item.rentingOrderItems || [],
           rentingDepositItems: item.rentingDepositItems || [],
@@ -214,18 +214,18 @@ export class SellingOrdersService {
     };
   }
 
-  public async getSellingOrdersByOrgIdWithOffsetPaging(
+  public async getRentingOrdersByOrgIdWithOffsetPaging(
     orgId,
     pageSize: number,
     offset?: any,
     orderBy?: any,
     include?: any,
-  ): Promise<OffsetPaginationDTO<SellingOrderModel>> {
+  ): Promise<OffsetPaginationDTO<RentingOrderModel>> {
     const whereQuery = {
       orgId: orgId,
     };
 
-    return this.getSellingOrdersWithOffsetPaging(
+    return this.getRentingOrdersWithOffsetPaging(
       whereQuery,
       pageSize,
       offset,
@@ -238,7 +238,7 @@ export class SellingOrdersService {
     id: string,
     orgId: string,
     include?: any,
-  ): Promise<SellingOrderModel> {
+  ): Promise<RentingOrderModel> {
     let statuses;
     let rentingDepositItemTypes;
     let rentingDepositItemStatuses;
@@ -248,7 +248,7 @@ export class SellingOrdersService {
       include.allowChangeToStatuses ||
       include.rentingOrderItem?.statusDetail
     ) {
-      statuses = await this.customAttributeService.getAllSellingOrderStatusCustomAttributes(
+      statuses = await this.customAttributeService.getAllRentingOrderStatusCustomAttributes(
         orgId,
       );
     }
@@ -274,7 +274,7 @@ export class SellingOrdersService {
     }
     delete include['rentingDepositItem'];
 
-    const item: any = await this.prismaService.sellingOrder.findUnique({
+    const item: any = await this.prismaService.rentingOrder.findUnique({
       where: { id },
       include,
     });
@@ -295,7 +295,7 @@ export class SellingOrdersService {
       });
     }
 
-    return SellingOrderModel.fromDatabase({
+    return RentingOrderModel.fromDatabase({
       data: item,
       rentingOrderItems: item.rentingOrderItems || [],
       rentingDepositItems: item.rentingDepositItems || [],

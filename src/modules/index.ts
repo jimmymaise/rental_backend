@@ -20,6 +20,6 @@ export * from './permissions';
 export * from './employees';
 export * from './custom-attributes';
 export * from './data-initialize';
-export * from './selling-orders';
+export * from './renting-orders';
 export * from './customers';
 export * from './org-categories';

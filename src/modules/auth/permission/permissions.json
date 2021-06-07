@@ -101,26 +101,26 @@
     "isInternal": false,
     "order": 49
   },
-  "GET_SELLING_ORDER": {
-    "name": "GET_SELLING_ORDER",
+  "GET_RENTING_ORDER": {
+    "name": "GET_RENTING_ORDER",
     "description": "",
     "isInternal": false,
     "order": 50
   },
-  "CREATE_SELLING_ORDER": {
-    "name": "CREATE_SELLING_ORDER",
+  "CREATE_RENTING_ORDER": {
+    "name": "CREATE_RENTING_ORDER",
     "description": "",
     "isInternal": false,
     "order": 53
   },
-  "DELETE_SELLING_ORDER": {
-    "name": "DELETE_SELLING_ORDER",
+  "DELETE_RENTING_ORDER": {
+    "name": "DELETE_RENTING_ORDER",
     "description": "",
     "isInternal": false,
     "order": 55
   },
-  "UPDATE_SELLING_ORDER": {
-    "name": "UPDATE_SELLING_ORDER",
+  "UPDATE_RENTING_ORDER": {
+    "name": "UPDATE_RENTING_ORDER",
     "description": "",
     "isInternal": false,
     "order": 57

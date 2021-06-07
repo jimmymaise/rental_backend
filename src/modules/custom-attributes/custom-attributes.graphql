@@ -1,16 +1,16 @@
 # Selling Order Status
-type SellingOrderStatus {
+type RentingOrderStatus {
   value: String
   label: String
   description: String
   color: String
   isDefault: Boolean
   isDisabled: Boolean
-  mapWithSystemStatus: SellingOrderStatus
+  mapWithSystemStatus: RentingOrderStatus
   order: Int
 }
 
-input SellingOrderStatusCreateInput {
+input RentingOrderStatusCreateInput {
   value: String!
   label: String!
   description: String
@@ -20,7 +20,7 @@ input SellingOrderStatusCreateInput {
   order: Int
 }
 
-input SellingOrderStatusEditInput {
+input RentingOrderStatusEditInput {
   label: String!
   description: String
   color: String
@@ -121,14 +121,14 @@ input RentingDepositItemTypeEditInput {
 
 type Mutation {
   # Selling Order Status
-  createSellingOrderStatusCustomAttribute(
-    data: SellingOrderStatusCreateInput!
-  ): SellingOrderStatus
-  updateSellingOrderStatusCustomAttribute(
+  createRentingOrderStatusCustomAttribute(
+    data: RentingOrderStatusCreateInput!
+  ): RentingOrderStatus
+  updateRentingOrderStatusCustomAttribute(
     value: ID!
-    data: SellingOrderStatusEditInput!
-  ): SellingOrderStatus
-  deleteSellingOrderStatusCustomAttribute(id: ID!): SellingOrderStatus
+    data: RentingOrderStatusEditInput!
+  ): RentingOrderStatus
+  deleteRentingOrderStatusCustomAttribute(id: ID!): RentingOrderStatus
   # Renting Order Item Status
   createRentingOrderItemStatusCustomAttribute(
     data: RentingOrderItemStatusCreateInput!
@@ -162,8 +162,8 @@ type Mutation {
 
 type Query {
   # Selling Order Status
-  feedAllSellingOrderStatusCustomAttributes: [SellingOrderStatus]
-  feedAllSystemSellingOrderStatusCustomAttributes: [SellingOrderStatus]
+  feedAllRentingOrderStatusCustomAttributes: [RentingOrderStatus]
+  feedAllSystemRentingOrderStatusCustomAttributes: [RentingOrderStatus]
   # Renting Order Item Status
   feedAllRentingOrderItemStatusCustomAttributes: [RentingOrderItemStatus]
   feedAllSystemRentingOrderItemStatusCustomAttributes: [RentingOrderItemStatus]

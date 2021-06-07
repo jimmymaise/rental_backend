@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { SellingOrderModel } from './models/selling-order.model';
+import { RentingOrderModel } from './models/renting-order.model';
 
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
 
 @Injectable()
-export class SellingOrdersStatusService {
+export class RentingOrdersStatusService {
   constructor(
     private prismaService: PrismaService,
     private customAttributeService: CustomAttributesService,
   ) {}
 
-  public async changeSellingOrderStatus({
+  public async changeRentingOrderStatus({
     id,
     orgId,
     include,
@@ -22,11 +22,11 @@ export class SellingOrdersStatusService {
     orgId: string;
     include?: any;
     newStatus: string;
-  }): Promise<SellingOrderModel> {
+  }): Promise<RentingOrderModel> {
     let rentingDepositItemTypes;
     let rentingDepositItemStatuses;
 
-    const statuses = await this.customAttributeService.getAllSellingOrderStatusCustomAttributes(
+    const statuses = await this.customAttributeService.getAllRentingOrderStatusCustomAttributes(
       orgId,
     );
 
@@ -56,7 +56,7 @@ export class SellingOrdersStatusService {
       delete include['rentingOrderItem'];
     }
 
-    const item: any = await this.prismaService.sellingOrder.findUnique({
+    const item: any = await this.prismaService.rentingOrder.findUnique({
       where: { id },
       include,
     });
@@ -78,20 +78,20 @@ export class SellingOrdersStatusService {
     }
 
     // Update
-    const sellingOrderNewSystemStatus = statuses.find(
+    const rentingOrderNewSystemStatus = statuses.find(
       (status) => status.value === newStatus,
     ).mapWithSystemStatus.value;
-    const updatedItem = await this.prismaService.sellingOrder.update({
+    const updatedItem = await this.prismaService.rentingOrder.update({
       where: {
         id,
       },
       data: {
         status: newStatus,
-        systemStatus: sellingOrderNewSystemStatus as any,
+        systemStatus: rentingOrderNewSystemStatus as any,
       },
     });
 
-    return SellingOrderModel.fromDatabase({
+    return RentingOrderModel.fromDatabase({
       data: updatedItem,
       rentingOrderItems: item.rentingOrderItems || [],
       rentingDepositItems: item.rentingDepositItems || [],

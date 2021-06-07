@@ -2,7 +2,7 @@ import { RentingOrderItem } from '@prisma/client';
 
 import { StoragePublicDTO } from '../../storages/storage-public.dto';
 import { ItemDTO } from '../../items/item.dto';
-import { SellingOrderStatusModel } from '../../custom-attributes/models/selling-order-status.model';
+import { RentingOrderStatusModel } from '../../custom-attributes/models/renting-order-status.model';
 
 export class RentingOrderItemModel {
   public id: string;
@@ -21,19 +21,19 @@ export class RentingOrderItemModel {
   public itemId: string;
   public item?: ItemDTO;
   public status?: string;
-  public statusDetail?: SellingOrderStatusModel;
+  public statusDetail?: RentingOrderStatusModel;
 
   public static fromDatabase(
     data: RentingOrderItem,
     {
-      sellingOrderStatuses,
-    }: { sellingOrderStatuses?: SellingOrderStatusModel[] } = {
-      sellingOrderStatuses: [],
+      rentingOrderStatuses,
+    }: { rentingOrderStatuses?: RentingOrderStatusModel[] } = {
+      rentingOrderStatuses: [],
     },
   ): RentingOrderItemModel {
-    let statusDetail: SellingOrderStatusModel;
-    if (sellingOrderStatuses?.length) {
-      statusDetail = sellingOrderStatuses.find(
+    let statusDetail: RentingOrderStatusModel;
+    if (rentingOrderStatuses?.length) {
+      statusDetail = rentingOrderStatuses.find(
         (status) => status.value === data.status,
       );
     }

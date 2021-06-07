@@ -2,19 +2,19 @@ import { Injectable } from '@nestjs/common';
 import {
   CommonAttributesType,
   RentingDepositItemSystemStatusType,
-  SellingOrderSystemStatusType,
+  RentingOrderSystemStatusType,
 } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  SellingOrderStatusModel,
-  SellingOrderStatusCreateModel,
+  RentingOrderStatusModel,
+  RentingOrderStatusCreateModel,
   RentingDepositItemStatusCreateModel,
   RentingDepositItemStatusModel,
   RentingDepositItemTypeCreateModel,
   RentingDepositItemTypeModel,
 } from './models';
-import { SellingOrderSystemStatusTypes } from './constants/selling-order-system-status-types';
+import { RentingOrderSystemStatusTypes } from './constants/renting-order-system-status-types';
 import { RentingDepositItemSystemStatusTypes } from './constants/renting-deposit-item-system-status-types';
 import { RentingDepositItemSystemTypeTypes } from './constants/renting-deposit-item-system-type-types';
 
@@ -23,50 +23,50 @@ export class CustomAttributesService {
   constructor(private prismaService: PrismaService) {}
 
   // Selling Order Status
-  getAllSystemSellingOrderStatus(): SellingOrderStatusModel[] {
-    return SellingOrderSystemStatusTypes;
+  getAllSystemRentingOrderStatus(): RentingOrderStatusModel[] {
+    return RentingOrderSystemStatusTypes;
   }
 
-  async getAllSellingOrderStatusCustomAttributes(
+  async getAllRentingOrderStatusCustomAttributes(
     orgId: string,
-  ): Promise<SellingOrderStatusModel[]> {
+  ): Promise<RentingOrderStatusModel[]> {
     const queryResult = await this.prismaService.commonAttributesConfig.findMany(
       {
         where: {
           orgId,
-          type: CommonAttributesType.SellingOrderStatus,
+          type: CommonAttributesType.RentingOrderStatus,
         },
       },
     );
 
     return queryResult.map((record) =>
-      SellingOrderStatusModel.fromCommonAttributesConfig(record),
+      RentingOrderStatusModel.fromCommonAttributesConfig(record),
     );
   }
 
-  async createSellingOrderStatusCustomAttribute(
+  async createRentingOrderStatusCustomAttribute(
     orgId: string,
     userId: string,
-    data: SellingOrderStatusCreateModel,
-  ): Promise<SellingOrderStatusModel> {
+    data: RentingOrderStatusCreateModel,
+  ): Promise<RentingOrderStatusModel> {
     const result = await this.prismaService.commonAttributesConfig.create({
-      data: SellingOrderStatusCreateModel.toCommonAttributesConfig(
+      data: RentingOrderStatusCreateModel.toCommonAttributesConfig(
         orgId,
         userId,
         data,
       ),
     });
 
-    return SellingOrderStatusModel.fromCommonAttributesConfig(result);
+    return RentingOrderStatusModel.fromCommonAttributesConfig(result);
   }
 
-  async updateSellingOrderStatusCustomAttribute(
+  async updateRentingOrderStatusCustomAttribute(
     value: string,
     orgId: string,
     userId: string,
-    data: SellingOrderStatusCreateModel,
-  ): Promise<SellingOrderStatusModel> {
-    const updatedData = SellingOrderStatusCreateModel.toCommonAttributesConfig(
+    data: RentingOrderStatusCreateModel,
+  ): Promise<RentingOrderStatusModel> {
+    const updatedData = RentingOrderStatusCreateModel.toCommonAttributesConfig(
       orgId,
       userId,
       data,
@@ -76,7 +76,7 @@ export class CustomAttributesService {
         orgId_type_value: {
           orgId,
           value,
-          type: CommonAttributesType.SellingOrderStatus,
+          type: CommonAttributesType.RentingOrderStatus,
         },
       },
       data: {
@@ -89,21 +89,21 @@ export class CustomAttributesService {
       },
     });
 
-    return SellingOrderStatusModel.fromCommonAttributesConfig(result);
+    return RentingOrderStatusModel.fromCommonAttributesConfig(result);
   }
 
-  async deleteSellingOrderStatusCustomAttribute(
+  async deleteRentingOrderStatusCustomAttribute(
     value: string,
     orgId: string,
     type: string,
-  ): Promise<SellingOrderStatusModel> {
+  ): Promise<RentingOrderStatusModel> {
     const result = await this.prismaService.commonAttributesConfig.delete({
       where: {
         orgId_type_value: { orgId, value, type: type as CommonAttributesType },
       },
     });
 
-    return SellingOrderStatusModel.fromCommonAttributesConfig(result);
+    return RentingOrderStatusModel.fromCommonAttributesConfig(result);
   }
 
   // Renting Deposit Item Status
@@ -274,26 +274,26 @@ export class CustomAttributesService {
     return RentingDepositItemTypeModel.fromCommonAttributesConfig(result);
   }
 
-  async getListCustomSellingOrderStatus(
+  async getListCustomRentingOrderStatus(
     orgId: string,
-    systemStatus: SellingOrderSystemStatusType,
-  ): Promise<SellingOrderStatusModel[]> {
+    systemStatus: RentingOrderSystemStatusType,
+  ): Promise<RentingOrderStatusModel[]> {
     const result = await this.prismaService.commonAttributesConfig.findMany({
       where: {
         orgId,
-        type: CommonAttributesType.SellingOrderStatus,
+        type: CommonAttributesType.RentingOrderStatus,
         mapWithSystemValue: systemStatus,
       },
     });
 
     if (!result?.length) {
       throw new Error(
-        `getListCustomSellingOrderStatus: Default of ${systemStatus} not existing`,
+        `getListCustomRentingOrderStatus: Default of ${systemStatus} not existing`,
       );
     }
 
     return result.map((item) =>
-      SellingOrderStatusModel.fromCommonAttributesConfig(item),
+      RentingOrderStatusModel.fromCommonAttributesConfig(item),
     );
   }
 

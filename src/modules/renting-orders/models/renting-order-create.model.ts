@@ -2,7 +2,7 @@ import { RentingOrderItemCreateModel } from './renting-order-item-create.model';
 import { StoragePublicDTO } from '../../storages/storage-public.dto';
 import { RentingDepositItemCreateModel } from './renting-deposit-item-create.model';
 
-export interface SellingOrderCreateModel {
+export interface RentingOrderCreateModel {
   orderCustomId: string;
   totalAmount?: number;
   note?: string;

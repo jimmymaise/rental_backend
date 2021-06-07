@@ -2,14 +2,14 @@ import { CommonAttributesConfig, CommonAttributesType } from '@prisma/client';
 
 import { BaseCustomAttributeCreateModel } from './base-custom-attribute-create.model';
 
-export class SellingOrderStatusCreateModel extends BaseCustomAttributeCreateModel {
+export class RentingOrderStatusCreateModel extends BaseCustomAttributeCreateModel {
   public color: string;
   public mapWithSystemStatus?: string;
 
   public static toCommonAttributesConfig(
     orgId: string,
     userId: string,
-    data: SellingOrderStatusCreateModel,
+    data: RentingOrderStatusCreateModel,
   ): CommonAttributesConfig {
     return {
       ...BaseCustomAttributeCreateModel.toCommonAttributesConfig(
@@ -17,7 +17,7 @@ export class SellingOrderStatusCreateModel extends BaseCustomAttributeCreateMode
         userId,
         data,
       ),
-      type: CommonAttributesType.SellingOrderStatus,
+      type: CommonAttributesType.RentingOrderStatus,
       customConfigs: {
         color: data.color,
       },
@@ -27,4 +27,4 @@ export class SellingOrderStatusCreateModel extends BaseCustomAttributeCreateMode
   }
 }
 
-export default SellingOrderStatusCreateModel;
+export default RentingOrderStatusCreateModel;

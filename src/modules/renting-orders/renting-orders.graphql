@@ -51,7 +51,7 @@ type RentingOrderItem {
   statusDetail: RentingOrderItemStatus
 }
 
-input SellingOrderCreateInput {
+input RentingOrderCreateInput {
   orderCustomId: String
   totalAmount: Int
   note: String
@@ -61,11 +61,11 @@ input SellingOrderCreateInput {
   rentingDepositItems: [RentingDepositItemCreateInput]
 }
 
-input ChangeSellingOrderStatusInput {
+input ChangeRentingOrderStatusInput {
   newStatus: String
 }
 
-type SellingOrder {
+type RentingOrder {
   id: String!
   orderCustomId: String
   totalAmount: Float
@@ -78,28 +78,28 @@ type SellingOrder {
   createdDate: Float
   updatedDate: Float
   status: String
-  statusDetail: SellingOrderStatus
-  allowChangeToStatuses: [SellingOrderStatus]
+  statusDetail: RentingOrderStatus
+  allowChangeToStatuses: [RentingOrderStatus]
 }
 
-type SellingOrderPagination {
-  items: [SellingOrder]
+type RentingOrderPagination {
+  items: [RentingOrder]
   total: Int
   limit: Int
   offset: Int
 }
 
 type Query {
-  getMyOrgSellingOrdersWithPaging(
+  getMyOrgRentingOrdersWithPaging(
     paginationData: BaseOffsetPagingInput
-  ): SellingOrderPagination
-  getMyOrgSellingOrderDetail(id: ID!): SellingOrder
+  ): RentingOrderPagination
+  getMyOrgRentingOrderDetail(id: ID!): RentingOrder
 }
 
 type Mutation {
-  createSellingOrder(data: SellingOrderCreateInput!): SellingOrder
-  changeSellingOrderStatus(
+  createRentingOrder(data: RentingOrderCreateInput!): RentingOrder
+  changeRentingOrderStatus(
     id: ID!
-    data: ChangeSellingOrderStatusInput!
-  ): SellingOrder
+    data: ChangeRentingOrderStatusInput!
+  ): RentingOrder
 }

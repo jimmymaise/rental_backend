@@ -27,7 +27,7 @@ import {
   PermissionsModule,
   CustomAttributesModule,
   DataInitilizeModule,
-  SellingOrderModule,
+  RentingOrderModule,
   CustomersModule,
   OrgCategoriesModule,
 } from './modules';
@@ -131,7 +131,7 @@ import { AppService } from './app.service';
     EmployeesModule,
     CustomAttributesModule,
     DataInitilizeModule,
-    SellingOrderModule,
+    RentingOrderModule,
     CustomersModule,
     OrgCategoriesModule,
   ],

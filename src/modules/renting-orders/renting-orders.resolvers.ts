@@ -3,32 +3,32 @@ import { Resolver, Mutation, Args, Query, Info } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';
 
 import { QueryWithOffsetPagingDTO } from '@app/models';
-import { SellingOrdersService } from './selling-orders.service';
-import { SellingOrdersStatusService } from './selling-orders-status.service';
+import { RentingOrdersService } from './renting-orders.service';
+import { RentingOrdersStatusService } from './renting-orders-status.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
-import { SellingOrderCreateModel } from './models/selling-order-create.model';
-import { SellingOrderUpdateStatusModel } from './models/selling-order-update-status.model';
-import { SellingOrderModel } from './models/selling-order.model';
+import { RentingOrderCreateModel } from './models/renting-order-create.model';
+import { RentingOrderUpdateStatusModel } from './models/renting-order-update-status.model';
+import { RentingOrderModel } from './models/renting-order.model';
 import { OffsetPaginationDTO } from '../../models';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 
-@Resolver('SellingOrder')
-export class SellingOrderResolvers {
+@Resolver('RentingOrder')
+export class RentingOrderResolvers {
   constructor(
-    private readonly sellingOrdersService: SellingOrdersService,
-    private sellingOrdersStatusService: SellingOrdersStatusService,
+    private readonly rentingOrdersService: RentingOrdersService,
+    private rentingOrdersStatusService: RentingOrdersStatusService,
   ) {}
 
   @Mutation()
-  @Permissions(Permission.ORG_MASTER, Permission.CREATE_SELLING_ORDER)
+  @Permissions(Permission.ORG_MASTER, Permission.CREATE_RENTING_ORDER)
   @UseGuards(GqlAuthGuard)
-  async createSellingOrder(
+  async createRentingOrder(
     @CurrentUser() user: GuardUserPayload,
-    @Args('data') data: SellingOrderCreateModel,
-  ): Promise<SellingOrderModel> {
-    return this.sellingOrdersService.createRentingOrder({
+    @Args('data') data: RentingOrderCreateModel,
+  ): Promise<RentingOrderModel> {
+    return this.rentingOrdersService.createRentingOrder({
       creatorId: user.id,
       orgId: user.currentOrgId,
       data,
@@ -36,14 +36,14 @@ export class SellingOrderResolvers {
   }
 
   @Mutation()
-  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_SELLING_ORDER)
+  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_RENTING_ORDER)
   @UseGuards(GqlAuthGuard)
-  async changeSellingOrderStatus(
+  async changeRentingOrderStatus(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('id') id: string,
-    @Args('data') data: SellingOrderUpdateStatusModel,
-  ): Promise<SellingOrderModel> {
+    @Args('data') data: RentingOrderUpdateStatusModel,
+  ): Promise<RentingOrderModel> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
       { fieldName: 'rentingOrderItems' },
@@ -83,7 +83,7 @@ export class SellingOrderResolvers {
       },
     ]);
 
-    return this.sellingOrdersStatusService.changeSellingOrderStatus({
+    return this.rentingOrdersStatusService.changeRentingOrderStatus({
       id,
       newStatus: data.newStatus,
       orgId: user.currentOrgId,
@@ -91,32 +91,32 @@ export class SellingOrderResolvers {
   }
 
   @Query()
-  @Permissions(Permission.ORG_MASTER, Permission.GET_SELLING_ORDER)
+  @Permissions(Permission.ORG_MASTER, Permission.GET_RENTING_ORDER)
   @UseGuards(GqlAuthGuard)
-  async getMyOrgSellingOrdersWithPaging(
+  async getMyOrgRentingOrdersWithPaging(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('paginationData')
     paginationData: QueryWithOffsetPagingDTO,
-  ): Promise<OffsetPaginationDTO<SellingOrderModel>> {
+  ): Promise<OffsetPaginationDTO<RentingOrderModel>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
-      { fieldName: 'rentingOrderItems', fieldPath: 'items.SellingOrder' },
+      { fieldName: 'rentingOrderItems', fieldPath: 'items.RentingOrder' },
       {
         fieldName: 'rentingDepositItems',
-        fieldPath: 'items.SellingOrder',
+        fieldPath: 'items.RentingOrder',
       },
       {
         fieldName: 'customerUser',
-        fieldPath: 'items.SellingOrder',
+        fieldPath: 'items.RentingOrder',
       },
       {
         fieldName: 'statusDetail',
-        fieldPath: 'items.SellingOrder',
+        fieldPath: 'items.RentingOrder',
       },
     ]);
 
-    return this.sellingOrdersService.getSellingOrdersByOrgIdWithOffsetPaging(
+    return this.rentingOrdersService.getRentingOrdersByOrgIdWithOffsetPaging(
       user.currentOrgId,
       paginationData.pageSize,
       paginationData.offset,
@@ -126,14 +126,14 @@ export class SellingOrderResolvers {
   }
 
   @Query()
-  @Permissions(Permission.ORG_MASTER, Permission.GET_SELLING_ORDER)
+  @Permissions(Permission.ORG_MASTER, Permission.GET_RENTING_ORDER)
   @UseGuards(GqlAuthGuard)
-  async getMyOrgSellingOrderDetail(
+  async getMyOrgRentingOrderDetail(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('id')
     id: string,
-  ): Promise<SellingOrderModel> {
+  ): Promise<RentingOrderModel> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
       { fieldName: 'rentingOrderItems' },
@@ -173,7 +173,7 @@ export class SellingOrderResolvers {
       },
     ]);
 
-    return this.sellingOrdersService.getOrderDetail(
+    return this.rentingOrdersService.getOrderDetail(
       id,
       user.currentOrgId,
       include,

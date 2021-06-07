@@ -7,7 +7,7 @@ enum FileUsingLocate {
   OrgAvatarImage
   RentingOrderItemImage
   RentingDepositItemImage
-  SellingOrderActivityImage
+  RentingOrderActivityImage
   BookingActivityImage
 }
 

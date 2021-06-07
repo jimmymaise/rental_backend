@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { CommonAttributesConfig } from '@prisma/client';
 import {
-  SellingOrderStatusCreateModel,
+  RentingOrderStatusCreateModel,
   RentingDepositItemStatusCreateModel,
   RentingDepositItemTypeCreateModel,
 } from '@modules/custom-attributes/models';
@@ -51,7 +51,7 @@ export class DataInitilizeService {
     });
 
     const defaultOrderStatuses: CommonAttributesConfig[] = [
-      SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
+      RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
         label: 'Đơn hàng mới',
         description: 'Đơn hàng mới được tạo',
         color: '#17b7ff',
@@ -59,7 +59,7 @@ export class DataInitilizeService {
         mapWithSystemStatus: 'New',
         order: 0,
       }),
-      SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
+      RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
         label: 'Đặt giữ',
         description:
           'Đơn hàng đã được đặt giữ và sản phẩm cho thuê được đặt lịch đã được khoá',
@@ -69,7 +69,7 @@ export class DataInitilizeService {
         parentAttributeValue: 'NEW',
         order: 1,
       }),
-      SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
+      RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
         label: 'Đã nhận hàng',
         description:
           'Khách hàng đã nhận được sản phẩm cho thuê và đang sử dụng',
@@ -79,7 +79,7 @@ export class DataInitilizeService {
         parentAttributeValue: 'RESERVED',
         order: 2,
       }),
-      SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
+      RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
         label: 'Đã trả hàng',
         description:
           'Kết thúc hợp đồng cho thuê, khách hàng đã trả lại sản phẩm',
@@ -89,7 +89,7 @@ export class DataInitilizeService {
         mapWithSystemStatus: 'Returned',
         order: 3,
       }),
-      SellingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
+      RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
         label: 'Huỷ đơn',
         description: 'Vì một lý do nào đó đơn hàng đã được duyệt đã bị huỷ',
         color: '#dd5252',
