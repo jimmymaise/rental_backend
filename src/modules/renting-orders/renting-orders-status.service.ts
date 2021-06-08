@@ -81,6 +81,15 @@ export class RentingOrdersStatusService {
     const rentingOrderNewSystemStatus = statuses.find(
       (status) => status.value === newStatus,
     ).mapWithSystemStatus.value;
+    await this.prismaService.rentingOrderItem.updateMany({
+      where: {
+        rentingOrderId: item.id,
+      },
+      data: {
+        status: newStatus,
+        systemStatus: rentingOrderNewSystemStatus as any,
+      },
+    });
     const updatedItem = await this.prismaService.rentingOrder.update({
       where: {
         id,

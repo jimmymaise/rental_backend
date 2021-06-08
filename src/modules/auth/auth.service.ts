@@ -164,19 +164,19 @@ export class AuthService {
         },
       });
     }
-    const orgIds = user.employeesThisUserBecome.map((org) => org.orgId);
+    const orgIds = (user.employeesThisUserBecome || []).map((org) => org.orgId);
     const firstOrg = orgIds.length > 0 ? orgIds[0] : undefined;
     orgId = orgId || user.currentOrgId || firstOrg;
     let currentOrgPermissionNames = [];
     let isOwner;
     if (orgId) {
-      isOwner = user.employeesThisUserBecome.filter(
+      isOwner = (user.employeesThisUserBecome || []).filter(
         (org) => org.orgId == orgId,
       )[0].isOwner;
-      const roles = user.employeesThisUserBecome.filter(
+      const roles = (user.employeesThisUserBecome || []).filter(
         (org) => org.orgId == orgId,
       )[0].roles;
-      const roleIds = roles.map((role) => role.id);
+      const roleIds = (roles || []).map((role) => role.id);
       currentOrgPermissionNames = await this.getOrgPermissionNameByRoleIds(
         roleIds,
         orgId,
@@ -251,7 +251,7 @@ export class AuthService {
         },
       },
     });
-    return permissions.map((permission) => permission.name);
+    return (permissions || []).map((permission) => permission.name);
   }
 
   async getUserByEmailPassword(
