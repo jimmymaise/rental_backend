@@ -147,7 +147,7 @@ export class AuthService {
   ): Promise<AuthDTO> {
     const user = await this.getUserByEmailPassword(email, password);
     orgId = orgId || user.currentOrgId;
-    return this.generateNewToken(user, null, orgId);
+    return this.generateNewToken(null, user.id, orgId);
   }
 
   async generateNewToken(
@@ -179,7 +179,6 @@ export class AuthService {
       const roleIds = (roles || []).map((role) => role.id);
       currentOrgPermissionNames = await this.getOrgPermissionNameByRoleIds(
         roleIds,
-        orgId,
       );
       await this.prismaService.user.update({
         where: { id: user.id },
@@ -236,16 +235,13 @@ export class AuthService {
     return tokenResult;
   }
 
-  async getOrgPermissionNameByRoleIds(
-    roleIds: string[],
-    orgId: string,
-  ): Promise<string[]> {
+  async getOrgPermissionNameByRoleIds(roleIds: string[]): Promise<string[]> {
     const permissions = await this.prismaService.permission.findMany({
       where: {
         roles: {
           some: {
             id: {
-              in: orgId,
+              in: roleIds,
             },
           },
         },
