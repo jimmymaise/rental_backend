@@ -7,6 +7,7 @@ import {
   RentingOrderSystemStatusType,
   RentingDepositItemSystemType,
   RentingDepositItemSystemStatusType,
+  RentingOrder,
 } from '@prisma/client';
 import { RentingOrderModel } from './models/renting-order.model';
 import { RentingOrderCreateModel } from './models/renting-order-create.model';
@@ -143,6 +144,7 @@ export class RentingOrdersService {
         type: depositItem.type,
         attachedFiles: depositItem.attachedFiles,
         rentingOrderId: createRentingOrderResult.id,
+        note: depositItem.note,
       });
     });
     await this.prismaService.rentingDepositItem.createMany({
@@ -304,5 +306,258 @@ export class RentingOrdersService {
       rentingDepositItemTypes,
       rentingDepositItemStatuses,
     });
+  }
+
+  public async updateRentingOrder({
+    creatorId,
+    id,
+    orgId,
+    data,
+  }: {
+    creatorId: string;
+    id: string;
+    orgId: string;
+    data: RentingOrderModel;
+  }): Promise<RentingOrderModel> {
+    const item: RentingOrder = await this.prismaService.rentingOrder.findUnique(
+      {
+        where: { id },
+      },
+    );
+
+    if (item.orgId !== orgId) {
+      throw new Error('Record not exist');
+    }
+
+    if (item.systemStatus !== RentingOrderSystemStatusType.New) {
+      throw new Error('not allow to update the in-progress order');
+    }
+
+    // TODO: use redis cache for caching custom renting order status
+    const rentingOrderNewStatuses = await this.customAttributeService.getListCustomRentingOrderStatus(
+      orgId,
+      RentingOrderSystemStatusType.New,
+    );
+    const defaultRentingOrderNew = rentingOrderNewStatuses[0];
+
+    // Update Renting Order
+    const updateRentingOrderResult = await this.prismaService.rentingOrder.update(
+      {
+        data: {
+          updatedBy: creatorId,
+          orderCustomId: data.orderCustomId,
+          attachedFiles: data.attachedFiles,
+          customerUserId: {
+            set: data.customerUserId,
+          },
+          note: data.note,
+          totalAmount: data.totalAmount,
+        },
+        where: {
+          id,
+        },
+        include: {
+          rentingOrderItems: true,
+          rentingDepositItems: true,
+        },
+      },
+    );
+
+    // Update Renting Order Item
+    const createManyRentingOrderItemData = [];
+    const updateManyRentingOrderItemData = [];
+    const existingUpdateRentingOrderItemIds = [];
+    data.rentingOrderItems.forEach((updatingRentingOrderItem) => {
+      (updatingRentingOrderItem.attachedFiles || []).forEach((file) => {
+        this.storagesService.handleUploadImageBySignedUrlComplete(
+          file.id,
+          file.imageSizes,
+          false,
+        );
+      });
+
+      if (updatingRentingOrderItem.id) {
+        existingUpdateRentingOrderItemIds.push(id);
+        updateManyRentingOrderItemData.push({
+          id: updatingRentingOrderItem.id,
+          customerUserId: {
+            set: data.customerUserId,
+          },
+          name: updatingRentingOrderItem.name,
+          sku: updatingRentingOrderItem.sku,
+          note: updatingRentingOrderItem.note,
+          amount: updatingRentingOrderItem.amount,
+          quantity: updatingRentingOrderItem.quantity,
+          pickupDateTime: updatingRentingOrderItem.pickupDateTime
+            ? new Date(updatingRentingOrderItem.pickupDateTime)
+            : null,
+          returningDateTime: updatingRentingOrderItem.returningDateTime
+            ? new Date(updatingRentingOrderItem.returningDateTime)
+            : null,
+          unitPrice: updatingRentingOrderItem.unitPrice,
+          unitPricePerDay: updatingRentingOrderItem.unitPricePerDay,
+          unitPricePerWeek: updatingRentingOrderItem.unitPricePerWeek,
+          unitPricePerMonth: updatingRentingOrderItem.unitPricePerMonth,
+          attachedFiles: updatingRentingOrderItem.attachedFiles,
+          itemId: updatingRentingOrderItem.itemId,
+          updatedBy: creatorId,
+        });
+      } else {
+        createManyRentingOrderItemData.push({
+          customerUserId: data.customerUserId,
+          name: updatingRentingOrderItem.name,
+          sku: updatingRentingOrderItem.sku,
+          note: updatingRentingOrderItem.note,
+          amount: updatingRentingOrderItem.amount,
+          quantity: updatingRentingOrderItem.quantity,
+          pickupDateTime: updatingRentingOrderItem.pickupDateTime
+            ? new Date(updatingRentingOrderItem.pickupDateTime)
+            : null,
+          returningDateTime: updatingRentingOrderItem.returningDateTime
+            ? new Date(updatingRentingOrderItem.returningDateTime)
+            : null,
+          unitPrice: updatingRentingOrderItem.unitPrice,
+          unitPricePerDay: updatingRentingOrderItem.unitPricePerDay,
+          unitPricePerWeek: updatingRentingOrderItem.unitPricePerWeek,
+          unitPricePerMonth: updatingRentingOrderItem.unitPricePerMonth,
+          attachedFiles: updatingRentingOrderItem.attachedFiles,
+          itemId: updatingRentingOrderItem.itemId,
+          orgId,
+          rentingOrderId: updateRentingOrderResult.id,
+          status: defaultRentingOrderNew.value,
+          systemStatus: RentingOrderSystemStatusType.New,
+          updatedBy: creatorId,
+        });
+      }
+    });
+
+    await this.prismaService.rentingOrderItem.deleteMany({
+      where: {
+        id: {
+          notIn: existingUpdateRentingOrderItemIds,
+        },
+        orgId,
+        rentingOrderId: updateRentingOrderResult.id,
+      },
+    });
+
+    await this.prismaService.rentingOrderItem.createMany({
+      data: createManyRentingOrderItemData,
+    });
+
+    updateManyRentingOrderItemData.forEach(async (updatingRentingOrderItem) => {
+      await this.prismaService.rentingOrderItem.update({
+        data: updatingRentingOrderItem,
+        where: {
+          id: updatingRentingOrderItem.id,
+        },
+      });
+    });
+
+    // Update Renting Deposit Item
+    const depositItemStatuses = await this.customAttributeService.getListCustomRentingDepositItemStatus(
+      orgId,
+      RentingDepositItemSystemStatusType.New,
+    );
+    const defaultDepositItemStatus = depositItemStatuses[0];
+    const depositItemTypes = await this.customAttributeService.getListCustomRentingDepositItemType(
+      orgId,
+    );
+    const createManyRentingDepositItemData = [];
+    const updateManyRentingDepositItemData = [];
+    const existingUpdateRentingDepositItemIds = [];
+    data.rentingDepositItems.forEach((updatingRentingDepositItem) => {
+      (updatingRentingDepositItem.attachedFiles || []).forEach((file) => {
+        this.storagesService.handleUploadImageBySignedUrlComplete(
+          file.id,
+          file.imageSizes,
+          false,
+        );
+      });
+
+      const depositItemTypeDetail = depositItemTypes.find(
+        (typeItem) => typeItem.value === updatingRentingDepositItem.type,
+      );
+
+      if (updatingRentingDepositItem.id) {
+        existingUpdateRentingDepositItemIds.push(id);
+        updateManyRentingDepositItemData.push({
+          customerUserId: {
+            set: data.customerUserId,
+          },
+          systemType: depositItemTypeDetail.mapWithSystemType
+            .value as RentingDepositItemSystemType,
+          type: updatingRentingDepositItem.type,
+          attachedFiles: updatingRentingDepositItem.attachedFiles,
+          note: updatingRentingDepositItem.note,
+        });
+      } else {
+        createManyRentingDepositItemData.push({
+          customerUserId: data.customerUserId,
+          orgId,
+          status: defaultDepositItemStatus.value,
+          systemStatus: RentingDepositItemSystemStatusType.New,
+          systemType: depositItemTypeDetail.mapWithSystemType
+            .value as RentingDepositItemSystemType,
+          type: updatingRentingDepositItem.type,
+          attachedFiles: updatingRentingDepositItem.attachedFiles,
+          rentingOrderId: updateRentingOrderResult.id,
+          note: updatingRentingDepositItem.note,
+        });
+      }
+    });
+
+    await this.prismaService.rentingDepositItem.deleteMany({
+      where: {
+        id: {
+          notIn: existingUpdateRentingDepositItemIds,
+        },
+        orgId,
+        rentingOrderId: updateRentingOrderResult.id,
+      },
+    });
+
+    await this.prismaService.rentingDepositItem.createMany({
+      data: createManyRentingDepositItemData,
+    });
+
+    updateManyRentingDepositItemData.forEach(
+      async (updatingRentingDepositItem) => {
+        await this.prismaService.rentingDepositItem.update({
+          data: updatingRentingDepositItem,
+          where: {
+            id: updatingRentingDepositItem.id,
+          },
+        });
+      },
+    );
+
+    return RentingOrderModel.fromDatabase({ data: updateRentingOrderResult });
+  }
+
+  public async deleteRentingOrder({
+    id,
+    orgId,
+  }: {
+    id: string;
+    orgId: string;
+  }): Promise<RentingOrderModel> {
+    const item: RentingOrder = await this.prismaService.rentingOrder.findUnique(
+      {
+        where: { id },
+      },
+    );
+
+    if (item.orgId !== orgId) {
+      throw new Error('Record not exist');
+    }
+
+    const deletedItem = await this.prismaService.rentingOrder.delete({
+      where: {
+        id,
+      },
+    });
+
+    return RentingOrderModel.fromDatabase({ data: deletedItem });
   }
 }

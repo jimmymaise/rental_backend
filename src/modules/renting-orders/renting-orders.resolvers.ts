@@ -38,6 +38,35 @@ export class RentingOrderResolvers {
   @Mutation()
   @Permissions(Permission.ORG_MASTER, Permission.UPDATE_RENTING_ORDER)
   @UseGuards(GqlAuthGuard)
+  async updateRentingOrder(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+    @Args('data') data: RentingOrderModel,
+  ): Promise<RentingOrderModel> {
+    return this.rentingOrdersService.updateRentingOrder({
+      id,
+      creatorId: user.id,
+      orgId: user.currentOrgId,
+      data,
+    });
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.DELETE_RENTING_ORDER)
+  @UseGuards(GqlAuthGuard)
+  async deleteRentingOrder(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+  ): Promise<RentingOrderModel> {
+    return this.rentingOrdersService.deleteRentingOrder({
+      id,
+      orgId: user.currentOrgId,
+    });
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER, Permission.UPDATE_RENTING_ORDER)
+  @UseGuards(GqlAuthGuard)
   async changeRentingOrderStatus(
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,

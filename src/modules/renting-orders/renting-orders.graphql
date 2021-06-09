@@ -1,4 +1,4 @@
-input RentingDepositItemCreateInput {
+input RentingDepositItemInput {
   type: String!
   note: String
   valueAmount: Int
@@ -16,7 +16,8 @@ type RentingDepositItem {
   typeDetail: RentingDepositItemType
 }
 
-input RentingOrderItemCreateInput {
+input RentingOrderItemInput {
+  id: String
   sku: String
   name: String
   note: String
@@ -51,14 +52,14 @@ type RentingOrderItem {
   statusDetail: RentingOrderItemStatus
 }
 
-input RentingOrderCreateInput {
+input RentingOrderInput {
   orderCustomId: String
   totalAmount: Int
   note: String
   customerUserId: String
   attachedFiles: [PublicStorageFileInput]
-  rentingOrderItems: [RentingOrderItemCreateInput]
-  rentingDepositItems: [RentingDepositItemCreateInput]
+  rentingOrderItems: [RentingOrderItemInput]
+  rentingDepositItems: [RentingDepositItemInput]
 }
 
 input ChangeRentingOrderStatusInput {
@@ -97,7 +98,9 @@ type Query {
 }
 
 type Mutation {
-  createRentingOrder(data: RentingOrderCreateInput!): RentingOrder
+  createRentingOrder(data: RentingOrderInput!): RentingOrder
+  updateRentingOrder(id: String!, data: RentingOrderInput!): RentingOrder
+  deleteRentingOrder(id: String!): RentingOrder
   changeRentingOrderStatus(
     id: ID!
     data: ChangeRentingOrderStatusInput!
