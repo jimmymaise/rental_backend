@@ -1,6 +1,5 @@
 scalar JSON
 
-
 type UserSummary {
   id: ID!
   email: String

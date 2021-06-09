@@ -1,6 +1,5 @@
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 
-
 export interface EmployeeDto {
   id: string;
   orgId: string;

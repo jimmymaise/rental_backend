@@ -9,13 +9,12 @@ import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 import { OffsetPaginationDTO } from '@app/models';
 import { UsersService } from '@modules/users/users.service';
 
-
 @Injectable()
 export class EmployeesService {
-  constructor(private prismaService: PrismaService,
-              private usersService: UsersService,
-  ) {
-  }
+  constructor(
+    private prismaService: PrismaService,
+    private usersService: UsersService,
+  ) {}
 
   async getEmployeesWithOffsetPaging(
     whereQuery: any,

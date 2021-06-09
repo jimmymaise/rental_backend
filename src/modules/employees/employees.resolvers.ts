@@ -22,8 +22,7 @@ import {
 
 @Resolver('Employee')
 export class EmployeesResolvers {
-  constructor(private readonly employeeService: EmployeesService) {
-  }
+  constructor(private readonly employeeService: EmployeesService) {}
 
   @Query()
   @Permissions(Permission.NEED_LOGIN)
@@ -32,7 +31,7 @@ export class EmployeesResolvers {
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('getMyOrgEmployeesWithOffsetPagingData')
-      getMyOrgEmployeesWithOffsetPagingData: QueryWithOffsetPagingDTO,
+    getMyOrgEmployeesWithOffsetPagingData: QueryWithOffsetPagingDTO,
   ): Promise<OffsetPaginationDTO<EmployeeDto>> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
@@ -68,7 +67,7 @@ export class EmployeesResolvers {
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('addEmployeeByUserIdData')
-      addEmployeeByUserIdData: AddEmployeeByUserIdDTO,
+    addEmployeeByUserIdData: AddEmployeeByUserIdDTO,
   ): Promise<Employee> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
@@ -89,7 +88,7 @@ export class EmployeesResolvers {
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('removeEmployeeByUserIdData')
-      removeEmployeeByUserIdData: { userId: string },
+    removeEmployeeByUserIdData: { userId: string },
   ): Promise<{ id: string }> {
     await this.employeeService.removeEmployeeByUserId(
       user.currentOrgId,
@@ -105,7 +104,7 @@ export class EmployeesResolvers {
     @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
     @Args('updateEmployeeRolesByUserIdData')
-      updateEmployeeRolesByUserIdData: UpdateEmployeeRolesByUserIdDTO,
+    updateEmployeeRolesByUserIdData: UpdateEmployeeRolesByUserIdDTO,
   ): Promise<Employee> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields([

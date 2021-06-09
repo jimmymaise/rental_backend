@@ -10,7 +10,6 @@ type OrganizationInfo {
   employees: [EmployeeInfo]
 }
 
-
 type OrgSummaryCache {
   id: ID!
   name: String

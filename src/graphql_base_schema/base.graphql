@@ -1,19 +1,19 @@
 type DeleteItem {
-    id: String!
+  id: String!
 }
 
 enum UpdateType {
-    connect
-    disconnect
-    set
+  connect
+  disconnect
+  set
 }
 
 input BaseOffsetPagingInput {
-    pageSize: Int
-    offset: Int
-    orderBy: JSON
+  pageSize: Int
+  offset: Int
+  orderBy: JSON
 }
 input BaseCursorPagingInput {
-    pageSize: Int
-    cursor: String
+  pageSize: Int
+  cursor: String
 }
