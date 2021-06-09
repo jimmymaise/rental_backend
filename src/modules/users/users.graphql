@@ -1,14 +1,6 @@
 scalar JSON
 
-input BaseOffsetPagingInput {
-  pageSize: Int
-  offset: Int
-  orderBy: JSON
-}
-input BaseCursorPagingInput {
-  pageSize: Int
-  cursor: String
-}
+
 type UserSummary {
   id: ID!
   email: String

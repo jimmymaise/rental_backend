@@ -49,9 +49,9 @@ function encryptPhoneNumber(userInfo: UserInfoDTO): UserInfoDTO {
     ...userInfo,
     phoneNumber: !isEmpty(userInfo.phoneNumber)
       ? EncryptByAesCBCPassword(
-          userInfo.phoneNumber,
-          process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
-        )
+        userInfo.phoneNumber,
+        process.env.ENCRYPT_PHONE_NUMBER_PASSWORD,
+      )
       : userInfo.phoneNumber,
   };
 }
@@ -69,7 +69,8 @@ export class UsersService {
     private redisCacheService: RedisCacheService,
     private authService: AuthService,
     private organizationsService: OrganizationsService,
-  ) {}
+  ) {
+  }
 
   async isUserInMyContactList(
     userId: string,
@@ -105,6 +106,20 @@ export class UsersService {
     return pagingHandler.getPage(offset);
   }
 
+  async resetUserDetailCache(userId: string) {
+    const cacheKey = getUserCacheKey(userId);
+
+    const userData = await this.getUserById(userId, {
+      employeesThisUserBecome: true,
+    });
+    const userInfoData = await this.getUserInfoById(userId);
+
+    let userDetail = toUserInfoDTO(userData, userInfoData);
+
+    await this.redisCacheService.set(cacheKey, userDetail || {}, 3600);
+
+  }
+
   async getUserDetailData(
     userId: string,
     isDisableEncryptPhoneNumber = false,
@@ -118,14 +133,7 @@ export class UsersService {
     let userDetail = await this.redisCacheService.get(cacheKey);
 
     if (!userDetail) {
-      const userData = await this.getUserById(userId, {
-        employeesThisUserBecome: true,
-      });
-      const userInfoData = await this.getUserInfoById(userId);
-
-      userDetail = toUserInfoDTO(userData, userInfoData);
-
-      await this.redisCacheService.set(cacheKey, userDetail || {}, 3600);
+      await this.resetUserDetailCache(userId);
     }
 
     if (include) {
@@ -137,7 +145,7 @@ export class UsersService {
       if (userDetail['currentOrgId'] && include['currentOrgDetail']) {
         userDetail[
           'currentOrgDetail'
-        ] = await this.organizationsService.getOrgSummaryCache(
+          ] = await this.organizationsService.getOrgSummaryCache(
           userDetail['currentOrgId'],
         );
       }

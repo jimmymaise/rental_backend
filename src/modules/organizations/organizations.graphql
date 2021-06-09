@@ -10,11 +10,6 @@ type OrganizationInfo {
   employees: [EmployeeInfo]
 }
 
-type EmployeeInfo {
-  userId: String
-  isOwner: Boolean
-  orgId: String
-}
 
 type OrgSummaryCache {
   id: ID!

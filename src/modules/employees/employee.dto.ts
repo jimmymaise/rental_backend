@@ -1,5 +1,6 @@
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 
+
 export interface EmployeeDto {
   id: string;
   orgId: string;
@@ -21,6 +22,7 @@ export interface EmployeeUserInfo {
   createdDate?: number;
   isDeleted?: boolean;
 }
+
 export interface AddEmployeeByUserIdDTO {
   userId: string;
   roleIds: [string];
@@ -29,4 +31,10 @@ export interface AddEmployeeByUserIdDTO {
 export interface AddRemoveEmployeeRolesByUserIdDTO {
   userId: string;
   roleIds: [string];
+}
+
+export interface UpdateEmployeeRolesByUserIdDTO {
+  userId: string;
+  roleIds: [string];
+  action: 'connect' | 'disconnect' | 'set';
 }

@@ -54,7 +54,7 @@ import { AppService } from './app.service';
         ],
         credentials: true,
       },
-      typePaths: ['./**/*.graphql'],
+      typePaths: ['./**/*.graphql','./graphql_base_schema/*.graphql'],
       context: ({ request, res }) => {
         return { req: request, res };
       },

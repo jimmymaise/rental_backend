@@ -7,10 +7,15 @@ import { EmployeeDto } from './employee.dto';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 
 import { OffsetPaginationDTO } from '@app/models';
+import { UsersService } from '@modules/users/users.service';
+
 
 @Injectable()
 export class EmployeesService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService,
+              private usersService: UsersService,
+  ) {
+  }
 
   async getEmployeesWithOffsetPaging(
     whereQuery: any,
@@ -71,7 +76,7 @@ export class EmployeesService {
   }
 
   async removeEmployeeByUserId(orgId, userId): Promise<any> {
-    return this.prismaService.employee.delete({
+    await this.prismaService.employee.delete({
       where: {
         userId_orgId: {
           userId: userId,
@@ -79,15 +84,17 @@ export class EmployeesService {
         },
       },
     });
+    await this.usersService.resetUserDetailCache(userId);
   }
 
-  async removeEmployeeRoleByUserId(
+  async updateEmployeeRoleByUserId(
     orgId,
     userId,
     roleIds,
+    action,
     include,
   ): Promise<Employee> {
-    return await this.prismaService.employee.update({
+    let result = await this.prismaService.employee.update({
       include: include,
       where: {
         userId_orgId: {
@@ -97,35 +104,13 @@ export class EmployeesService {
       },
       data: {
         roles: {
-          disconnect: roleIds.map((roleId) => {
+          [action]: roleIds.map((roleId) => {
             return { id: roleId };
           }),
         },
       },
     });
-  }
-
-  async addEmployeeRoleByUserId(
-    orgId,
-    userId,
-    roleIds,
-    include,
-  ): Promise<Employee> {
-    return await this.prismaService.employee.update({
-      include: include,
-      where: {
-        userId_orgId: {
-          userId: userId,
-          orgId: orgId,
-        },
-      },
-      data: {
-        roles: {
-          connect: roleIds.map((roleId) => {
-            return { id: roleId };
-          }),
-        },
-      },
-    });
+    await this.usersService.resetUserDetailCache(userId);
+    return result;
   }
 }
