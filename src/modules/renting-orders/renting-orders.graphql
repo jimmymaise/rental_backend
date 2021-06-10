@@ -80,6 +80,7 @@ type RentingOrder {
   updatedDate: Float
   status: String
   statusDetail: RentingOrderStatus
+  systemStatus: String
   allowChangeToStatuses: [RentingOrderStatus]
 }
 

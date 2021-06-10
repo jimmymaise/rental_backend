@@ -22,6 +22,7 @@ export class RentingOrderModel {
   public customerUser?: CustomerModel;
   public attachedFiles?: StoragePublicDTO[];
   public status: string;
+  public systemStatus: string;
   public statusDetail?: RentingOrderStatusModel;
 
   public rentingOrderItems?: RentingOrderItemModel[];
@@ -82,6 +83,7 @@ export class RentingOrderModel {
         ? CustomerModel.fromCustomer(orgCustomerInfo)
         : null,
       statusDetail,
+      systemStatus: data.systemStatus,
       allowChangeToStatuses,
     };
   }
