@@ -552,6 +552,18 @@ export class RentingOrdersService {
       throw new Error('Record not exist');
     }
 
+    await this.prismaService.rentingDepositItem.deleteMany({
+      where: {
+        rentingOrderId: id,
+      },
+    });
+
+    await this.prismaService.rentingOrderItem.deleteMany({
+      where: {
+        rentingOrderId: id,
+      },
+    });
+
     const deletedItem = await this.prismaService.rentingOrder.delete({
       where: {
         id,
