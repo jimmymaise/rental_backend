@@ -100,8 +100,8 @@ type Query {
 
 type Mutation {
   createRentingOrder(data: RentingOrderInput!): RentingOrder
-  updateRentingOrder(id: String!, data: RentingOrderInput!): RentingOrder
-  deleteRentingOrder(id: String!): RentingOrder
+  updateRentingOrder(id: ID!, data: RentingOrderInput!): RentingOrder
+  deleteRentingOrder(id: ID!): RentingOrder
   changeRentingOrderStatus(
     id: ID!
     data: ChangeRentingOrderStatusInput!
