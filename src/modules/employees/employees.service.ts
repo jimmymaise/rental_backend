@@ -93,7 +93,21 @@ export class EmployeesService {
     action,
     include,
   ): Promise<Employee> {
-    let result = await this.prismaService.employee.update({
+    let dbAction;
+
+    switch (action) {
+      case 'Set':
+        dbAction = 'set';
+        break;
+      case 'Connect':
+        dbAction = 'connect';
+        break;
+      case 'Disconnect':
+        dbAction = 'disconnect';
+        break;
+    }
+
+    const result = await this.prismaService.employee.update({
       include: include,
       where: {
         userId_orgId: {
@@ -103,7 +117,7 @@ export class EmployeesService {
       },
       data: {
         roles: {
-          [action]: roleIds.map((roleId) => {
+          [dbAction]: roleIds.map((roleId) => {
             return { id: roleId };
           }),
         },

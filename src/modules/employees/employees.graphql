@@ -10,6 +10,7 @@ type EmployeeInfo {
 }
 
 type DBUserInfoForEmployee {
+  id: ID!
   phoneNumber: String
   email: String
   createdDate: Float
@@ -49,9 +50,7 @@ type Mutation {
     addEmployeeByUserIdData: AddEmployeeByUserIdInput!
   ): EmployeeInfo
 
-  removeEmployeeFromOrganization(
-    removeEmployeeByUserIdData: RemoveEmployeeByUserIdInput!
-  ): DeleteItem
+  removeEmployeeFromOrganization(id: ID!): DeleteItem
 
   updateEmployeeRoles(
     updateEmployeeRolesByUserIdData: UpdateEmployeeRoleByUserIdInput!

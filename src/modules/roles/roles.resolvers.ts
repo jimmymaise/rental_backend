@@ -93,7 +93,6 @@ export class RolesResolvers {
   ): Promise<Role> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
-      { fieldName: 'users' },
       { fieldName: 'org' },
       { fieldName: 'permissions' },
     ]);

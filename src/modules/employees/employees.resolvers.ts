@@ -36,6 +36,7 @@ export class EmployeesResolvers {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
       { fieldName: 'user', fieldPath: 'items.EmployeeInfo' },
+      { fieldName: 'roles', fieldPath: 'items.EmployeeInfo' },
     ]);
     const userInfoInclude = graphQLFieldHandler.getIncludeForNestedRelationalFields(
       [
@@ -85,15 +86,11 @@ export class EmployeesResolvers {
   @UseGuards(GqlAuthGuard)
   @Permissions(Permission.NEED_LOGIN)
   async removeEmployeeFromOrganization(
-    @Info() info: GraphQLResolveInfo,
     @CurrentUser() user: GuardUserPayload,
-    @Args('removeEmployeeByUserIdData')
-    removeEmployeeByUserIdData: { userId: string },
+    @Args('id')
+    id: string,
   ): Promise<{ id: string }> {
-    await this.employeeService.removeEmployeeByUserId(
-      user.currentOrgId,
-      removeEmployeeByUserIdData.userId,
-    );
+    await this.employeeService.removeEmployeeByUserId(user.currentOrgId, id);
     return { id: user.currentOrgId };
   }
 

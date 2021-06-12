@@ -3,9 +3,9 @@ type DeleteItem {
 }
 
 enum UpdateType {
-  connect
-  disconnect
-  set
+  Connect
+  Disconnect
+  Set
 }
 
 input BaseOffsetPagingInput {
