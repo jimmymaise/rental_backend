@@ -21,8 +21,9 @@ before_script:
   - $(aws ecr get-login --no-include-email --region "${AWS_DEFAULT_REGION}")
   - IMAGE_TAG="$(echo $CI_COMMIT_SHA | head -c 8)"
 
-build:
-  stage: build
+Dockerfile-Staging:
+  stage: dockerfile
+  environment: staging
   tags:
     - ecs_ecr
   script:
@@ -38,7 +39,7 @@ build:
     - /^release-v\d+\.\d+\.\d+$/
 
 
-deploy:
+Deploy-Staging:
   stage: deploy
   environment: staging
   tags:
