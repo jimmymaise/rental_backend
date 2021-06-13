@@ -52,7 +52,6 @@ Deploy-Staging:
     - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "${TASK_DEFINITION_NAME}" --region "${AWS_DEFAULT_REGION}")
     - NEW_TASK_DEFINTIION=$(echo $TASK_DEFINITION |  jq   --argjson ENV_JSON_BY_NAME_VALUE "$ENV_JSON_BY_NAME_VALUE" --arg IMAGE "$REPOSITORY_URL:$IMAGE_TAG" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.requiresAttributes) | del(.registeredAt) | del(.registeredBy) | del(.taskDefinitionArn) | del(.revision) | del(.status) | .+{"requiresCompatibilities":.compatibilities} | del(.compatibilities) |.containerDefinitions[0].environment = $ENV_JSON_BY_NAME_VALUE')
     - echo "Registering new task definition..."
-    - echo $NEW_TASK_DEFINTIION
     - aws ecs register-task-definition --region "${AWS_DEFAULT_REGION}" --cli-input-json "${NEW_TASK_DEFINTIION}"
     - echo "Updating the service..."
     - aws ecs update-service --region "${AWS_DEFAULT_REGION}" --cluster "${CLUSTER_NAME}" --service "${SERVICE_NAME}"  --task-definition "${TASK_DEFINITION_NAME}"
