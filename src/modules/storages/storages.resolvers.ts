@@ -1,5 +1,5 @@
 import { UseGuards, BadRequestException } from '@nestjs/common';
-import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Info, Mutation, Resolver, Query } from '@nestjs/graphql';
 // import * as sharp from 'sharp'
 import * as mime from 'mime-types';
 import { FileUsingLocate } from '@prisma/client';
@@ -238,5 +238,17 @@ export class StoragesResolvers {
       preSignedUrl,
       url: fileFullUrl,
     };
+  }
+
+  @Query()
+  @Permissions(Permission.NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
+  async generatePublicUrl(
+    @Args('url')
+    url: string,
+  ): Promise<string> {
+    this.storagesService.setCloudService('aws');
+
+    return this.storagesService.generatePublicUrl(url);
   }
 }

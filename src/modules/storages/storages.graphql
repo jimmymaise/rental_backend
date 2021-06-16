@@ -77,6 +77,10 @@ type StorageFile {
   contentType: String
 }
 
+type Query {
+  generatePublicUrl(url: String!): String
+}
+
 # uploadItemImage(file: Upload!): StorageFile!
 type Mutation {
   generateImageFile(imageData: PreSignedUrlFileInput!): PreSignedUrlImageData!

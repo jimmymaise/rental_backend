@@ -257,4 +257,17 @@ export class StoragesService {
       },
     });
   }
+
+  public async generatePublicUrl(url: string): Promise<string> {
+    // Extract, get signed url cho tung file
+    const splitedUrl = url.split('/');
+    const bucketName = DEFAULT_BUCKET_NAME;
+    const fileName = splitedUrl[splitedUrl.length - 1];
+    const folderName = splitedUrl[splitedUrl.length - 2];
+
+    return this.cloudStorageService.getPreSignedUrlForDownload(
+      `${folderName}/${fileName}`,
+      bucketName,
+    );
+  }
 }
