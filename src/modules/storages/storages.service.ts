@@ -124,15 +124,13 @@ export class StoragesService {
     }
 
     if (makePublic) {
-      if (includes.includes('original')) {
-        try {
-          await this.cloudStorageService.makePublic(
-            fileDb.folderName,
-            fileDb.name,
-            fileDb.bucketName,
-          );
-        } catch (err) {}
-      }
+      try {
+        await this.cloudStorageService.makePublic(
+          fileDb.folderName,
+          fileDb.name,
+          fileDb.bucketName,
+        );
+      } catch (err) {}
 
       if (includes.includes('small')) {
         try {
@@ -224,6 +222,37 @@ export class StoragesService {
         createdBy,
         orgId,
         sizes: fileSizes,
+        usingLocate,
+      },
+    });
+  }
+
+  async saveItemFileStorageInfo({
+    folderName,
+    name,
+    url,
+    contentType,
+    createdBy,
+    orgId,
+    usingLocate,
+  }: {
+    folderName: string;
+    name: string;
+    url: string;
+    contentType: string;
+    createdBy: string;
+    orgId: string;
+    usingLocate: FileUsingLocate;
+  }): Promise<FileStorage> {
+    return this.prismaService.fileStorage.create({
+      data: {
+        url,
+        name,
+        contentType,
+        bucketName: DEFAULT_BUCKET_NAME,
+        folderName,
+        createdBy,
+        orgId,
         usingLocate,
       },
     });

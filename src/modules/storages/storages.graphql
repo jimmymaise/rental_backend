@@ -31,7 +31,14 @@ input PreSignedUrlFileInput {
   contentType: String!
   cloudName: String
   includes: [String]
-  fileSizeMap: FileSizeMapInput!
+  fileSizeMap: FileSizeMapInput
+  usingLocate: FileUsingLocate
+}
+
+input RequestUploadFileDataInput {
+  name: String!
+  contentType: String!
+  size: Float!
   usingLocate: FileUsingLocate!
 }
 
@@ -41,6 +48,12 @@ type PreSignedUrlImageData {
   mediumPreSignedUrl: String
   smallPreSignedUrl: String
   imageUrl: String
+}
+
+type RequestUploadFileData {
+  id: String!
+  preSignedUrl: String
+  url: String
 }
 
 type PublicStorageFileSignedUrl {
@@ -68,4 +81,7 @@ type StorageFile {
 type Mutation {
   generateImageFile(imageData: PreSignedUrlFileInput!): PreSignedUrlImageData!
   deleteFileForListingItem(fileId: String!): String!
+  requestUploadFile(
+    fileData: RequestUploadFileDataInput!
+  ): RequestUploadFileData!
 }

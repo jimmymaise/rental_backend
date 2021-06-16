@@ -14,6 +14,10 @@ import { ErrorMap } from '@app/constants';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GraphQLResolveInfo } from 'graphql';
+import {
+  FilePreSignedUploadRequestModel,
+  FilePreSignedUploadResultModel,
+} from './models';
 
 interface PreSignedImageUrlData {
   id: string;
@@ -180,5 +184,59 @@ export class StoragesResolvers {
     } catch {}
 
     return fileId;
+  }
+
+  @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
+  async requestUploadFile(
+    @Info() info: GraphQLResolveInfo,
+    @CurrentUser() user: GuardUserPayload,
+    @Args('fileData')
+    fileData: FilePreSignedUploadRequestModel,
+  ): Promise<FilePreSignedUploadResultModel> {
+    this.storagesService.setCloudService('aws');
+
+    const contentType = fileData.contentType;
+    const fileSize = fileData.size;
+
+    const OneMb = 1000000;
+    if (fileSize > OneMb) {
+      throw new BadRequestException(ErrorMap.FILE_TOO_BIG);
+    }
+
+    const fileExtension = mime.extension(contentType);
+
+    const folderName = user.currentOrgId || user.id;
+    const fileNamePaths = fileData.name.split('.');
+    const fileName = `${Date.now()}-${fileNamePaths[0].replace(
+      /[^a-zA-Z0-9]/g,
+      '-',
+    )}.${fileExtension}`;
+    const fileFullUrl = this.storagesService.getImagePublicUrl(
+      folderName,
+      fileName,
+    );
+    const storageInfo = await this.storagesService.saveItemFileStorageInfo({
+      folderName,
+      name: fileName,
+      url: fileFullUrl,
+      contentType,
+      createdBy: user.id,
+      orgId: user.currentOrgId,
+      usingLocate: fileData.usingLocate,
+    });
+
+    const preSignedUrl = await this.storagesService.generateUploadImageSignedUrl(
+      `${folderName}/${fileName}`,
+      contentType,
+      fileSize,
+    );
+
+    return {
+      id: storageInfo.id,
+      preSignedUrl,
+      url: fileFullUrl,
+    };
   }
 }
