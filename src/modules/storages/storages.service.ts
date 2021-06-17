@@ -258,7 +258,7 @@ export class StoragesService {
     });
   }
 
-  public async generatePublicUrl(url: string): Promise<string> {
+  public async generatePublicUrl(url): Promise<string> {
     // Extract, get signed url cho tung file
     const splitedUrl = url.split('/');
     const bucketName = DEFAULT_BUCKET_NAME;

@@ -4,6 +4,8 @@ import {
   S3Client,
   PutObjectCommand,
   PutObjectAclCommand,
+  GetObjectCommand,
+  GetObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { IStorageService } from '@modules/storages/storage.service.interface';
@@ -42,12 +44,12 @@ export class S3StorageService implements IStorageService {
   ): Promise<string> {
     // These options will allow temporary read access to the file
 
-    const params = {
+    const params: GetObjectCommandInput = {
       Bucket: bucketName,
       Key: filePath,
     };
 
-    const command = new PutObjectCommand(params);
+    const command = new GetObjectCommand(params);
     return await getSignedUrl(this.s3Client, command, {
       expiresIn: 900, // 15 minutes,
     });
