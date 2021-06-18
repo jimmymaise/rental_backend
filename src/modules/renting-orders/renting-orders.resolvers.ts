@@ -11,6 +11,7 @@ import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
 import { RentingOrderCreateModel } from './models/renting-order-create.model';
 import { RentingOrderUpdateStatusModel } from './models/renting-order-update-status.model';
 import { RentingOrderModel } from './models/renting-order.model';
+import { RentingOrderItemModel } from './models/renting-order-item.model';
 import { OffsetPaginationDTO } from '../../models';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 
@@ -205,6 +206,32 @@ export class RentingOrderResolvers {
     return this.rentingOrdersService.getOrderDetail(
       id,
       user.currentOrgId,
+      include,
+    );
+  }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_RENTING_ORDER)
+  @UseGuards(GqlAuthGuard)
+  async getRentingOrderItemsAfterDateByItemId(
+    @Info() info: GraphQLResolveInfo,
+    @CurrentUser() user: GuardUserPayload,
+    @Args('itemId')
+    itemId: string,
+    @Args('fromDate')
+    fromDate: number,
+  ): Promise<RentingOrderItemModel[]> {
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include = graphQLFieldHandler.getIncludeForRelationalFields([
+      'statusDetail',
+    ]);
+
+    return this.rentingOrdersService.getRentingOrderItemsAfterDateByItemId(
+      {
+        itemId,
+        orgId: user.currentOrgId,
+        fromDate,
+      },
       include,
     );
   }

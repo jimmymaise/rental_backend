@@ -11,6 +11,7 @@ import {
 } from '@prisma/client';
 import { RentingOrderModel } from './models/renting-order.model';
 import { RentingOrderCreateModel } from './models/renting-order-create.model';
+import { RentingOrderItemModel } from './models/renting-order-item.model';
 import { StoragesService } from '@modules/storages/storages.service';
 
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
@@ -571,5 +572,55 @@ export class RentingOrdersService {
     });
 
     return RentingOrderModel.fromDatabase({ data: deletedItem });
+  }
+
+  public async getRentingOrderItemsAfterDateByItemId(
+    {
+      itemId,
+      orgId,
+      fromDate,
+    }: {
+      itemId: string;
+      orgId: string;
+      fromDate: number;
+    },
+    include?: any,
+  ): Promise<RentingOrderItemModel[]> {
+    let statuses;
+    if (include.statusDetail) {
+      statuses = await this.customAttributeService.getAllRentingOrderStatusCustomAttributes(
+        orgId,
+      );
+    }
+    delete include['statusDetail'];
+
+    const rentingOrderItems = await this.prismaService.rentingOrderItem.findMany(
+      {
+        where: {
+          itemId,
+          systemStatus: {
+            not: RentingOrderSystemStatusType.Cancelled,
+          },
+          OR: [
+            {
+              pickupDateTime: {
+                gte: new Date(fromDate),
+              },
+            },
+            {
+              returningDateTime: {
+                gte: new Date(fromDate),
+              },
+            },
+          ],
+        },
+      },
+    );
+
+    return rentingOrderItems.map((orderItem) =>
+      RentingOrderItemModel.fromDatabase(orderItem, {
+        rentingOrderStatuses: statuses,
+      }),
+    );
   }
 }

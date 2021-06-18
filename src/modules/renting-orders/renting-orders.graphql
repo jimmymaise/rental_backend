@@ -96,6 +96,10 @@ type Query {
     paginationData: BaseOffsetPagingInput
   ): RentingOrderPagination
   getMyOrgRentingOrderDetail(id: ID!): RentingOrder
+  getRentingOrderItemsAfterDateByItemId(
+    itemId: ID!
+    fromDate: Float!
+  ): [RentingOrderItem]
 }
 
 type Mutation {
