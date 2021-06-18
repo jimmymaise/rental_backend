@@ -113,9 +113,11 @@ export class UsersService {
     });
     const userInfoData = await this.getUserInfoById(userId);
 
-    let userDetail = toUserInfoDTO(userData, userInfoData);
+    const userDetail = toUserInfoDTO(userData, userInfoData);
 
     await this.redisCacheService.set(cacheKey, userDetail || {}, 3600);
+
+    return userDetail;
   }
 
   async getUserDetailData(
@@ -131,7 +133,7 @@ export class UsersService {
     let userDetail = await this.redisCacheService.get(cacheKey);
 
     if (!userDetail) {
-      await this.resetUserDetailCache(userId);
+      userDetail = await this.resetUserDetailCache(userId);
     }
 
     if (include) {
