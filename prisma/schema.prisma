@@ -12,24 +12,28 @@ generator client {
 }
 
 model Organization {
-  id                      String                   @id @default(uuid())
-  name                    String?
-  description             String?
-  avatarImage             Json?
-  slug                    String?                  @unique
-  createdDate             DateTime?                @default(now())
-  updatedDate             DateTime?                @updatedAt
-  rolesThisOrgHaving      Role[]
-  createdByUser           User?                    @relation("CreatedByUser", fields: [createdBy], references: [id])
-  createdBy               String?
-  employees               Employee[]
-  customers               Customer[]
-  items                   Item[]                   @relation("ItemBelongToOrg")
-  rentingOrder            RentingOrder[]           @relation("RentingOrderBelongToOrg")
-  rentingOrderItems       RentingOrderItem[]       @relation("RentingOrderItemBelongToOrg")
-  rentingDepositItems     RentingDepositItem[]     @relation("RentingDepositItemBelongToOrg")
-  commonAttributesConfigs CommonAttributesConfig[] @relation("CommonAttributesConfigBelongToOrg")
-  orgCategories           OrgCategory[]            @relation("OrgCategoryBelongToOrg")
+  id                                   String                                 @id @default(uuid())
+  name                                 String?
+  description                          String?
+  avatarImage                          Json?
+  slug                                 String?                                @unique
+  createdDate                          DateTime?                              @default(now())
+  updatedDate                          DateTime?                              @updatedAt
+  rolesThisOrgHaving                   Role[]
+  createdByUser                        User?                                  @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdBy                            String?
+  employees                            Employee[]
+  customers                            Customer[]
+  items                                Item[]                                 @relation("ItemBelongToOrg")
+  rentingOrder                         RentingOrder[]                         @relation("RentingOrderBelongToOrg")
+  rentingOrderItems                    RentingOrderItem[]                     @relation("RentingOrderItemBelongToOrg")
+  rentingDepositItems                  RentingDepositItem[]                   @relation("RentingDepositItemBelongToOrg")
+  commonAttributesConfigs              CommonAttributesConfig[]               @relation("CommonAttributesConfigBelongToOrg")
+  orgCategories                        OrgCategory[]                          @relation("OrgCategoryBelongToOrg")
+  orgDailyOrderStatistics              OrgDailyOrderStatistics[]              @relation("OrgDailyOrderStatisticsBelongToOrg")
+  orgDailyCategoryStatistics           OrgDailyCategoryStatistics[]           @relation("OrgDailyCategoryStatisticsBelongToOrg")
+  orgDailyItemStatistics               OrgDailyItemStatistics[]               @relation("OrgDailyItemStatisticsBelongToOrg")
+  OrgDailyCustomerTradeCountStatistics OrgDailyCustomerTradeCountStatistics[] @relation("OrgDailyCustomerTradeCountStatisticsBelongToOrg")
 }
 
 model Employee {
@@ -266,7 +270,10 @@ model Item {
   ItemReview  ItemReview[]
   WishingItem WishingItem[]
 
-  rentingOrderItems RentingOrderItem[] @relation("RentingOrderItemBelongToItem")
+  rentingOrderItems      RentingOrderItem[]       @relation("RentingOrderItemBelongToItem")
+  orgDailyItemStatistics OrgDailyItemStatistics[] @relation("OrgDailyItemStatisticsBelongToItem")
+
+
   @@index(fields: [status, isDeleted, isVerified, keyword], name: "item_main_index")
   @@index(fields: [createdDate], name: "item_created_date_index")
   @@index(fields: [keyword], name: "item_keyword_index")
@@ -636,7 +643,68 @@ model OrgCategory {
   category         Category?    @relation("OrgCategoryBelongToCategory", fields: [categoryId], references: [id])
   categoryId       String?
 
+  orgDailyCategoryStatistics OrgDailyCategoryStatistics[] @relation("OrgDailyCategoryStatisticsBelongToOrgCategory")
+
   @@unique([orgId, slug])
+}
+
+model OrgDailyOrderStatistics {
+  entryDateTime DateTime @id
+
+  org   Organization @relation("OrgDailyOrderStatisticsBelongToOrg", fields: [orgId], references: [id])
+  orgId String
+
+  rentingOrderAmount          Int? @default(0) // Sum all Completed Renting Order Amount
+  rentingNewOrderCount        Int? @default(0)
+  rentingReservedOrderCount   Int? @default(0)
+  rentingPickedUpOrderCount   Int? @default(0)
+  rentingReturnedUpOrderCount Int? @default(0)
+  rentingCancelledOrderCount  Int? @default(0)
+}
+
+model OrgDailyCategoryStatistics {
+  entryDateTime DateTime @id
+
+  org   Organization @relation("OrgDailyCategoryStatisticsBelongToOrg", fields: [orgId], references: [id])
+  orgId String
+
+  OrgCategory   OrgCategory? @relation("OrgDailyCategoryStatisticsBelongToOrgCategory", fields: [orgCategoryId], references: [id])
+  orgCategoryId String?
+
+  newRentingOrderCount       Int? @default(0)
+  cancelledRentingOrderCount Int? @default(0)
+  viewCount                  Int? @default(0)
+  amount                     Int? @default(0)
+}
+
+model OrgDailyItemStatistics {
+  entryDateTime DateTime @id
+
+  org   Organization @relation("OrgDailyItemStatisticsBelongToOrg", fields: [orgId], references: [id])
+  orgId String
+
+  item   Item   @relation("OrgDailyItemStatisticsBelongToItem", fields: [itemId], references: [id])
+  itemId String
+
+  newRentingOrderCount       Int? @default(0)
+  cancelledRentingOrderCount Int? @default(0)
+  viewCount                  Int? @default(0)
+  amount                     Int? @default(0)
+  debtAmount                 Int? @default(0) // Debt after Approved Order
+  payAmount                  Int? @default(0) // Pay after Approved Order
+}
+
+model OrgDailyCustomerTradeCountStatistics {
+  id            String   @id @default(uuid())
+  entryDateTime DateTime
+  startTime     Int // In Second 0 -> 0hr
+  endTime       Int // In Second 900 -> 0 hr 15 min
+  count         Int
+
+  org   Organization @relation("OrgDailyCustomerTradeCountStatisticsBelongToOrg", fields: [orgId], references: [id])
+  orgId String
+
+  @@index(fields: [entryDateTime], name: "org_daily_customer_trade_count_statistics_entry_date_time_index")
 }
 
 // Item Reviews?
