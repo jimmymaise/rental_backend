@@ -8,6 +8,7 @@ import {
   RentingDepositItemStatusCreateModel,
   RentingDepositItemTypeCreateModel,
 } from '@modules/custom-attributes/models';
+import { PaymentMethodCreateModel } from '@modules/payment/models';
 
 @Injectable()
 export class DataInitilizeService {
@@ -200,11 +201,64 @@ export class DataInitilizeService {
       ),
     ];
 
+    const defaultPaymentMethods: CommonAttributesConfig[] = [
+      PaymentMethodCreateModel.toCommonAttributesConfig(orgId, userId, {
+        label: 'Tiền mặt',
+        description: 'Thanh toán bằng tiền mặt',
+        value: 'CASH',
+        mapWithSystemPaymentMethod: 'Cash',
+        order: 0,
+      }),
+      PaymentMethodCreateModel.toCommonAttributesConfig(orgId, userId, {
+        label: 'Thẻ',
+        description: 'Thanh toán bằng cách cà thẻ',
+        value: 'CARD',
+        mapWithSystemPaymentMethod: 'Card',
+        order: 1,
+      }),
+      PaymentMethodCreateModel.toCommonAttributesConfig(orgId, userId, {
+        label: 'Chuyển khoản',
+        description: 'Chuyển khoản qua tất cả ngân hàng',
+        value: 'BANK_TRANSFER',
+        mapWithSystemPaymentMethod: 'BankTransfer',
+        order: 2,
+      }),
+      PaymentMethodCreateModel.toCommonAttributesConfig(orgId, userId, {
+        label: 'Ví điện tử',
+        description: 'Thanh toán qua ví điện tử (Momo, Moca, ZaloPay,..)',
+        value: 'MOBILE_MONEY',
+        mapWithSystemPaymentMethod: 'MobileMoney',
+        order: 3,
+      }),
+      PaymentMethodCreateModel.toCommonAttributesConfig(orgId, userId, {
+        label: 'Voucher',
+        description: 'Thanh toán bằng Voucher',
+        value: 'VOUCHER',
+        mapWithSystemPaymentMethod: 'PromoCode',
+        order: 4,
+      }),
+      PaymentMethodCreateModel.toCommonAttributesConfig(orgId, userId, {
+        label: 'Điểm thưởng',
+        description: 'Thanh toán bằng Điểm thưởng',
+        value: 'REWARD_POINTS',
+        mapWithSystemPaymentMethod: 'RewardPoints',
+        order: 5,
+      }),
+      PaymentMethodCreateModel.toCommonAttributesConfig(orgId, userId, {
+        label: 'Khác',
+        description: 'Các hình thức khác',
+        value: 'OTHER',
+        mapWithSystemPaymentMethod: 'Other',
+        order: 6,
+      }),
+    ];
+
     await this.prismaService.commonAttributesConfig.createMany({
       data: [
         ...defaultOrderStatuses,
         ...defaultDepositItemStatuses,
         ...defaultDepositTypes,
+        ...defaultPaymentMethods,
       ].map((item) => ({
         ...item,
         orgId,

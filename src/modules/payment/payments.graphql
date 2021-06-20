@@ -1,0 +1,37 @@
+type PaymentMethod {
+  value: String
+  label: String
+  description: String
+  isDefault: Boolean
+  isDisabled: Boolean
+  mapWithSystemPaymentMethod: PaymentMethod
+  order: Int
+}
+
+input PaymentMethodCreateInput {
+  value: String!
+  label: String!
+  description: String
+  isDisabled: Boolean
+  mapWithSystemPaymentMethod: String
+  order: Int
+}
+
+input PaymentMethodEditInput {
+  label: String!
+  description: String
+  isDisabled: Boolean
+  mapWithSystemPaymentMethod: String
+  order: Int
+}
+
+type Mutation {
+  createPaymentMethod(data: PaymentMethodCreateInput!): PaymentMethod
+  updatePaymentMethod(value: ID!, data: PaymentMethodEditInput!): PaymentMethod
+  deletePaymentMethod(id: ID!): PaymentMethod
+}
+
+type Query {
+  feedAllPaymentMethods: [PaymentMethod]
+  feedAllSystemPaymentMethods: [PaymentMethod]
+}

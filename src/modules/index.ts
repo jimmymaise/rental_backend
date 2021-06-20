@@ -23,3 +23,4 @@ export * from './data-initialize';
 export * from './renting-orders';
 export * from './customers';
 export * from './org-categories';
+export * from './payment';

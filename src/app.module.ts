@@ -30,6 +30,7 @@ import {
   RentingOrderModule,
   CustomersModule,
   OrgCategoriesModule,
+  PaymentsModule,
 } from './modules';
 
 import { rootContants } from './constants';
@@ -134,6 +135,7 @@ import { AppService } from './app.service';
     RentingOrderModule,
     CustomersModule,
     OrgCategoriesModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [

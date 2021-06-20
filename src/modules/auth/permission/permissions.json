@@ -172,5 +172,29 @@
     "description": "",
     "isInternal": false,
     "order": 77
+  },
+  "GET_ORG_PAYMENT_METHOD": {
+    "name": "GET_ORG_PAYMENT_METHOD",
+    "description": "",
+    "isInternal": false,
+    "order": 80
+  },
+  "CREATE_ORG_PAYMENT_METHOD": {
+    "name": "CREATE_ORG_PAYMENT_METHOD",
+    "description": "",
+    "isInternal": false,
+    "order": 83
+  },
+  "DELETE_ORG_PAYMENT_METHOD": {
+    "name": "DELETE_ORG_PAYMENT_METHOD",
+    "description": "",
+    "isInternal": false,
+    "order": 85
+  },
+  "UPDATE_ORG_PAYMENT_METHOD": {
+    "name": "UPDATE_ORG_PAYMENT_METHOD",
+    "description": "",
+    "isInternal": false,
+    "order": 87
   }
 }
