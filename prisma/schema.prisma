@@ -34,6 +34,7 @@ model Organization {
   orgDailyCategoryStatistics           OrgDailyCategoryStatistics[]           @relation("OrgDailyCategoryStatisticsBelongToOrg")
   orgDailyItemStatistics               OrgDailyItemStatistics[]               @relation("OrgDailyItemStatisticsBelongToOrg")
   OrgDailyCustomerTradeCountStatistics OrgDailyCustomerTradeCountStatistics[] @relation("OrgDailyCustomerTradeCountStatisticsBelongToOrg")
+  orgPaymentHistories                  OrgPaymentHistory[]                    @relation("OrgPaymentHistoryBelongToOrg")
 }
 
 model Employee {
@@ -104,6 +105,7 @@ model User {
   rentingOrderItems            RentingOrderItem[]   @relation("RentingOrderItemBelongToCustomer")
 
   rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToCustomer")
+  orgPaymentHistories OrgPaymentHistory[]  @relation("OrgPaymentHistoryBelongToUser")
 }
 
 model Role {
@@ -515,6 +517,7 @@ model RentingOrder {
   orderCustomId  String?
   org            Organization                 @relation("RentingOrderBelongToOrg", fields: [orgId], references: [id])
   orgId          String
+  payAmount      Int?                         @default(0)
   totalAmount    Int?                         @default(0)
   note           String?
   customerUser   User                         @relation("RentingOrderBelongToCustomer", fields: [customerUserId], references: [id])
@@ -528,6 +531,7 @@ model RentingOrder {
 
   rentingOrderItems   RentingOrderItem[]   @relation("RentingOrderItemBelongToRentingOrder")
   rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToRentingOrder")
+  orgPaymentHistories OrgPaymentHistory[]  @relation("OrgPaymentHistoryBelongToRentingOrder")
 
   @@index(fields: [orgId, status], name: "selling_order_status_index")
 }
@@ -601,6 +605,37 @@ enum CommonAttributesType {
   RentingOrderItemStatus
   RentingDepositItemStatus
   RentingDepositItemType
+  PaymentMethod
+}
+
+enum PaymentMethodSystemType {
+  PromoCode
+  RewardPoints
+  COD
+  BankTransfer
+  Card
+  Cash
+  MobileMoney
+}
+
+model OrgPaymentHistory {
+  id             String       @id @default(uuid())
+  rentingOrder   RentingOrder @relation("OrgPaymentHistoryBelongToRentingOrder", fields: [rentingOrderId], references: [id])
+  rentingOrderId String
+  org            Organization @relation("OrgPaymentHistoryBelongToOrg", fields: [orgId], references: [id])
+  orgId          String
+
+  payAmount Int? @default(0)
+
+  systemMethod PaymentMethodSystemType
+  method       String
+
+  createdDate DateTime @default(now())
+  updatedDate DateTime @updatedAt
+  updatedBy   String
+
+  createdByUser User?  @relation("OrgPaymentHistoryBelongToUser", fields: [createdBy], references: [id])
+  createdBy     String
 }
 
 model CommonAttributesConfig {
