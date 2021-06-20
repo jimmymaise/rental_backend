@@ -625,7 +625,10 @@ model OrgPaymentHistory {
   org            Organization @relation("OrgPaymentHistoryBelongToOrg", fields: [orgId], references: [id])
   orgId          String
 
-  payAmount Int? @default(0)
+  payAmount     Int?    @default(0)
+  code          String? // Back Transfer code/ id. Payment Id,...
+  note          String?
+  attachedFiles Json?
 
   systemMethod PaymentMethodSystemType
   method       String
@@ -636,6 +639,8 @@ model OrgPaymentHistory {
 
   createdByUser User?  @relation("OrgPaymentHistoryBelongToUser", fields: [createdBy], references: [id])
   createdBy     String
+
+  @@index(fields: [code], name: "org_payment_history_code_index")
 }
 
 model CommonAttributesConfig {
