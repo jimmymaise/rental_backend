@@ -104,8 +104,8 @@ model User {
   rentingOrders                RentingOrder[]       @relation("RentingOrderBelongToCustomer")
   rentingOrderItems            RentingOrderItem[]   @relation("RentingOrderItemBelongToCustomer")
 
-  rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToCustomer")
-  orgPaymentHistories OrgPaymentHistory[]  @relation("OrgPaymentHistoryBelongToUser")
+  rentingDepositItems        RentingDepositItem[] @relation("RentingDepositItemBelongToCustomer")
+  createdOrgPaymentHistories OrgPaymentHistory[]  @relation("OrgPaymentHistoryCreatedByUser")
 }
 
 model Role {
@@ -637,7 +637,7 @@ model OrgPaymentHistory {
   updatedDate DateTime @updatedAt
   updatedBy   String
 
-  createdByUser User?  @relation("OrgPaymentHistoryBelongToUser", fields: [createdBy], references: [id])
+  createdByUser User?  @relation("OrgPaymentHistoryCreatedByUser", fields: [createdBy], references: [id])
   createdBy     String
 
   @@index(fields: [code], name: "org_payment_history_code_index")

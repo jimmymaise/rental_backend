@@ -1,0 +1,59 @@
+import { OrgPaymentHistory } from '@prisma/client';
+import { StoragePublicDTO } from '../../storages/storage-public.dto';
+import { PaymentMethodModel } from './payment-method.model';
+import { RentingOrderModel } from '../../renting-orders/models/renting-order.model';
+import { UserInfoDTO } from '../../users/user-info.dto';
+
+export class PaymentModel {
+  public id?: string;
+  public rentingOrderId: string;
+  public orgId: string;
+  public payAmount: number;
+  public code?: string;
+  public note?: string;
+  public attachedFiles?: StoragePublicDTO[];
+  public method: string;
+  public createdBy: string;
+  public updatedBy: string;
+
+  public methodDetail?: PaymentMethodModel;
+  public rentingOrderDetail?: RentingOrderModel;
+  public createdByDetail?: UserInfoDTO;
+
+  public static fromDatabase(
+    data: OrgPaymentHistory,
+    {
+      paymentMethods,
+      createdByDetail,
+    }: {
+      paymentMethods: PaymentMethodModel[];
+      createdByDetail?: UserInfoDTO;
+    } = { paymentMethods: [] },
+  ): PaymentModel {
+    let methodDetail: PaymentMethodModel;
+
+    if (paymentMethods?.length) {
+      methodDetail = paymentMethods.find((item) => item.value === data.method);
+    }
+
+    return {
+      id: data.id,
+      rentingOrderId: data.rentingOrderId,
+      orgId: data.orgId,
+      payAmount: data.payAmount,
+      code: data.code,
+      note: data.note,
+      attachedFiles: data.attachedFiles as StoragePublicDTO[],
+      method: data.method,
+      createdBy: data.createdBy,
+      updatedBy: data.updatedBy,
+      methodDetail,
+      rentingOrderDetail: RentingOrderModel.fromDatabase(
+        (data as any).rentingOrder,
+      ),
+      createdByDetail,
+    };
+  }
+}
+
+export default PaymentModel;
