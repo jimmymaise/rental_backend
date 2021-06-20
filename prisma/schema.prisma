@@ -616,6 +616,7 @@ enum PaymentMethodSystemType {
   Card
   Cash
   MobileMoney
+  Other
 }
 
 model OrgPaymentHistory {
