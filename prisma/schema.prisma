@@ -12,29 +12,31 @@ generator client {
 }
 
 model Organization {
-  id                                   String                                 @id @default(uuid())
-  name                                 String?
-  description                          String?
-  avatarImage                          Json?
-  slug                                 String?                                @unique
-  createdDate                          DateTime?                              @default(now())
-  updatedDate                          DateTime?                              @updatedAt
-  rolesThisOrgHaving                   Role[]
-  createdByUser                        User?                                  @relation("CreatedByUser", fields: [createdBy], references: [id])
-  createdBy                            String?
-  employees                            Employee[]
-  customers                            Customer[]
-  items                                Item[]                                 @relation("ItemBelongToOrg")
-  rentingOrder                         RentingOrder[]                         @relation("RentingOrderBelongToOrg")
-  rentingOrderItems                    RentingOrderItem[]                     @relation("RentingOrderItemBelongToOrg")
-  rentingDepositItems                  RentingDepositItem[]                   @relation("RentingDepositItemBelongToOrg")
-  commonAttributesConfigs              CommonAttributesConfig[]               @relation("CommonAttributesConfigBelongToOrg")
-  orgCategories                        OrgCategory[]                          @relation("OrgCategoryBelongToOrg")
-  orgDailyOrderStatistics              OrgDailyOrderStatistics[]              @relation("OrgDailyOrderStatisticsBelongToOrg")
-  orgDailyCategoryStatistics           OrgDailyCategoryStatistics[]           @relation("OrgDailyCategoryStatisticsBelongToOrg")
-  orgDailyItemStatistics               OrgDailyItemStatistics[]               @relation("OrgDailyItemStatisticsBelongToOrg")
-  OrgDailyCustomerTradeCountStatistics OrgDailyCustomerTradeCountStatistics[] @relation("OrgDailyCustomerTradeCountStatisticsBelongToOrg")
-  orgPaymentHistories                  OrgPaymentHistory[]                    @relation("OrgPaymentHistoryBelongToOrg")
+  id                                       String                                   @id @default(uuid())
+  name                                     String?
+  description                              String?
+  avatarImage                              Json?
+  slug                                     String?                                  @unique
+  createdDate                              DateTime?                                @default(now())
+  updatedDate                              DateTime?                                @updatedAt
+  rolesThisOrgHaving                       Role[]
+  createdByUser                            User?                                    @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdBy                                String?
+  employees                                Employee[]
+  customers                                Customer[]
+  items                                    Item[]                                   @relation("ItemBelongToOrg")
+  rentingOrder                             RentingOrder[]                           @relation("RentingOrderBelongToOrg")
+  rentingOrderItems                        RentingOrderItem[]                       @relation("RentingOrderItemBelongToOrg")
+  rentingDepositItems                      RentingDepositItem[]                     @relation("RentingDepositItemBelongToOrg")
+  commonAttributesConfigs                  CommonAttributesConfig[]                 @relation("CommonAttributesConfigBelongToOrg")
+  orgCategories                            OrgCategory[]                            @relation("OrgCategoryBelongToOrg")
+  orgDailyOrderStatistics                  OrgDailyOrderStatistics[]                @relation("OrgDailyOrderStatisticsBelongToOrg")
+  orgDailyCategoryStatistics               OrgDailyCategoryStatistics[]             @relation("OrgDailyCategoryStatisticsBelongToOrg")
+  orgDailyItemStatistics                   OrgDailyItemStatistics[]                 @relation("OrgDailyItemStatisticsBelongToOrg")
+  OrgDailyCustomerTradeCountStatistics     OrgDailyCustomerTradeCountStatistics[]   @relation("OrgDailyCustomerTradeCountStatisticsBelongToOrg")
+  orgPaymentHistories                      OrgPaymentHistory[]                      @relation("OrgPaymentHistoryBelongToOrg")
+  orgRentingOrderItemCompensatoryHistories OrgRentingOrderItemCompensatoryHistory[] @relation("OrgRentingOrderItemCompensatoryBelongToOrg")
+  orgRefundHistories                       OrgRefundHistory[]                       @relation("OrgRefundHistoryBelongToOrg")
 }
 
 model Employee {
@@ -104,8 +106,10 @@ model User {
   rentingOrders                RentingOrder[]       @relation("RentingOrderBelongToCustomer")
   rentingOrderItems            RentingOrderItem[]   @relation("RentingOrderItemBelongToCustomer")
 
-  rentingDepositItems        RentingDepositItem[] @relation("RentingDepositItemBelongToCustomer")
-  createdOrgPaymentHistories OrgPaymentHistory[]  @relation("OrgPaymentHistoryCreatedByUser")
+  rentingDepositItems                             RentingDepositItem[]                     @relation("RentingDepositItemBelongToCustomer")
+  createdOrgPaymentHistories                      OrgPaymentHistory[]                      @relation("OrgPaymentHistoryCreatedByUser")
+  createdOrgRefundHistories                       OrgRefundHistory[]                       @relation("OrgRefundHistoryCreatedByUser")
+  createdOrgRentingOrderItemCompensatoryHistories OrgRentingOrderItemCompensatoryHistory[] @relation("OrgRentingOrderItemCompensatoryCreatedByUser")
 }
 
 model Role {
@@ -275,6 +279,8 @@ model Item {
   rentingOrderItems      RentingOrderItem[]       @relation("RentingOrderItemBelongToItem")
   orgDailyItemStatistics OrgDailyItemStatistics[] @relation("OrgDailyItemStatisticsBelongToItem")
 
+
+  orgRentingOrderItemCompensatoryHistories OrgRentingOrderItemCompensatoryHistory[] @relation("OrgRentingOrderItemCompensatoryBelongToItem")
 
   @@index(fields: [status, isDeleted, isVerified, keyword], name: "item_main_index")
   @@index(fields: [createdDate], name: "item_created_date_index")
@@ -554,18 +560,19 @@ model RentingOrderItem {
   unitPricePerMonth Int?                         @default(0)
   attachedFiles     Json?
 
-  createdDate    DateTime     @default(now())
-  updatedDate    DateTime     @updatedAt
-  updatedBy      String
-  item           Item?        @relation("RentingOrderItemBelongToItem", fields: [itemId], references: [id])
-  itemId         String?
-  org            Organization @relation("RentingOrderItemBelongToOrg", fields: [orgId], references: [id])
-  orgId          String
-  rentingOrder   RentingOrder @relation("RentingOrderItemBelongToRentingOrder", fields: [rentingOrderId], references: [id])
-  rentingOrderId String
-  customerUser   User         @relation("RentingOrderItemBelongToCustomer", fields: [customerUserId], references: [id])
-  customerUserId String
-  order          Int?         @default(0)
+  createdDate                              DateTime                                 @default(now())
+  updatedDate                              DateTime                                 @updatedAt
+  updatedBy                                String
+  item                                     Item?                                    @relation("RentingOrderItemBelongToItem", fields: [itemId], references: [id])
+  itemId                                   String?
+  org                                      Organization                             @relation("RentingOrderItemBelongToOrg", fields: [orgId], references: [id])
+  orgId                                    String
+  rentingOrder                             RentingOrder                             @relation("RentingOrderItemBelongToRentingOrder", fields: [rentingOrderId], references: [id])
+  rentingOrderId                           String
+  customerUser                             User                                     @relation("RentingOrderItemBelongToCustomer", fields: [customerUserId], references: [id])
+  customerUserId                           String
+  order                                    Int?                                     @default(0)
+  orgRentingOrderItemCompensatoryHistories OrgRentingOrderItemCompensatoryHistory[] @relation("OrgRentingOrderItemCompensatoryBelongToRentingOrderItem")
 }
 
 enum RentingDepositItemSystemStatusType {
@@ -606,6 +613,8 @@ enum CommonAttributesType {
   RentingDepositItemStatus
   RentingDepositItemType
   PaymentMethod
+  RefundMethod
+  CompensatoryPaymentMethod
 }
 
 enum PaymentMethodSystemType {
@@ -640,7 +649,62 @@ model OrgPaymentHistory {
   createdByUser User?  @relation("OrgPaymentHistoryCreatedByUser", fields: [createdBy], references: [id])
   createdBy     String
 
+  orgRefundHistories OrgRefundHistory[] @relation("OrgRefundHistoryBelongToOrgPaymentHistory")
   @@index(fields: [code], name: "org_payment_history_code_index")
+}
+
+model OrgRefundHistory {
+  id                  String            @id @default(uuid())
+  orgPaymentHistory   OrgPaymentHistory @relation("OrgRefundHistoryBelongToOrgPaymentHistory", fields: [orgPaymentHistoryId], references: [id])
+  orgPaymentHistoryId String
+  org                 Organization      @relation("OrgRefundHistoryBelongToOrg", fields: [orgId], references: [id])
+  orgId               String
+
+  payAmount     Int?    @default(0)
+  code          String? // Back Transfer code/ id. Payment Id,...
+  note          String?
+  attachedFiles Json?
+
+  systemMethod PaymentMethodSystemType
+  method       String
+
+  createdDate DateTime @default(now())
+  updatedDate DateTime @updatedAt
+  updatedBy   String
+
+  createdByUser User?  @relation("OrgRefundHistoryCreatedByUser", fields: [createdBy], references: [id])
+  createdBy     String
+
+  @@index(fields: [code], name: "org_refund_history_code_index")
+}
+
+model OrgRentingOrderItemCompensatoryHistory {
+  id                 String           @id @default(uuid())
+  rentingOrderItem   RentingOrderItem @relation("OrgRentingOrderItemCompensatoryBelongToRentingOrderItem", fields: [rentingOrderItemId], references: [id])
+  rentingOrderItemId String
+
+  item   Item?   @relation("OrgRentingOrderItemCompensatoryBelongToItem", fields: [itemId], references: [id])
+  itemId String?
+
+  org   Organization @relation("OrgRentingOrderItemCompensatoryBelongToOrg", fields: [orgId], references: [id])
+  orgId String
+
+  payAmount     Int?    @default(0)
+  code          String? // Back Transfer code/ id. Payment Id,...
+  note          String?
+  attachedFiles Json?
+
+  systemMethod PaymentMethodSystemType
+  method       String
+
+  createdDate DateTime @default(now())
+  updatedDate DateTime @updatedAt
+  updatedBy   String
+
+  createdByUser User?  @relation("OrgRentingOrderItemCompensatoryCreatedByUser", fields: [createdBy], references: [id])
+  createdBy     String
+
+  @@index(fields: [code], name: "org_renting_order_item_compensatory_history_code_index")
 }
 
 model CommonAttributesConfig {

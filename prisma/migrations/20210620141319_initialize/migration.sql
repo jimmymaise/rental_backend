@@ -29,7 +29,10 @@ CREATE TYPE "RentingDepositItemSystemStatusType" AS ENUM ('New', 'PickedUp', 'Re
 CREATE TYPE "RentingDepositItemSystemType" AS ENUM ('Money', 'Document', 'Item', 'Other');
 
 -- CreateEnum
-CREATE TYPE "CommonAttributesType" AS ENUM ('RentingOrderStatus', 'RentingOrderItemStatus', 'RentingDepositItemStatus', 'RentingDepositItemType');
+CREATE TYPE "CommonAttributesType" AS ENUM ('RentingOrderStatus', 'RentingOrderItemStatus', 'RentingDepositItemStatus', 'RentingDepositItemType', 'PaymentMethod', 'RefundMethod', 'CompensatoryPaymentMethod');
+
+-- CreateEnum
+CREATE TYPE "PaymentMethodSystemType" AS ENUM ('PromoCode', 'RewardPoints', 'BankTransfer', 'Card', 'Cash', 'MobileMoney', 'Other');
 
 -- CreateTable
 CREATE TABLE "Organization" (
@@ -407,6 +410,7 @@ CREATE TABLE "RentingOrder" (
     "id" TEXT NOT NULL,
     "orderCustomId" TEXT,
     "orgId" TEXT NOT NULL,
+    "payAmount" INTEGER DEFAULT 0,
     "totalAmount" INTEGER DEFAULT 0,
     "note" TEXT,
     "customerUserId" TEXT NOT NULL,
@@ -468,6 +472,64 @@ CREATE TABLE "RentingDepositItem" (
 );
 
 -- CreateTable
+CREATE TABLE "OrgPaymentHistory" (
+    "id" TEXT NOT NULL,
+    "rentingOrderId" TEXT NOT NULL,
+    "orgId" TEXT NOT NULL,
+    "payAmount" INTEGER DEFAULT 0,
+    "code" TEXT,
+    "note" TEXT,
+    "attachedFiles" JSONB,
+    "systemMethod" "PaymentMethodSystemType" NOT NULL,
+    "method" TEXT NOT NULL,
+    "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedDate" TIMESTAMP(3) NOT NULL,
+    "updatedBy" TEXT NOT NULL,
+    "createdBy" TEXT NOT NULL,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "OrgRefundHistory" (
+    "id" TEXT NOT NULL,
+    "orgPaymentHistoryId" TEXT NOT NULL,
+    "orgId" TEXT NOT NULL,
+    "payAmount" INTEGER DEFAULT 0,
+    "code" TEXT,
+    "note" TEXT,
+    "attachedFiles" JSONB,
+    "systemMethod" "PaymentMethodSystemType" NOT NULL,
+    "method" TEXT NOT NULL,
+    "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedDate" TIMESTAMP(3) NOT NULL,
+    "updatedBy" TEXT NOT NULL,
+    "createdBy" TEXT NOT NULL,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "OrgRentingOrderItemCompensatoryHistory" (
+    "id" TEXT NOT NULL,
+    "rentingOrderItemId" TEXT NOT NULL,
+    "itemId" TEXT,
+    "orgId" TEXT NOT NULL,
+    "payAmount" INTEGER DEFAULT 0,
+    "code" TEXT,
+    "note" TEXT,
+    "attachedFiles" JSONB,
+    "systemMethod" "PaymentMethodSystemType" NOT NULL,
+    "method" TEXT NOT NULL,
+    "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedDate" TIMESTAMP(3) NOT NULL,
+    "updatedBy" TEXT NOT NULL,
+    "createdBy" TEXT NOT NULL,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "CommonAttributesConfig" (
     "description" TEXT,
     "value" TEXT NOT NULL,
@@ -501,6 +563,60 @@ CREATE TABLE "OrgCategory" (
     "seoDescription" TEXT,
     "orgId" TEXT NOT NULL,
     "categoryId" TEXT,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "OrgDailyOrderStatistics" (
+    "entryDateTime" TIMESTAMP(3) NOT NULL,
+    "orgId" TEXT NOT NULL,
+    "rentingOrderAmount" INTEGER DEFAULT 0,
+    "rentingNewOrderCount" INTEGER DEFAULT 0,
+    "rentingReservedOrderCount" INTEGER DEFAULT 0,
+    "rentingPickedUpOrderCount" INTEGER DEFAULT 0,
+    "rentingReturnedUpOrderCount" INTEGER DEFAULT 0,
+    "rentingCancelledOrderCount" INTEGER DEFAULT 0,
+
+    PRIMARY KEY ("entryDateTime")
+);
+
+-- CreateTable
+CREATE TABLE "OrgDailyCategoryStatistics" (
+    "entryDateTime" TIMESTAMP(3) NOT NULL,
+    "orgId" TEXT NOT NULL,
+    "orgCategoryId" TEXT,
+    "newRentingOrderCount" INTEGER DEFAULT 0,
+    "cancelledRentingOrderCount" INTEGER DEFAULT 0,
+    "viewCount" INTEGER DEFAULT 0,
+    "amount" INTEGER DEFAULT 0,
+
+    PRIMARY KEY ("entryDateTime")
+);
+
+-- CreateTable
+CREATE TABLE "OrgDailyItemStatistics" (
+    "entryDateTime" TIMESTAMP(3) NOT NULL,
+    "orgId" TEXT NOT NULL,
+    "itemId" TEXT NOT NULL,
+    "newRentingOrderCount" INTEGER DEFAULT 0,
+    "cancelledRentingOrderCount" INTEGER DEFAULT 0,
+    "viewCount" INTEGER DEFAULT 0,
+    "amount" INTEGER DEFAULT 0,
+    "debtAmount" INTEGER DEFAULT 0,
+    "payAmount" INTEGER DEFAULT 0,
+
+    PRIMARY KEY ("entryDateTime")
+);
+
+-- CreateTable
+CREATE TABLE "OrgDailyCustomerTradeCountStatistics" (
+    "id" TEXT NOT NULL,
+    "entryDateTime" TIMESTAMP(3) NOT NULL,
+    "startTime" INTEGER NOT NULL,
+    "endTime" INTEGER NOT NULL,
+    "customerCount" INTEGER NOT NULL,
+    "orgId" TEXT NOT NULL,
 
     PRIMARY KEY ("id")
 );
@@ -635,6 +751,15 @@ CREATE UNIQUE INDEX "ChatMessage_replyToId_unique" ON "ChatMessage"("replyToId")
 CREATE INDEX "selling_order_status_index" ON "RentingOrder"("orgId", "status");
 
 -- CreateIndex
+CREATE INDEX "org_payment_history_code_index" ON "OrgPaymentHistory"("code");
+
+-- CreateIndex
+CREATE INDEX "org_refund_history_code_index" ON "OrgRefundHistory"("code");
+
+-- CreateIndex
+CREATE INDEX "org_renting_order_item_compensatory_history_code_index" ON "OrgRentingOrderItemCompensatoryHistory"("code");
+
+-- CreateIndex
 CREATE INDEX "common_attributes_org_type_index" ON "CommonAttributesConfig"("orgId", "type");
 
 -- CreateIndex
@@ -645,6 +770,9 @@ CREATE INDEX "common_attributes_map_system_value_index" ON "CommonAttributesConf
 
 -- CreateIndex
 CREATE UNIQUE INDEX "OrgCategory.orgId_slug_unique" ON "OrgCategory"("orgId", "slug");
+
+-- CreateIndex
+CREATE INDEX "org_daily_customer_trade_count_statistics_entry_date_time_index" ON "OrgDailyCustomerTradeCountStatistics"("entryDateTime");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_EmployeeToRole_AB_unique" ON "_EmployeeToRole"("A", "B");
@@ -773,6 +901,36 @@ ALTER TABLE "RentingDepositItem" ADD FOREIGN KEY ("orgId") REFERENCES "Organizat
 ALTER TABLE "RentingDepositItem" ADD FOREIGN KEY ("customerUserId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "OrgPaymentHistory" ADD FOREIGN KEY ("rentingOrderId") REFERENCES "RentingOrder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgPaymentHistory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgPaymentHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgRefundHistory" ADD FOREIGN KEY ("orgPaymentHistoryId") REFERENCES "OrgPaymentHistory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgRefundHistory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgRefundHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgRentingOrderItemCompensatoryHistory" ADD FOREIGN KEY ("rentingOrderItemId") REFERENCES "RentingOrderItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgRentingOrderItemCompensatoryHistory" ADD FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgRentingOrderItemCompensatoryHistory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgRentingOrderItemCompensatoryHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "CommonAttributesConfig" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -780,6 +938,24 @@ ALTER TABLE "OrgCategory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("i
 
 -- AddForeignKey
 ALTER TABLE "OrgCategory" ADD FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgDailyOrderStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgDailyCategoryStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgDailyCategoryStatistics" ADD FOREIGN KEY ("orgCategoryId") REFERENCES "OrgCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgDailyItemStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgDailyItemStatistics" ADD FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgDailyCustomerTradeCountStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_EmployeeToRole" ADD FOREIGN KEY ("A") REFERENCES "Employee"("id") ON DELETE CASCADE ON UPDATE CASCADE;
