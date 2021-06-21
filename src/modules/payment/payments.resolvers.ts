@@ -5,7 +5,14 @@ import { PaymentsService } from './payments.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
-import { PaymentMethodCreateModel, PaymentMethodModel } from './models';
+import {
+  PaymentMethodCreateModel,
+  PaymentMethodModel,
+  RefundCreateModel,
+  PaymentCreateModel,
+  TransactionModel,
+  TransactionCreateModel,
+} from './models';
 
 @Resolver('Payment')
 export class PaymentsResolvers {
@@ -58,7 +65,21 @@ export class PaymentsResolvers {
   }
 
   @Mutation()
-  @Permissions(Permission.ORG_MASTER, Permission.DELETE_ORG_PAYMENT_METHOD)
+  @Permissions(Permission.ORG_MASTER, Permission.CREATE_PAYMENT_TRANSACTION)
+  @UseGuards(GqlAuthGuard)
+  async createPayment(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: PaymentCreateModel,
+  ): Promise<TransactionModel> {
+    return this.paymentsService.createTransaction(
+      TransactionCreateModel.fromPaymentCreateModel(data),
+      user.currentOrgId,
+      user.userId,
+    );
+  }
+
+  @Mutation()
+  @Permissions(Permission.ORG_MASTER)
   @UseGuards(GqlAuthGuard)
   async deletePaymentMethod(
     @CurrentUser() user: GuardUserPayload,

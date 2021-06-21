@@ -479,8 +479,8 @@ CREATE TABLE "RentingDepositItem" (
 -- CreateTable
 CREATE TABLE "OrgTransactionHistory" (
     "id" TEXT NOT NULL,
-    "rentingOrderId" TEXT NOT NULL,
     "orgId" TEXT NOT NULL,
+    "refundToTransactionId" TEXT,
     "payAmount" INTEGER DEFAULT 0,
     "refId" TEXT,
     "note" TEXT,
@@ -491,29 +491,30 @@ CREATE TABLE "OrgTransactionHistory" (
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3) NOT NULL,
     "updatedBy" TEXT NOT NULL,
-    "createdBy" TEXT NOT NULL,
+    "createdBy" TEXT,
+    "transactionOwner" TEXT,
+    "rentingOrderId" TEXT,
 
     PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "OrgRentingOrderItemDamagesPaymentHistory" (
-    "id" TEXT NOT NULL,
+CREATE TABLE "OrgRentingOrderItemTransactionHistory" (
     "rentingOrderItemId" TEXT NOT NULL,
     "itemId" TEXT,
-    "orgId" TEXT NOT NULL,
-    "payAmount" INTEGER DEFAULT 0,
-    "code" TEXT,
-    "note" TEXT,
-    "attachedFiles" JSONB,
-    "systemMethod" "PaymentMethodSystemType" NOT NULL,
-    "method" TEXT NOT NULL,
-    "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedDate" TIMESTAMP(3) NOT NULL,
-    "updatedBy" TEXT NOT NULL,
-    "createdBy" TEXT NOT NULL,
+    "type" TEXT,
+    "orgTransactionHistoryId" TEXT NOT NULL,
 
-    PRIMARY KEY ("id")
+    PRIMARY KEY ("rentingOrderItemId","orgTransactionHistoryId")
+);
+
+-- CreateTable
+CREATE TABLE "OrgRentingOrderTransactionHistory" (
+    "rentingOrderId" TEXT NOT NULL,
+    "type" TEXT,
+    "orgTransactionHistoryId" TEXT NOT NULL,
+
+    PRIMARY KEY ("rentingOrderId","orgTransactionHistoryId")
 );
 
 -- CreateTable
@@ -747,10 +748,10 @@ CREATE UNIQUE INDEX "ChatMessage_replyToId_unique" ON "ChatMessage"("replyToId")
 CREATE INDEX "selling_order_status_index" ON "RentingOrder"("orgId", "status");
 
 -- CreateIndex
-CREATE INDEX "org_payment_history_ref_id_index" ON "OrgTransactionHistory"("refId");
+CREATE INDEX "org_transaction_ref_id_index" ON "OrgTransactionHistory"("refId");
 
 -- CreateIndex
-CREATE INDEX "org_renting_order_item_damages_history_code_index" ON "OrgRentingOrderItemDamagesPaymentHistory"("code");
+CREATE INDEX "org_transaction_refund_to_transaction_id_index" ON "OrgTransactionHistory"("refundToTransactionId");
 
 -- CreateIndex
 CREATE INDEX "common_attributes_org_type_index" ON "CommonAttributesConfig"("orgId", "type");
@@ -900,25 +901,31 @@ ALTER TABLE "RentingDepositItem" ADD FOREIGN KEY ("orgId") REFERENCES "Organizat
 ALTER TABLE "RentingDepositItem" ADD FOREIGN KEY ("customerUserId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("rentingOrderId") REFERENCES "RentingOrder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgRentingOrderItemDamagesPaymentHistory" ADD FOREIGN KEY ("rentingOrderItemId") REFERENCES "RentingOrderItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("transactionOwner") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgRentingOrderItemDamagesPaymentHistory" ADD FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("rentingOrderId") REFERENCES "RentingOrder"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgRentingOrderItemDamagesPaymentHistory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgRentingOrderItemTransactionHistory" ADD FOREIGN KEY ("rentingOrderItemId") REFERENCES "RentingOrderItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgRentingOrderItemDamagesPaymentHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgRentingOrderItemTransactionHistory" ADD FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgRentingOrderItemTransactionHistory" ADD FOREIGN KEY ("itemId") REFERENCES "OrgTransactionHistory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgRentingOrderTransactionHistory" ADD FOREIGN KEY ("rentingOrderId") REFERENCES "RentingOrder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgRentingOrderTransactionHistory" ADD FOREIGN KEY ("orgTransactionHistoryId") REFERENCES "OrgTransactionHistory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrgActivityLog" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;

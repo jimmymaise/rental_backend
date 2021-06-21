@@ -4,7 +4,7 @@ import { PaymentMethodModel } from './payment-method.model';
 import { RentingOrderModel } from '../../renting-orders/models/renting-order.model';
 import { UserInfoDTO } from '../../users/user-info.dto';
 
-export class PaymentModel {
+export class TransactionModel {
   public id?: string;
   public rentingOrderId: string;
   public orgId: string;
@@ -15,6 +15,8 @@ export class PaymentModel {
   public method: string;
   public createdBy: string;
   public updatedBy: string;
+  public type: string;
+  public refundToTransactionId?: string;
 
   public methodDetail?: PaymentMethodModel;
   public rentingOrderDetail?: RentingOrderModel;
@@ -29,7 +31,7 @@ export class PaymentModel {
       paymentMethods: PaymentMethodModel[];
       createdByDetail?: UserInfoDTO;
     } = { paymentMethods: [] },
-  ): PaymentModel {
+  ): TransactionModel {
     let methodDetail: PaymentMethodModel;
 
     if (paymentMethods?.length) {
@@ -51,9 +53,11 @@ export class PaymentModel {
       rentingOrderDetail: RentingOrderModel.fromDatabase(
         (data as any).rentingOrder,
       ),
+      refundToTransactionId: data.refundToTransactionId,
+      type: data.type,
       createdByDetail,
     };
   }
 }
 
-export default PaymentModel;
+export default TransactionModel;

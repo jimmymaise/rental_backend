@@ -10,7 +10,8 @@ import {
   PaymentMethodModel,
   PaymentMethodCreateModel,
   PaymentCreateModel,
-  PaymentModel,
+  TransactionModel,
+  TransactionCreateModel,
 } from './models';
 import { PaymentMethodSystemTypeTypes } from './constants/payment-method-system-type-types';
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
@@ -105,19 +106,21 @@ export class PaymentsService {
     return PaymentMethodModel.fromCommonAttributesConfig(result);
   }
 
-  async createPayment(
+  async createTransaction(
     {
       rentingOrderId,
-      orgId,
       payAmount,
       refId,
       note,
       attachedFiles,
       method,
-    }: PaymentCreateModel,
+      type,
+      refundToTransactionId,
+    }: TransactionCreateModel,
+    orgId,
     userId: string,
     include?: any,
-  ): Promise<PaymentModel> {
+  ): Promise<TransactionModel> {
     const paymentMethods = await this.getAllPaymentMethods(orgId);
     const paymentMethodDetail = paymentMethods.find(
       (item) => item.value === method,
@@ -140,7 +143,8 @@ export class PaymentsService {
             id: orgId,
           },
         },
-        type: TransactionType.Pay,
+        type,
+        refundToTransactionId,
         systemMethod: paymentMethodDetail.mapWithSystemPaymentMethod
           .value as PaymentMethodSystemType,
         createdByUser: {
@@ -155,7 +159,7 @@ export class PaymentsService {
 
     const createdByDetail = await this.usersService.getUserDetailData(userId);
 
-    return PaymentModel.fromDatabase(result, {
+    return TransactionModel.fromDatabase(result, {
       paymentMethods,
       createdByDetail,
     });

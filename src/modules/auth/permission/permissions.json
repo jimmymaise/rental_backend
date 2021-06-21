@@ -196,5 +196,11 @@
     "description": "",
     "isInternal": false,
     "order": 87
+  },
+  "CREATE_PAYMENT_TRANSACTION": {
+    "name": "CREATE_PAYMENT_TRANSACTION",
+    "description": "",
+    "isInternal": false,
+    "order": 88
   }
 }

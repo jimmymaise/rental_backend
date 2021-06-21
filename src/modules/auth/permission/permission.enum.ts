@@ -48,6 +48,8 @@ export const Permission = {
   UPDATE_ORG_PAYMENT_METHOD: permissions.UPDATE_ORG_PAYMENT_METHOD.name,
   DELETE_ORG_PAYMENT_METHOD: permissions.DELETE_ORG_PAYMENT_METHOD.name,
   CREATE_ORG_PAYMENT_METHOD: permissions.CREATE_ORG_PAYMENT_METHOD.name,
+
+  CREATE_PAYMENT_TRANSACTION: permissions.CREATE_PAYMENT_TRANSACTION.name,
 };
 
 export default Permission;
