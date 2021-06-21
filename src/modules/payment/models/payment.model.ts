@@ -1,4 +1,4 @@
-import { OrgPaymentHistory } from '@prisma/client';
+import { OrgTransactionHistory } from '@prisma/client';
 import { StoragePublicDTO } from '../../storages/storage-public.dto';
 import { PaymentMethodModel } from './payment-method.model';
 import { RentingOrderModel } from '../../renting-orders/models/renting-order.model';
@@ -9,7 +9,7 @@ export class PaymentModel {
   public rentingOrderId: string;
   public orgId: string;
   public payAmount: number;
-  public code?: string;
+  public refId?: string;
   public note?: string;
   public attachedFiles?: StoragePublicDTO[];
   public method: string;
@@ -21,7 +21,7 @@ export class PaymentModel {
   public createdByDetail?: UserInfoDTO;
 
   public static fromDatabase(
-    data: OrgPaymentHistory,
+    data: OrgTransactionHistory,
     {
       paymentMethods,
       createdByDetail,
@@ -41,7 +41,7 @@ export class PaymentModel {
       rentingOrderId: data.rentingOrderId,
       orgId: data.orgId,
       payAmount: data.payAmount,
-      code: data.code,
+      refId: data.refId,
       note: data.note,
       attachedFiles: data.attachedFiles as StoragePublicDTO[],
       method: data.method,

@@ -29,10 +29,13 @@ CREATE TYPE "RentingDepositItemSystemStatusType" AS ENUM ('New', 'PickedUp', 'Re
 CREATE TYPE "RentingDepositItemSystemType" AS ENUM ('Money', 'Document', 'Item', 'Other');
 
 -- CreateEnum
-CREATE TYPE "CommonAttributesType" AS ENUM ('RentingOrderStatus', 'RentingOrderItemStatus', 'RentingDepositItemStatus', 'RentingDepositItemType', 'PaymentMethod', 'RefundMethod', 'CompensatoryPaymentMethod');
+CREATE TYPE "CommonAttributesType" AS ENUM ('RentingOrderStatus', 'RentingOrderItemStatus', 'RentingDepositItemStatus', 'RentingDepositItemType', 'PaymentMethod');
 
 -- CreateEnum
 CREATE TYPE "PaymentMethodSystemType" AS ENUM ('PromoCode', 'RewardPoints', 'BankTransfer', 'Card', 'Cash', 'MobileMoney', 'Other');
+
+-- CreateEnum
+CREATE TYPE "TransactionType" AS ENUM ('Pay', 'Refund');
 
 -- CreateTable
 CREATE TABLE "Organization" (
@@ -280,11 +283,11 @@ CREATE TABLE "RentingItemRequest" (
 CREATE TABLE "ItemReview" (
     "id" TEXT NOT NULL,
     "itemId" TEXT NOT NULL,
-    "rentingRequestId" TEXT,
+    "refId" TEXT,
     "reviewScore" INTEGER NOT NULL,
     "reviewComment" TEXT,
-    "images" TEXT,
-    "ownerUserId" TEXT NOT NULL,
+    "attachedFiles" JSONB,
+    "createdBy" TEXT NOT NULL,
     "isDeleted" BOOLEAN DEFAULT false,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3) NOT NULL,
@@ -297,14 +300,16 @@ CREATE TABLE "ItemReview" (
 CREATE TABLE "UserReview" (
     "id" TEXT NOT NULL,
     "toUserId" TEXT NOT NULL,
-    "rentingRequestId" TEXT,
+    "refId" TEXT,
     "reviewScore" INTEGER NOT NULL,
     "reviewComment" TEXT,
-    "ownerUserId" TEXT NOT NULL,
+    "createdBy" TEXT NOT NULL,
+    "createdByOrgId" TEXT,
     "isDeleted" BOOLEAN DEFAULT false,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3) NOT NULL,
     "updatedBy" TEXT NOT NULL,
+    "userId" TEXT,
 
     PRIMARY KEY ("id")
 );
@@ -472,16 +477,17 @@ CREATE TABLE "RentingDepositItem" (
 );
 
 -- CreateTable
-CREATE TABLE "OrgPaymentHistory" (
+CREATE TABLE "OrgTransactionHistory" (
     "id" TEXT NOT NULL,
     "rentingOrderId" TEXT NOT NULL,
     "orgId" TEXT NOT NULL,
     "payAmount" INTEGER DEFAULT 0,
-    "code" TEXT,
+    "refId" TEXT,
     "note" TEXT,
     "attachedFiles" JSONB,
     "systemMethod" "PaymentMethodSystemType" NOT NULL,
     "method" TEXT NOT NULL,
+    "type" "TransactionType" NOT NULL,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3) NOT NULL,
     "updatedBy" TEXT NOT NULL,
@@ -491,26 +497,7 @@ CREATE TABLE "OrgPaymentHistory" (
 );
 
 -- CreateTable
-CREATE TABLE "OrgRefundHistory" (
-    "id" TEXT NOT NULL,
-    "orgPaymentHistoryId" TEXT NOT NULL,
-    "orgId" TEXT NOT NULL,
-    "payAmount" INTEGER DEFAULT 0,
-    "code" TEXT,
-    "note" TEXT,
-    "attachedFiles" JSONB,
-    "systemMethod" "PaymentMethodSystemType" NOT NULL,
-    "method" TEXT NOT NULL,
-    "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedDate" TIMESTAMP(3) NOT NULL,
-    "updatedBy" TEXT NOT NULL,
-    "createdBy" TEXT NOT NULL,
-
-    PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "OrgRentingOrderItemCompensatoryHistory" (
+CREATE TABLE "OrgRentingOrderItemDamagesPaymentHistory" (
     "id" TEXT NOT NULL,
     "rentingOrderItemId" TEXT NOT NULL,
     "itemId" TEXT,
@@ -524,6 +511,18 @@ CREATE TABLE "OrgRentingOrderItemCompensatoryHistory" (
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3) NOT NULL,
     "updatedBy" TEXT NOT NULL,
+    "createdBy" TEXT NOT NULL,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "OrgActivityLog" (
+    "id" TEXT NOT NULL,
+    "orgId" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "data" JSONB,
+    "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdBy" TEXT NOT NULL,
 
     PRIMARY KEY ("id")
@@ -718,16 +717,13 @@ CREATE INDEX "request_lender_user_index" ON "RentingItemRequest"("lenderUserId")
 CREATE INDEX "request_item_index" ON "RentingItemRequest"("itemId");
 
 -- CreateIndex
-CREATE INDEX "review_owner_user_index" ON "ItemReview"("ownerUserId");
+CREATE INDEX "review_owner_user_index" ON "ItemReview"("createdBy");
 
 -- CreateIndex
 CREATE INDEX "review_item_index" ON "ItemReview"("itemId");
 
 -- CreateIndex
-CREATE INDEX "user_review_owner_user_index" ON "UserReview"("ownerUserId");
-
--- CreateIndex
-CREATE INDEX "user_review_to_user_index" ON "UserReview"("toUserId");
+CREATE INDEX "user_review_by_user_index" ON "UserReview"("toUserId");
 
 -- CreateIndex
 CREATE INDEX "renting_request_id_index" ON "RentingItemRequestActivity"("rentingItemRequestId");
@@ -751,13 +747,10 @@ CREATE UNIQUE INDEX "ChatMessage_replyToId_unique" ON "ChatMessage"("replyToId")
 CREATE INDEX "selling_order_status_index" ON "RentingOrder"("orgId", "status");
 
 -- CreateIndex
-CREATE INDEX "org_payment_history_code_index" ON "OrgPaymentHistory"("code");
+CREATE INDEX "org_payment_history_ref_id_index" ON "OrgTransactionHistory"("refId");
 
 -- CreateIndex
-CREATE INDEX "org_refund_history_code_index" ON "OrgRefundHistory"("code");
-
--- CreateIndex
-CREATE INDEX "org_renting_order_item_compensatory_history_code_index" ON "OrgRentingOrderItemCompensatoryHistory"("code");
+CREATE INDEX "org_renting_order_item_damages_history_code_index" ON "OrgRentingOrderItemDamagesPaymentHistory"("code");
 
 -- CreateIndex
 CREATE INDEX "common_attributes_org_type_index" ON "CommonAttributesConfig"("orgId", "type");
@@ -844,13 +837,19 @@ ALTER TABLE "RentingItemRequest" ADD FOREIGN KEY ("lenderUserId") REFERENCES "Us
 ALTER TABLE "ItemReview" ADD FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ItemReview" ADD FOREIGN KEY ("ownerUserId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ItemReview" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserReview" ADD FOREIGN KEY ("toUserId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserReview" ADD FOREIGN KEY ("ownerUserId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "UserReview" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserReview" ADD FOREIGN KEY ("createdByOrgId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserReview" ADD FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RentingItemRequestActivity" ADD FOREIGN KEY ("rentingItemRequestId") REFERENCES "RentingItemRequest"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -901,34 +900,31 @@ ALTER TABLE "RentingDepositItem" ADD FOREIGN KEY ("orgId") REFERENCES "Organizat
 ALTER TABLE "RentingDepositItem" ADD FOREIGN KEY ("customerUserId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgPaymentHistory" ADD FOREIGN KEY ("rentingOrderId") REFERENCES "RentingOrder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("rentingOrderId") REFERENCES "RentingOrder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgPaymentHistory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgPaymentHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgRefundHistory" ADD FOREIGN KEY ("orgPaymentHistoryId") REFERENCES "OrgPaymentHistory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgRentingOrderItemDamagesPaymentHistory" ADD FOREIGN KEY ("rentingOrderItemId") REFERENCES "RentingOrderItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgRefundHistory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgRentingOrderItemDamagesPaymentHistory" ADD FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgRefundHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgRentingOrderItemDamagesPaymentHistory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgRentingOrderItemCompensatoryHistory" ADD FOREIGN KEY ("rentingOrderItemId") REFERENCES "RentingOrderItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgRentingOrderItemDamagesPaymentHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgRentingOrderItemCompensatoryHistory" ADD FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "OrgActivityLog" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgRentingOrderItemCompensatoryHistory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "OrgRentingOrderItemCompensatoryHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgActivityLog" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CommonAttributesConfig" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;

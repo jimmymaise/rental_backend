@@ -4,7 +4,7 @@ export interface PaymentCreateModel {
   rentingOrderId: string;
   orgId: string;
   payAmount: number;
-  code?: string;
+  refId?: string;
   note?: string;
   attachedFiles?: StoragePublicDTO[];
   method: string;

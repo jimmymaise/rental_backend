@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CommonAttributesType, PaymentMethodSystemType } from '@prisma/client';
+import {
+  CommonAttributesType,
+  PaymentMethodSystemType,
+  TransactionType,
+} from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -106,7 +110,7 @@ export class PaymentsService {
       rentingOrderId,
       orgId,
       payAmount,
-      code,
+      refId,
       note,
       attachedFiles,
       method,
@@ -119,10 +123,10 @@ export class PaymentsService {
       (item) => item.value === method,
     );
 
-    const result = await this.prismaService.orgPaymentHistory.create({
+    const result = await this.prismaService.orgTransactionHistory.create({
       data: {
         payAmount,
-        code,
+        refId,
         note,
         attachedFiles,
         method,
@@ -136,6 +140,7 @@ export class PaymentsService {
             id: orgId,
           },
         },
+        type: TransactionType.Pay,
         systemMethod: paymentMethodDetail.mapWithSystemPaymentMethod
           .value as PaymentMethodSystemType,
         createdByUser: {
