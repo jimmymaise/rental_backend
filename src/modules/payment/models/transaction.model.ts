@@ -6,7 +6,6 @@ import { UserInfoDTO } from '../../users/user-info.dto';
 
 export class TransactionModel {
   public id?: string;
-  public rentingOrderId: string;
   public orgId: string;
   public payAmount: number;
   public refId?: string;
@@ -14,9 +13,9 @@ export class TransactionModel {
   public attachedFiles?: StoragePublicDTO[];
   public method: string;
   public createdBy: string;
-  public updatedBy: string;
   public type: string;
   public refundToTransactionId?: string;
+  public transactionOwner?: string;
 
   public methodDetail?: PaymentMethodModel;
   public rentingOrderDetail?: RentingOrderModel;
@@ -40,7 +39,6 @@ export class TransactionModel {
 
     return {
       id: data.id,
-      rentingOrderId: data.rentingOrderId,
       orgId: data.orgId,
       payAmount: data.payAmount,
       refId: data.refId,
@@ -48,7 +46,6 @@ export class TransactionModel {
       attachedFiles: data.attachedFiles as StoragePublicDTO[],
       method: data.method,
       createdBy: data.createdBy,
-      updatedBy: data.updatedBy,
       methodDetail,
       rentingOrderDetail: RentingOrderModel.fromDatabase(
         (data as any).rentingOrder,
@@ -56,6 +53,7 @@ export class TransactionModel {
       refundToTransactionId: data.refundToTransactionId,
       type: data.type,
       createdByDetail,
+      transactionOwner: data.transactionOwner,
     };
   }
 }

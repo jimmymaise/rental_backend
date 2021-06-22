@@ -1,10 +1,10 @@
 import { StoragePublicDTO } from '../../storages/storage-public.dto';
 
-export interface PaymentCreateModel {
-  rentingOrderId: string;
-  payAmount: number;
-  refId?: string;
-  note?: string;
-  attachedFiles?: StoragePublicDTO[];
-  method: string;
+export class PaymentCreateModel {
+  public payAmount: number;
+  public refId?: string;
+  public note?: string;
+  public attachedFiles?: StoragePublicDTO[];
+  public method: string;
+  public transactionOwner?: string;
 }

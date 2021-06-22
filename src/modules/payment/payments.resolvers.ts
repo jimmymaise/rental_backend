@@ -12,6 +12,10 @@ import {
   PaymentCreateModel,
   TransactionModel,
   TransactionCreateModel,
+  RentingOrderItemPayTransactionCreateModel,
+  RentingOrderItemRefundTransactionCreateModel,
+  RentingOrderPayTransactionCreateModel,
+  RentingOrderRefundTransactionCreateModel,
 } from './models';
 
 @Resolver('Payment')
@@ -65,20 +69,6 @@ export class PaymentsResolvers {
   }
 
   @Mutation()
-  @Permissions(Permission.ORG_MASTER, Permission.CREATE_PAYMENT_TRANSACTION)
-  @UseGuards(GqlAuthGuard)
-  async createPayment(
-    @CurrentUser() user: GuardUserPayload,
-    @Args('data') data: PaymentCreateModel,
-  ): Promise<TransactionModel> {
-    return this.paymentsService.createTransaction(
-      TransactionCreateModel.fromPaymentCreateModel(data),
-      user.currentOrgId,
-      user.userId,
-    );
-  }
-
-  @Mutation()
   @Permissions(Permission.ORG_MASTER)
   @UseGuards(GqlAuthGuard)
   async deletePaymentMethod(
@@ -90,6 +80,75 @@ export class PaymentsResolvers {
       value,
       user.currentOrgId,
       type,
+    );
+  }
+
+  // Payment
+  @Mutation()
+  @Permissions(
+    Permission.ORG_MASTER,
+    Permission.CREATE_ORDER_PAYMENT_TRANSACTION,
+  )
+  @UseGuards(GqlAuthGuard)
+  async createOrderPaymentTransaction(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: RentingOrderPayTransactionCreateModel,
+  ): Promise<TransactionModel> {
+    return this.paymentsService.createOrderPayTransaction(
+      data,
+      user.currentOrgId,
+      user.userId,
+    );
+  }
+
+  @Mutation()
+  @Permissions(
+    Permission.ORG_MASTER,
+    Permission.CREATE_ORDER_REFUND_TRANSACTION,
+  )
+  @UseGuards(GqlAuthGuard)
+  async createOrderRefundTransaction(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: RentingOrderRefundTransactionCreateModel,
+  ): Promise<TransactionModel> {
+    return this.paymentsService.createOrderRefundTransaction(
+      data,
+      user.currentOrgId,
+      user.userId,
+    );
+  }
+
+  @Mutation()
+  @Permissions(
+    Permission.ORG_MASTER,
+    Permission.CREATE_ORDER_ITEM_PAYMENT_TRANSACTION,
+  )
+  @UseGuards(GqlAuthGuard)
+  async createOrderItemPayDamagesTransaction(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: RentingOrderItemPayTransactionCreateModel,
+  ): Promise<TransactionModel> {
+    return this.paymentsService.createOrderItemPayDamagesTransaction(
+      data,
+      user.currentOrgId,
+      user.userId,
+    );
+  }
+
+  @Mutation()
+  @Permissions(
+    Permission.ORG_MASTER,
+    Permission.CREATE_ORDER_ITEM_REFUND_TRANSACTION,
+  )
+  @UseGuards(GqlAuthGuard)
+  async createOrderItemRefundDamagesTransaction(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: RentingOrderItemRefundTransactionCreateModel,
+  ): Promise<TransactionModel> {
+    return this.paymentsService.createOrderItemRefundDamagesTransaction(
+      data,
+      user.currentOrgId,
+      user.userId,
     );
   }
 }

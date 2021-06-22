@@ -9,13 +9,17 @@ import { PrismaService } from '../prisma/prisma.service';
 import {
   PaymentMethodModel,
   PaymentMethodCreateModel,
-  PaymentCreateModel,
   TransactionModel,
   TransactionCreateModel,
+  RentingOrderItemPayTransactionCreateModel,
+  RentingOrderItemRefundTransactionCreateModel,
+  RentingOrderPayTransactionCreateModel,
+  RentingOrderRefundTransactionCreateModel,
 } from './models';
 import { PaymentMethodSystemTypeTypes } from './constants/payment-method-system-type-types';
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
 import { UsersService } from '../users/users.service';
+import { PaymentTrasactionTypes } from './constants/payment-transaction-types';
 
 @Injectable()
 export class PaymentsService {
@@ -108,7 +112,6 @@ export class PaymentsService {
 
   async createTransaction(
     {
-      rentingOrderId,
       payAmount,
       refId,
       note,
@@ -116,6 +119,7 @@ export class PaymentsService {
       method,
       type,
       refundToTransactionId,
+      transactionOwner,
     }: TransactionCreateModel,
     orgId,
     userId: string,
@@ -133,11 +137,6 @@ export class PaymentsService {
         note,
         attachedFiles,
         method,
-        rentingOrder: {
-          connect: {
-            id: rentingOrderId,
-          },
-        },
         org: {
           connect: {
             id: orgId,
@@ -152,7 +151,11 @@ export class PaymentsService {
             id: userId,
           },
         },
-        updatedBy: userId,
+        transactionOwnerUser: {
+          connect: {
+            id: transactionOwner,
+          },
+        },
       },
       include,
     });
@@ -163,5 +166,161 @@ export class PaymentsService {
       paymentMethods,
       createdByDetail,
     });
+  }
+
+  async createOrderPayTransaction(
+    data: RentingOrderPayTransactionCreateModel,
+    orgId: string,
+    userId: string,
+  ): Promise<TransactionModel> {
+    const transactionHistory = await this.createTransaction(
+      TransactionCreateModel.fromRentingOrderPayTransactionCreateModel(data),
+      orgId,
+      userId,
+    );
+
+    await this.prismaService.orgRentingOrderTransactionHistory.create({
+      data: {
+        orgTransactionHistory: {
+          connect: {
+            id: transactionHistory.id,
+          },
+        },
+        rentingOrder: {
+          connect: {
+            id: data.rentingOrderId,
+          },
+        },
+        type: PaymentTrasactionTypes.PayForRentingOrder,
+      },
+    });
+
+    await this.prismaService.rentingOrder.update({
+      where: {
+        id: data.rentingOrderId,
+      },
+      data: {
+        payAmount: {
+          increment: data.payAmount,
+        },
+      },
+    });
+
+    return transactionHistory;
+  }
+
+  async createOrderRefundTransaction(
+    data: RentingOrderRefundTransactionCreateModel,
+    orgId: string,
+    userId: string,
+  ): Promise<TransactionModel> {
+    const transactionHistory = await this.createTransaction(
+      TransactionCreateModel.fromRentingOrderRefundTransactionCreateModel(data),
+      orgId,
+      userId,
+    );
+
+    await this.prismaService.orgRentingOrderTransactionHistory.create({
+      data: {
+        orgTransactionHistory: {
+          connect: {
+            id: transactionHistory.id,
+          },
+        },
+        rentingOrder: {
+          connect: {
+            id: data.rentingOrderId,
+          },
+        },
+        type: PaymentTrasactionTypes.RefundForRentingOrder,
+      },
+    });
+
+    await this.prismaService.rentingOrder.update({
+      where: {
+        id: data.rentingOrderId,
+      },
+      data: {
+        payAmount: {
+          decrement: data.payAmount,
+        },
+      },
+    });
+
+    return transactionHistory;
+  }
+
+  async createOrderItemPayDamagesTransaction(
+    data: RentingOrderItemPayTransactionCreateModel,
+    orgId: string,
+    userId: string,
+  ): Promise<TransactionModel> {
+    const transactionHistory = await this.createTransaction(
+      TransactionCreateModel.fromRentingOrderItemPayTransactionCreateModel(
+        data,
+      ),
+      orgId,
+      userId,
+    );
+
+    await this.prismaService.orgRentingOrderItemTransactionHistory.create({
+      data: {
+        orgTransactionHistory: {
+          connect: {
+            id: transactionHistory.id,
+          },
+        },
+        rentingOrderItem: {
+          connect: {
+            id: data.rentingOrderItemId,
+          },
+        },
+        item: {
+          connect: {
+            id: data.itemId,
+          },
+        },
+        type: PaymentTrasactionTypes.PayDamagesForRentingOrder,
+      },
+    });
+
+    return transactionHistory;
+  }
+
+  async createOrderItemRefundDamagesTransaction(
+    data: RentingOrderItemRefundTransactionCreateModel,
+    orgId: string,
+    userId: string,
+  ): Promise<TransactionModel> {
+    const transactionHistory = await this.createTransaction(
+      TransactionCreateModel.fromRentingOrderItemRefundTransactionCreateModel(
+        data,
+      ),
+      orgId,
+      userId,
+    );
+
+    await this.prismaService.orgRentingOrderItemTransactionHistory.create({
+      data: {
+        orgTransactionHistory: {
+          connect: {
+            id: transactionHistory.id,
+          },
+        },
+        rentingOrderItem: {
+          connect: {
+            id: data.rentingOrderItemId,
+          },
+        },
+        item: {
+          connect: {
+            id: data.itemId,
+          },
+        },
+        type: PaymentTrasactionTypes.RefundDamagesForRentingOrder,
+      },
+    });
+
+    return transactionHistory;
   }
 }

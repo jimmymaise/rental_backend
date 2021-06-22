@@ -5,3 +5,7 @@ export * from './transaction.model';
 export * from './transaction-create.model';
 export * from './payment-create.model';
 export * from './refund-create.model';
+export * from './renting-order-item-pay-transaction-create.model';
+export * from './renting-order-item-refund-transaction-create.model';
+export * from './renting-order-pay-transaction-create.model';
+export * from './renting-order-refund-transaction-create.model';

@@ -671,6 +671,9 @@ model OrgTransactionHistory {
 }
 
 model OrgRentingOrderItemTransactionHistory {
+  orgTransactionHistory   OrgTransactionHistory? @relation("OrgRentingOrderItemTransactionHistoryBelongToOrgTransactionHistory", fields: [orgTransactionHistoryId], references: [id])
+  orgTransactionHistoryId String                 @id
+
   rentingOrderItem   RentingOrderItem @relation("OrgRentingOrderItemTransactionBelongToRentingOrderItem", fields: [rentingOrderItemId], references: [id])
   rentingOrderItemId String
 
@@ -679,22 +682,19 @@ model OrgRentingOrderItemTransactionHistory {
 
   type String?
 
-  orgTransactionHistory   OrgTransactionHistory? @relation("OrgRentingOrderItemTransactionHistoryBelongToOrgTransactionHistory", fields: [itemId], references: [id])
-  orgTransactionHistoryId String
-
-  @@id([rentingOrderItemId, orgTransactionHistoryId])
+  @@index(fields: [type], name: "org_renting_order_item_transaction_history_type")
 }
 
 model OrgRentingOrderTransactionHistory {
+  orgTransactionHistory   OrgTransactionHistory? @relation("OrgRentingOrderTransactionHistoryBelongToOrgTransactionHistory", fields: [orgTransactionHistoryId], references: [id])
+  orgTransactionHistoryId String                 @id
+
   rentingOrder   RentingOrder @relation("OrgRentingOrderTransactionBelongToRentingOrder", fields: [rentingOrderId], references: [id])
   rentingOrderId String
 
   type String?
 
-  orgTransactionHistory   OrgTransactionHistory? @relation("OrgRentingOrderTransactionHistoryBelongToOrgTransactionHistory", fields: [orgTransactionHistoryId], references: [id])
-  orgTransactionHistoryId String
-
-  @@id([rentingOrderId, orgTransactionHistoryId])
+  @@index(fields: [type], name: "org_renting_order_transaction_history_type")
 }
 
 model OrgActivityLog {

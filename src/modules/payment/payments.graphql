@@ -8,6 +8,23 @@ type PaymentMethod {
   order: Int
 }
 
+type TransactionHistory {
+  id: String!
+  orgId: String
+  payAmount: Float
+  refId: String
+  note: String
+  attachedFiles: [PublicStorageFile]
+  method: String
+  createdBy: String
+  type: String
+  refundToTransactionId: String
+  methodDetail: PaymentMethod
+  createdByDetail: UserInfo
+  transactionOwner: String
+}
+
+# PaymentMethod
 input PaymentMethodCreateInput {
   value: String!
   label: String!
@@ -25,10 +42,67 @@ input PaymentMethodEditInput {
   order: Int
 }
 
+# Transaction
+input RentingOrderPayTransactionCreateModel {
+  payAmount: Float!
+  refId: String
+  note: String
+  attachedFiles: [PublicStorageFileInput]
+  method: String!
+  transactionOwner: String!
+  rentingOrderId: String!
+}
+
+input RentingOrderRefundTransactionCreateModel {
+  payAmount: Float!
+  refId: String
+  note: String
+  attachedFiles: [PublicStorageFileInput]
+  method: String!
+  transactionOwner: String!
+  rentingOrderId: String!
+  refundToTransactionId: String!
+}
+
+input RentingOrderItemPayTransactionCreateModel {
+  payAmount: Float!
+  refId: String
+  note: String
+  attachedFiles: [PublicStorageFileInput]
+  method: String!
+  transactionOwner: String!
+  rentingOrderItemId: String!
+  itemId: String!
+}
+
+input RentingOrderItemRefundTransactionCreateModel {
+  payAmount: Float!
+  refId: String
+  note: String
+  attachedFiles: [PublicStorageFileInput]
+  method: String!
+  transactionOwner: String!
+  refundToTransactionId: String!
+  rentingOrderItemId: String!
+  itemId: String!
+}
+
 type Mutation {
   createPaymentMethod(data: PaymentMethodCreateInput!): PaymentMethod
   updatePaymentMethod(value: ID!, data: PaymentMethodEditInput!): PaymentMethod
   deletePaymentMethod(id: ID!): PaymentMethod
+  createOrderPaymentTransaction(
+    data: RentingOrderPayTransactionCreateModel!
+  ): TransactionHistory
+  createOrderRefundTransaction(
+    data: RentingOrderRefundTransactionCreateModel!
+  ): TransactionHistory
+  createOrderItemPayDamagesTransaction(
+    data: RentingOrderItemPayTransactionCreateModel!
+  ): TransactionHistory
+  createOrderItemRefundDamagesTransaction(
+    data: RentingOrderItemRefundTransactionCreateModel!
+  ): TransactionHistory
 }
 
 type Query {
