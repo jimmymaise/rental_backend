@@ -8,15 +8,15 @@ import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
 import {
   PaymentMethodCreateModel,
   PaymentMethodModel,
-  RefundCreateModel,
-  PaymentCreateModel,
   TransactionModel,
-  TransactionCreateModel,
   RentingOrderItemPayTransactionCreateModel,
   RentingOrderItemRefundTransactionCreateModel,
   RentingOrderPayTransactionCreateModel,
   RentingOrderRefundTransactionCreateModel,
+  RentingOrderTransactionModel,
+  RentingOrderItemTransactionModel,
 } from './models';
+import { PaymentTransactionTypes } from './constants/payment-transaction-types';
 
 @Resolver('Payment')
 export class PaymentsResolvers {
@@ -87,7 +87,7 @@ export class PaymentsResolvers {
   @Mutation()
   @Permissions(
     Permission.ORG_MASTER,
-    Permission.CREATE_ORDER_PAYMENT_TRANSACTION,
+    Permission.CREATE_PAYMENT_TRANSACTION_HISTORY,
   )
   @UseGuards(GqlAuthGuard)
   async createOrderPaymentTransaction(
@@ -104,7 +104,7 @@ export class PaymentsResolvers {
   @Mutation()
   @Permissions(
     Permission.ORG_MASTER,
-    Permission.CREATE_ORDER_REFUND_TRANSACTION,
+    Permission.CREATE_PAYMENT_TRANSACTION_HISTORY,
   )
   @UseGuards(GqlAuthGuard)
   async createOrderRefundTransaction(
@@ -121,7 +121,7 @@ export class PaymentsResolvers {
   @Mutation()
   @Permissions(
     Permission.ORG_MASTER,
-    Permission.CREATE_ORDER_ITEM_PAYMENT_TRANSACTION,
+    Permission.CREATE_PAYMENT_TRANSACTION_HISTORY,
   )
   @UseGuards(GqlAuthGuard)
   async createOrderItemPayDamagesTransaction(
@@ -138,7 +138,7 @@ export class PaymentsResolvers {
   @Mutation()
   @Permissions(
     Permission.ORG_MASTER,
-    Permission.CREATE_ORDER_ITEM_REFUND_TRANSACTION,
+    Permission.CREATE_PAYMENT_TRANSACTION_HISTORY,
   )
   @UseGuards(GqlAuthGuard)
   async createOrderItemRefundDamagesTransaction(
@@ -150,5 +150,41 @@ export class PaymentsResolvers {
       user.currentOrgId,
       user.userId,
     );
+  }
+
+  @Query()
+  @Permissions(
+    Permission.ORG_MASTER,
+    Permission.GET_PAYMENT_TRANSACTION_HISTORY,
+  )
+  @UseGuards(GqlAuthGuard)
+  async feedAllRentingOrderTransactions(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('rentingOrderId') rentingOrderId: string,
+    @Args('type') type: string,
+  ): Promise<RentingOrderTransactionModel[]> {
+    return this.paymentsService.getAllPaymentTransactionForRentingOrder({
+      orgId: user.currentOrgId,
+      rentingOrderId: rentingOrderId,
+      type: type as PaymentTransactionTypes,
+    });
+  }
+
+  @Query()
+  @Permissions(
+    Permission.ORG_MASTER,
+    Permission.GET_PAYMENT_TRANSACTION_HISTORY,
+  )
+  @UseGuards(GqlAuthGuard)
+  async feedAllRentingOrderItemTransactions(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('rentingOrderItemId') rentingOrderItemId: string,
+    @Args('type') type: string,
+  ): Promise<RentingOrderItemTransactionModel[]> {
+    return this.paymentsService.getAllPaymentTransactionForRentingOrderItem({
+      orgId: user.currentOrgId,
+      rentingOrderItemId,
+      type: type as PaymentTransactionTypes,
+    });
   }
 }

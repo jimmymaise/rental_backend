@@ -1,6 +1,4 @@
-export enum PaymentTrasactionTypes {
-  PayForRentingOrder = 'PayForRentingOrder',
-  RefundForRentingOrder = 'RefundForRentingOrder',
-  PayDamagesForRentingOrder = 'PayDamagesForRentingOrder',
-  RefundDamagesForRentingOrder = 'RefundDamagesForRentingOrder',
+export enum PaymentTransactionTypes {
+  PaymentForRentingOrder = 'PaymentForRentingOrder',
+  PaymentForDamagesOfRentingOrderItem = 'PaymentForDamagesOfRentingOrderItem',
 }

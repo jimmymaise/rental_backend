@@ -9,3 +9,5 @@ export * from './renting-order-item-pay-transaction-create.model';
 export * from './renting-order-item-refund-transaction-create.model';
 export * from './renting-order-pay-transaction-create.model';
 export * from './renting-order-refund-transaction-create.model';
+export * from './renting-order-item-transaction.model';
+export * from './renting-order-transaction.model';

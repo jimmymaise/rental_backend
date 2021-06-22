@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CommonAttributesType,
-  PaymentMethodSystemType,
-  TransactionType,
-} from '@prisma/client';
+import { CommonAttributesType, PaymentMethodSystemType } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -15,17 +11,17 @@ import {
   RentingOrderItemRefundTransactionCreateModel,
   RentingOrderPayTransactionCreateModel,
   RentingOrderRefundTransactionCreateModel,
+  RentingOrderItemTransactionModel,
+  RentingOrderTransactionModel,
 } from './models';
 import { PaymentMethodSystemTypeTypes } from './constants/payment-method-system-type-types';
-import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
 import { UsersService } from '../users/users.service';
-import { PaymentTrasactionTypes } from './constants/payment-transaction-types';
+import { PaymentTransactionTypes } from './constants/payment-transaction-types';
 
 @Injectable()
 export class PaymentsService {
   constructor(
     private prismaService: PrismaService,
-    private customAttributeService: CustomAttributesService,
     private usersService: UsersService,
   ) {}
 
@@ -191,7 +187,7 @@ export class PaymentsService {
             id: data.rentingOrderId,
           },
         },
-        type: PaymentTrasactionTypes.PayForRentingOrder,
+        type: PaymentTransactionTypes.PaymentForRentingOrder,
       },
     });
 
@@ -232,7 +228,7 @@ export class PaymentsService {
             id: data.rentingOrderId,
           },
         },
-        type: PaymentTrasactionTypes.RefundForRentingOrder,
+        type: PaymentTransactionTypes.PaymentForRentingOrder,
       },
     });
 
@@ -280,7 +276,7 @@ export class PaymentsService {
             id: data.itemId,
           },
         },
-        type: PaymentTrasactionTypes.PayDamagesForRentingOrder,
+        type: PaymentTransactionTypes.PaymentForDamagesOfRentingOrderItem,
       },
     });
 
@@ -317,10 +313,82 @@ export class PaymentsService {
             id: data.itemId,
           },
         },
-        type: PaymentTrasactionTypes.RefundDamagesForRentingOrder,
+        type: PaymentTransactionTypes.PaymentForDamagesOfRentingOrderItem,
       },
     });
 
     return transactionHistory;
+  }
+
+  async getAllPaymentTransactionForRentingOrder({
+    orgId,
+    rentingOrderId,
+    type,
+  }: {
+    orgId: string;
+    rentingOrderId: string;
+    type?: PaymentTransactionTypes;
+  }): Promise<RentingOrderTransactionModel[]> {
+    const where: any = {
+      rentingOrderId,
+    };
+
+    if (type) {
+      where.type = type;
+    }
+
+    const result = await this.prismaService.orgRentingOrderTransactionHistory.findMany(
+      {
+        where,
+        include: {
+          orgTransactionHistory: true,
+          rentingOrder: true,
+        },
+      },
+    );
+
+    if (result?.length && result[0].rentingOrder.orgId !== orgId) {
+      throw new Error('getAllPaymentTransactionForRentingOrder not found');
+    }
+
+    return result.map((item) =>
+      RentingOrderTransactionModel.fromDatabase(item),
+    );
+  }
+
+  async getAllPaymentTransactionForRentingOrderItem({
+    orgId,
+    rentingOrderItemId,
+    type,
+  }: {
+    orgId: string;
+    rentingOrderItemId: string;
+    type?: PaymentTransactionTypes;
+  }): Promise<RentingOrderItemTransactionModel[]> {
+    const where: any = {
+      rentingOrderItemId,
+    };
+
+    if (type) {
+      where.type = type;
+    }
+
+    const result = await this.prismaService.orgRentingOrderItemTransactionHistory.findMany(
+      {
+        where,
+        include: {
+          orgTransactionHistory: true,
+          rentingOrderItem: true,
+        },
+      },
+    );
+
+    if (result?.length && result[0].rentingOrderItem.orgId !== orgId) {
+      throw new Error('getAllPaymentTransactionForRentingOrderItem not found');
+    }
+
+    return result.map((item) =>
+      RentingOrderItemTransactionModel.fromDatabase(item),
+    );
   }
 }

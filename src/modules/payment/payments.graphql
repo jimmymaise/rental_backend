@@ -24,6 +24,19 @@ type TransactionHistory {
   transactionOwner: String
 }
 
+type RentingOrderTransactionHistory {
+  orgTransactionHistoryId: String!
+  orgTransactionHistory: TransactionHistory
+  rentingOrderId: String
+}
+
+type RentingOrderItemTransactionHistory {
+  orgTransactionHistoryId: String!
+  orgTransactionHistory: TransactionHistory
+  rentingOrderItemId: String
+  itemId: String
+}
+
 # PaymentMethod
 input PaymentMethodCreateInput {
   value: String!
@@ -108,4 +121,12 @@ type Mutation {
 type Query {
   feedAllPaymentMethods: [PaymentMethod]
   feedAllSystemPaymentMethods: [PaymentMethod]
+  feedAllRentingOrderTransactions(
+    rentingOrderId: String!
+    type: String
+  ): [RentingOrderTransactionHistory]
+  feedAllRentingOrderItemTransactions(
+    rentingOrderId: String!
+    type: String
+  ): [RentingOrderItemTransactionHistory]
 }
