@@ -136,6 +136,10 @@ export class UsersService {
       userDetail = await this.resetUserDetailCache(userId);
     }
 
+    if (!userDetail) {
+      throw new Error('User Profile not existed!');
+    }
+
     if (include) {
       if (include['orgDetails']) {
         userDetail['orgDetails'] = userDetail['orgIds'].map((orgId) =>
