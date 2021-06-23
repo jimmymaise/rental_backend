@@ -208,6 +208,8 @@ enum FileUsingLocate {
   RentingDepositItemImage
   RentingOrderActivityImage
   BookingActivityImage
+  PaymentTransactionImage
+  RefundTransactionImage
 }
 
 model FileStorage {

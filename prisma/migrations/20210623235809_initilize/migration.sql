@@ -2,7 +2,7 @@
 CREATE TYPE "UserVerifyDocumentType" AS ENUM ('Facebook', 'Email', 'PhoneNumber');
 
 -- CreateEnum
-CREATE TYPE "FileUsingLocate" AS ENUM ('ItemPreviewImage', 'UserAvatarImage', 'UserCoverImage', 'OrgAvatarImage', 'RentingOrderItemImage', 'RentingDepositItemImage', 'RentingOrderActivityImage', 'BookingActivityImage');
+CREATE TYPE "FileUsingLocate" AS ENUM ('ItemPreviewImage', 'UserAvatarImage', 'UserCoverImage', 'OrgAvatarImage', 'RentingOrderItemImage', 'RentingDepositItemImage', 'RentingOrderActivityImage', 'BookingActivityImage', 'PaymentTransactionImage', 'RefundTransactionImage');
 
 -- CreateEnum
 CREATE TYPE "ItemStatus" AS ENUM ('Draft', 'Blocked', 'Published');
