@@ -34,6 +34,17 @@ export class PaymentsResolvers {
   @Query()
   @Permissions(Permission.ORG_MASTER, Permission.GET_ORG_PAYMENT_METHOD)
   @UseGuards(GqlAuthGuard)
+  async feedAllAvailablePaymentMethods(
+    @CurrentUser() user: GuardUserPayload,
+  ): Promise<PaymentMethodModel[]> {
+    return this.paymentsService.getAllAvailablePaymentMethods(
+      user.currentOrgId,
+    );
+  }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_ORG_PAYMENT_METHOD)
+  @UseGuards(GqlAuthGuard)
   async feedAllSystemPaymentMethods(): Promise<PaymentMethodModel[]> {
     return this.paymentsService.getAllPaymentMethodSystemType();
   }

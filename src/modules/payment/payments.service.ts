@@ -44,6 +44,24 @@ export class PaymentsService {
     );
   }
 
+  async getAllAvailablePaymentMethods(
+    orgId: string,
+  ): Promise<PaymentMethodModel[]> {
+    const queryResult = await this.prismaService.commonAttributesConfig.findMany(
+      {
+        where: {
+          orgId,
+          type: CommonAttributesType.PaymentMethod,
+          isDisabled: false,
+        },
+      },
+    );
+
+    return queryResult.map((record) =>
+      PaymentMethodModel.fromCommonAttributesConfig(record),
+    );
+  }
+
   async createPaymentMethod(
     orgId: string,
     userId: string,

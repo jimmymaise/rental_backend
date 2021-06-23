@@ -120,6 +120,7 @@ type Mutation {
 
 type Query {
   feedAllPaymentMethods: [PaymentMethod]
+  feedAllAvailablePaymentMethods: [PaymentMethod]
   feedAllSystemPaymentMethods: [PaymentMethod]
   feedAllRentingOrderTransactions(
     rentingOrderId: String!
