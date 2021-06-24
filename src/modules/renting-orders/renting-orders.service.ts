@@ -146,6 +146,7 @@ export class RentingOrdersService {
         attachedFiles: depositItem.attachedFiles,
         rentingOrderId: createRentingOrderResult.id,
         note: depositItem.note,
+        valueAmount: depositItem.valueAmount
       });
     });
     await this.prismaService.rentingDepositItem.createMany({
@@ -491,6 +492,7 @@ export class RentingOrdersService {
           type: updatingRentingDepositItem.type,
           attachedFiles: updatingRentingDepositItem.attachedFiles,
           note: updatingRentingDepositItem.note,
+          valueAmount: updatingRentingDepositItem.valueAmount
         });
       } else {
         createManyRentingDepositItemData.push({
@@ -504,6 +506,7 @@ export class RentingOrdersService {
           attachedFiles: updatingRentingDepositItem.attachedFiles,
           rentingOrderId: updateRentingOrderResult.id,
           note: updatingRentingDepositItem.note,
+          valueAmount: updatingRentingDepositItem.valueAmount
         });
       }
     });
