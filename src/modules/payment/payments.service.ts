@@ -369,9 +369,24 @@ export class PaymentsService {
       throw new Error('getAllPaymentTransactionForRentingOrder not found');
     }
 
-    return result.map((item) =>
-      RentingOrderTransactionModel.fromDatabase(item),
-    );
+    const allPaymentMethods = await this.getAllPaymentMethods(orgId);
+
+    const finalResult = [];
+
+    for (let i = 0; i < result.length; i++) {
+      const item = result[i];
+      const createdByDetail = await this.usersService.getUserDetailData(
+        item.orgTransactionHistory.createdBy,
+      );
+      finalResult.push(
+        RentingOrderTransactionModel.fromDatabase(item, {
+          paymentMethods: allPaymentMethods,
+          createdByDetail,
+        }),
+      );
+    }
+
+    return finalResult;
   }
 
   async getAllPaymentTransactionForRentingOrderItem({

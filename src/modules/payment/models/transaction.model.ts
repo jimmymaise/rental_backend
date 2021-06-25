@@ -47,9 +47,9 @@ export class TransactionModel {
       method: data.method,
       createdBy: data.createdBy,
       methodDetail,
-      rentingOrderDetail: RentingOrderModel.fromDatabase(
-        (data as any).rentingOrder,
-      ),
+      rentingOrderDetail: (data as any).rentingOrder
+        ? RentingOrderModel.fromDatabase((data as any).rentingOrder)
+        : null,
       refundToTransactionId: data.refundToTransactionId,
       type: data.type,
       createdByDetail,
