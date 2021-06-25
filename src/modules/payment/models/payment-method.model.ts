@@ -1,6 +1,6 @@
 import { CommonAttributesConfig } from '@prisma/client';
 
-import { PaymentMethodSystemTypeTypes } from '../constants/payment-method-system-type-types';
+import { PaymentMethodSystemTypeTypesMap } from '../constants/payment-method-system-type-types';
 
 export class PaymentMethodModel {
   public value: string;
@@ -24,7 +24,7 @@ export class PaymentMethodModel {
       order: data.order,
       parentAttributeValue: data.parentAttributeValue,
       mapWithSystemPaymentMethod:
-        PaymentMethodSystemTypeTypes[data.mapWithSystemValue],
+        PaymentMethodSystemTypeTypesMap[data.mapWithSystemValue],
     };
   }
 }
