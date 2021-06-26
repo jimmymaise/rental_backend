@@ -128,7 +128,7 @@ type Query {
     type: String
   ): [RentingOrderTransactionHistory]
   feedAllRentingOrderItemTransactions(
-    rentingOrderId: String!
+    rentingOrderItemId: String!
     type: String
   ): [RentingOrderItemTransactionHistory]
 }

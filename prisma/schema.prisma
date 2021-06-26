@@ -68,6 +68,7 @@ model Customer {
   createdDate  DateTime?    @default(now())
   updatedDate  DateTime?    @updatedAt
 
+  customerOrgActivityLogs CustomerOrgActivityLog[] @relation("CustomerOrgActivityLogBelongToCustomer")
   @@unique([userId, orgId])
   @@unique([id, orgId])
 }
@@ -283,6 +284,8 @@ model Item {
   orgDailyItemStatistics OrgDailyItemStatistics[] @relation("OrgDailyItemStatisticsBelongToItem")
 
   orgRentingOrderItemTransactionHistories OrgRentingOrderItemTransactionHistory[] @relation("OrgRentingOrderItemTransactionBelongToItem")
+  itemOrgActivityLog                      ItemOrgActivityLog[]                    @relation("ItemOrgActivityLogBelongToItem")
+
 
   @@index(fields: [status, isDeleted, isVerified, keyword], name: "item_main_index")
   @@index(fields: [createdDate], name: "item_created_date_index")
@@ -540,11 +543,12 @@ model RentingOrder {
   status         String
   attachedFiles  Json?
 
-  rentingOrderItems          RentingOrderItem[]      @relation("RentingOrderItemBelongToRentingOrder")
-  rentingDepositItems        RentingDepositItem[]    @relation("RentingDepositItemBelongToRentingOrder")
-  orgOrgTransactionHistories OrgTransactionHistory[] @relation("OrgTransactionHistoryBelongToRentingOrder")
+  rentingOrderItems   RentingOrderItem[]   @relation("RentingOrderItemBelongToRentingOrder")
+  rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToRentingOrder")
 
-  OrgRentingOrderTransactionHistory OrgRentingOrderTransactionHistory[] @relation("OrgRentingOrderTransactionBelongToRentingOrder")
+  orgRentingOrderTransactionHistories OrgRentingOrderTransactionHistory[] @relation("OrgRentingOrderTransactionBelongToRentingOrder")
+  rentingOrderOrgActivityLogs         RentingOrderOrgActivityLog[]        @relation("RentingOrderOrgActivityLogBelongToRentingOrder")
+
   @@index(fields: [orgId, status], name: "selling_order_status_index")
 }
 
@@ -663,11 +667,9 @@ model OrgTransactionHistory {
   transactionOwnerUser User?   @relation("OrgTransactionHistoryOwnerUser", fields: [transactionOwner], references: [id])
   transactionOwner     String?
 
-  orgRentingOrderItemTransactionHistories OrgRentingOrderItemTransactionHistory[] @relation("OrgRentingOrderItemTransactionHistoryBelongToOrgTransactionHistory")
-  orgRentingOrderTransactionHistories     OrgRentingOrderTransactionHistory[]     @relation("OrgRentingOrderTransactionHistoryBelongToOrgTransactionHistory")
+  orgRentingOrderItemTransactionHistory OrgRentingOrderItemTransactionHistory? @relation("OrgRentingOrderItemTransactionHistoryBelongToOrgTransactionHistory")
+  orgRentingOrderTransactionHistory     OrgRentingOrderTransactionHistory?     @relation("OrgRentingOrderTransactionHistoryBelongToOrgTransactionHistory")
 
-  RentingOrder   RentingOrder? @relation("OrgTransactionHistoryBelongToRentingOrder", fields: [rentingOrderId], references: [id])
-  rentingOrderId String?
   @@index(fields: [refId], name: "org_transaction_ref_id_index")
   @@index(fields: [refundToTransactionId], name: "org_transaction_refund_to_transaction_id_index")
 }
@@ -713,6 +715,34 @@ model OrgActivityLog {
 
   createdByUser User?  @relation("OrgActivityLogCreatedByUser", fields: [createdBy], references: [id])
   createdBy     String
+
+  rentingOrderOrgActivityLog RentingOrderOrgActivityLog? @relation("RentingOrderActivityLogBelongToOrgActivityLog")
+  itemOrgActivityLog         ItemOrgActivityLog?         @relation("ItemActivityLogBelongToOrgActivityLog")
+  customerOrgActivityLog     CustomerOrgActivityLog?     @relation("CustomerActivityLogBelongToOrgActivityLog")
+}
+
+model RentingOrderOrgActivityLog {
+  orgActivityLog   OrgActivityLog? @relation("RentingOrderActivityLogBelongToOrgActivityLog", fields: [orgActivityLogId], references: [id])
+  orgActivityLogId String          @id
+
+  rentingOrder   RentingOrder @relation("RentingOrderOrgActivityLogBelongToRentingOrder", fields: [rentingOrderId], references: [id])
+  rentingOrderId String
+}
+
+model ItemOrgActivityLog {
+  orgActivityLog   OrgActivityLog? @relation("ItemActivityLogBelongToOrgActivityLog", fields: [orgActivityLogId], references: [id])
+  orgActivityLogId String          @id
+
+  item   Item   @relation("ItemOrgActivityLogBelongToItem", fields: [itemId], references: [id])
+  itemId String
+}
+
+model CustomerOrgActivityLog {
+  orgActivityLog   OrgActivityLog? @relation("CustomerActivityLogBelongToOrgActivityLog", fields: [orgActivityLogId], references: [id])
+  orgActivityLogId String          @id
+
+  customer   Customer @relation("CustomerOrgActivityLogBelongToCustomer", fields: [customerId], references: [id])
+  customerId String
 }
 
 model CommonAttributesConfig {
