@@ -1,0 +1,11 @@
+type OrgActivityLog {
+  id: ID!
+  orgId: String
+  type: String
+  createdBy: String
+  createdDate: Float
+}
+
+type Query {
+  getAllOrgActivityLog: [OrgActivityLog]
+}

@@ -53,6 +53,8 @@ export const Permission = {
     permissions.CREATE_PAYMENT_TRANSACTION_HISTORY.name,
   GET_PAYMENT_TRANSACTION_HISTORY:
     permissions.GET_PAYMENT_TRANSACTION_HISTORY.name,
+
+  GET_ORG_ACTIVITY_LOG: permissions.GET_ORG_ACTIVITY_LOG.name,
 };
 
 export default Permission;

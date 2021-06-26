@@ -24,3 +24,4 @@ export * from './renting-orders';
 export * from './customers';
 export * from './org-categories';
 export * from './payment';
+export * from './org-activity-log';

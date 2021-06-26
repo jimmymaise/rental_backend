@@ -208,5 +208,11 @@
     "description": "",
     "isInternal": false,
     "order": 92
+  },
+  "GET_ORG_ACTIVITY_LOG": {
+    "name": "GET_ORG_ACTIVITY_LOG",
+    "description": "",
+    "isInternal": false,
+    "order": 93
   }
 }
