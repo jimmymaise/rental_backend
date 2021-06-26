@@ -22,6 +22,8 @@ export class RentingOrderItemModel {
   public item?: ItemDTO;
   public status?: string;
   public statusDetail?: RentingOrderStatusModel;
+  public systemStatus?: string;
+  public customerUserId?: string;
 
   public static fromDatabase(
     data: RentingOrderItem,
@@ -58,6 +60,8 @@ export class RentingOrderItemModel {
       unitPricePerWeek: data.unitPricePerWeek,
       unitPricePerMonth: data.unitPricePerMonth,
       statusDetail,
+      systemStatus: data.systemStatus,
+      customerUserId: data.customerUserId,
     };
   }
 }

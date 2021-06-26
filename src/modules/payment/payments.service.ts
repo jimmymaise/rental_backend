@@ -362,6 +362,11 @@ export class PaymentsService {
           orgTransactionHistory: true,
           rentingOrder: true,
         },
+        orderBy: {
+          orgTransactionHistory: {
+            createdDate: 'desc',
+          },
+        },
       },
     );
 

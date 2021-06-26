@@ -16,6 +16,7 @@ export class TransactionModel {
   public type: string;
   public refundToTransactionId?: string;
   public transactionOwner?: string;
+  public createdDate: number;
 
   public methodDetail?: PaymentMethodModel;
   public rentingOrderDetail?: RentingOrderModel;
@@ -54,6 +55,7 @@ export class TransactionModel {
       type: data.type,
       createdByDetail,
       transactionOwner: data.transactionOwner,
+      createdDate: data.createdDate.getTime(),
     };
   }
 }

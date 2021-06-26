@@ -50,6 +50,8 @@ type RentingOrderItem {
   attachedFiles: [PublicStorageFile]
   itemId: String!
   statusDetail: RentingOrderItemStatus
+  systemStatus: String
+  customerUserId: String
 }
 
 input RentingOrderInput {
