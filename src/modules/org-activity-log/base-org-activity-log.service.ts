@@ -26,7 +26,7 @@ export class BaseOrgActivityLogService {
             id: data.orgId,
           },
         },
-        data: RentingOrderActivityLogModel.toDatabaseDataJSON(data),
+        data: data.data,
         rentingOrderOrgActivityLog: {
           create: {
             rentingOrderId: data.rentingOrderId,

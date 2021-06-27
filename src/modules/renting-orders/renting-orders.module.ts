@@ -7,9 +7,10 @@ import { RentingOrdersStatusService } from './renting-orders-status.service';
 import { RentingOrderResolvers } from './renting-orders.resolvers';
 
 import { CustomAttributesModule } from '@modules/custom-attributes/custom-attributes.module';
+import { OrgActivityLogModule } from '@modules/org-activity-log';
 
 @Module({
-  imports: [CustomAttributesModule, StoragesModule],
+  imports: [CustomAttributesModule, StoragesModule, OrgActivityLogModule],
   providers: [
     RentingOrdersService,
     RentingOrdersStatusService,

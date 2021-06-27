@@ -6,7 +6,8 @@ export class BaseOrgActivityLogModel {
   public orgId: string;
   public type?: OrgActivityLogType;
   public createdBy: string;
-  public createdDate: number;
+  public createdDate?: number;
+  public data: any;
 
   public static fromDatabase(
     remoteData: OrgActivityLog,
@@ -16,6 +17,7 @@ export class BaseOrgActivityLogModel {
       type: remoteData.type as OrgActivityLogType,
       createdBy: remoteData.createdBy,
       createdDate: remoteData.createdDate.getTime(),
+      data: remoteData.data,
     };
   }
 }

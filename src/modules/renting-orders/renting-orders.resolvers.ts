@@ -14,12 +14,14 @@ import { RentingOrderModel } from './models/renting-order.model';
 import { RentingOrderItemModel } from './models/renting-order-item.model';
 import { OffsetPaginationDTO } from '../../models';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
+import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
 
 @Resolver('RentingOrder')
 export class RentingOrderResolvers {
   constructor(
     private readonly rentingOrdersService: RentingOrdersService,
     private rentingOrdersStatusService: RentingOrdersStatusService,
+    private orgActivityLogService: OrgActivityLogService,
   ) {}
 
   @Mutation()
@@ -29,11 +31,23 @@ export class RentingOrderResolvers {
     @CurrentUser() user: GuardUserPayload,
     @Args('data') data: RentingOrderCreateModel,
   ): Promise<RentingOrderModel> {
-    return this.rentingOrdersService.createRentingOrder({
+    const result = await this.rentingOrdersService.createRentingOrder({
       creatorId: user.id,
       orgId: user.currentOrgId,
       data,
     });
+
+    await this.orgActivityLogService.logCreateNewRentingOrder({
+      createdBy: user.id,
+      orgId: user.currentOrgId,
+      rentingOrderId: result.id,
+      data: {
+        rentingOrderId: result.id,
+        orderCustomId: result.orderCustomId,
+      },
+    });
+
+    return result;
   }
 
   @Mutation()
