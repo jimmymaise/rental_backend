@@ -58,12 +58,25 @@ export class RentingOrderResolvers {
     @Args('id') id: string,
     @Args('data') data: RentingOrderModel,
   ): Promise<RentingOrderModel> {
-    return this.rentingOrdersService.updateRentingOrder({
+    const result = await this.rentingOrdersService.updateRentingOrder({
       id,
       creatorId: user.id,
       orgId: user.currentOrgId,
       data,
     });
+
+    await this.orgActivityLogService.logUpdateRentingOrder({
+      createdBy: user.id,
+      orgId: user.currentOrgId,
+      rentingOrderId: result.id,
+      data: {
+        rentingOrderId: result.id,
+        orderCustomId: result.orderCustomId,
+        updateActions: [],
+      },
+    });
+
+    return result;
   }
 
   @Mutation()
@@ -73,10 +86,22 @@ export class RentingOrderResolvers {
     @CurrentUser() user: GuardUserPayload,
     @Args('id') id: string,
   ): Promise<RentingOrderModel> {
-    return this.rentingOrdersService.deleteRentingOrder({
+    const result = await this.rentingOrdersService.deleteRentingOrder({
       id,
       orgId: user.currentOrgId,
     });
+
+    await this.orgActivityLogService.logDeleteRentingOrder({
+      createdBy: user.id,
+      orgId: user.currentOrgId,
+      rentingOrderId: result.id,
+      data: {
+        rentingOrderId: result.id,
+        orderCustomId: result.orderCustomId,
+      },
+    });
+
+    return result;
   }
 
   @Mutation()
@@ -127,11 +152,41 @@ export class RentingOrderResolvers {
       },
     ]);
 
-    return this.rentingOrdersStatusService.changeRentingOrderStatus({
+    const currentItem = await this.rentingOrdersService.getOrderDetail(
       id,
-      newStatus: data.newStatus,
+      user.currentOrgId,
+      { statusDetail: true },
+    );
+    const result = await this.rentingOrdersStatusService.changeRentingOrderStatus(
+      {
+        id,
+        newStatus: data.newStatus,
+        orgId: user.currentOrgId,
+        include: {
+          statusDetail: true,
+        },
+      },
+    );
+
+    await this.orgActivityLogService.logChangeRentingOrderStatus({
+      createdBy: user.id,
       orgId: user.currentOrgId,
+      rentingOrderId: result.id,
+      data: {
+        rentingOrderId: result.id,
+        orderCustomId: result.orderCustomId,
+        fromStatus: {
+          value: currentItem.statusDetail.value,
+          label: currentItem.statusDetail.label,
+        },
+        toStatus: {
+          value: result.statusDetail.value,
+          label: result.statusDetail.label,
+        },
+      },
     });
+
+    return result;
   }
 
   @Query()

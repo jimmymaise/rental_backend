@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import isEmpty from 'lodash/isEmpty';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { RentingOrderModel } from './models/renting-order.model';
@@ -58,7 +59,7 @@ export class RentingOrdersStatusService {
 
     const item: any = await this.prismaService.rentingOrder.findUnique({
       where: { id },
-      include,
+      include: isEmpty(include) ? undefined : include,
     });
 
     if (item.orgId !== orgId) {

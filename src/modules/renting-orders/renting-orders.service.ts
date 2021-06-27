@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 import { OffsetPaginationDTO } from '@app/models';
 import { PrismaService } from '../prisma/prisma.service';
+import isEmpty from 'lodash/isEmpty';
+
 import {
   RentingOrderSystemStatusType,
   RentingDepositItemSystemType,
@@ -146,7 +148,7 @@ export class RentingOrdersService {
         attachedFiles: depositItem.attachedFiles,
         rentingOrderId: createRentingOrderResult.id,
         note: depositItem.note,
-        valueAmount: depositItem.valueAmount
+        valueAmount: depositItem.valueAmount,
       });
     });
     await this.prismaService.rentingDepositItem.createMany({
@@ -280,7 +282,7 @@ export class RentingOrdersService {
 
     const item: any = await this.prismaService.rentingOrder.findUnique({
       where: { id },
-      include,
+      include: isEmpty(include) ? undefined : include,
     });
 
     if (item.orgId !== orgId) {
@@ -492,7 +494,7 @@ export class RentingOrdersService {
           type: updatingRentingDepositItem.type,
           attachedFiles: updatingRentingDepositItem.attachedFiles,
           note: updatingRentingDepositItem.note,
-          valueAmount: updatingRentingDepositItem.valueAmount
+          valueAmount: updatingRentingDepositItem.valueAmount,
         });
       } else {
         createManyRentingDepositItemData.push({
@@ -506,7 +508,7 @@ export class RentingOrdersService {
           attachedFiles: updatingRentingDepositItem.attachedFiles,
           rentingOrderId: updateRentingOrderResult.id,
           note: updatingRentingDepositItem.note,
-          valueAmount: updatingRentingDepositItem.valueAmount
+          valueAmount: updatingRentingDepositItem.valueAmount,
         });
       }
     });
