@@ -177,10 +177,12 @@ export class RentingOrderResolvers {
         orderCustomId: result.orderCustomId,
         fromStatus: {
           value: currentItem.statusDetail.value,
+          color: currentItem.statusDetail.color,
           label: currentItem.statusDetail.label,
         },
         toStatus: {
           value: result.statusDetail.value,
+          color: result.statusDetail.color,
           label: result.statusDetail.label,
         },
       },

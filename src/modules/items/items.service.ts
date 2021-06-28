@@ -11,6 +11,7 @@ import { StoragesService } from '../storages/storages.service';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 import { ItemDTO } from '@modules/items/item.dto';
+import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
 
 @Injectable()
 export class ItemsService {
@@ -18,6 +19,7 @@ export class ItemsService {
     private prismaService: PrismaService,
     private storageService: StoragesService,
     private redisCacheService: RedisCacheService,
+    private orgActivityLogService: OrgActivityLogService,
   ) {}
 
   // findAllAvailable(isFeatured: boolean): Promise<Item[]> {
@@ -135,7 +137,21 @@ export class ItemsService {
       };
     }
 
-    return this.prismaService.item.create(createData);
+    const result = await this.prismaService.item.create(createData);
+
+    if (orgId) {
+      await this.orgActivityLogService.logCreateNewItem({
+        createdBy: userId,
+        data: {
+          itemId: result.id,
+          itemName: result.name,
+        },
+        itemId: result.id,
+        orgId,
+      });
+    }
+
+    return result;
   }
 
   async findAllAvailablesItem({

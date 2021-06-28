@@ -8,8 +8,12 @@ export enum OrgActivityLogType {
   DeleteItem = 'DeleteItem',
   CreateCustomer = 'CreateCustomer',
   UpdateCustomer = 'UpdateCustomer',
+  AddEmployee = 'AddEmployee', //
+  UpdateEmployee = 'UpdateEmployee', //
+  RemoveEmployee = 'RemoveEmployee', //
   CreateRole = 'CreateRole',
   UpdateRole = 'UpdateRole',
+  DeleteRole = 'DeleteRole',
   UpdateOrgInformation = 'UpdateOrgInformation',
   AddCategory = 'AddCategory',
   DeleteCategory = 'DeleteCategory',

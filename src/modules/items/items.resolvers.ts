@@ -346,7 +346,7 @@ export class ItemsResolvers {
   ): Promise<ItemDTO> {
     return new Promise((resolve, reject) => {
       this.orgItemsService
-        .updateOrgItem(id, user.currentOrgId, itemData)
+        .updateOrgItem(id, user.currentOrgId, user.id, itemData)
         .then((item) => {
           resolve(toItemDTO(item, user.id));
         })
@@ -363,7 +363,7 @@ export class ItemsResolvers {
   ): Promise<ItemDTO> {
     return new Promise((resolve, reject) => {
       this.orgItemsService
-        .softDeleteOrgItem(id, user.currentOrgId)
+        .softDeleteOrgItem(id, user.currentOrgId, user.id)
         .then((item) => {
           if (!item) {
             throw new Error('Item is not existing!');

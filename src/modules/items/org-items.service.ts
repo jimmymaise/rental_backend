@@ -6,12 +6,14 @@ import { Item, ItemStatus } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers/common';
+import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
 
 @Injectable()
 export class OrgItemsService {
   constructor(
     private prismaService: PrismaService,
     private storageService: StoragesService,
+    private orgActivityLogService: OrgActivityLogService,
   ) {}
 
   async findDetailForOrg(
@@ -48,6 +50,7 @@ export class OrgItemsService {
   async updateOrgItem(
     id: string,
     orgId: string,
+    updatedBy: string,
     data: ItemUserInputDTO,
   ): Promise<Item> {
     const allowUpdateFields = [
@@ -165,6 +168,8 @@ export class OrgItemsService {
       }
     }
 
+    updateData.updatedBy = updatedBy;
+
     if (
       foundItem &&
       (foundItem.isDeleted ||
@@ -174,13 +179,30 @@ export class OrgItemsService {
       return null;
     }
 
-    return this.prismaService.item.update({
+    const result = await this.prismaService.item.update({
       where,
       data: updateData,
     });
+
+    await this.orgActivityLogService.logUpdateItem({
+      createdBy: result.updatedBy,
+      data: {
+        itemId: result.id,
+        itemName: result.name,
+        updateActions: [],
+      },
+      itemId: result.id,
+      orgId,
+    });
+
+    return result;
   }
 
-  async softDeleteOrgItem(id: string, orgId: string): Promise<Item> {
+  async softDeleteOrgItem(
+    id: string,
+    orgId: string,
+    deletedBy: string,
+  ): Promise<Item> {
     const where = {
       id,
     };
@@ -194,11 +216,23 @@ export class OrgItemsService {
       return null;
     }
 
-    return this.prismaService.item.update({
+    const result = await this.prismaService.item.update({
       where,
       data: {
         isDeleted: true,
       },
     });
+
+    await this.orgActivityLogService.logDeleteItem({
+      createdBy: deletedBy,
+      data: {
+        itemId: result.id,
+        itemName: result.name,
+      },
+      itemId: result.id,
+      orgId,
+    });
+
+    return result;
   }
 }

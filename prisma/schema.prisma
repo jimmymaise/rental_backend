@@ -49,6 +49,13 @@ model Employee {
   isOwner      Boolean      @default(false)
   createdDate  DateTime?    @default(now())
   updatedDate  DateTime?    @updatedAt
+  createdBy    String?
+  updatedBy    String?
+
+  isDisabled Boolean? @default(false)
+  isDeleted  Boolean? @default(false)
+
+  employeeOrgActivityLogs EmployeeOrgActivityLog[] @relation("EmployeeOrgActivityLogBelongToEmployee")
 
   @@unique([userId, orgId])
 }
@@ -67,6 +74,11 @@ model Customer {
   birthday     DateTime?
   createdDate  DateTime?    @default(now())
   updatedDate  DateTime?    @updatedAt
+  createdBy    String?
+  updatedBy    String?
+
+  isDisabled Boolean? @default(false)
+  isDeleted  Boolean? @default(false)
 
   customerOrgActivityLogs CustomerOrgActivityLog[] @relation("CustomerOrgActivityLogBelongToCustomer")
   @@unique([userId, orgId])
@@ -719,6 +731,7 @@ model OrgActivityLog {
   rentingOrderOrgActivityLog RentingOrderOrgActivityLog? @relation("RentingOrderActivityLogBelongToOrgActivityLog")
   itemOrgActivityLog         ItemOrgActivityLog?         @relation("ItemActivityLogBelongToOrgActivityLog")
   customerOrgActivityLog     CustomerOrgActivityLog?     @relation("CustomerActivityLogBelongToOrgActivityLog")
+  employeeOrgActivityLog     EmployeeOrgActivityLog?     @relation("EmployeeActivityLogBelongToOrgActivityLog")
 }
 
 model RentingOrderOrgActivityLog {
@@ -743,6 +756,14 @@ model CustomerOrgActivityLog {
 
   customer   Customer @relation("CustomerOrgActivityLogBelongToCustomer", fields: [customerId], references: [id])
   customerId String
+}
+
+model EmployeeOrgActivityLog {
+  orgActivityLog   OrgActivityLog? @relation("EmployeeActivityLogBelongToOrgActivityLog", fields: [orgActivityLogId], references: [id])
+  orgActivityLogId String          @id
+
+  employee   Employee @relation("EmployeeOrgActivityLogBelongToEmployee", fields: [employeeId], references: [id])
+  employeeId String
 }
 
 model CommonAttributesConfig {

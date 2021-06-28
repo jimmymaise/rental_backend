@@ -9,12 +9,14 @@ import { OffsetPaginationDTO } from '@app/models';
 import { UsersService } from '@modules/users/users.service';
 import { CustomerModel, CustomerCreateModel } from './models';
 import { User } from '@prisma/client';
+import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
 
 @Injectable()
 export class CustomersService {
   constructor(
     private prismaService: PrismaService,
     private usersService: UsersService,
+    private orgActivityLogService: OrgActivityLogService,
   ) {}
 
   public async getCustomersWithOffsetPaging(
@@ -57,9 +59,11 @@ export class CustomersService {
 
   public async createCustomer({
     orgId,
+    createdBy,
     data,
   }: {
     orgId: string;
+    createdBy: string;
     data: CustomerCreateModel;
   }): Promise<CustomerModel> {
     if (!data.email && !data.phoneNumber) {
@@ -119,6 +123,18 @@ export class CustomersService {
             id: user.id,
           },
         },
+        createdBy,
+      },
+    });
+
+    this.orgActivityLogService.logCreateCustomer({
+      createdBy,
+      customerId: customer.id,
+      orgId,
+      data: {
+        customerId: customer.id,
+        customerName:
+          customer.displayName || customer.email || customer.phoneNumber,
       },
     });
 
@@ -129,10 +145,12 @@ export class CustomersService {
   public async updateCustomer({
     id,
     orgId,
+    createdBy,
     data,
   }: {
     id: string;
     orgId: string;
+    createdBy: string;
     data: CustomerCreateModel;
   }): Promise<CustomerModel> {
     const updatedCustomer = await this.prismaService.customer.update({
@@ -149,6 +167,20 @@ export class CustomersService {
         email: data.email,
         phoneNumber: data.phoneNumber,
         gender: data.gender,
+      },
+    });
+
+    this.orgActivityLogService.logUpdateCustomer({
+      createdBy,
+      customerId: updatedCustomer.id,
+      orgId,
+      data: {
+        customerId: updatedCustomer.id,
+        customerName:
+          updatedCustomer.displayName ||
+          updatedCustomer.email ||
+          updatedCustomer.phoneNumber,
+        updateActions: [],
       },
     });
 
@@ -176,9 +208,11 @@ export class CustomersService {
 
   public async getOrCreateCustomerByUserId({
     userId,
+    createdBy,
     orgId,
   }: {
     userId: string;
+    createdBy: string;
     orgId: string;
   }): Promise<CustomerModel> {
     const customer = await this.prismaService.customer.findUnique({
@@ -198,6 +232,7 @@ export class CustomersService {
     const userInfo = await this.usersService.getUserInfoById(userId);
     return this.createCustomer({
       orgId,
+      createdBy,
       data: {
         displayName: userInfo.displayName,
         email: user.email,

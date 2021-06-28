@@ -38,10 +38,12 @@ export class ChangeRentingOrderStatusActivityLogModel extends RentingOrderActivi
     orderCustomId: string;
     fromStatus: {
       value: string;
+      color: string;
       label: string;
     };
     toStatus: {
       value: string;
+      color: string;
       label: string;
     };
   };

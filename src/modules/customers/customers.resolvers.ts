@@ -65,6 +65,7 @@ export class CustomersResolvers {
   ): Promise<CustomerModel> {
     return this.customerService.createCustomer({
       orgId: user.currentOrgId,
+      createdBy: user.id,
       data,
     });
   }
@@ -80,6 +81,7 @@ export class CustomersResolvers {
     return this.customerService.updateCustomer({
       id,
       orgId: user.currentOrgId,
+      createdBy: user.id,
       data,
     });
   }
@@ -106,6 +108,7 @@ export class CustomersResolvers {
   ): Promise<CustomerModel> {
     return this.customerService.getOrCreateCustomerByUserId({
       userId,
+      createdBy: user.id,
       orgId: user.currentOrgId,
     });
   }

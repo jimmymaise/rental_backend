@@ -6,6 +6,25 @@ import {
   UpdateRentingOrderActivityLogModel,
   ChangeRentingOrderStatusActivityLogModel,
   DeleteRentingOrderActivityLogModel,
+  CreateItemActivityLogModel,
+  CreateCategoryActivityLogModel,
+  CreateCustomerActivityLogModel,
+  CreateDamagesPayForRentingOrderItemActivityLogModel,
+  CreateDamagesRefundForRentingOrderItemActivityLogModel,
+  CreatePayForRentingOrderActivityLogModel,
+  CreateRefundForRentingOrderActivityLogModel,
+  CreateRoleActivityLogModel,
+  DeleteCategoryActivityLogModel,
+  DeleteItemActivityLogModel,
+  UpdateCategoryActivityLogModel,
+  UpdateCustomerActivityLogModel,
+  UpdateItemActivityLogModel,
+  UpdateOrgInformationActivityLogModel,
+  UpdateRoleActivityLogModel,
+  DeleteRoleActivityLogModel,
+  AddEmployeeActivityLogModel,
+  UpdateEmployeeActivityLogModel,
+  RemoveEmployeeActivityLogModel,
 } from './models';
 import { OrgActivityLogType } from './constants/org-activity-log-type.enum';
 
@@ -47,6 +66,185 @@ export class OrgActivityLogService {
     return this.baseOrgActivityLogService.addRentingOrderActivityLog({
       ...data,
       type: OrgActivityLogType.DeleteReningOrder,
+    });
+  }
+
+  // Item
+  public async logCreateNewItem(
+    data: CreateItemActivityLogModel,
+  ): Promise<CreateItemActivityLogModel> {
+    return this.baseOrgActivityLogService.addItemActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreateItem,
+    });
+  }
+
+  public async logUpdateItem(
+    data: UpdateItemActivityLogModel,
+  ): Promise<UpdateItemActivityLogModel> {
+    return this.baseOrgActivityLogService.addItemActivityLog({
+      ...data,
+      type: OrgActivityLogType.UpdateItem,
+    });
+  }
+
+  public async logDeleteItem(
+    data: DeleteItemActivityLogModel,
+  ): Promise<DeleteItemActivityLogModel> {
+    return this.baseOrgActivityLogService.addItemActivityLog({
+      ...data,
+      type: OrgActivityLogType.DeleteItem,
+    });
+  }
+
+  // Customer
+  public async logCreateCustomer(
+    data: CreateCustomerActivityLogModel,
+  ): Promise<CreateCustomerActivityLogModel> {
+    return this.baseOrgActivityLogService.addCustomerActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreateCustomer,
+    });
+  }
+
+  public async logUpdateCustomer(
+    data: UpdateCustomerActivityLogModel,
+  ): Promise<UpdateCustomerActivityLogModel> {
+    return this.baseOrgActivityLogService.addCustomerActivityLog({
+      ...data,
+      type: OrgActivityLogType.UpdateCustomer,
+    });
+  }
+
+  // Employee
+  public async logAddEmployee(
+    data: AddEmployeeActivityLogModel,
+  ): Promise<AddEmployeeActivityLogModel> {
+    return this.baseOrgActivityLogService.addEmployeeActivityLog({
+      ...data,
+      type: OrgActivityLogType.AddEmployee,
+    });
+  }
+
+  public async logUpdateEmployee(
+    data: UpdateEmployeeActivityLogModel,
+  ): Promise<UpdateEmployeeActivityLogModel> {
+    return this.baseOrgActivityLogService.addEmployeeActivityLog({
+      ...data,
+      type: OrgActivityLogType.UpdateEmployee,
+    });
+  }
+
+  public async logRemoveEmployee(
+    data: RemoveEmployeeActivityLogModel,
+  ): Promise<RemoveEmployeeActivityLogModel> {
+    return this.baseOrgActivityLogService.addEmployeeActivityLog({
+      ...data,
+      type: OrgActivityLogType.RemoveEmployee,
+    });
+  }
+
+  // Role
+  public async logCreateRole(
+    data: CreateRoleActivityLogModel,
+  ): Promise<CreateRoleActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreateRole,
+    });
+  }
+
+  public async logUpdateRole(
+    data: UpdateRoleActivityLogModel,
+  ): Promise<UpdateRoleActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.UpdateRole,
+    });
+  }
+
+  public async logDeleteRole(
+    data: DeleteRoleActivityLogModel,
+  ): Promise<DeleteRoleActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.DeleteRole,
+    });
+  }
+
+  // Update Org Information
+  public async logUpdateOrgInformation(
+    data: UpdateOrgInformationActivityLogModel,
+  ): Promise<UpdateOrgInformationActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.UpdateOrgInformation,
+    });
+  }
+
+  // Category
+  public async logCreateCategory(
+    data: CreateCategoryActivityLogModel,
+  ): Promise<CreateCategoryActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.AddCategory,
+    });
+  }
+
+  public async logUpdateCategory(
+    data: UpdateCategoryActivityLogModel,
+  ): Promise<UpdateCategoryActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.UpdateCategory,
+    });
+  }
+
+  public async logDeleteCategory(
+    data: DeleteCategoryActivityLogModel,
+  ): Promise<DeleteCategoryActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.DeleteCategory,
+    });
+  }
+
+  // Renting Order Payment
+  public async logCreatePayForRenting(
+    data: CreatePayForRentingOrderActivityLogModel,
+  ): Promise<CreatePayForRentingOrderActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreatePayForRentingOrder,
+    });
+  }
+
+  public async logCreateRefundForRenting(
+    data: CreateRefundForRentingOrderActivityLogModel,
+  ): Promise<CreateRefundForRentingOrderActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreateRefundForRentingOrder,
+    });
+  }
+
+  // Item Damages Payment
+  public async logCreateDamagesPayForRentingItemOrder(
+    data: CreateDamagesPayForRentingOrderItemActivityLogModel,
+  ): Promise<CreateDamagesPayForRentingOrderItemActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreateDamagesPayForRentingItemOrder,
+    });
+  }
+
+  public async logCreateDamagesRefundForRentingItemOrder(
+    data: CreateDamagesRefundForRentingOrderItemActivityLogModel,
+  ): Promise<CreateDamagesRefundForRentingOrderItemActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreateDamagesRefundForRentingItemOrder,
     });
   }
 }

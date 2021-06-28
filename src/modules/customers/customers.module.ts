@@ -9,6 +9,7 @@ import { CustomersService } from './customers.service';
 import { StoragesModule } from '@modules/storages/storages.module';
 import { CustomersResolvers } from './customers.resolvers';
 import { UsersModule } from '@modules/users/users.module';
+import { OrgActivityLogModule } from '@modules/org-activity-log/org-activity-log.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UsersModule } from '@modules/users/users.module';
     ConfigModule,
     StoragesModule,
     RedisCacheModule,
+    OrgActivityLogModule,
   ],
   providers: [CustomersService, CustomersResolvers],
 })
