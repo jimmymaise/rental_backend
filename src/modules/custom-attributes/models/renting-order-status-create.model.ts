@@ -21,7 +21,6 @@ export class RentingOrderStatusCreateModel extends BaseCustomAttributeCreateMode
       customConfigs: {
         color: data.color,
       },
-
       mapWithSystemValue: data.mapWithSystemStatus,
     } as any;
   }

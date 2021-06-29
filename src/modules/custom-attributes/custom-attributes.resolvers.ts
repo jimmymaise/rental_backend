@@ -80,6 +80,7 @@ export class CustomAttributesResolvers {
     return this.customAttributeService.deleteRentingOrderStatusCustomAttribute(
       value,
       user.currentOrgId,
+      user.id,
       type,
     );
   }
@@ -146,6 +147,7 @@ export class CustomAttributesResolvers {
     return this.customAttributeService.deleteRentingDepositItemStatusCustomAttribute(
       value,
       user.currentOrgId,
+      user.id,
       type,
     );
   }
@@ -212,6 +214,7 @@ export class CustomAttributesResolvers {
     return this.customAttributeService.deleteRentingDepositItemTypeCustomAttribute(
       value,
       user.currentOrgId,
+      user.id,
       type,
     );
   }

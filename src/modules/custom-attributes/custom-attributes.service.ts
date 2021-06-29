@@ -17,10 +17,14 @@ import {
 import { RentingOrderSystemStatusTypes } from './constants/renting-order-system-status-types';
 import { RentingDepositItemSystemStatusTypes } from './constants/renting-deposit-item-system-status-types';
 import { RentingDepositItemSystemTypeTypes } from './constants/renting-deposit-item-system-type-types';
+import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
 
 @Injectable()
 export class CustomAttributesService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private orgActivityLogService: OrgActivityLogService,
+  ) {}
 
   // Selling Order Status
   getAllSystemRentingOrderStatus(): RentingOrderStatusModel[] {
@@ -50,11 +54,23 @@ export class CustomAttributesService {
     data: RentingOrderStatusCreateModel,
   ): Promise<RentingOrderStatusModel> {
     const result = await this.prismaService.commonAttributesConfig.create({
-      data: RentingOrderStatusCreateModel.toCommonAttributesConfig(
-        orgId,
-        userId,
-        data,
-      ),
+      data: {
+        ...RentingOrderStatusCreateModel.toCommonAttributesConfig(
+          orgId,
+          userId,
+          data,
+        ),
+        createdBy: userId,
+      },
+    });
+
+    await this.orgActivityLogService.logCreateRentingOrderStatus({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+      },
+      orgId,
     });
 
     return RentingOrderStatusModel.fromCommonAttributesConfig(result);
@@ -89,18 +105,38 @@ export class CustomAttributesService {
       },
     });
 
+    await this.orgActivityLogService.logUpdateRentingOrderStatus({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+        updateActions: [],
+      },
+      orgId,
+    });
+
     return RentingOrderStatusModel.fromCommonAttributesConfig(result);
   }
 
   async deleteRentingOrderStatusCustomAttribute(
     value: string,
     orgId: string,
+    userId: string,
     type: string,
   ): Promise<RentingOrderStatusModel> {
     const result = await this.prismaService.commonAttributesConfig.delete({
       where: {
         orgId_type_value: { orgId, value, type: type as CommonAttributesType },
       },
+    });
+
+    await this.orgActivityLogService.logDeleteRentingOrderStatus({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+      },
+      orgId,
     });
 
     return RentingOrderStatusModel.fromCommonAttributesConfig(result);
@@ -134,11 +170,23 @@ export class CustomAttributesService {
     data: RentingDepositItemStatusCreateModel,
   ): Promise<RentingDepositItemStatusModel> {
     const result = await this.prismaService.commonAttributesConfig.create({
-      data: RentingDepositItemStatusCreateModel.toCommonAttributesConfig(
-        orgId,
-        userId,
-        data,
-      ),
+      data: {
+        ...RentingDepositItemStatusCreateModel.toCommonAttributesConfig(
+          orgId,
+          userId,
+          data,
+        ),
+        createdBy: userId,
+      },
+    });
+
+    await this.orgActivityLogService.logCreateDepositItemStatus({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+      },
+      orgId,
     });
 
     return RentingDepositItemStatusModel.fromCommonAttributesConfig(result);
@@ -173,18 +221,38 @@ export class CustomAttributesService {
       },
     });
 
+    await this.orgActivityLogService.logUpdateDepositItemStatus({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+        updateActions: [],
+      },
+      orgId,
+    });
+
     return RentingDepositItemStatusModel.fromCommonAttributesConfig(result);
   }
 
   async deleteRentingDepositItemStatusCustomAttribute(
     value: string,
     orgId: string,
+    userId: string,
     type: string,
   ): Promise<RentingDepositItemStatusModel> {
     const result = await this.prismaService.commonAttributesConfig.delete({
       where: {
         orgId_type_value: { orgId, value, type: type as CommonAttributesType },
       },
+    });
+
+    await this.orgActivityLogService.logDeleteDepositItemStatus({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+      },
+      orgId,
     });
 
     return RentingDepositItemStatusModel.fromCommonAttributesConfig(result);
@@ -218,11 +286,23 @@ export class CustomAttributesService {
     data: RentingDepositItemTypeCreateModel,
   ): Promise<RentingDepositItemTypeModel> {
     const result = await this.prismaService.commonAttributesConfig.create({
-      data: RentingDepositItemTypeCreateModel.toCommonAttributesConfig(
-        orgId,
-        userId,
-        data,
-      ),
+      data: {
+        ...RentingDepositItemTypeCreateModel.toCommonAttributesConfig(
+          orgId,
+          userId,
+          data,
+        ),
+        createdBy: userId,
+      },
+    });
+
+    await this.orgActivityLogService.logCreateDepositType({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+      },
+      orgId,
     });
 
     return RentingDepositItemTypeModel.fromCommonAttributesConfig(result);
@@ -257,18 +337,38 @@ export class CustomAttributesService {
       },
     });
 
+    await this.orgActivityLogService.logUpdateDepositType({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+        updateActions: [],
+      },
+      orgId,
+    });
+
     return RentingDepositItemTypeModel.fromCommonAttributesConfig(result);
   }
 
   async deleteRentingDepositItemTypeCustomAttribute(
     value: string,
     orgId: string,
+    userId: string,
     type: string,
   ): Promise<RentingDepositItemTypeModel> {
     const result = await this.prismaService.commonAttributesConfig.delete({
       where: {
         orgId_type_value: { orgId, value, type: type as CommonAttributesType },
       },
+    });
+
+    await this.orgActivityLogService.logDeleteDepositType({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+      },
+      orgId,
     });
 
     return RentingDepositItemTypeModel.fromCommonAttributesConfig(result);

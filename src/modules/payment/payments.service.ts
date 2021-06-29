@@ -77,6 +77,15 @@ export class PaymentsService {
       ),
     });
 
+    await this.orgActivityLogService.logCreatePaymentMethod({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+      },
+      orgId,
+    });
+
     return PaymentMethodModel.fromCommonAttributesConfig(result);
   }
 
@@ -109,18 +118,38 @@ export class PaymentsService {
       },
     });
 
+    await this.orgActivityLogService.logUpdatePaymentMethod({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+        updateActions: [],
+      },
+      orgId,
+    });
+
     return PaymentMethodModel.fromCommonAttributesConfig(result);
   }
 
   async deletePaymentMethod(
     value: string,
     orgId: string,
+    userId: string,
     type: string,
   ): Promise<PaymentMethodModel> {
     const result = await this.prismaService.commonAttributesConfig.delete({
       where: {
         orgId_type_value: { orgId, value, type: type as CommonAttributesType },
       },
+    });
+
+    await this.orgActivityLogService.logDeletePaymentMethod({
+      createdBy: userId,
+      data: {
+        name: result.label,
+        value: result.value,
+      },
+      orgId,
     });
 
     return PaymentMethodModel.fromCommonAttributesConfig(result);

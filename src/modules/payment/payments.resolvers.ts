@@ -90,6 +90,7 @@ export class PaymentsResolvers {
     return this.paymentsService.deletePaymentMethod(
       value,
       user.currentOrgId,
+      user.id,
       type,
     );
   }

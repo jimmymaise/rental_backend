@@ -25,6 +25,9 @@ import {
   AddEmployeeActivityLogModel,
   UpdateEmployeeActivityLogModel,
   RemoveEmployeeActivityLogModel,
+  CreateCustomAttributeActivityLogModel,
+  UpdateCustomAttributeActivityLogModel,
+  DeleteCustomAttributeActivityLogModel,
 } from './models';
 import { OrgActivityLogType } from './constants/org-activity-log-type.enum';
 
@@ -245,6 +248,119 @@ export class OrgActivityLogService {
     return this.baseOrgActivityLogService.addActivityLog({
       ...data,
       type: OrgActivityLogType.CreateDamagesRefundForRentingItemOrder,
+    });
+  }
+
+  // Custom Attribute
+  // RentingOrderStatus
+  public async logCreateRentingOrderStatus(
+    data: CreateCustomAttributeActivityLogModel,
+  ): Promise<CreateCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreateRentingOrderStatus,
+    });
+  }
+
+  public async logUpdateRentingOrderStatus(
+    data: UpdateCustomAttributeActivityLogModel,
+  ): Promise<UpdateCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.UpdateRentingOrderStatus,
+    });
+  }
+
+  public async logDeleteRentingOrderStatus(
+    data: DeleteCustomAttributeActivityLogModel,
+  ): Promise<DeleteCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.DeleteRentingOrderStatus,
+    });
+  }
+
+  // DepositItemStatus
+  public async logCreateDepositItemStatus(
+    data: CreateCustomAttributeActivityLogModel,
+  ): Promise<CreateCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreateDepositItemStatus,
+    });
+  }
+
+  public async logUpdateDepositItemStatus(
+    data: UpdateCustomAttributeActivityLogModel,
+  ): Promise<UpdateCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.UpdateDepositItemStatus,
+    });
+  }
+
+  public async logDeleteDepositItemStatus(
+    data: DeleteCustomAttributeActivityLogModel,
+  ): Promise<DeleteCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.DeleteDepositItemStatus,
+    });
+  }
+
+  // DepositType
+  public async logCreateDepositType(
+    data: CreateCustomAttributeActivityLogModel,
+  ): Promise<CreateCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreateDepositType,
+    });
+  }
+
+  public async logUpdateDepositType(
+    data: UpdateCustomAttributeActivityLogModel,
+  ): Promise<UpdateCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.UpdateDepositType,
+    });
+  }
+
+  public async logDeleteDepositType(
+    data: DeleteCustomAttributeActivityLogModel,
+  ): Promise<DeleteCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.DeleteDepositType,
+    });
+  }
+
+  // PaymentMethod
+  public async logCreatePaymentMethod(
+    data: CreateCustomAttributeActivityLogModel,
+  ): Promise<CreateCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.CreatePaymentMethod,
+    });
+  }
+
+  public async logUpdatePaymentMethod(
+    data: UpdateCustomAttributeActivityLogModel,
+  ): Promise<UpdateCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.UpdatePaymentMethod,
+    });
+  }
+
+  public async logDeletePaymentMethod(
+    data: DeleteCustomAttributeActivityLogModel,
+  ): Promise<DeleteCustomAttributeActivityLogModel> {
+    return this.baseOrgActivityLogService.addActivityLog({
+      ...data,
+      type: OrgActivityLogType.DeletePaymentMethod,
     });
   }
 }
