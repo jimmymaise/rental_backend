@@ -8,12 +8,14 @@ import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 
 import { OffsetPaginationDTO } from '@app/models';
 import { UsersService } from '@modules/users/users.service';
+import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
 
 @Injectable()
 export class EmployeesService {
   constructor(
     private prismaService: PrismaService,
     private usersService: UsersService,
+    private orgActivityLogService: OrgActivityLogService,
   ) {}
 
   async getEmployeesWithOffsetPaging(
@@ -43,6 +45,7 @@ export class EmployeesService {
   ): Promise<OffsetPaginationDTO<EmployeeDto>> {
     const whereQuery = {
       orgId: orgId,
+      isDeleted: false,
     };
 
     return this.getEmployeesWithOffsetPaging(
@@ -54,14 +57,24 @@ export class EmployeesService {
     );
   }
 
-  async addEmployeeByUserId(
+  async addEmployeeByUserId({
     orgId,
     userId,
     roleIds,
     include,
-  ): Promise<Employee> {
-    return this.prismaService.employee.create({
-      include: include,
+    createdBy,
+  }: {
+    orgId: string;
+    userId: string;
+    roleIds: string[];
+    include: any;
+    createdBy: string;
+  }): Promise<Employee> {
+    const result = await this.prismaService.employee.create({
+      include: {
+        ...include,
+        user: true,
+      },
       data: {
         organization: { connect: { id: orgId } },
         user: { connect: { id: userId } },
@@ -72,10 +85,33 @@ export class EmployeesService {
         },
       },
     });
+
+    await this.orgActivityLogService.logAddEmployee({
+      createdBy,
+      data: {
+        employeeId: result.id,
+        employeeName: result['user'].email,
+      },
+      employeeId: result.id,
+      orgId,
+    });
+
+    return result;
   }
 
-  async removeEmployeeByUserId(orgId, userId): Promise<any> {
-    await this.prismaService.employee.delete({
+  async removeEmployeeByUserId({
+    orgId,
+    userId,
+    updatedBy,
+  }: {
+    orgId: string;
+    userId: string;
+    updatedBy: string;
+  }): Promise<any> {
+    const result = await this.prismaService.employee.delete({
+      include: {
+        user: true,
+      },
       where: {
         userId_orgId: {
           userId: userId,
@@ -84,15 +120,35 @@ export class EmployeesService {
       },
     });
     await this.usersService.resetUserDetailCache(userId);
+
+    await this.orgActivityLogService.logRemoveEmployee({
+      createdBy: updatedBy,
+      data: {
+        employeeId: result.id,
+        employeeName: result['user'].email,
+      },
+      employeeId: result.id,
+      orgId,
+    });
+
+    return result;
   }
 
-  async updateEmployeeRoleByUserId(
+  async updateEmployeeRoleByUserId({
     orgId,
     userId,
     roleIds,
     action,
     include,
-  ): Promise<Employee> {
+    updatedBy,
+  }: {
+    orgId: string;
+    userId: string;
+    roleIds: string[];
+    action: string;
+    include: any;
+    updatedBy: string;
+  }): Promise<Employee> {
     let dbAction;
 
     switch (action) {
@@ -124,6 +180,18 @@ export class EmployeesService {
       },
     });
     await this.usersService.resetUserDetailCache(userId);
+
+    await this.orgActivityLogService.logUpdateEmployee({
+      createdBy: updatedBy,
+      data: {
+        employeeId: result.id,
+        employeeName: result['user'].email,
+        updateActions: [],
+      },
+      employeeId: result.id,
+      orgId,
+    });
+
     return result;
   }
 }

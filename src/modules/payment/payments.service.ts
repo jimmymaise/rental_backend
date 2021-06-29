@@ -17,12 +17,14 @@ import {
 import { PaymentMethodSystemTypeTypes } from './constants/payment-method-system-type-types';
 import { UsersService } from '../users/users.service';
 import { PaymentTransactionTypes } from './constants/payment-transaction-types';
+import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
 
 @Injectable()
 export class PaymentsService {
   constructor(
     private prismaService: PrismaService,
     private usersService: UsersService,
+    private orgActivityLogService: OrgActivityLogService,
   ) {}
 
   getAllPaymentMethodSystemType(): PaymentMethodModel[] {
@@ -209,7 +211,7 @@ export class PaymentsService {
       },
     });
 
-    await this.prismaService.rentingOrder.update({
+    const rentingOrder = await this.prismaService.rentingOrder.update({
       where: {
         id: data.rentingOrderId,
       },
@@ -218,6 +220,20 @@ export class PaymentsService {
           increment: data.payAmount,
         },
       },
+    });
+
+    await this.orgActivityLogService.logCreatePayForRenting({
+      createdBy: userId,
+      data: {
+        amount: transactionHistory.payAmount,
+        method: {
+          value: transactionHistory.methodDetail.value,
+          label: transactionHistory.methodDetail.label,
+        },
+        orderCustomId: rentingOrder.orderCustomId,
+        rentingOrderId: data.rentingOrderId,
+      },
+      orgId,
     });
 
     return transactionHistory;
@@ -250,7 +266,7 @@ export class PaymentsService {
       },
     });
 
-    await this.prismaService.rentingOrder.update({
+    const rentingOrder = await this.prismaService.rentingOrder.update({
       where: {
         id: data.rentingOrderId,
       },
@@ -259,6 +275,21 @@ export class PaymentsService {
           decrement: data.payAmount,
         },
       },
+    });
+
+    await this.orgActivityLogService.logCreateRefundForRenting({
+      createdBy: userId,
+      data: {
+        amount: transactionHistory.payAmount,
+        method: {
+          value: transactionHistory.methodDetail.value,
+          label: transactionHistory.methodDetail.label,
+        },
+        orderCustomId: rentingOrder.orderCustomId,
+        rentingOrderId: data.rentingOrderId,
+        refundForTransactionId: data.refundToTransactionId,
+      },
+      orgId,
     });
 
     return transactionHistory;
@@ -277,25 +308,57 @@ export class PaymentsService {
       userId,
     );
 
-    await this.prismaService.orgRentingOrderItemTransactionHistory.create({
-      data: {
-        orgTransactionHistory: {
-          connect: {
-            id: transactionHistory.id,
+    const result = await this.prismaService.orgRentingOrderItemTransactionHistory.create(
+      {
+        data: {
+          orgTransactionHistory: {
+            connect: {
+              id: transactionHistory.id,
+            },
+          },
+          rentingOrderItem: {
+            connect: {
+              id: data.rentingOrderItemId,
+            },
+          },
+          item: {
+            connect: {
+              id: data.itemId,
+            },
+          },
+          type: PaymentTransactionTypes.PaymentForDamagesOfRentingOrderItem,
+        },
+        include: {
+          rentingOrderItem: {
+            select: {
+              id: true,
+              rentingOrderId: true,
+              name: true,
+              rentingOrder: {
+                select: {
+                  orderCustomId: true,
+                },
+              },
+            },
           },
         },
-        rentingOrderItem: {
-          connect: {
-            id: data.rentingOrderItemId,
-          },
-        },
-        item: {
-          connect: {
-            id: data.itemId,
-          },
-        },
-        type: PaymentTransactionTypes.PaymentForDamagesOfRentingOrderItem,
       },
+    );
+
+    await this.orgActivityLogService.logCreateDamagesPayForRentingItemOrder({
+      createdBy: userId,
+      data: {
+        amount: transactionHistory.payAmount,
+        method: {
+          value: transactionHistory.methodDetail.value,
+          label: transactionHistory.methodDetail.label,
+        },
+        rentingOrderId: result.rentingOrderItem.rentingOrderId,
+        itemName: result.rentingOrderItem.name,
+        rentingOrderItemId: result.rentingOrderItem.id,
+        orderCustomId: result.rentingOrderItem.rentingOrder.orderCustomId,
+      },
+      orgId,
     });
 
     return transactionHistory;
@@ -314,25 +377,58 @@ export class PaymentsService {
       userId,
     );
 
-    await this.prismaService.orgRentingOrderItemTransactionHistory.create({
-      data: {
-        orgTransactionHistory: {
-          connect: {
-            id: transactionHistory.id,
+    const result = await this.prismaService.orgRentingOrderItemTransactionHistory.create(
+      {
+        data: {
+          orgTransactionHistory: {
+            connect: {
+              id: transactionHistory.id,
+            },
+          },
+          rentingOrderItem: {
+            connect: {
+              id: data.rentingOrderItemId,
+            },
+          },
+          item: {
+            connect: {
+              id: data.itemId,
+            },
+          },
+          type: PaymentTransactionTypes.PaymentForDamagesOfRentingOrderItem,
+        },
+        include: {
+          rentingOrderItem: {
+            select: {
+              id: true,
+              rentingOrderId: true,
+              name: true,
+              rentingOrder: {
+                select: {
+                  orderCustomId: true,
+                },
+              },
+            },
           },
         },
-        rentingOrderItem: {
-          connect: {
-            id: data.rentingOrderItemId,
-          },
-        },
-        item: {
-          connect: {
-            id: data.itemId,
-          },
-        },
-        type: PaymentTransactionTypes.PaymentForDamagesOfRentingOrderItem,
       },
+    );
+
+    await this.orgActivityLogService.logCreateDamagesRefundForRentingItemOrder({
+      createdBy: userId,
+      data: {
+        amount: transactionHistory.payAmount,
+        method: {
+          value: transactionHistory.methodDetail.value,
+          label: transactionHistory.methodDetail.label,
+        },
+        rentingOrderId: result.rentingOrderItem.rentingOrderId,
+        itemName: result.rentingOrderItem.name,
+        rentingOrderItemId: result.rentingOrderItem.id,
+        orderCustomId: result.rentingOrderItem.rentingOrder.orderCustomId,
+        refundForTransactionId: data.refundToTransactionId,
+      },
+      orgId,
     });
 
     return transactionHistory;

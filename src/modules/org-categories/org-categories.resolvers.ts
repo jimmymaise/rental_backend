@@ -43,10 +43,11 @@ export class OrgCategoriesResolvers {
     @CurrentUser() user: GuardUserPayload,
     @Args('data') data: OrgCategoryCreateModel,
   ): Promise<OrgCategory> {
-    return this.categoriesService.create(
-      user.currentOrgId,
-      OrgCategoryCreateModel.toDatabase(data),
-    );
+    return this.categoriesService.create({
+      orgId: user.currentOrgId,
+      data: OrgCategoryCreateModel.toDatabase(data),
+      createdBy: user.id,
+    });
   }
 
   @Mutation()
@@ -57,11 +58,12 @@ export class OrgCategoriesResolvers {
     @Args('id') id: string,
     @Args('data') data: OrgCategoryCreateModel,
   ): Promise<OrgCategory> {
-    return this.categoriesService.update(
+    return this.categoriesService.update({
       id,
-      user.currentOrgId,
-      OrgCategoryCreateModel.toDatabase(data),
-    );
+      orgId: user.currentOrgId,
+      data: OrgCategoryCreateModel.toDatabase(data),
+      updatedBy: user.id,
+    });
   }
 
   @Mutation()
@@ -71,6 +73,10 @@ export class OrgCategoriesResolvers {
     @CurrentUser() user: GuardUserPayload,
     @Args('id') id: string,
   ): Promise<OrgCategory> {
-    return this.categoriesService.delete(id, user.currentOrgId);
+    return this.categoriesService.delete({
+      id,
+      orgId: user.currentOrgId,
+      updatedBy: user.id,
+    });
   }
 }

@@ -8,6 +8,7 @@ import { RolesService } from './roles.service';
 import { StoragesModule } from '@app/modules/storages/storages.module';
 import { RolesResolvers } from './roles.resolvers';
 import { MailModule } from '@app/modules/mail/mail.module';
+import { OrgActivityLogModule } from '@modules/org-activity-log/org-activity-log.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MailModule } from '@app/modules/mail/mail.module';
     MailModule,
     StoragesModule,
     RedisCacheModule,
+    OrgActivityLogModule,
   ],
   providers: [RolesService, RolesResolvers],
   exports: [RolesService],

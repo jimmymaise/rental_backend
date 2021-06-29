@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Role } from '@prisma/client';
 
-import { OrgCheckHandler } from '@helpers/handlers/org-check-handler';
 import { PrismaService } from '../prisma/prisma.service';
 import { OffsetPaginationDTO } from '@app/models';
 import { CreateRoleDto, UpdateRoleDto, RoleDTO } from './roles.dto';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
+import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
 
 @Injectable()
 export class RolesService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private orgActivityLogService: OrgActivityLogService,
+  ) {}
 
   async getRole(roleId: string, include: any): Promise<Role> {
     return this.prismaService.role.findUnique({
@@ -18,10 +21,15 @@ export class RolesService {
     });
   }
 
-  async createRole(
-    createRoleData: CreateRoleDto,
-    include?: any,
-  ): Promise<Role> {
+  async createRole({
+    createRoleData,
+    include,
+    createdBy,
+  }: {
+    createRoleData: CreateRoleDto;
+    include?: any;
+    createdBy: string;
+  }): Promise<Role> {
     const addedCommand = {};
     const permissionsAdded = (createRoleData['permissions'] || []).map(
       (permission) => {
@@ -34,7 +42,7 @@ export class RolesService {
       };
     }
 
-    return await this.prismaService.role.create({
+    const result = await this.prismaService.role.create({
       include: include,
       data: {
         name: createRoleData.name,
@@ -47,13 +55,30 @@ export class RolesService {
         ...addedCommand,
       },
     });
+
+    await this.orgActivityLogService.logCreateRole({
+      createdBy,
+      data: {
+        roleId: result.id,
+        roleName: result.name,
+      },
+      orgId: createRoleData.orgId,
+    });
+
+    return result;
   }
 
-  async updateRole(
-    updateRoleData: UpdateRoleDto,
+  async updateRole({
     orgId,
-    include?: any,
-  ): Promise<Role> {
+    updateRoleData,
+    include,
+    updatedBy,
+  }: {
+    updateRoleData: UpdateRoleDto;
+    orgId;
+    include?: any;
+    updatedBy: string;
+  }): Promise<Role> {
     const addedCommand = { users: {}, permissions: {} };
 
     const permissionsAdded = (updateRoleData['addPermissionsToRole'] || []).map(
@@ -79,7 +104,7 @@ export class RolesService {
     delete updateRoleData['addPermissionsToRole'];
     delete updateRoleData['removePermissionsFromRole'];
 
-    return await this.prismaService.role.update({
+    const result = await this.prismaService.role.update({
       include: include,
       where: {
         orgId_id: {
@@ -92,6 +117,18 @@ export class RolesService {
         ...addedCommand,
       },
     });
+
+    await this.orgActivityLogService.logUpdateRole({
+      createdBy: updatedBy,
+      data: {
+        roleId: result.id,
+        roleName: result.name,
+        updateActions: [],
+      },
+      orgId,
+    });
+
+    return result;
   }
 
   async getRolesByOrgIdWithOffsetPaging(
@@ -141,17 +178,31 @@ export class RolesService {
     });
   }
 
-  async deleteRole(id: string): Promise<Role> {
+  async deleteRole(
+    id: string,
+    { orgId, updatedBy }: { orgId: string; updatedBy: string },
+  ): Promise<Role> {
     const deletingRole = await this.getRoleDetail(id);
 
     if (deletingRole.isDefault) {
       throw new Error('Cannot delete default role');
     }
 
-    return this.prismaService.role.delete({
+    const result = await this.prismaService.role.delete({
       where: {
         id,
       },
     });
+
+    await this.orgActivityLogService.logDeleteRole({
+      createdBy: updatedBy,
+      data: {
+        roleId: result.id,
+        roleName: result.name,
+      },
+      orgId,
+    });
+
+    return result;
   }
 }

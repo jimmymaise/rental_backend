@@ -102,10 +102,11 @@ export class OrganizationsResolvers {
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
       'employees',
     ]);
-    return this.organizationsService.updateOrganization(
+    return this.organizationsService.updateOrganization({
       updateMyOrganizationData,
-      user.currentOrgId,
+      orgId: user.currentOrgId,
       include,
-    );
+      updatedBy: user.id,
+    });
   }
 }

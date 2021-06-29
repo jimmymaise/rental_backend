@@ -32,10 +32,11 @@ export class RolesResolvers {
       'employees',
       'permissions',
     ]);
-    return this.rolesService.createRole(
-      { orgId: user.currentOrgId, ...createRoleData },
+    return this.rolesService.createRole({
+      createRoleData: { orgId: user.currentOrgId, ...createRoleData },
       include,
-    );
+      createdBy: user.id,
+    });
   }
 
   @Mutation()
@@ -48,14 +49,15 @@ export class RolesResolvers {
   ): Promise<Role> {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
-      'users',
+      'employees',
       'permissions',
     ]);
-    return this.rolesService.updateRole(
-      { ...updateRoleData },
-      user.currentOrgId,
+    return this.rolesService.updateRole({
+      updateRoleData: { ...updateRoleData },
+      orgId: user.currentOrgId,
       include,
-    );
+      updatedBy: user.id,
+    });
   }
 
   @Query()
@@ -104,9 +106,13 @@ export class RolesResolvers {
   @Permissions(Permission.ORG_MASTER, Permission.DELETE_ROLE)
   @UseGuards(GqlAuthGuard)
   async deleteRole(
+    @CurrentUser() user: GuardUserPayload,
     @Args('id')
     id: string,
   ): Promise<Role> {
-    return this.rolesService.deleteRole(id);
+    return this.rolesService.deleteRole(id, {
+      orgId: user.currentOrgId,
+      updatedBy: user.id,
+    });
   }
 }

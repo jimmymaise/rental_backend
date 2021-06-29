@@ -193,6 +193,7 @@ export class CreateDamagesRefundForRentingOrderItemActivityLogModel extends Base
   public data: {
     rentingOrderId: string;
     orderCustomId: string;
+    refundForTransactionId: string;
     rentingOrderItemId: string;
     itemName: string;
     amount: number;

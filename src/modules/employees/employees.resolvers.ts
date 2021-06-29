@@ -74,12 +74,13 @@ export class EmployeesResolvers {
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
       'roles',
     ]);
-    return this.employeeService.addEmployeeByUserId(
-      user.currentOrgId,
-      addEmployeeByUserIdData.userId,
-      addEmployeeByUserIdData.roleIds,
+    return this.employeeService.addEmployeeByUserId({
+      orgId: user.currentOrgId,
+      userId: addEmployeeByUserIdData.userId,
+      roleIds: addEmployeeByUserIdData.roleIds,
       include,
-    );
+      createdBy: user.id,
+    });
   }
 
   @Mutation()
@@ -90,7 +91,11 @@ export class EmployeesResolvers {
     @Args('id')
     id: string,
   ): Promise<{ id: string }> {
-    await this.employeeService.removeEmployeeByUserId(user.currentOrgId, id);
+    await this.employeeService.removeEmployeeByUserId({
+      orgId: user.currentOrgId,
+      userId: id,
+      updatedBy: user.id,
+    });
     return { id: user.currentOrgId };
   }
 
@@ -107,12 +112,13 @@ export class EmployeesResolvers {
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
       'roles',
     ]);
-    return this.employeeService.updateEmployeeRoleByUserId(
-      user.currentOrgId,
-      updateEmployeeRolesByUserIdData.userId,
-      updateEmployeeRolesByUserIdData.roleIds,
-      updateEmployeeRolesByUserIdData.action,
+    return this.employeeService.updateEmployeeRoleByUserId({
+      orgId: user.currentOrgId,
+      userId: updateEmployeeRolesByUserIdData.userId,
+      roleIds: updateEmployeeRolesByUserIdData.roleIds,
+      action: updateEmployeeRolesByUserIdData.action,
       include,
-    );
+      updatedBy: user.id,
+    });
   }
 }

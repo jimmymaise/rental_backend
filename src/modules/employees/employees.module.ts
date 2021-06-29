@@ -9,6 +9,7 @@ import { RedisCacheModule } from '@modules/redis-cache/redis-cache.module';
 import { EmployeesService } from './employees.service';
 import { StoragesModule } from '@modules/storages/storages.module';
 import { EmployeesResolvers } from './employees.resolvers';
+import { OrgActivityLogModule } from '@modules/org-activity-log/org-activity-log.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { EmployeesResolvers } from './employees.resolvers';
     StoragesModule,
     RedisCacheModule,
     UsersModule,
+    OrgActivityLogModule,
   ],
   providers: [EmployeesService, EmployeesResolvers],
 })

@@ -59,6 +59,10 @@ CREATE TABLE "Employee" (
     "isOwner" BOOLEAN NOT NULL DEFAULT false,
     "createdDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "isDisabled" BOOLEAN DEFAULT false,
+    "isDeleted" BOOLEAN DEFAULT false,
 
     PRIMARY KEY ("id")
 );
@@ -76,6 +80,10 @@ CREATE TABLE "Customer" (
     "birthday" TIMESTAMP(3),
     "createdDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3),
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+    "isDisabled" BOOLEAN DEFAULT false,
+    "isDeleted" BOOLEAN DEFAULT false,
 
     PRIMARY KEY ("id")
 );
@@ -421,6 +429,7 @@ CREATE TABLE "RentingOrder" (
     "customerUserId" TEXT NOT NULL,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT NOT NULL,
     "updatedBy" TEXT NOT NULL,
     "systemStatus" "RentingOrderSystemStatusType" NOT NULL,
     "status" TEXT NOT NULL,
@@ -448,6 +457,7 @@ CREATE TABLE "RentingOrderItem" (
     "attachedFiles" JSONB,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT NOT NULL,
     "updatedBy" TEXT NOT NULL,
     "itemId" TEXT,
     "orgId" TEXT NOT NULL,
@@ -472,6 +482,8 @@ CREATE TABLE "RentingDepositItem" (
     "orgId" TEXT NOT NULL,
     "customerUserId" TEXT NOT NULL,
     "order" INTEGER DEFAULT 0,
+    "createdBy" TEXT NOT NULL,
+    "updatedBy" TEXT NOT NULL,
 
     PRIMARY KEY ("id")
 );
@@ -491,7 +503,6 @@ CREATE TABLE "OrgTransactionHistory" (
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdBy" TEXT,
     "transactionOwner" TEXT,
-    "rentingOrderId" TEXT,
 
     PRIMARY KEY ("id")
 );
@@ -528,6 +539,38 @@ CREATE TABLE "OrgActivityLog" (
 );
 
 -- CreateTable
+CREATE TABLE "RentingOrderOrgActivityLog" (
+    "orgActivityLogId" TEXT NOT NULL,
+    "rentingOrderId" TEXT NOT NULL,
+
+    PRIMARY KEY ("orgActivityLogId")
+);
+
+-- CreateTable
+CREATE TABLE "ItemOrgActivityLog" (
+    "orgActivityLogId" TEXT NOT NULL,
+    "itemId" TEXT NOT NULL,
+
+    PRIMARY KEY ("orgActivityLogId")
+);
+
+-- CreateTable
+CREATE TABLE "CustomerOrgActivityLog" (
+    "orgActivityLogId" TEXT NOT NULL,
+    "customerId" TEXT NOT NULL,
+
+    PRIMARY KEY ("orgActivityLogId")
+);
+
+-- CreateTable
+CREATE TABLE "EmployeeOrgActivityLog" (
+    "orgActivityLogId" TEXT NOT NULL,
+    "employeeId" TEXT NOT NULL,
+
+    PRIMARY KEY ("orgActivityLogId")
+);
+
+-- CreateTable
 CREATE TABLE "CommonAttributesConfig" (
     "description" TEXT,
     "value" TEXT NOT NULL,
@@ -542,6 +585,7 @@ CREATE TABLE "CommonAttributesConfig" (
     "orgId" TEXT NOT NULL,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT NOT NULL,
     "updatedBy" TEXT NOT NULL,
 
     PRIMARY KEY ("orgId","type","value")
@@ -561,6 +605,8 @@ CREATE TABLE "OrgCategory" (
     "seoDescription" TEXT,
     "orgId" TEXT NOT NULL,
     "categoryId" TEXT,
+    "createdBy" TEXT NOT NULL,
+    "updatedBy" TEXT NOT NULL,
 
     PRIMARY KEY ("id")
 );
@@ -914,9 +960,6 @@ ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("createdBy") REFERENCES "Us
 ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("transactionOwner") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgTransactionHistory" ADD FOREIGN KEY ("rentingOrderId") REFERENCES "RentingOrder"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "OrgRentingOrderItemTransactionHistory" ADD FOREIGN KEY ("orgTransactionHistoryId") REFERENCES "OrgTransactionHistory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -936,6 +979,30 @@ ALTER TABLE "OrgActivityLog" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"
 
 -- AddForeignKey
 ALTER TABLE "OrgActivityLog" ADD FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RentingOrderOrgActivityLog" ADD FOREIGN KEY ("orgActivityLogId") REFERENCES "OrgActivityLog"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RentingOrderOrgActivityLog" ADD FOREIGN KEY ("rentingOrderId") REFERENCES "RentingOrder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ItemOrgActivityLog" ADD FOREIGN KEY ("orgActivityLogId") REFERENCES "OrgActivityLog"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ItemOrgActivityLog" ADD FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CustomerOrgActivityLog" ADD FOREIGN KEY ("orgActivityLogId") REFERENCES "OrgActivityLog"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CustomerOrgActivityLog" ADD FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EmployeeOrgActivityLog" ADD FOREIGN KEY ("orgActivityLogId") REFERENCES "OrgActivityLog"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "EmployeeOrgActivityLog" ADD FOREIGN KEY ("employeeId") REFERENCES "Employee"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CommonAttributesConfig" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;

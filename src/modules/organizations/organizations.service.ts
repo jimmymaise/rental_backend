@@ -12,6 +12,7 @@ import {
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { DataInitilizeService } from '@modules/data-initialize/data-initialize.service';
+import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
 
 @Injectable()
 export class OrganizationsService {
@@ -20,6 +21,7 @@ export class OrganizationsService {
     public authService: AuthService,
     public redisCacheService: RedisCacheService,
     public dataInitilizeService: DataInitilizeService,
+    private orgActivityLogService: OrgActivityLogService,
   ) {}
 
   async getOrganization(orgId: string, include: any): Promise<Organization> {
@@ -57,11 +59,17 @@ export class OrganizationsService {
     return organizationCreatedResult;
   }
 
-  async updateOrganization(
-    updateMyOrganizationData: UpdateMyOrganizationDto,
-    orgId: string,
-    include?: any,
-  ): Promise<Organization> {
+  async updateOrganization({
+    updateMyOrganizationData,
+    orgId,
+    include,
+    updatedBy,
+  }: {
+    updateMyOrganizationData: UpdateMyOrganizationDto;
+    orgId: string;
+    include?: any;
+    updatedBy: string;
+  }): Promise<Organization> {
     const employeesAdded = (
       updateMyOrganizationData['addEmployeesToOrgByUserId'] || []
     ).map((employeeUserId) => {
@@ -104,7 +112,7 @@ export class OrganizationsService {
       };
     }
 
-    return this.prismaService.organization.update({
+    const result = await this.prismaService.organization.update({
       include: include,
       where: { id: orgId },
       data: {
@@ -114,6 +122,18 @@ export class OrganizationsService {
         },
       },
     });
+
+    await this.orgActivityLogService.logUpdateOrgInformation({
+      createdBy: updatedBy,
+      data: {
+        orgId,
+        orgName: updateMyOrganizationData.name,
+        updateActions: [],
+      },
+      orgId,
+    });
+
+    return result;
   }
 
   async convertFullOrgDataToSummaryOrgInfo(

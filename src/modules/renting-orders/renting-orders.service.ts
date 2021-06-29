@@ -52,6 +52,7 @@ export class RentingOrdersService {
           status: defaultRentingOrderNew.value,
           systemStatus: RentingOrderSystemStatusType.New,
           updatedBy: creatorId,
+          createdBy: creatorId,
           orderCustomId: data.orderCustomId,
           attachedFiles: data.attachedFiles,
           customerUser: {
@@ -105,6 +106,7 @@ export class RentingOrdersService {
         rentingOrderId: createRentingOrderResult.id,
         status: defaultRentingOrderNew.value,
         systemStatus: RentingOrderSystemStatusType.New,
+        createdBy: creatorId,
         updatedBy: creatorId,
       });
     });

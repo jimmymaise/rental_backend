@@ -8,9 +8,9 @@ export enum OrgActivityLogType {
   DeleteItem = 'DeleteItem',
   CreateCustomer = 'CreateCustomer',
   UpdateCustomer = 'UpdateCustomer',
-  AddEmployee = 'AddEmployee', //
-  UpdateEmployee = 'UpdateEmployee', //
-  RemoveEmployee = 'RemoveEmployee', //
+  AddEmployee = 'AddEmployee',
+  UpdateEmployee = 'UpdateEmployee',
+  RemoveEmployee = 'RemoveEmployee',
   CreateRole = 'CreateRole',
   UpdateRole = 'UpdateRole',
   DeleteRole = 'DeleteRole',
@@ -22,4 +22,16 @@ export enum OrgActivityLogType {
   CreateRefundForRentingOrder = 'CreateRefundForRentingOrder',
   CreateDamagesPayForRentingItemOrder = 'CreateDamagesPayForRentingItemOrder',
   CreateDamagesRefundForRentingItemOrder = 'CreateDamagesRefundForRentingItemOrder',
+  CreateRentingOrderStatus = 'CreateRentingOrderStatus',
+  UpdateRentingOrderStatus = 'UpdateRentingOrderStatus',
+  DeleteRentingOrderStatus = 'DeleteRentingOrderStatus',
+  CreateDepositItemStatus = 'CreateDepositItemStatus',
+  UpdateDepositItemStatus = 'UpdateDepositItemStatus',
+  DeleteDepositItemStatus = 'DeleteDepositItemStatus',
+  CreateDepositType = 'CreateDepositType',
+  UpdateDepositType = 'UpdateDepositType',
+  DeleteDepositType = 'DeleteDepositType',
+  CreatePaymentMethod = 'CreatePaymentMethod',
+  UpdatePaymentMethod = 'UpdatePaymentMethod',
+  DeletePaymentMethod = 'DeletePaymentMethod',
 }
