@@ -10,7 +10,6 @@ import {
   OrganizationSummaryCacheDto,
 } from './organizations.dto';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
-import { Permission } from '@modules/auth/permission/permission.enum';
 import { DataInitilizeService } from '@modules/data-initialize/data-initialize.service';
 import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
 

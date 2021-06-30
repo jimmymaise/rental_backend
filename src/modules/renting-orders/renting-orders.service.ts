@@ -151,6 +151,8 @@ export class RentingOrdersService {
         rentingOrderId: createRentingOrderResult.id,
         note: depositItem.note,
         valueAmount: depositItem.valueAmount,
+        createdBy: creatorId,
+        updatedBy: creatorId,
       });
     });
     await this.prismaService.rentingDepositItem.createMany({
@@ -432,6 +434,7 @@ export class RentingOrdersService {
           rentingOrderId: updateRentingOrderResult.id,
           status: defaultRentingOrderNew.value,
           systemStatus: RentingOrderSystemStatusType.New,
+          createdBy: creatorId,
           updatedBy: creatorId,
         });
       }
@@ -511,6 +514,8 @@ export class RentingOrdersService {
           rentingOrderId: updateRentingOrderResult.id,
           note: updatingRentingDepositItem.note,
           valueAmount: updatingRentingDepositItem.valueAmount,
+          createdBy: creatorId,
+          updatedBy: creatorId,
         });
       }
     });

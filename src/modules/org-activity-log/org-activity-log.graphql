@@ -3,9 +3,21 @@ type OrgActivityLog {
   orgId: String
   type: String
   createdBy: String
+  createdByDetail: UserInfo
   createdDate: Float
 }
 
+type OrgActivityLogPagination {
+  items: [OrgActivityLog]
+  total: Int
+  limit: Int
+  offset: Int
+}
+
 type Query {
-  getAllOrgActivityLog: [OrgActivityLog]
+  # getAllOrgActivityLog: [OrgActivityLog]
+  getMyOrgActivityLogsWithPaging(
+    type: String
+    data: BaseOffsetPagingInput
+  ): OrgActivityLogPagination
 }

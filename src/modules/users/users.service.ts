@@ -4,8 +4,9 @@ import sample from 'lodash/sample';
 import isEmpty from 'lodash/isEmpty';
 import sanitizeHtml from 'sanitize-html';
 
+import { getOrgCacheKey } from '@helpers/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { User, UserInfo } from '@prisma/client';
+import { User, UserInfo, Organization } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
 import {
   UserInfoInputDTO,
@@ -17,7 +18,7 @@ import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { EncryptByAesCBCPassword } from '@helpers/encrypt';
 import { getUserCacheKey, toUserInfoDTO } from './helpers';
 import { AuthService } from '@modules/auth/auth.service';
-import { OrganizationsService } from '@modules/organizations/organizations.service';
+import { OrganizationSummaryCacheDto } from '../organizations/organizations.dto';
 
 import { AuthDTO } from '@modules/auth/auth.dto';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
@@ -68,7 +69,6 @@ export class UsersService {
     private storageService: StoragesService,
     private redisCacheService: RedisCacheService,
     private authService: AuthService,
-    private organizationsService: OrganizationsService,
   ) {}
 
   async isUserInMyContactList(
@@ -120,6 +120,38 @@ export class UsersService {
     return userDetail;
   }
 
+  // TODO: Temporary Solution to Avoid Dependency User -> Organization
+  async getOrganization(orgId: string, include: any): Promise<Organization> {
+    return this.prismaService.organization.findUnique({
+      where: { id: orgId },
+      include: include,
+    });
+  }
+
+  async convertFullOrgDataToSummaryOrgInfo(
+    fullOrgData: Organization,
+  ): Promise<OrganizationSummaryCacheDto> {
+    return {
+      name: fullOrgData.name,
+      avatarImage: fullOrgData.avatarImage as any,
+      description: fullOrgData.description,
+      id: fullOrgData.id,
+      slug: fullOrgData.slug,
+    };
+  }
+
+  // TODO: Temporary Solution to Avoid Dependency User -> Organization
+  async getOrgSummaryCache(orgId: string) {
+    const cacheKey = getOrgCacheKey(orgId);
+    let orgSummaryCache = await this.redisCacheService.get(cacheKey);
+    if (!orgSummaryCache) {
+      const fullOrgData = await this.getOrganization(orgId, null);
+      orgSummaryCache = this.convertFullOrgDataToSummaryOrgInfo(fullOrgData);
+      await this.redisCacheService.set(cacheKey, fullOrgData || {}, 3600);
+    }
+    return orgSummaryCache;
+  }
+
   async getUserDetailData(
     userId: string,
     isDisableEncryptPhoneNumber = false,
@@ -143,13 +175,11 @@ export class UsersService {
     if (include) {
       if (include['orgDetails']) {
         userDetail['orgDetails'] = userDetail['orgIds'].map((orgId) =>
-          this.organizationsService.getOrgSummaryCache(orgId),
+          this.getOrgSummaryCache(orgId),
         );
       }
       if (userDetail['currentOrgId'] && include['currentOrgDetail']) {
-        userDetail[
-          'currentOrgDetail'
-        ] = await this.organizationsService.getOrgSummaryCache(
+        userDetail['currentOrgDetail'] = await this.getOrgSummaryCache(
           userDetail['currentOrgId'],
         );
       }

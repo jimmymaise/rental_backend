@@ -261,6 +261,7 @@ export class DataInitilizeService {
         ...defaultPaymentMethods,
       ].map((item) => ({
         ...item,
+        createdBy: userId,
         orgId,
         org: undefined,
       })),

@@ -8,10 +8,17 @@ import {
   CustomerActivityLogModel,
   EmployeeActivityLogModel,
 } from './models';
+import { OrgActivityLogType } from './constants';
+import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
+import { UsersService } from '../users/users.service';
+import { OffsetPaginationDTO } from '@app/models';
 
 @Injectable()
 export class BaseOrgActivityLogService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private usersService: UsersService,
+  ) {}
 
   public async addRentingOrderActivityLog(
     data: RentingOrderActivityLogModel,
@@ -148,12 +155,62 @@ export class BaseOrgActivityLogService {
     return CustomerActivityLogModel.fromDatabase(dbResponse);
   }
 
+  public async getOrgActivityLogWithOffsetPaging(
+    orgId: string,
+    {
+      pageSize,
+      offset,
+      type,
+    }: {
+      pageSize: number;
+      offset?: any;
+      type?: OrgActivityLogType;
+    },
+  ): Promise<OffsetPaginationDTO<BaseOrgActivityLogModel>> {
+    const whereQuery: any = {
+      orgId,
+    };
+
+    if (type) {
+      whereQuery.type = type;
+    }
+
+    const pagingHandler = new OffsetPagingHandler(
+      whereQuery,
+      pageSize,
+      {
+        createdDate: 'desc',
+      },
+      this.prismaService,
+      'orgActivityLog',
+    );
+
+    const dbResponse = await pagingHandler.getPage(offset);
+    const items = [];
+
+    for (let i = 0; i < dbResponse.items.length; i++) {
+      const dbItem = dbResponse.items[i];
+      const createdByDetail = await this.usersService.getUserDetailData(
+        dbItem.createdBy,
+      );
+      items.push(BaseOrgActivityLogModel.fromDatabase(dbItem, createdByDetail));
+    }
+
+    return {
+      ...dbResponse,
+      items,
+    };
+  }
+
   public async getAllOrgActivityLog(
     orgId: string,
   ): Promise<BaseOrgActivityLogModel[]> {
     const dbResponse = await this.prismaService.orgActivityLog.findMany({
       where: {
         orgId,
+      },
+      orderBy: {
+        createdDate: 'desc',
       },
     });
 
