@@ -1,7 +1,10 @@
+scalar JSON
+
 type OrgActivityLog {
   id: ID!
   orgId: String
   type: String
+  data: JSON
   createdBy: String
   createdByDetail: UserInfo
   createdDate: Float
