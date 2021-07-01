@@ -68,7 +68,7 @@ export class OrgActivityLogService {
   ): Promise<DeleteRentingOrderActivityLogModel> {
     return this.baseOrgActivityLogService.addRentingOrderActivityLog({
       ...data,
-      type: OrgActivityLogType.DeleteReningOrder,
+      type: OrgActivityLogType.DeleteRentingOrder,
     });
   }
 

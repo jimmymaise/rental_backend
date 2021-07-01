@@ -2,7 +2,7 @@ export enum OrgActivityLogType {
   CreateRentingOrder = 'CreateRentingOrder',
   UpdateRentingOrder = 'UpdateRentingOrder',
   ChangeStatusRentingOrder = 'ChangeStatusRentingOrder',
-  DeleteReningOrder = 'DeleteRentingOrder',
+  DeleteRentingOrder = 'DeleteRentingOrder',
   CreateItem = 'CreateItem',
   UpdateItem = 'UpdateItem',
   DeleteItem = 'DeleteItem',
