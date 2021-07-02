@@ -164,7 +164,10 @@ export class EmployeesService {
     }
 
     const result = await this.prismaService.employee.update({
-      include: include,
+      include: {
+        ...include,
+        user: true,
+      },
       where: {
         userId_orgId: {
           userId: userId,
