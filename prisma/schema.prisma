@@ -872,8 +872,8 @@ model OrgDailyItemStatistics {
   cancelledRentingOrderCount Int? @default(0)
   viewCount                  Int? @default(0)
   amount                     Int? @default(0) // Amount after Approved
-  payAmount                  Int? @default(0) // Pay after Approved Order
   payDamagesAmount           Int? @default(0)
+  refundDamagesAmount        Int? @default(0)
 
   @@id([orgId, entryDateTime, itemId])
 }

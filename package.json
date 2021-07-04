@@ -24,7 +24,7 @@
     "postinstall": "npm run prisma:generate",
     "prepare": "husky install",
     "seed-permissions": "node ./prisma/seed/seed-permission.js",
-    "seed-core-data": "node  ./prisma/seed/seed-category.js && node ./prisma/seed/seed-area.js && node ./prisma/seed/seed-permission.js"
+    "seed-core-data": "node ./prisma/seed/seed-category.js && node ./prisma/seed/seed-area.js && node ./prisma/seed/seed-permission.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.16.0",
