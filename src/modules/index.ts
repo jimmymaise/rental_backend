@@ -25,3 +25,4 @@ export * from './customers';
 export * from './org-categories';
 export * from './payment';
 export * from './org-activity-log';
+export * from './org-statistics';

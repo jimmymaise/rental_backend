@@ -1,0 +1,13 @@
+type OrgStatistic {
+  id: ID!
+  name: String
+  slug: String
+  image: PublicStorageFile
+  coverImage: PublicStorageFile
+  parentCategoryId: String
+  seoTitle: String
+  seoDescription: String
+  order: Int
+  isDisabled: Boolean
+  categoryId: String
+}

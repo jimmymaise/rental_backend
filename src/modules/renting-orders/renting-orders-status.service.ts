@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import isEmpty from 'lodash/isEmpty';
+import { RentingOrderSystemStatusType } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { RentingOrderModel } from './models/renting-order.model';
 
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
+import { OrgStatisticLogService } from '@modules/org-statistics';
 
 @Injectable()
 export class RentingOrdersStatusService {
   constructor(
     private prismaService: PrismaService,
     private customAttributeService: CustomAttributesService,
+    private orgStatisticLogService: OrgStatisticLogService,
   ) {}
 
   public async changeRentingOrderStatus({
@@ -100,6 +103,14 @@ export class RentingOrdersStatusService {
         systemStatus: rentingOrderNewSystemStatus as any,
       },
     });
+
+    // Log Statistic
+    if (rentingOrderNewSystemStatus === RentingOrderSystemStatusType.Reserved) {
+      await this.orgStatisticLogService.increaseTodayOrderAmount(
+        orgId,
+        updatedItem.totalAmount,
+      );
+    }
 
     return RentingOrderModel.fromDatabase({
       data: updatedItem,

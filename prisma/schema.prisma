@@ -825,36 +825,42 @@ model OrgCategory {
 }
 
 model OrgDailyOrderStatistics {
-  entryDateTime DateTime @id
+  entryDateTime DateTime
 
   org   Organization @relation("OrgDailyOrderStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
-  rentingOrderAmount          Int? @default(0) // Sum all Completed Renting Order Amount
+  rentingOrderAmount          Int? @default(0) // After Approved
+  rentingOrderPayAmount       Int? @default(0) // After Approved
+  rentingOrderRefundAmount    Int? @default(0) // After Approved
   rentingNewOrderCount        Int? @default(0)
   rentingReservedOrderCount   Int? @default(0)
   rentingPickedUpOrderCount   Int? @default(0)
   rentingReturnedUpOrderCount Int? @default(0)
   rentingCancelledOrderCount  Int? @default(0)
+
+  @@id([orgId, entryDateTime])
 }
 
 model OrgDailyCategoryStatistics {
-  entryDateTime DateTime @id
+  entryDateTime DateTime
 
   org   Organization @relation("OrgDailyCategoryStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
-  OrgCategory   OrgCategory? @relation("OrgDailyCategoryStatisticsBelongToOrgCategory", fields: [orgCategoryId], references: [id])
-  orgCategoryId String?
+  orgCategory   OrgCategory @relation("OrgDailyCategoryStatisticsBelongToOrgCategory", fields: [orgCategoryId], references: [id])
+  orgCategoryId String
 
   newRentingOrderCount       Int? @default(0)
   cancelledRentingOrderCount Int? @default(0)
   viewCount                  Int? @default(0)
   amount                     Int? @default(0)
+
+  @@id([orgId, entryDateTime, orgCategoryId])
 }
 
 model OrgDailyItemStatistics {
-  entryDateTime DateTime @id
+  entryDateTime DateTime
 
   org   Organization @relation("OrgDailyItemStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
@@ -865,13 +871,14 @@ model OrgDailyItemStatistics {
   newRentingOrderCount       Int? @default(0)
   cancelledRentingOrderCount Int? @default(0)
   viewCount                  Int? @default(0)
-  amount                     Int? @default(0)
-  debtAmount                 Int? @default(0) // Debt after Approved Order
+  amount                     Int? @default(0) // Amount after Approved
   payAmount                  Int? @default(0) // Pay after Approved Order
+  payDamagesAmount           Int? @default(0)
+
+  @@id([orgId, entryDateTime, itemId])
 }
 
 model OrgDailyCustomerTradeCountStatistics {
-  id            String   @id @default(uuid())
   entryDateTime DateTime
   startTime     Int // In Second 0 -> 0hr
   endTime       Int // In Second 900 -> 0 hr 15 min
@@ -880,7 +887,7 @@ model OrgDailyCustomerTradeCountStatistics {
   org   Organization @relation("OrgDailyCustomerTradeCountStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
-  @@index(fields: [entryDateTime], name: "org_daily_customer_trade_count_statistics_entry_date_time_index")
+  @@id([orgId, entryDateTime, startTime, endTime])
 }
 
 // Item Reviews?
