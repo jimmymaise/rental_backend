@@ -15,6 +15,7 @@ import { RentingOrderModel } from './models/renting-order.model';
 import { RentingOrderCreateModel } from './models/renting-order-create.model';
 import { RentingOrderItemModel } from './models/renting-order-item.model';
 import { StoragesService } from '@modules/storages/storages.service';
+import { OrgStatisticLogService } from '@modules/org-statistics';
 
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
 
@@ -24,6 +25,7 @@ export class RentingOrdersService {
     private prismaService: PrismaService,
     private storagesService: StoragesService,
     private customAttributeService: CustomAttributesService,
+    private orgStatisticLogService: OrgStatisticLogService,
   ) {}
 
   public async createRentingOrder({
@@ -159,6 +161,31 @@ export class RentingOrdersService {
       data: createRentingDepositItemsManyData,
     });
 
+    await this.orgStatisticLogService.increaseTodayNewOrderCount(orgId);
+
+    // Log Statistic Category New Count
+    const createdRentingOrderItems = await this.prismaService.rentingOrderItem.findMany(
+      {
+        where: {
+          rentingOrderId: createRentingOrderResult.id,
+        },
+      },
+    );
+    for (let i = 0; i < createdRentingOrderItems.length; i++) {
+      const currentItem = createdRentingOrderItems[i];
+      const itemDetail = await this.prismaService.item.findUnique({
+        where: { id: currentItem.itemId },
+        select: { orgCategories: { select: { id: true } } },
+      });
+
+      for (let j = 0; j < itemDetail.orgCategories.length; j++) {
+        await this.orgStatisticLogService.increaseTodayOrgCategoryNewOrderCount(
+          orgId,
+          itemDetail.orgCategories[j].id,
+        );
+      }
+    }
+
     return RentingOrderModel.fromDatabase({ data: createRentingOrderResult });
   }
 
@@ -179,7 +206,10 @@ export class RentingOrdersService {
     delete include['statusDetail'];
 
     const pagingHandler = new OffsetPagingHandler(
-      whereQuery,
+      {
+        ...whereQuery,
+        isDeleted: false,
+      },
       pageSize,
       orderBy,
       this.prismaService,
@@ -284,12 +314,39 @@ export class RentingOrdersService {
     }
     delete include['rentingDepositItem'];
 
+    // TODO: include: isEmpty(include) ? undefined : include,
     const item: any = await this.prismaService.rentingOrder.findUnique({
       where: { id },
-      include: isEmpty(include) ? undefined : include,
+      select: {
+        id: true,
+        orderCustomId: true,
+        orgId: true,
+        payAmount: true,
+        totalAmount: true,
+        note: true,
+        customerUserId: true,
+        createdDate: true,
+        updatedDate: true,
+        systemStatus: true,
+        status: true,
+        attachedFiles: true,
+        isDeleted: true,
+        createdBy: true,
+        updatedBy: true,
+        rentingOrderItems: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        rentingDepositItems: {
+          where: {
+            isDeleted: false,
+          },
+        },
+      },
     });
 
-    if (item.orgId !== orgId) {
+    if (item.isDeleted || item.orgId !== orgId) {
       throw new Error('Record not exist');
     }
 
@@ -440,13 +497,16 @@ export class RentingOrdersService {
       }
     });
 
-    await this.prismaService.rentingOrderItem.deleteMany({
+    await this.prismaService.rentingOrderItem.updateMany({
       where: {
         id: {
           notIn: existingUpdateRentingOrderItemIds,
         },
         orgId,
         rentingOrderId: updateRentingOrderResult.id,
+      },
+      data: {
+        isDeleted: true,
       },
     });
 
@@ -520,13 +580,16 @@ export class RentingOrdersService {
       }
     });
 
-    await this.prismaService.rentingDepositItem.deleteMany({
+    await this.prismaService.rentingDepositItem.updateMany({
       where: {
         id: {
           notIn: existingUpdateRentingDepositItemIds,
         },
         orgId,
         rentingOrderId: updateRentingOrderResult.id,
+      },
+      data: {
+        isDeleted: true,
       },
     });
 
@@ -565,21 +628,30 @@ export class RentingOrdersService {
       throw new Error('Record not exist');
     }
 
-    await this.prismaService.rentingDepositItem.deleteMany({
+    await this.prismaService.rentingDepositItem.updateMany({
       where: {
         rentingOrderId: id,
       },
-    });
-
-    await this.prismaService.rentingOrderItem.deleteMany({
-      where: {
-        rentingOrderId: id,
+      data: {
+        isDeleted: true,
       },
     });
 
-    const deletedItem = await this.prismaService.rentingOrder.delete({
+    await this.prismaService.rentingOrderItem.updateMany({
+      where: {
+        rentingOrderId: id,
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    const deletedItem = await this.prismaService.rentingOrder.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
       },
     });
 
@@ -609,6 +681,7 @@ export class RentingOrdersService {
     const rentingOrderItems = await this.prismaService.rentingOrderItem.findMany(
       {
         where: {
+          isDeleted: false,
           itemId,
           systemStatus: {
             not: RentingOrderSystemStatusType.Cancelled,

@@ -105,11 +105,115 @@ export class RentingOrdersStatusService {
     });
 
     // Log Statistic
-    if (rentingOrderNewSystemStatus === RentingOrderSystemStatusType.Reserved) {
-      await this.orgStatisticLogService.increaseTodayOrderAmount(
-        orgId,
-        updatedItem.totalAmount,
-      );
+    switch (rentingOrderNewSystemStatus) {
+      case RentingOrderSystemStatusType.Reserved:
+        await this.orgStatisticLogService.increaseTodayReservedOrderCount(
+          orgId,
+        );
+        await this.orgStatisticLogService.increaseTodayOrderAmount(
+          orgId,
+          updatedItem.totalAmount,
+        );
+
+        const rentingOrderDetailResult = await this.prismaService.rentingOrder.findUnique(
+          {
+            where: {
+              id,
+            },
+            select: {
+              rentingOrderItems: {
+                select: {
+                  amount: true,
+                  item: {
+                    select: {
+                      id: true,
+                      orgCategories: {
+                        select: {
+                          id: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        );
+        for (
+          let i = 0;
+          i < rentingOrderDetailResult.rentingOrderItems.length;
+          i++
+        ) {
+          const itemDetail = rentingOrderDetailResult.rentingOrderItems[i];
+
+          for (let j = 0; j < itemDetail.item.orgCategories.length; j++) {
+            await this.orgStatisticLogService.increaseTodayOrgCategoryAmount(
+              orgId,
+              itemDetail.item.orgCategories[j].id,
+              itemDetail.amount,
+            );
+          }
+
+          await this.orgStatisticLogService.increaseTodayItemAmount(
+            orgId,
+            itemDetail.item.id,
+            itemDetail.amount,
+          );
+        }
+        break;
+      case RentingOrderSystemStatusType.PickedUp:
+        await this.orgStatisticLogService.increaseTodayPickedUpOrderCount(
+          orgId,
+        );
+        break;
+      case RentingOrderSystemStatusType.Cancelled:
+        await this.orgStatisticLogService.increaseTodayCancelledOrderCount(
+          orgId,
+        );
+        const rentingOrderDetailResult2 = await this.prismaService.rentingOrder.findUnique(
+          {
+            where: {
+              id,
+            },
+            select: {
+              rentingOrderItems: {
+                select: {
+                  amount: true,
+                  item: {
+                    select: {
+                      id: true,
+                      orgCategories: {
+                        select: {
+                          id: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        );
+        for (
+          let i = 0;
+          i < rentingOrderDetailResult2.rentingOrderItems.length;
+          i++
+        ) {
+          const itemDetail = rentingOrderDetailResult2.rentingOrderItems[i];
+
+          for (let j = 0; j < itemDetail.item.orgCategories.length; j++) {
+            await this.orgStatisticLogService.increaseTodayOrgCategoryCancelledOrderCount(
+              orgId,
+              itemDetail.item.orgCategories[j].id,
+            );
+          }
+        }
+        break;
+      case RentingOrderSystemStatusType.Returned:
+        await this.orgStatisticLogService.increaseTodayReturnedOrderCount(
+          orgId,
+        );
+        break;
     }
 
     return RentingOrderModel.fromDatabase({

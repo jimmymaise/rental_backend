@@ -6,6 +6,7 @@ import { RedisCacheModule } from '../redis-cache/redis-cache.module';
 import { UsersModule } from '../users/users.module';
 import { CustomAttributesModule } from '@modules/custom-attributes/custom-attributes.module';
 import { OrgActivityLogModule } from '@app/modules/org-activity-log/org-activity-log.module';
+import { OrgStatisticsModule } from '@app/modules/org-statistics/org-statistics.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { OrgActivityLogModule } from '@app/modules/org-activity-log/org-activity
     CustomAttributesModule,
     UsersModule,
     OrgActivityLogModule,
+    OrgStatisticsModule,
   ],
   providers: [PaymentsService, PaymentsResolvers],
 })

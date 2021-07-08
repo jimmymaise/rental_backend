@@ -12,31 +12,31 @@ generator client {
 }
 
 model Organization {
-  id                                   String                                 @id @default(uuid())
-  name                                 String?
-  description                          String?
-  avatarImage                          Json?
-  slug                                 String?                                @unique
-  createdDate                          DateTime?                              @default(now())
-  updatedDate                          DateTime?                              @updatedAt
-  rolesThisOrgHaving                   Role[]
-  createdByUser                        User?                                  @relation("CreatedByUser", fields: [createdBy], references: [id])
-  createdBy                            String?
-  employees                            Employee[]
-  customers                            Customer[]
-  items                                Item[]                                 @relation("ItemBelongToOrg")
-  rentingOrder                         RentingOrder[]                         @relation("RentingOrderBelongToOrg")
-  rentingOrderItems                    RentingOrderItem[]                     @relation("RentingOrderItemBelongToOrg")
-  rentingDepositItems                  RentingDepositItem[]                   @relation("RentingDepositItemBelongToOrg")
-  commonAttributesConfigs              CommonAttributesConfig[]               @relation("CommonAttributesConfigBelongToOrg")
-  orgCategories                        OrgCategory[]                          @relation("OrgCategoryBelongToOrg")
-  orgDailyOrderStatistics              OrgDailyOrderStatistics[]              @relation("OrgDailyOrderStatisticsBelongToOrg")
-  orgDailyCategoryStatistics           OrgDailyCategoryStatistics[]           @relation("OrgDailyCategoryStatisticsBelongToOrg")
-  orgDailyItemStatistics               OrgDailyItemStatistics[]               @relation("OrgDailyItemStatisticsBelongToOrg")
-  OrgDailyCustomerTradeCountStatistics OrgDailyCustomerTradeCountStatistics[] @relation("OrgDailyCustomerTradeCountStatisticsBelongToOrg")
-  orgOrgTransactionHistories           OrgTransactionHistory[]                @relation("OrgTransactionHistoryBelongToOrg")
-  userReviews                          UserReview[]                           @relation("UserReviewCreatedByOrg")
-  orgActivityLogs                      OrgActivityLog[]                       @relation("OrgActivityLogBelongToOrg")
+  id                                           String                                         @id @default(uuid())
+  name                                         String?
+  description                                  String?
+  avatarImage                                  Json?
+  slug                                         String?                                        @unique
+  createdDate                                  DateTime?                                      @default(now())
+  updatedDate                                  DateTime?                                      @updatedAt
+  rolesThisOrgHaving                           Role[]
+  createdByUser                                User?                                          @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdBy                                    String?
+  employees                                    Employee[]
+  customers                                    Customer[]
+  items                                        Item[]                                         @relation("ItemBelongToOrg")
+  rentingOrder                                 RentingOrder[]                                 @relation("RentingOrderBelongToOrg")
+  rentingOrderItems                            RentingOrderItem[]                             @relation("RentingOrderItemBelongToOrg")
+  rentingDepositItems                          RentingDepositItem[]                           @relation("RentingDepositItemBelongToOrg")
+  commonAttributesConfigs                      CommonAttributesConfig[]                       @relation("CommonAttributesConfigBelongToOrg")
+  orgCategories                                OrgCategory[]                                  @relation("OrgCategoryBelongToOrg")
+  orgDailyOrderStatistics                      OrgDailyOrderStatistics[]                      @relation("OrgDailyOrderStatisticsBelongToOrg")
+  orgDailyCategoryStatistics                   OrgDailyCategoryStatistics[]                   @relation("OrgDailyCategoryStatisticsBelongToOrg")
+  orgDailyItemStatistics                       OrgDailyItemStatistics[]                       @relation("OrgDailyItemStatisticsBelongToOrg")
+  OrgDailyCustomerTradeTrackingCountStatistics OrgDailyCustomerTradeTrackingCountStatistics[] @relation("OrgDailyCustomerTradeTrackingCountStatisticsBelongToOrg")
+  orgOrgTransactionHistories                   OrgTransactionHistory[]                        @relation("OrgTransactionHistoryBelongToOrg")
+  userReviews                                  UserReview[]                                   @relation("UserReviewCreatedByOrg")
+  orgActivityLogs                              OrgActivityLog[]                               @relation("OrgActivityLogBelongToOrg")
 }
 
 model Employee {
@@ -557,6 +557,8 @@ model RentingOrder {
   status        String
   attachedFiles Json?
 
+  isDeleted Boolean? @default(false)
+
   rentingOrderItems   RentingOrderItem[]   @relation("RentingOrderItemBelongToRentingOrder")
   rentingDepositItems RentingDepositItem[] @relation("RentingDepositItemBelongToRentingOrder")
 
@@ -588,6 +590,8 @@ model RentingOrderItem {
   updatedDate DateTime @updatedAt
   createdBy   String
   updatedBy   String
+
+  isDeleted Boolean? @default(false)
 
   item                                    Item?                                   @relation("RentingOrderItemBelongToItem", fields: [itemId], references: [id])
   itemId                                  String?
@@ -635,6 +639,7 @@ model RentingDepositItem {
   createdBy String
   updatedBy String
 
+  isDeleted Boolean? @default(false)
 }
 
 enum CommonAttributesType {
@@ -878,16 +883,112 @@ model OrgDailyItemStatistics {
   @@id([orgId, entryDateTime, itemId])
 }
 
-model OrgDailyCustomerTradeCountStatistics {
+// In Second 0 -> 0hr
+// In Second 900 -> 0 hr 15 min
+model OrgDailyCustomerTradeTrackingCountStatistics {
   entryDateTime DateTime
-  startTime     Int // In Second 0 -> 0hr
-  endTime       Int // In Second 900 -> 0 hr 15 min
-  customerCount Int
 
-  org   Organization @relation("OrgDailyCustomerTradeCountStatisticsBelongToOrg", fields: [orgId], references: [id])
+  org   Organization @relation("OrgDailyCustomerTradeTrackingCountStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
-  @@id([orgId, entryDateTime, startTime, endTime])
+  time_0_900       Int?
+  time_901_1800    Int?
+  time_1801_2700   Int?
+  time_2701_3600   Int?
+  time_3601_4500   Int?
+  time_4501_5400   Int?
+  time_5401_6300   Int?
+  time_6301_7200   Int?
+  time_7201_8100   Int?
+  time_8101_9000   Int?
+  time_9001_9900   Int?
+  time_9901_10800  Int?
+  time_10801_11700 Int?
+  time_11701_12600 Int?
+  time_12601_13500 Int?
+  time_13501_14400 Int?
+  time_14401_15300 Int?
+  time_15301_16200 Int?
+  time_16201_17100 Int?
+  time_17101_18000 Int?
+  time_18001_18900 Int?
+  time_18901_19800 Int?
+  time_19801_20700 Int?
+  time_20701_21600 Int?
+  time_21601_22500 Int?
+  time_22501_23400 Int?
+  time_23401_24300 Int?
+  time_24301_25200 Int?
+  time_25201_26100 Int?
+  time_26101_27000 Int?
+  time_27001_27900 Int?
+  time_27901_28800 Int?
+  time_28801_29700 Int?
+  time_29701_30600 Int?
+  time_30601_31500 Int?
+  time_31501_32400 Int?
+  time_32401_33300 Int?
+  time_33301_34200 Int?
+  time_34201_35100 Int?
+  time_35101_36000 Int?
+  time_36001_36900 Int?
+  time_36901_37800 Int?
+  time_37801_38700 Int?
+  time_38701_39600 Int?
+  time_39601_40500 Int?
+  time_40501_41400 Int?
+  time_41401_42300 Int?
+  time_42301_43200 Int?
+  time_43201_44100 Int?
+  time_44101_45000 Int?
+  time_45001_45900 Int?
+  time_45901_46800 Int?
+  time_46801_47700 Int?
+  time_47701_48600 Int?
+  time_48601_49500 Int?
+  time_49501_50400 Int?
+  time_50401_51300 Int?
+  time_51301_52200 Int?
+  time_52201_53100 Int?
+  time_53101_54000 Int?
+  time_54001_54900 Int?
+  time_54901_55800 Int?
+  time_55801_56700 Int?
+  time_56701_57600 Int?
+  time_57601_58500 Int?
+  time_58501_59400 Int?
+  time_59401_60300 Int?
+  time_60301_61200 Int?
+  time_61201_62100 Int?
+  time_62101_63000 Int?
+  time_63001_63900 Int?
+  time_63901_64800 Int?
+  time_64801_65700 Int?
+  time_65701_66600 Int?
+  time_66601_67500 Int?
+  time_67501_68400 Int?
+  time_68401_69300 Int?
+  time_69301_70200 Int?
+  time_70201_71100 Int?
+  time_71101_72000 Int?
+  time_72001_72900 Int?
+  time_72901_73800 Int?
+  time_73801_74700 Int?
+  time_74701_75600 Int?
+  time_75601_76500 Int?
+  time_76501_77400 Int?
+  time_77401_78300 Int?
+  time_78301_79200 Int?
+  time_79201_80100 Int?
+  time_80101_81000 Int?
+  time_81001_81900 Int?
+  time_81901_82800 Int?
+  time_82801_83700 Int?
+  time_83701_84600 Int?
+  time_84601_85500 Int?
+  time_85501_86400 Int?
+
+  @@id([orgId, entryDateTime])
 }
 
 // Item Reviews?

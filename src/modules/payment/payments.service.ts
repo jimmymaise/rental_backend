@@ -18,6 +18,7 @@ import { PaymentMethodSystemTypeTypes } from './constants/payment-method-system-
 import { UsersService } from '../users/users.service';
 import { PaymentTransactionTypes } from './constants/payment-transaction-types';
 import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
+import { OrgStatisticLogService } from '@app/modules/org-statistics/org-statistic-log.service';
 
 @Injectable()
 export class PaymentsService {
@@ -25,6 +26,7 @@ export class PaymentsService {
     private prismaService: PrismaService,
     private usersService: UsersService,
     private orgActivityLogService: OrgActivityLogService,
+    private orgStatisticLogService: OrgStatisticLogService,
   ) {}
 
   getAllPaymentMethodSystemType(): PaymentMethodModel[] {
@@ -265,6 +267,11 @@ export class PaymentsService {
       orgId,
     });
 
+    await this.orgStatisticLogService.increaseTodayOrderPayAmount(
+      orgId,
+      transactionHistory.payAmount,
+    );
+
     return transactionHistory;
   }
 
@@ -320,6 +327,11 @@ export class PaymentsService {
       },
       orgId,
     });
+
+    await this.orgStatisticLogService.increaseTodayOrderRefundAmount(
+      orgId,
+      transactionHistory.payAmount,
+    );
 
     return transactionHistory;
   }
@@ -390,6 +402,12 @@ export class PaymentsService {
       orgId,
     });
 
+    await this.orgStatisticLogService.increaseTodayItemPayDamagesAmount(
+      orgId,
+      data.itemId,
+      transactionHistory.payAmount,
+    );
+
     return transactionHistory;
   }
 
@@ -459,6 +477,12 @@ export class PaymentsService {
       },
       orgId,
     });
+
+    await this.orgStatisticLogService.increaseTodayItemRefundDamagesAmount(
+      orgId,
+      data.itemId,
+      transactionHistory.payAmount,
+    );
 
     return transactionHistory;
   }

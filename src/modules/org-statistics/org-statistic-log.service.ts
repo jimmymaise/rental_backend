@@ -5,8 +5,9 @@ import {
   OrgDailyOrderStatistics,
   OrgDailyCategoryStatistics,
   OrgDailyItemStatistics,
-  OrgDailyCustomerTradeCountStatistics,
+  OrgDailyCustomerTradeTrackingCountStatistics,
 } from '@prisma/client';
+import { userTradeTimeRanges } from './constants/user-trade-time-range';
 
 @Injectable()
 export class OrgStatisticLogService {
@@ -196,6 +197,7 @@ export class OrgStatisticLogService {
     });
   }
 
+  //
   public async increaseTodayOrgCategoryViewCount(
     orgId: string,
     categoryId: string,
@@ -281,6 +283,7 @@ export class OrgStatisticLogService {
     });
   }
 
+  //
   public async increaseTodayItemViewCount(
     orgId: string,
     itemId: string,
@@ -325,39 +328,41 @@ export class OrgStatisticLogService {
   }
 
   // OrgDailyCustomerTradeCountStatistics
-  // public async increaseCustomerTradeCount(
-  //   orgId: string
-  // ): Promise<OrgDailyCustomerTradeCountStatistics> {
-  //   const entryDateTime = this.startOfToday();
-  //   const now = new Date()
+  public async increaseCustomerTradeCount(
+    orgId: string,
+  ): Promise<OrgDailyCustomerTradeTrackingCountStatistics> {
+    const entryDateTime = this.startOfToday();
+    const now = new Date();
+    const seconds =
+      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const foundRange = userTradeTimeRanges.find(
+      (timeRange) => seconds >= timeRange[0] && seconds <= timeRange[1],
+    );
+    const field = `time_${foundRange[0]}_${foundRange[1]}`;
 
-  //   return this.prismaService.orgDailyCustomerTradeCountStatistics.upsert({
-  //     create: {
-  //       entryDateTime,
-  //       org: {
-  //         connect: {
-  //           id: orgId,
-  //         },
-  //       },
-  //       item: {
-  //         connect: {
-  //           id: itemId,
-  //         },
-  //       },
-  //       [field]: value,
-  //     },
-  //     update: {
-  //       [field]: {
-  //         increment: value,
-  //       },
-  //     },
-  //     where: {
-  //       orgId_entryDateTime_itemId: {
-  //         entryDateTime,
-  //         orgId,
-  //         itemId,
-  //       },
-  //     },
-  //   });
-  // }
+    return this.prismaService.orgDailyCustomerTradeTrackingCountStatistics.upsert(
+      {
+        create: {
+          entryDateTime,
+          org: {
+            connect: {
+              id: orgId,
+            },
+          },
+          [field]: 1,
+        },
+        update: {
+          [field]: {
+            increment: 1,
+          },
+        },
+        where: {
+          orgId_entryDateTime: {
+            entryDateTime,
+            orgId,
+          },
+        },
+      },
+    );
+  }
 }
