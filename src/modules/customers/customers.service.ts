@@ -10,6 +10,7 @@ import { UsersService } from '@modules/users/users.service';
 import { CustomerModel, CustomerCreateModel } from './models';
 import { User } from '@prisma/client';
 import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
+import { OrgStatisticLogService } from '@modules/org-statistics/org-statistic-log.service';
 
 @Injectable()
 export class CustomersService {
@@ -17,6 +18,7 @@ export class CustomersService {
     private prismaService: PrismaService,
     private usersService: UsersService,
     private orgActivityLogService: OrgActivityLogService,
+    private orgStatisticLogService: OrgStatisticLogService,
   ) {}
 
   public async getCustomersWithOffsetPaging(
@@ -225,11 +227,13 @@ export class CustomersService {
     });
 
     if (customer) {
+      await this.orgStatisticLogService.increaseTodayReturnCustomerCount(orgId);
       return CustomerModel.fromCustomer(customer);
     }
 
     const user = await this.usersService.getUserById(userId);
     const userInfo = await this.usersService.getUserInfoById(userId);
+    await this.orgStatisticLogService.increaseTodayNewCustomerCount(orgId);
     return this.createCustomer({
       orgId,
       createdBy,

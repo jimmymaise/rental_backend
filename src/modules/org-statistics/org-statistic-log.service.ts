@@ -5,9 +5,8 @@ import {
   OrgDailyOrderStatistics,
   OrgDailyCategoryStatistics,
   OrgDailyItemStatistics,
-  OrgDailyCustomerTradeTrackingCountStatistics,
+  OrgDailyCustomerStatistics,
 } from '@prisma/client';
-import { userTradeTimeRanges } from './constants/user-trade-time-range';
 
 @Injectable()
 export class OrgStatisticLogService {
@@ -16,7 +15,7 @@ export class OrgStatisticLogService {
   private startOfToday(): Date {
     const date = new Date();
 
-    date.setHours(0, 0, 0, 0);
+    date.setSeconds(0);
 
     return date;
   }
@@ -327,42 +326,58 @@ export class OrgStatisticLogService {
     });
   }
 
-  // OrgDailyCustomerTradeCountStatistics
-  public async increaseCustomerTradeCount(
+  // OrgDailyCustomerStatistics
+  public async updateOrgDailyCustomerStatistics(
     orgId: string,
-  ): Promise<OrgDailyCustomerTradeTrackingCountStatistics> {
+    {
+      field,
+      value,
+    }: {
+      field: string;
+      value: number;
+    },
+  ): Promise<OrgDailyCustomerStatistics> {
     const entryDateTime = this.startOfToday();
-    const now = new Date();
-    const seconds =
-      now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    const foundRange = userTradeTimeRanges.find(
-      (timeRange) => seconds >= timeRange[0] && seconds <= timeRange[1],
-    );
-    const field = `time_${foundRange[0]}_${foundRange[1]}`;
 
-    return this.prismaService.orgDailyCustomerTradeTrackingCountStatistics.upsert(
-      {
-        create: {
-          entryDateTime,
-          org: {
-            connect: {
-              id: orgId,
-            },
-          },
-          [field]: 1,
-        },
-        update: {
-          [field]: {
-            increment: 1,
+    return this.prismaService.orgDailyCustomerStatistics.upsert({
+      create: {
+        entryDateTime,
+        org: {
+          connect: {
+            id: orgId,
           },
         },
-        where: {
-          orgId_entryDateTime: {
-            entryDateTime,
-            orgId,
-          },
+        [field]: value,
+      },
+      update: {
+        [field]: {
+          increment: value,
         },
       },
-    );
+      where: {
+        orgId_entryDateTime: {
+          entryDateTime,
+          orgId,
+        },
+      },
+    });
+  }
+
+  public async increaseTodayNewCustomerCount(
+    orgId: string,
+  ): Promise<OrgDailyCustomerStatistics> {
+    return this.updateOrgDailyCustomerStatistics(orgId, {
+      field: 'newCount',
+      value: 1,
+    });
+  }
+
+  public async increaseTodayReturnCustomerCount(
+    orgId: string,
+  ): Promise<OrgDailyCustomerStatistics> {
+    return this.updateOrgDailyCustomerStatistics(orgId, {
+      field: 'returnCount',
+      value: 1,
+    });
   }
 }
