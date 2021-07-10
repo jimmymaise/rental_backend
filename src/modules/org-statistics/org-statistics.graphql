@@ -1,13 +1,64 @@
-type OrgStatistic {
-  id: ID!
-  name: String
-  slug: String
-  image: PublicStorageFile
-  coverImage: PublicStorageFile
-  parentCategoryId: String
-  seoTitle: String
-  seoDescription: String
-  order: Int
-  isDisabled: Boolean
-  categoryId: String
+type OrgOrderStatistics {
+  entryDateTime: Float
+  orgId: String
+  rentingOrderAmount: Float
+  rentingOrderPayAmount: Float
+  rentingOrderRefundAmount: Float
+  rentingNewOrderCount: Float
+  rentingReservedOrderCount: Float
+  rentingPickedUpOrderCount: Float
+  rentingReturnedUpOrderCount: Float
+  rentingCancelledOrderCount: Float
+}
+
+type OrgCategoryStatistics {
+  entryDateTime: Float
+  orgId: String
+  orgCategoryId: String
+  newRentingOrderCount: Float
+  cancelledRentingOrderCount: Float
+  viewCount: Float
+  amount: Float
+}
+
+type OrgItemStatistics {
+  entryDateTime: Float
+  orgId: String
+  itemId: String
+  newRentingOrderCount: Float
+  cancelledRentingOrderCount: Float
+  viewCount: Float
+  amount: Float
+  payDamagesAmount: Float
+  refundDamagesAmount: Float
+}
+
+type OrgCustomerStatistics {
+  entryDateTime: Float
+  orgId: String
+  newCount: Float
+  returnCount: Float
+}
+
+type Query {
+  feedOrderStatistics(
+    fromDate: Float!
+    toDate: Float!
+    groupBy: String!
+  ): [OrgOrderStatistics]
+  feedCategoryStatistics(
+    fromDate: Float!
+    toDate: Float!
+    groupBy: String!
+  ): [OrgCategoryStatistics]
+  feedItemStatistics(
+    fromDate: Float!
+    toDate: Float!
+    groupBy: String!
+  ): [OrgItemStatistics]
+  feedCustomerStatistics(
+    fromDate: Float!
+    toDate: Float!
+    groupBy: String!
+  ): [OrgCustomerStatistics]
 }

@@ -17,6 +17,7 @@ export class OrgStatisticFeedService {
     data: any[],
     sumFields: string[],
     groupBy: StatisticEntryGroupByTypes,
+    uniqueBy: string[] = [],
   ): any[] {
     const itemOrders: string[] = [];
     const mapData = {};
@@ -48,6 +49,10 @@ export class OrgStatisticFeedService {
         default:
           break;
       }
+
+      uniqueBy.forEach((extraField) => {
+        key += `_${item[extraField]}`;
+      });
 
       if (mapData[key]) {
         sumFields.forEach((field) => {
@@ -87,6 +92,7 @@ export class OrgStatisticFeedService {
     });
   }
 
+  // Order
   public async getOrderStatisticsInTimeRange({
     orgId,
     fromDate,
@@ -134,5 +140,137 @@ export class OrgStatisticFeedService {
       ],
       groupBy,
     );
+  }
+
+  // Item
+  public async getItemStatisticsInTimeRange({
+    orgId,
+    fromDate,
+    toDate,
+  }: {
+    orgId: string;
+    fromDate: Date;
+    toDate: Date;
+  }): Promise<OrgItemStatistics[]> {
+    return this.getStatisticsInTimeRange({
+      tableName: 'orgItemStatistics',
+      orgId,
+      fromDate,
+      toDate,
+    });
+  }
+
+  public async getItemStatisticsInTimeRangeGroupBy({
+    orgId,
+    fromDate,
+    toDate,
+    groupBy,
+  }: {
+    orgId: string;
+    fromDate: Date;
+    toDate: Date;
+    groupBy: StatisticEntryGroupByTypes;
+  }): Promise<OrgItemStatistics[]> {
+    const dbData = await this.getItemStatisticsInTimeRange({
+      orgId,
+      fromDate,
+      toDate,
+    });
+    return this.groupStatisticsBy(
+      dbData,
+      [
+        'newRentingOrderCount',
+        'cancelledRentingOrderCount',
+        'viewCount',
+        'amount',
+        'payDamagesAmount',
+        'refundDamagesAmount',
+      ],
+      groupBy,
+    );
+  }
+
+  // Category
+  public async getCategoryStatisticsInTimeRange({
+    orgId,
+    fromDate,
+    toDate,
+  }: {
+    orgId: string;
+    fromDate: Date;
+    toDate: Date;
+  }): Promise<OrgCategoryStatistics[]> {
+    return this.getStatisticsInTimeRange({
+      tableName: 'orgCategoryStatistics',
+      orgId,
+      fromDate,
+      toDate,
+    });
+  }
+
+  public async getCategoryStatisticsInTimeRangeGroupBy({
+    orgId,
+    fromDate,
+    toDate,
+    groupBy,
+  }: {
+    orgId: string;
+    fromDate: Date;
+    toDate: Date;
+    groupBy: StatisticEntryGroupByTypes;
+  }): Promise<OrgCategoryStatistics[]> {
+    const dbData = await this.getCategoryStatisticsInTimeRange({
+      orgId,
+      fromDate,
+      toDate,
+    });
+    return this.groupStatisticsBy(
+      dbData,
+      [
+        'newRentingOrderCount',
+        'cancelledRentingOrderCount',
+        'viewCount',
+        'amout',
+      ],
+      groupBy,
+      ['orgCategoryId'],
+    );
+  }
+
+  // Customer
+  public async getCustomerStatisticsInTimeRange({
+    orgId,
+    fromDate,
+    toDate,
+  }: {
+    orgId: string;
+    fromDate: Date;
+    toDate: Date;
+  }): Promise<OrgCustomerStatistics[]> {
+    return this.getStatisticsInTimeRange({
+      tableName: 'orgCustomerStatistics',
+      orgId,
+      fromDate,
+      toDate,
+    });
+  }
+
+  public async getCustomerStatisticsInTimeRangeGroupBy({
+    orgId,
+    fromDate,
+    toDate,
+    groupBy,
+  }: {
+    orgId: string;
+    fromDate: Date;
+    toDate: Date;
+    groupBy: StatisticEntryGroupByTypes;
+  }): Promise<OrgCustomerStatistics[]> {
+    const dbData = await this.getCustomerStatisticsInTimeRange({
+      orgId,
+      fromDate,
+      toDate,
+    });
+    return this.groupStatisticsBy(dbData, ['newCount', 'returnCount'], groupBy);
   }
 }

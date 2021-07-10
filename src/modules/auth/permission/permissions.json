@@ -214,5 +214,11 @@
     "description": "",
     "isInternal": false,
     "order": 93
+  },
+  "GET_ORG_STATISTICS_LOG": {
+    "name": "GET_ORG_STATISTICS_LOG",
+    "description": "",
+    "isInternal": false,
+    "order": 94
   }
 }
