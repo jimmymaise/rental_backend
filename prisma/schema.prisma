@@ -30,14 +30,14 @@ model Organization {
   rentingDepositItems                          RentingDepositItem[]                           @relation("RentingDepositItemBelongToOrg")
   commonAttributesConfigs                      CommonAttributesConfig[]                       @relation("CommonAttributesConfigBelongToOrg")
   orgCategories                                OrgCategory[]                                  @relation("OrgCategoryBelongToOrg")
-  orgDailyOrderStatistics                      OrgDailyOrderStatistics[]                      @relation("OrgDailyOrderStatisticsBelongToOrg")
-  orgDailyCategoryStatistics                   OrgDailyCategoryStatistics[]                   @relation("OrgDailyCategoryStatisticsBelongToOrg")
-  orgDailyItemStatistics                       OrgDailyItemStatistics[]                       @relation("OrgDailyItemStatisticsBelongToOrg")
-  orgDailyCustomerTradeTrackingCountStatistics OrgDailyCustomerTradeTrackingCountStatistics[] @relation("OrgDailyCustomerTradeTrackingCountStatisticsBelongToOrg")
+  orgOrderStatistics                      OrgOrderStatistics[]                      @relation("OrgOrderStatisticsBelongToOrg")
+  orgCategoryStatistics                   OrgCategoryStatistics[]                   @relation("OrgCategoryStatisticsBelongToOrg")
+  orgItemStatistics                       OrgItemStatistics[]                       @relation("OrgItemStatisticsBelongToOrg")
+  orgCustomerTradeTrackingCountStatistics OrgCustomerTradeTrackingCountStatistics[] @relation("OrgCustomerTradeTrackingCountStatisticsBelongToOrg")
   orgOrgTransactionHistories                   OrgTransactionHistory[]                        @relation("OrgTransactionHistoryBelongToOrg")
   userReviews                                  UserReview[]                                   @relation("UserReviewCreatedByOrg")
   orgActivityLogs                              OrgActivityLog[]                               @relation("OrgActivityLogBelongToOrg")
-  orgDailyCustomerStatistics          OrgDailyCustomerStatistics[]      @relation("OrgDailyCustomerStatisticsBelongToOrg")
+  orgCustomerStatistics          OrgCustomerStatistics[]      @relation("OrgCustomerStatisticsBelongToOrg")
 }
 
 model Employee {
@@ -294,7 +294,7 @@ model Item {
   WishingItem WishingItem[]
 
   rentingOrderItems      RentingOrderItem[]       @relation("RentingOrderItemBelongToItem")
-  orgDailyItemStatistics OrgDailyItemStatistics[] @relation("OrgDailyItemStatisticsBelongToItem")
+  orgItemStatistics OrgItemStatistics[] @relation("OrgItemStatisticsBelongToItem")
 
   orgRentingOrderItemTransactionHistories OrgRentingOrderItemTransactionHistory[] @relation("OrgRentingOrderItemTransactionBelongToItem")
   itemOrgActivityLog                      ItemOrgActivityLog[]                    @relation("ItemOrgActivityLogBelongToItem")
@@ -825,15 +825,15 @@ model OrgCategory {
   createdBy String
   updatedBy String
 
-  orgDailyCategoryStatistics OrgDailyCategoryStatistics[] @relation("OrgDailyCategoryStatisticsBelongToOrgCategory")
+  orgCategoryStatistics OrgCategoryStatistics[] @relation("OrgCategoryStatisticsBelongToOrgCategory")
 
   @@unique([orgId, slug])
 }
 
-model OrgDailyOrderStatistics {
+model OrgOrderStatistics {
   entryDateTime DateTime
 
-  org   Organization @relation("OrgDailyOrderStatisticsBelongToOrg", fields: [orgId], references: [id])
+  org   Organization @relation("OrgOrderStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
   rentingOrderAmount          Int? @default(0) // After Approved
@@ -848,13 +848,13 @@ model OrgDailyOrderStatistics {
   @@id([orgId, entryDateTime])
 }
 
-model OrgDailyCategoryStatistics {
+model OrgCategoryStatistics {
   entryDateTime DateTime
 
-  org   Organization @relation("OrgDailyCategoryStatisticsBelongToOrg", fields: [orgId], references: [id])
+  org   Organization @relation("OrgCategoryStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
-  orgCategory   OrgCategory @relation("OrgDailyCategoryStatisticsBelongToOrgCategory", fields: [orgCategoryId], references: [id])
+  orgCategory   OrgCategory @relation("OrgCategoryStatisticsBelongToOrgCategory", fields: [orgCategoryId], references: [id])
   orgCategoryId String
 
   newRentingOrderCount       Int? @default(0)
@@ -865,13 +865,13 @@ model OrgDailyCategoryStatistics {
   @@id([orgId, entryDateTime, orgCategoryId])
 }
 
-model OrgDailyItemStatistics {
+model OrgItemStatistics {
   entryDateTime DateTime
 
-  org   Organization @relation("OrgDailyItemStatisticsBelongToOrg", fields: [orgId], references: [id])
+  org   Organization @relation("OrgItemStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
-  item   Item   @relation("OrgDailyItemStatisticsBelongToItem", fields: [itemId], references: [id])
+  item   Item   @relation("OrgItemStatisticsBelongToItem", fields: [itemId], references: [id])
   itemId String
 
   newRentingOrderCount       Int? @default(0)
@@ -884,12 +884,10 @@ model OrgDailyItemStatistics {
   @@id([orgId, entryDateTime, itemId])
 }
 
-// In Second 0 -> 0hr
-// In Second 900 -> 0 hr 15 min
-model OrgDailyCustomerTradeTrackingCountStatistics {
+model OrgCustomerTradeTrackingCountStatistics {
   entryDateTime DateTime
 
-  org   Organization @relation("OrgDailyCustomerTradeTrackingCountStatisticsBelongToOrg", fields: [orgId], references: [id])
+  org   Organization @relation("OrgCustomerTradeTrackingCountStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
   customerCount Int? @default(0)
@@ -897,10 +895,10 @@ model OrgDailyCustomerTradeTrackingCountStatistics {
   @@id([orgId, entryDateTime])
 }
 
-model OrgDailyCustomerStatistics {
+model OrgCustomerStatistics {
   entryDateTime DateTime
 
-  org   Organization @relation("OrgDailyCustomerStatisticsBelongToOrg", fields: [orgId], references: [id])
+  org   Organization @relation("OrgCustomerStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
   newCount Int? @default(0)

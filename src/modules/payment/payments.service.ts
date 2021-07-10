@@ -267,7 +267,7 @@ export class PaymentsService {
       orgId,
     });
 
-    await this.orgStatisticLogService.increaseTodayOrderPayAmount(
+    await this.orgStatisticLogService.increaseNowOrderPayAmount(
       orgId,
       transactionHistory.payAmount,
     );
@@ -328,7 +328,7 @@ export class PaymentsService {
       orgId,
     });
 
-    await this.orgStatisticLogService.increaseTodayOrderRefundAmount(
+    await this.orgStatisticLogService.increaseNowOrderRefundAmount(
       orgId,
       transactionHistory.payAmount,
     );
@@ -402,7 +402,7 @@ export class PaymentsService {
       orgId,
     });
 
-    await this.orgStatisticLogService.increaseTodayItemPayDamagesAmount(
+    await this.orgStatisticLogService.increaseNowItemPayDamagesAmount(
       orgId,
       data.itemId,
       transactionHistory.payAmount,
@@ -478,7 +478,7 @@ export class PaymentsService {
       orgId,
     });
 
-    await this.orgStatisticLogService.increaseTodayItemRefundDamagesAmount(
+    await this.orgStatisticLogService.increaseNowItemRefundDamagesAmount(
       orgId,
       data.itemId,
       transactionHistory.payAmount,

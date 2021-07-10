@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  OrgDailyOrderStatistics,
-  OrgDailyCategoryStatistics,
-  OrgDailyItemStatistics,
-  OrgDailyCustomerStatistics,
+  OrgOrderStatistics,
+  OrgCategoryStatistics,
+  OrgItemStatistics,
+  OrgCustomerStatistics,
 } from '@prisma/client';
 
 @Injectable()
@@ -20,8 +20,8 @@ export class OrgStatisticLogService {
     return date;
   }
 
-  // OrgDailyOrderStatistics
-  public async updateOrgDailyOrderStatistics(
+  // OrgOrderStatistics
+  public async updateOrgOrderStatistics(
     orgId: string,
     {
       field,
@@ -30,10 +30,10 @@ export class OrgStatisticLogService {
       field: string;
       value: number;
     },
-  ): Promise<OrgDailyOrderStatistics> {
+  ): Promise<OrgOrderStatistics> {
     const entryDateTime = this.startOfToday();
 
-    return this.prismaService.orgDailyOrderStatistics.upsert({
+    return this.prismaService.orgOrderStatistics.upsert({
       create: {
         entryDateTime,
         org: {
@@ -57,83 +57,83 @@ export class OrgStatisticLogService {
     });
   }
 
-  public async increaseTodayOrderAmount(
+  public async increaseNowOrderAmount(
     orgId: string,
     amount: number,
-  ): Promise<OrgDailyOrderStatistics> {
-    return this.updateOrgDailyOrderStatistics(orgId, {
+  ): Promise<OrgOrderStatistics> {
+    return this.updateOrgOrderStatistics(orgId, {
       field: 'rentingOrderAmount',
       value: amount,
     });
   }
 
-  public async increaseTodayOrderPayAmount(
+  public async increaseNowOrderPayAmount(
     orgId: string,
     amount: number,
-  ): Promise<OrgDailyOrderStatistics> {
-    return this.updateOrgDailyOrderStatistics(orgId, {
+  ): Promise<OrgOrderStatistics> {
+    return this.updateOrgOrderStatistics(orgId, {
       field: 'rentingOrderPayAmount',
       value: amount,
     });
   }
 
-  public async increaseTodayOrderRefundAmount(
+  public async increaseNowOrderRefundAmount(
     orgId: string,
     amount: number,
-  ): Promise<OrgDailyOrderStatistics> {
-    return this.updateOrgDailyOrderStatistics(orgId, {
+  ): Promise<OrgOrderStatistics> {
+    return this.updateOrgOrderStatistics(orgId, {
       field: 'rentingOrderRefundAmount',
       value: amount,
     });
   }
 
-  public async increaseTodayNewOrderCount(
+  public async increaseNowNewOrderCount(
     orgId: string,
-  ): Promise<OrgDailyOrderStatistics> {
-    return this.updateOrgDailyOrderStatistics(orgId, {
+  ): Promise<OrgOrderStatistics> {
+    return this.updateOrgOrderStatistics(orgId, {
       field: 'rentingNewOrderCount',
       value: 1,
     });
   }
 
-  public async increaseTodayReservedOrderCount(
+  public async increaseNowReservedOrderCount(
     orgId: string,
-  ): Promise<OrgDailyOrderStatistics> {
-    return this.updateOrgDailyOrderStatistics(orgId, {
+  ): Promise<OrgOrderStatistics> {
+    return this.updateOrgOrderStatistics(orgId, {
       field: 'rentingReservedOrderCount',
       value: 1,
     });
   }
 
-  public async increaseTodayPickedUpOrderCount(
+  public async increaseNowPickedUpOrderCount(
     orgId: string,
-  ): Promise<OrgDailyOrderStatistics> {
-    return this.updateOrgDailyOrderStatistics(orgId, {
+  ): Promise<OrgOrderStatistics> {
+    return this.updateOrgOrderStatistics(orgId, {
       field: 'rentingPickedUpOrderCount',
       value: 1,
     });
   }
 
-  public async increaseTodayReturnedOrderCount(
+  public async increaseNowReturnedOrderCount(
     orgId: string,
-  ): Promise<OrgDailyOrderStatistics> {
-    return this.updateOrgDailyOrderStatistics(orgId, {
+  ): Promise<OrgOrderStatistics> {
+    return this.updateOrgOrderStatistics(orgId, {
       field: 'rentingReturnedUpOrderCount',
       value: 1,
     });
   }
 
-  public async increaseTodayCancelledOrderCount(
+  public async increaseNowCancelledOrderCount(
     orgId: string,
-  ): Promise<OrgDailyOrderStatistics> {
-    return this.updateOrgDailyOrderStatistics(orgId, {
+  ): Promise<OrgOrderStatistics> {
+    return this.updateOrgOrderStatistics(orgId, {
       field: 'rentingCancelledOrderCount',
       value: 1,
     });
   }
 
-  // OrgDailyCategoryStatistics
-  public async updateOrgDailyCategoryStatistics(
+  // OrgCategoryStatistics
+  public async updateOrgCategoryStatistics(
     orgId: string,
     categoryId: string,
     {
@@ -143,10 +143,10 @@ export class OrgStatisticLogService {
       field: string;
       value: number;
     },
-  ): Promise<OrgDailyCategoryStatistics> {
+  ): Promise<OrgCategoryStatistics> {
     const entryDateTime = this.startOfToday();
 
-    return this.prismaService.orgDailyCategoryStatistics.upsert({
+    return this.prismaService.orgCategoryStatistics.upsert({
       create: {
         entryDateTime,
         org: {
@@ -176,50 +176,50 @@ export class OrgStatisticLogService {
     });
   }
 
-  public async increaseTodayOrgCategoryNewOrderCount(
+  public async increaseNowOrgCategoryNewOrderCount(
     orgId: string,
     categoryId: string,
-  ): Promise<OrgDailyCategoryStatistics> {
-    return this.updateOrgDailyCategoryStatistics(orgId, categoryId, {
+  ): Promise<OrgCategoryStatistics> {
+    return this.updateOrgCategoryStatistics(orgId, categoryId, {
       field: 'newRentingOrderCount',
       value: 1,
     });
   }
 
-  public async increaseTodayOrgCategoryCancelledOrderCount(
+  public async increaseNowOrgCategoryCancelledOrderCount(
     orgId: string,
     categoryId: string,
-  ): Promise<OrgDailyCategoryStatistics> {
-    return this.updateOrgDailyCategoryStatistics(orgId, categoryId, {
+  ): Promise<OrgCategoryStatistics> {
+    return this.updateOrgCategoryStatistics(orgId, categoryId, {
       field: 'cancelledRentingOrderCount',
       value: 1,
     });
   }
 
   //
-  public async increaseTodayOrgCategoryViewCount(
+  public async increaseNowOrgCategoryViewCount(
     orgId: string,
     categoryId: string,
-  ): Promise<OrgDailyCategoryStatistics> {
-    return this.updateOrgDailyCategoryStatistics(orgId, categoryId, {
+  ): Promise<OrgCategoryStatistics> {
+    return this.updateOrgCategoryStatistics(orgId, categoryId, {
       field: 'viewCount',
       value: 1,
     });
   }
 
-  public async increaseTodayOrgCategoryAmount(
+  public async increaseNowOrgCategoryAmount(
     orgId: string,
     categoryId: string,
     amount: number,
-  ): Promise<OrgDailyCategoryStatistics> {
-    return this.updateOrgDailyCategoryStatistics(orgId, categoryId, {
+  ): Promise<OrgCategoryStatistics> {
+    return this.updateOrgCategoryStatistics(orgId, categoryId, {
       field: 'amount',
       value: amount,
     });
   }
 
-  // OrgDailyItemStatistics
-  public async updateOrgDailyItemStatisticsStatistics(
+  // OrgItemStatistics
+  public async updateOrgItemStatisticsStatistics(
     orgId: string,
     itemId: string,
     {
@@ -229,10 +229,10 @@ export class OrgStatisticLogService {
       field: string;
       value: number;
     },
-  ): Promise<OrgDailyItemStatistics> {
+  ): Promise<OrgItemStatistics> {
     const entryDateTime = this.startOfToday();
 
-    return this.prismaService.orgDailyItemStatistics.upsert({
+    return this.prismaService.orgItemStatistics.upsert({
       create: {
         entryDateTime,
         org: {
@@ -262,72 +262,72 @@ export class OrgStatisticLogService {
     });
   }
 
-  public async increaseTodayItemNewOrderCount(
+  public async increaseNowItemNewOrderCount(
     orgId: string,
     itemId: string,
-  ): Promise<OrgDailyItemStatistics> {
-    return this.updateOrgDailyItemStatisticsStatistics(orgId, itemId, {
+  ): Promise<OrgItemStatistics> {
+    return this.updateOrgItemStatisticsStatistics(orgId, itemId, {
       field: 'newRentingOrderCount',
       value: 1,
     });
   }
 
-  public async increaseTodayItemCancelledOrderCount(
+  public async increaseNowItemCancelledOrderCount(
     orgId: string,
     itemId: string,
-  ): Promise<OrgDailyItemStatistics> {
-    return this.updateOrgDailyItemStatisticsStatistics(orgId, itemId, {
+  ): Promise<OrgItemStatistics> {
+    return this.updateOrgItemStatisticsStatistics(orgId, itemId, {
       field: 'cancelledRentingOrderCount',
       value: 1,
     });
   }
 
   //
-  public async increaseTodayItemViewCount(
+  public async increaseNowItemViewCount(
     orgId: string,
     itemId: string,
-  ): Promise<OrgDailyItemStatistics> {
-    return this.updateOrgDailyItemStatisticsStatistics(orgId, itemId, {
+  ): Promise<OrgItemStatistics> {
+    return this.updateOrgItemStatisticsStatistics(orgId, itemId, {
       field: 'viewCount',
       value: 1,
     });
   }
 
-  public async increaseTodayItemAmount(
+  public async increaseNowItemAmount(
     orgId: string,
     itemId: string,
     amount: number,
-  ): Promise<OrgDailyItemStatistics> {
-    return this.updateOrgDailyItemStatisticsStatistics(orgId, itemId, {
+  ): Promise<OrgItemStatistics> {
+    return this.updateOrgItemStatisticsStatistics(orgId, itemId, {
       field: 'amount',
       value: amount,
     });
   }
 
-  public async increaseTodayItemPayDamagesAmount(
+  public async increaseNowItemPayDamagesAmount(
     orgId: string,
     itemId: string,
     amount: number,
-  ): Promise<OrgDailyItemStatistics> {
-    return this.updateOrgDailyItemStatisticsStatistics(orgId, itemId, {
+  ): Promise<OrgItemStatistics> {
+    return this.updateOrgItemStatisticsStatistics(orgId, itemId, {
       field: 'payDamagesAmount',
       value: amount,
     });
   }
 
-  public async increaseTodayItemRefundDamagesAmount(
+  public async increaseNowItemRefundDamagesAmount(
     orgId: string,
     itemId: string,
     amount: number,
-  ): Promise<OrgDailyItemStatistics> {
-    return this.updateOrgDailyItemStatisticsStatistics(orgId, itemId, {
+  ): Promise<OrgItemStatistics> {
+    return this.updateOrgItemStatisticsStatistics(orgId, itemId, {
       field: 'refundDamagesAmount',
       value: amount,
     });
   }
 
-  // OrgDailyCustomerStatistics
-  public async updateOrgDailyCustomerStatistics(
+  // OrgCustomerStatistics
+  public async updateOrgCustomerStatistics(
     orgId: string,
     {
       field,
@@ -336,10 +336,10 @@ export class OrgStatisticLogService {
       field: string;
       value: number;
     },
-  ): Promise<OrgDailyCustomerStatistics> {
+  ): Promise<OrgCustomerStatistics> {
     const entryDateTime = this.startOfToday();
 
-    return this.prismaService.orgDailyCustomerStatistics.upsert({
+    return this.prismaService.orgCustomerStatistics.upsert({
       create: {
         entryDateTime,
         org: {
@@ -363,19 +363,19 @@ export class OrgStatisticLogService {
     });
   }
 
-  public async increaseTodayNewCustomerCount(
+  public async increaseNowNewCustomerCount(
     orgId: string,
-  ): Promise<OrgDailyCustomerStatistics> {
-    return this.updateOrgDailyCustomerStatistics(orgId, {
+  ): Promise<OrgCustomerStatistics> {
+    return this.updateOrgCustomerStatistics(orgId, {
       field: 'newCount',
       value: 1,
     });
   }
 
-  public async increaseTodayReturnCustomerCount(
+  public async increaseNowReturnCustomerCount(
     orgId: string,
-  ): Promise<OrgDailyCustomerStatistics> {
-    return this.updateOrgDailyCustomerStatistics(orgId, {
+  ): Promise<OrgCustomerStatistics> {
+    return this.updateOrgCustomerStatistics(orgId, {
       field: 'returnCount',
       value: 1,
     });

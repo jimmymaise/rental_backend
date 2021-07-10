@@ -107,10 +107,8 @@ export class RentingOrdersStatusService {
     // Log Statistic
     switch (rentingOrderNewSystemStatus) {
       case RentingOrderSystemStatusType.Reserved:
-        await this.orgStatisticLogService.increaseTodayReservedOrderCount(
-          orgId,
-        );
-        await this.orgStatisticLogService.increaseTodayOrderAmount(
+        await this.orgStatisticLogService.increaseNowReservedOrderCount(orgId);
+        await this.orgStatisticLogService.increaseNowOrderAmount(
           orgId,
           updatedItem.totalAmount,
         );
@@ -147,14 +145,14 @@ export class RentingOrdersStatusService {
           const itemDetail = rentingOrderDetailResult.rentingOrderItems[i];
 
           for (let j = 0; j < itemDetail.item.orgCategories.length; j++) {
-            await this.orgStatisticLogService.increaseTodayOrgCategoryAmount(
+            await this.orgStatisticLogService.increaseNowOrgCategoryAmount(
               orgId,
               itemDetail.item.orgCategories[j].id,
               itemDetail.amount,
             );
           }
 
-          await this.orgStatisticLogService.increaseTodayItemAmount(
+          await this.orgStatisticLogService.increaseNowItemAmount(
             orgId,
             itemDetail.item.id,
             itemDetail.amount,
@@ -162,14 +160,10 @@ export class RentingOrdersStatusService {
         }
         break;
       case RentingOrderSystemStatusType.PickedUp:
-        await this.orgStatisticLogService.increaseTodayPickedUpOrderCount(
-          orgId,
-        );
+        await this.orgStatisticLogService.increaseNowPickedUpOrderCount(orgId);
         break;
       case RentingOrderSystemStatusType.Cancelled:
-        await this.orgStatisticLogService.increaseTodayCancelledOrderCount(
-          orgId,
-        );
+        await this.orgStatisticLogService.increaseNowCancelledOrderCount(orgId);
         const rentingOrderDetailResult2 = await this.prismaService.rentingOrder.findUnique(
           {
             where: {
@@ -202,7 +196,7 @@ export class RentingOrdersStatusService {
           const itemDetail = rentingOrderDetailResult2.rentingOrderItems[i];
 
           for (let j = 0; j < itemDetail.item.orgCategories.length; j++) {
-            await this.orgStatisticLogService.increaseTodayOrgCategoryCancelledOrderCount(
+            await this.orgStatisticLogService.increaseNowOrgCategoryCancelledOrderCount(
               orgId,
               itemDetail.item.orgCategories[j].id,
             );
@@ -210,9 +204,7 @@ export class RentingOrdersStatusService {
         }
         break;
       case RentingOrderSystemStatusType.Returned:
-        await this.orgStatisticLogService.increaseTodayReturnedOrderCount(
-          orgId,
-        );
+        await this.orgStatisticLogService.increaseNowReturnedOrderCount(orgId);
         break;
     }
 

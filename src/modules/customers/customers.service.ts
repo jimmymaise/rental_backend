@@ -227,13 +227,13 @@ export class CustomersService {
     });
 
     if (customer) {
-      await this.orgStatisticLogService.increaseTodayReturnCustomerCount(orgId);
+      await this.orgStatisticLogService.increaseNowReturnCustomerCount(orgId);
       return CustomerModel.fromCustomer(customer);
     }
 
     const user = await this.usersService.getUserById(userId);
     const userInfo = await this.usersService.getUserInfoById(userId);
-    await this.orgStatisticLogService.increaseTodayNewCustomerCount(orgId);
+    await this.orgStatisticLogService.increaseNowNewCustomerCount(orgId);
     return this.createCustomer({
       orgId,
       createdBy,

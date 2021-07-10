@@ -209,7 +209,7 @@ export class StoragesResolvers {
 
     const folderName = user.currentOrgId || user.id;
     const fileNamePaths = fileData.name.split('.');
-    const fileName = `${Date.now()}-${fileNamePaths[0].replace(
+    const fileName = `${Date.now()}_${fileNamePaths[0].replace(
       /[^a-zA-Z0-9]/g,
       '-',
     )}.${fileExtension}`;

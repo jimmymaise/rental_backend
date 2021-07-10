@@ -161,7 +161,7 @@ export class RentingOrdersService {
       data: createRentingDepositItemsManyData,
     });
 
-    await this.orgStatisticLogService.increaseTodayNewOrderCount(orgId);
+    await this.orgStatisticLogService.increaseNowNewOrderCount(orgId);
 
     // Log Statistic Category New Count
     const createdRentingOrderItems = await this.prismaService.rentingOrderItem.findMany(
@@ -179,7 +179,7 @@ export class RentingOrdersService {
       });
 
       for (let j = 0; j < itemDetail.orgCategories.length; j++) {
-        await this.orgStatisticLogService.increaseTodayOrgCategoryNewOrderCount(
+        await this.orgStatisticLogService.increaseNowOrgCategoryNewOrderCount(
           orgId,
           itemDetail.orgCategories[j].id,
         );

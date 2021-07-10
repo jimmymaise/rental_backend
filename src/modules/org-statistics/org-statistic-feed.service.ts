@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  OrgDailyOrderStatistics,
-  OrgDailyCategoryStatistics,
-  OrgDailyItemStatistics,
-  OrgDailyCustomerStatistics,
+  OrgOrderStatistics,
+  OrgCategoryStatistics,
+  OrgItemStatistics,
+  OrgCustomerStatistics,
 } from '@prisma/client';
 
 @Injectable()

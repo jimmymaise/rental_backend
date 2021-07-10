@@ -434,6 +434,7 @@ CREATE TABLE "RentingOrder" (
     "systemStatus" "RentingOrderSystemStatusType" NOT NULL,
     "status" TEXT NOT NULL,
     "attachedFiles" JSONB,
+    "isDeleted" BOOLEAN DEFAULT false,
 
     PRIMARY KEY ("id")
 );
@@ -459,6 +460,7 @@ CREATE TABLE "RentingOrderItem" (
     "updatedDate" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT NOT NULL,
     "updatedBy" TEXT NOT NULL,
+    "isDeleted" BOOLEAN DEFAULT false,
     "itemId" TEXT,
     "orgId" TEXT NOT NULL,
     "rentingOrderId" TEXT NOT NULL,
@@ -484,6 +486,7 @@ CREATE TABLE "RentingDepositItem" (
     "order" INTEGER DEFAULT 0,
     "createdBy" TEXT NOT NULL,
     "updatedBy" TEXT NOT NULL,
+    "isDeleted" BOOLEAN DEFAULT false,
 
     PRIMARY KEY ("id")
 );
@@ -612,34 +615,36 @@ CREATE TABLE "OrgCategory" (
 );
 
 -- CreateTable
-CREATE TABLE "OrgDailyOrderStatistics" (
+CREATE TABLE "OrgOrderStatistics" (
     "entryDateTime" TIMESTAMP(3) NOT NULL,
     "orgId" TEXT NOT NULL,
     "rentingOrderAmount" INTEGER DEFAULT 0,
+    "rentingOrderPayAmount" INTEGER DEFAULT 0,
+    "rentingOrderRefundAmount" INTEGER DEFAULT 0,
     "rentingNewOrderCount" INTEGER DEFAULT 0,
     "rentingReservedOrderCount" INTEGER DEFAULT 0,
     "rentingPickedUpOrderCount" INTEGER DEFAULT 0,
     "rentingReturnedUpOrderCount" INTEGER DEFAULT 0,
     "rentingCancelledOrderCount" INTEGER DEFAULT 0,
 
-    PRIMARY KEY ("entryDateTime")
+    PRIMARY KEY ("orgId","entryDateTime")
 );
 
 -- CreateTable
-CREATE TABLE "OrgDailyCategoryStatistics" (
+CREATE TABLE "OrgCategoryStatistics" (
     "entryDateTime" TIMESTAMP(3) NOT NULL,
     "orgId" TEXT NOT NULL,
-    "orgCategoryId" TEXT,
+    "orgCategoryId" TEXT NOT NULL,
     "newRentingOrderCount" INTEGER DEFAULT 0,
     "cancelledRentingOrderCount" INTEGER DEFAULT 0,
     "viewCount" INTEGER DEFAULT 0,
     "amount" INTEGER DEFAULT 0,
 
-    PRIMARY KEY ("entryDateTime")
+    PRIMARY KEY ("orgId","entryDateTime","orgCategoryId")
 );
 
 -- CreateTable
-CREATE TABLE "OrgDailyItemStatistics" (
+CREATE TABLE "OrgItemStatistics" (
     "entryDateTime" TIMESTAMP(3) NOT NULL,
     "orgId" TEXT NOT NULL,
     "itemId" TEXT NOT NULL,
@@ -647,22 +652,29 @@ CREATE TABLE "OrgDailyItemStatistics" (
     "cancelledRentingOrderCount" INTEGER DEFAULT 0,
     "viewCount" INTEGER DEFAULT 0,
     "amount" INTEGER DEFAULT 0,
-    "debtAmount" INTEGER DEFAULT 0,
-    "payAmount" INTEGER DEFAULT 0,
+    "payDamagesAmount" INTEGER DEFAULT 0,
+    "refundDamagesAmount" INTEGER DEFAULT 0,
 
-    PRIMARY KEY ("entryDateTime")
+    PRIMARY KEY ("orgId","entryDateTime","itemId")
 );
 
 -- CreateTable
-CREATE TABLE "OrgDailyCustomerTradeCountStatistics" (
-    "id" TEXT NOT NULL,
+CREATE TABLE "OrgCustomerTradeTrackingCountStatistics" (
     "entryDateTime" TIMESTAMP(3) NOT NULL,
-    "startTime" INTEGER NOT NULL,
-    "endTime" INTEGER NOT NULL,
-    "customerCount" INTEGER NOT NULL,
     "orgId" TEXT NOT NULL,
+    "customerCount" INTEGER DEFAULT 0,
 
-    PRIMARY KEY ("id")
+    PRIMARY KEY ("orgId","entryDateTime")
+);
+
+-- CreateTable
+CREATE TABLE "OrgCustomerStatistics" (
+    "entryDateTime" TIMESTAMP(3) NOT NULL,
+    "orgId" TEXT NOT NULL,
+    "newCount" INTEGER DEFAULT 0,
+    "returnCount" INTEGER DEFAULT 0,
+
+    PRIMARY KEY ("orgId","entryDateTime")
 );
 
 -- CreateTable
@@ -814,9 +826,6 @@ CREATE INDEX "common_attributes_map_system_value_index" ON "CommonAttributesConf
 
 -- CreateIndex
 CREATE UNIQUE INDEX "OrgCategory.orgId_slug_unique" ON "OrgCategory"("orgId", "slug");
-
--- CreateIndex
-CREATE INDEX "org_daily_customer_trade_count_statistics_entry_date_time_index" ON "OrgDailyCustomerTradeCountStatistics"("entryDateTime");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_EmployeeToRole_AB_unique" ON "_EmployeeToRole"("A", "B");
@@ -1014,22 +1023,25 @@ ALTER TABLE "OrgCategory" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("i
 ALTER TABLE "OrgCategory" ADD FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgDailyOrderStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgOrderStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgDailyCategoryStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgCategoryStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgDailyCategoryStatistics" ADD FOREIGN KEY ("orgCategoryId") REFERENCES "OrgCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "OrgCategoryStatistics" ADD FOREIGN KEY ("orgCategoryId") REFERENCES "OrgCategory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgDailyItemStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgItemStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgDailyItemStatistics" ADD FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgItemStatistics" ADD FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrgDailyCustomerTradeCountStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "OrgCustomerTradeTrackingCountStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrgCustomerStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_EmployeeToRole" ADD FOREIGN KEY ("A") REFERENCES "Employee"("id") ON DELETE CASCADE ON UPDATE CASCADE;
