@@ -4,6 +4,7 @@ import { OrgActivityLogType } from '../constants';
 import { UserInfoDTO } from '../../users/user-info.dto';
 
 export class BaseOrgActivityLogModel {
+  public id?: string;
   public orgId: string;
   public type?: OrgActivityLogType;
   public createdBy: string;
@@ -16,6 +17,7 @@ export class BaseOrgActivityLogModel {
     createdByDetail?: any,
   ): BaseOrgActivityLogModel {
     return {
+      id: remoteData.id,
       orgId: remoteData.orgId,
       type: remoteData.type as OrgActivityLogType,
       createdBy: remoteData.createdBy,
