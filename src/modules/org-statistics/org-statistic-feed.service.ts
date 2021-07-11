@@ -273,4 +273,33 @@ export class OrgStatisticFeedService {
     });
     return this.groupStatisticsBy(dbData, ['newCount', 'returnCount'], groupBy);
   }
+
+  public async getTopTenItemInTimeRange({
+    orgId,
+    fromDate,
+    toDate,
+    orderByField,
+  }: {
+    orgId: string;
+    fromDate: Date;
+    toDate: Date;
+    orderByField: string;
+  }): Promise<any[]> {
+    return this.prismaService.$queryRaw(`
+      SELECT  item_list."id", item_list."pid", item_list."name", item_list."images", item_list."slug",
+        SUM("newRentingOrderCount") as "newRentingOrderCount",	
+        SUM("cancelledRentingOrderCount") as "cancelledRentingOrderCount",
+        SUM("viewCount") as "viewCount", 
+        SUM("amount") as "amount", 
+        SUM("payDamagesAmount") as "payDamagesAmount", 
+        SUM("refundDamagesAmount") as "refundDamagesAmount", 
+        SUM("returnedRentingOrderCount") as "returnedRentingOrderCount"
+      
+      FROM public."OrgItemStatistics" as org_item_statistics, public."Item" as item_list
+      WHERE org_item_statistics."orgId" = 'b3eb101d-d347-4e56-8619-63f0bacf4026'
+        AND item_list."isDeleted" IS FALSE
+      GROUP BY item_list."id", item_list."pid", item_list."name", item_list."images", item_list."slug"
+      ORDER BY "newRentingOrderCount" desc
+    `);
+  }
 }

@@ -168,6 +168,7 @@ export class RentingOrdersService {
       {
         where: {
           rentingOrderId: createRentingOrderResult.id,
+          isDeleted: false,
         },
       },
     );
@@ -177,6 +178,11 @@ export class RentingOrdersService {
         where: { id: currentItem.itemId },
         select: { orgCategories: { select: { id: true } } },
       });
+
+      await this.orgStatisticLogService.increaseNowItemNewOrderCount(
+        orgId,
+        currentItem.itemId,
+      );
 
       for (let j = 0; j < itemDetail.orgCategories.length; j++) {
         await this.orgStatisticLogService.increaseNowOrgCategoryNewOrderCount(
@@ -497,6 +503,7 @@ export class RentingOrdersService {
       }
     });
 
+    // TODO: consider use deleted item to increwaseh cancelled Renting order count
     await this.prismaService.rentingOrderItem.updateMany({
       where: {
         id: {
@@ -513,6 +520,43 @@ export class RentingOrdersService {
     await this.prismaService.rentingOrderItem.createMany({
       data: createManyRentingOrderItemData,
     });
+
+    // Log Statistic Category New Count
+    const createdRentingOrderItems = await this.prismaService.rentingOrderItem.findMany(
+      {
+        where: {
+          rentingOrderId: updateRentingOrderResult.id,
+          isDeleted: false,
+        },
+      },
+    );
+    for (let i = 0; i < createdRentingOrderItems.length; i++) {
+      const currentItem = createdRentingOrderItems[i];
+      const isFound = createManyRentingOrderItemData.find(
+        (item) => item.itemId === currentItem.itemId,
+      );
+      if (!isFound) {
+        continue;
+      }
+
+      const itemDetail = await this.prismaService.item.findUnique({
+        where: { id: currentItem.itemId },
+        select: { orgCategories: { select: { id: true } } },
+      });
+
+      await this.orgStatisticLogService.increaseNowItemNewOrderCount(
+        orgId,
+        currentItem.itemId,
+      );
+
+      for (let j = 0; j < itemDetail.orgCategories.length; j++) {
+        await this.orgStatisticLogService.increaseNowOrgCategoryNewOrderCount(
+          orgId,
+          itemDetail.orgCategories[j].id,
+        );
+      }
+    }
+    // Log Statistic Category New Count --- End Log
 
     updateManyRentingOrderItemData.forEach(async (updatingRentingOrderItem) => {
       await this.prismaService.rentingOrderItem.update({

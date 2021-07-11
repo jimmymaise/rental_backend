@@ -859,6 +859,7 @@ model OrgCategoryStatistics {
 
   newRentingOrderCount       Int? @default(0)
   cancelledRentingOrderCount Int? @default(0)
+  returnedRentingOrderCount Int? @default(0)
   viewCount                  Int? @default(0)
   amount                     Int? @default(0)
 
@@ -876,6 +877,7 @@ model OrgItemStatistics {
 
   newRentingOrderCount       Int? @default(0)
   cancelledRentingOrderCount Int? @default(0)
+  returnedRentingOrderCount Int? @default(0)
   viewCount                  Int? @default(0)
   amount                     Int? @default(0) // Amount after Approved
   payDamagesAmount           Int? @default(0)

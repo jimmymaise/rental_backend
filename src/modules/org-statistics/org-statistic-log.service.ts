@@ -197,6 +197,16 @@ export class OrgStatisticLogService {
     });
   }
 
+  public async increaseNowOrgCategoryReturnedOrderCount(
+    orgId: string,
+    categoryId: string,
+  ): Promise<OrgCategoryStatistics> {
+    return this.updateOrgCategoryStatistics(orgId, categoryId, {
+      field: 'returnedRentingOrderCount',
+      value: 1,
+    });
+  }
+
   //
   public async increaseNowOrgCategoryViewCount(
     orgId: string,
@@ -279,6 +289,16 @@ export class OrgStatisticLogService {
   ): Promise<OrgItemStatistics> {
     return this.updateOrgItemStatisticsStatistics(orgId, itemId, {
       field: 'cancelledRentingOrderCount',
+      value: 1,
+    });
+  }
+
+  public async increaseNowItemReturnedOrderCount(
+    orgId: string,
+    itemId: string,
+  ): Promise<OrgItemStatistics> {
+    return this.updateOrgItemStatisticsStatistics(orgId, itemId, {
+      field: 'returnedRentingOrderCount',
       value: 1,
     });
   }

@@ -195,6 +195,11 @@ export class RentingOrdersStatusService {
         ) {
           const itemDetail = rentingOrderDetailResult2.rentingOrderItems[i];
 
+          await this.orgStatisticLogService.increaseNowItemCancelledOrderCount(
+            orgId,
+            itemDetail.item.id,
+          );
+
           for (let j = 0; j < itemDetail.item.orgCategories.length; j++) {
             await this.orgStatisticLogService.increaseNowOrgCategoryCancelledOrderCount(
               orgId,
@@ -205,6 +210,49 @@ export class RentingOrdersStatusService {
         break;
       case RentingOrderSystemStatusType.Returned:
         await this.orgStatisticLogService.increaseNowReturnedOrderCount(orgId);
+        const rentingOrderDetailResult3 = await this.prismaService.rentingOrder.findUnique(
+          {
+            where: {
+              id,
+            },
+            select: {
+              rentingOrderItems: {
+                select: {
+                  amount: true,
+                  item: {
+                    select: {
+                      id: true,
+                      orgCategories: {
+                        select: {
+                          id: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        );
+        for (
+          let i = 0;
+          i < rentingOrderDetailResult3.rentingOrderItems.length;
+          i++
+        ) {
+          const itemDetail = rentingOrderDetailResult3.rentingOrderItems[i];
+
+          await this.orgStatisticLogService.increaseNowItemReturnedOrderCount(
+            orgId,
+            itemDetail.item.id,
+          );
+
+          for (let j = 0; j < itemDetail.item.orgCategories.length; j++) {
+            await this.orgStatisticLogService.increaseNowOrgCategoryReturnedOrderCount(
+              orgId,
+              itemDetail.item.orgCategories[j].id,
+            );
+          }
+        }
         break;
     }
 
