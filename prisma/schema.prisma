@@ -842,7 +842,7 @@ model OrgOrderStatistics {
   rentingNewOrderCount        Int? @default(0)
   rentingReservedOrderCount   Int? @default(0)
   rentingPickedUpOrderCount   Int? @default(0)
-  rentingReturnedUpOrderCount Int? @default(0)
+  rentingReturnedOrderCount Int? @default(0)
   rentingCancelledOrderCount  Int? @default(0)
 
   @@id([orgId, entryDateTime])

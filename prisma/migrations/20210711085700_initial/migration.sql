@@ -624,7 +624,7 @@ CREATE TABLE "OrgOrderStatistics" (
     "rentingNewOrderCount" INTEGER DEFAULT 0,
     "rentingReservedOrderCount" INTEGER DEFAULT 0,
     "rentingPickedUpOrderCount" INTEGER DEFAULT 0,
-    "rentingReturnedUpOrderCount" INTEGER DEFAULT 0,
+    "rentingReturnedOrderCount" INTEGER DEFAULT 0,
     "rentingCancelledOrderCount" INTEGER DEFAULT 0,
 
     PRIMARY KEY ("orgId","entryDateTime")

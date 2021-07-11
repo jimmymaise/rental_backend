@@ -119,7 +119,7 @@ export class OrgStatisticLogService {
     orgId: string,
   ): Promise<OrgOrderStatistics> {
     return this.updateOrgOrderStatistics(orgId, {
-      field: 'rentingReturnedUpOrderCount',
+      field: 'rentingReturnedOrderCount',
       value: 1,
     });
   }

@@ -135,7 +135,7 @@ export class OrgStatisticFeedService {
         'rentingNewOrderCount',
         'rentingReservedOrderCount',
         'rentingPickedUpOrderCount',
-        'rentingReturnedUpOrderCount',
+        'rentingReturnedOrderCount',
         'rentingCancelledOrderCount',
       ],
       groupBy,

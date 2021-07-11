@@ -7,7 +7,7 @@ type OrgOrderStatistics {
   rentingNewOrderCount: Float
   rentingReservedOrderCount: Float
   rentingPickedUpOrderCount: Float
-  rentingReturnedUpOrderCount: Float
+  rentingReturnedOrderCount: Float
   rentingCancelledOrderCount: Float
 }
 
