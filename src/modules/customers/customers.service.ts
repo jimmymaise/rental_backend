@@ -129,7 +129,7 @@ export class CustomersService {
       },
     });
 
-    this.orgActivityLogService.logCreateCustomer({
+    await this.orgActivityLogService.logCreateCustomer({
       createdBy,
       customerId: customer.id,
       orgId,
@@ -139,6 +139,8 @@ export class CustomersService {
           customer.displayName || customer.email || customer.phoneNumber,
       },
     });
+
+    await this.orgStatisticLogService.increaseNowNewCustomerCount(orgId);
 
     // Return all data
     return CustomerModel.fromCustomer(customer);
