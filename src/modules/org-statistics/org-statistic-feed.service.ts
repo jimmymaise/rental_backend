@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import moment from 'moment';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { StatisticEntryGroupByTypes, timeRangesInSeconds } from './constants';
@@ -8,6 +9,7 @@ import {
   OrgItemStatistics,
   OrgCustomerStatistics,
 } from '@prisma/client';
+import { TopItemInTimeRangeModel } from './models';
 
 @Injectable()
 export class OrgStatisticFeedService {
@@ -284,22 +286,30 @@ export class OrgStatisticFeedService {
     fromDate: Date;
     toDate: Date;
     orderByField: string;
-  }): Promise<any[]> {
+  }): Promise<TopItemInTimeRangeModel[]> {
+    const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
     return this.prismaService.$queryRaw(`
-      SELECT  item_list."id", item_list."pid", item_list."name", item_list."images", item_list."slug",
-        SUM("newRentingOrderCount") as "newRentingOrderCount",	
-        SUM("cancelledRentingOrderCount") as "cancelledRentingOrderCount",
-        SUM("viewCount") as "viewCount", 
-        SUM("amount") as "amount", 
-        SUM("payDamagesAmount") as "payDamagesAmount", 
-        SUM("refundDamagesAmount") as "refundDamagesAmount", 
-        SUM("returnedRentingOrderCount") as "returnedRentingOrderCount"
+      SELECT item_list."id", item_list."pid", item_list."name", item_list."images", item_list."slug", "newRentingOrderCount",
+        "cancelledRentingOrderCount", "viewCount", "amount", "payDamagesAmount", "refundDamagesAmount", "returnedRentingOrderCount"
+        FROM (SELECT "itemId",
+          SUM("newRentingOrderCount") as "newRentingOrderCount",	
+          SUM("cancelledRentingOrderCount") as "cancelledRentingOrderCount",
+          SUM("viewCount") as "viewCount", 
+          SUM("amount") as "amount", 
+          SUM("payDamagesAmount") as "payDamagesAmount", 
+          SUM("refundDamagesAmount") as "refundDamagesAmount", 
+          SUM("returnedRentingOrderCount") as "returnedRentingOrderCount"
       
-      FROM public."OrgItemStatistics" as org_item_statistics, public."Item" as item_list
-      WHERE org_item_statistics."orgId" = 'b3eb101d-d347-4e56-8619-63f0bacf4026'
-        AND item_list."isDeleted" IS FALSE
-      GROUP BY item_list."id", item_list."pid", item_list."name", item_list."images", item_list."slug"
-      ORDER BY "newRentingOrderCount" desc
+        FROM public."OrgItemStatistics" as org_item_statistics
+        WHERE org_item_statistics."orgId" = '${orgId}' 
+            AND "entryDateTime" between '${moment(fromDate).format(
+              DATE_FORMAT,
+            )}' AND '${moment(toDate).format(DATE_FORMAT)}'
+        GROUP BY org_item_statistics."itemId"
+        ORDER BY "${orderByField}" desc) AS grouped_org_item_statistics
+      LEFT JOIN public."Item" AS item_list on grouped_org_item_statistics."itemId" = "id"
+      WHERE item_list."isDeleted" IS FALSE AND "${orderByField}" > 0
+      LIMIT 10
     `);
   }
 }

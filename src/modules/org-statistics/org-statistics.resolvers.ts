@@ -12,6 +12,7 @@ import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
 import { StatisticEntryGroupByTypes } from './constants';
+import { TopItemInTimeRangeModel } from './models';
 
 function toLocalStatictis(inputData: any): any {
   return {
@@ -104,5 +105,22 @@ export class OrgStatisticsResolvers {
         },
       )
     ).map(toLocalStatictis);
+  }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_ORG_STATISTICS_LOG)
+  @UseGuards(GqlAuthGuard)
+  async feedTopTenItems(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('fromDate') fromDate: number,
+    @Args('toDate') toDate: number,
+    @Args('orderByField') orderByField: string,
+  ): Promise<TopItemInTimeRangeModel[]> {
+    return await this.orgStatisticFeedService.getTopTenItemInTimeRange({
+      orgId: user.currentOrgId,
+      fromDate: new Date(fromDate),
+      toDate: new Date(toDate),
+      orderByField,
+    });
   }
 }

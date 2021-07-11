@@ -40,6 +40,21 @@ type OrgCustomerStatistics {
   returnCount: Float
 }
 
+type TopItemInTimeRangeItem {
+  id: String!
+  pid: Float!
+  name: String!
+  images: [PublicStorageFile]
+  slug: String!
+  newRentingOrderCount: Float!
+  cancelledRentingOrderCount: Float!
+  viewCount: Float!
+  amount: Float!
+  payDamagesAmount: Float!
+  refundDamagesAmount: Float!
+  returnedRentingOrderCount: Float!
+}
+
 type Query {
   feedOrderStatistics(
     fromDate: Float!
@@ -61,4 +76,9 @@ type Query {
     toDate: Float!
     groupBy: String!
   ): [OrgCustomerStatistics]
+  feedTopTenItems(
+    fromDate: Float!
+    toDate: Float!
+    orderByField: String!
+  ): [TopItemInTimeRangeItem]
 }
