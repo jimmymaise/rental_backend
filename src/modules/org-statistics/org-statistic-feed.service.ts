@@ -60,7 +60,7 @@ export class OrgStatisticFeedService {
         });
       } else {
         itemOrders.push(key);
-        mapData[key] = item;
+        mapData[key] = { ...item };
       }
     });
 

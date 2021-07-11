@@ -14,10 +14,19 @@ export class OrgCategoriesResolvers {
 
   @Query()
   @Permissions(Permission.NO_NEED_LOGIN)
-  async getAllAvailableOrgCategories(
+  async getAllPublicAvailableOrgCategories(
     @Args('orgId') orgId: string,
   ): Promise<OrgCategory[]> {
     return this.categoriesService.findAllAvailable(orgId);
+  }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_ORG_CATEGORY)
+  @UseGuards(GqlAuthGuard)
+  async getAllAvailableOrgCategories(
+    @CurrentUser() user: GuardUserPayload,
+  ): Promise<OrgCategory[]> {
+    return this.categoriesService.findAllAvailable(user.currentOrgId);
   }
 
   @Query()
