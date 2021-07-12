@@ -1,18 +1,12 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-// import {
-//   OrgOrderStatistics,
-//   OrgCategoryStatistics,
-//   OrgItemStatistics,
-//   OrgCustomerStatistics,
-// } from '@prisma/client';
 
 import { OrgStatisticFeedService } from './org-statistic-feed.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
 import { StatisticEntryGroupByTypes } from './constants';
-import { TopItemInTimeRangeModel } from './models';
+import { TopItemInTimeRangeModel, TopCategoryInTimeRangeModel } from './models';
 
 function toLocalStatictis(inputData: any): any {
   return {
@@ -117,6 +111,23 @@ export class OrgStatisticsResolvers {
     @Args('orderByField') orderByField: string,
   ): Promise<TopItemInTimeRangeModel[]> {
     return await this.orgStatisticFeedService.getTopTenItemInTimeRange({
+      orgId: user.currentOrgId,
+      fromDate: new Date(fromDate),
+      toDate: new Date(toDate),
+      orderByField,
+    });
+  }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_ORG_STATISTICS_LOG)
+  @UseGuards(GqlAuthGuard)
+  async feedTopTenCategories(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('fromDate') fromDate: number,
+    @Args('toDate') toDate: number,
+    @Args('orderByField') orderByField: string,
+  ): Promise<TopCategoryInTimeRangeModel[]> {
+    return await this.orgStatisticFeedService.getTopTenCategoryInTimeRange({
       orgId: user.currentOrgId,
       fromDate: new Date(fromDate),
       toDate: new Date(toDate),

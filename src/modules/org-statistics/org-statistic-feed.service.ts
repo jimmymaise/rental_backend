@@ -9,7 +9,7 @@ import {
   OrgItemStatistics,
   OrgCustomerStatistics,
 } from '@prisma/client';
-import { TopItemInTimeRangeModel } from './models';
+import { TopItemInTimeRangeModel, TopCategoryInTimeRangeModel } from './models';
 
 @Injectable()
 export class OrgStatisticFeedService {
@@ -309,6 +309,40 @@ export class OrgStatisticFeedService {
         ORDER BY "${orderByField}" desc) AS grouped_org_item_statistics
       LEFT JOIN public."Item" AS item_list on grouped_org_item_statistics."itemId" = "id"
       WHERE item_list."isDeleted" IS FALSE AND "${orderByField}" > 0
+      LIMIT 10
+    `);
+  }
+
+  public async getTopTenCategoryInTimeRange({
+    orgId,
+    fromDate,
+    toDate,
+    orderByField,
+  }: {
+    orgId: string;
+    fromDate: Date;
+    toDate: Date;
+    orderByField: string;
+  }): Promise<TopCategoryInTimeRangeModel[]> {
+    const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+    return this.prismaService.$queryRaw(`
+      SELECT category_list."id", category_list."name", category_list."slug", "newRentingOrderCount",
+        "cancelledRentingOrderCount", "viewCount", "amount", "returnedRentingOrderCount"
+      FROM (SELECT "orgCategoryId",
+        SUM("newRentingOrderCount") as "newRentingOrderCount",
+        SUM("cancelledRentingOrderCount") as "cancelledRentingOrderCount",
+        SUM("viewCount") as "viewCount",
+        SUM("amount") as "amount",
+        SUM("returnedRentingOrderCount") as "returnedRentingOrderCount"
+      FROM public."OrgCategoryStatistics" as org_category_statistics
+      WHERE org_category_statistics."orgId" = '${orgId}' 
+            AND "entryDateTime" between '${moment(fromDate).format(
+              DATE_FORMAT,
+            )}' AND '${moment(toDate).format(DATE_FORMAT)}'
+      GROUP BY org_category_statistics."orgCategoryId"
+      ORDER BY "${orderByField}" desc) AS grouped_org_category_statistics
+      LEFT JOIN public."OrgCategory" AS category_list on grouped_org_category_statistics."orgCategoryId" = "id"
+      WHERE category_list."isDisabled" IS FALSE AND "${orderByField}" > 0
       LIMIT 10
     `);
   }

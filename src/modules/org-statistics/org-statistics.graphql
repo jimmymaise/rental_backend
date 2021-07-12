@@ -40,7 +40,7 @@ type OrgCustomerStatistics {
   returnCount: Float
 }
 
-type TopItemInTimeRangeItem {
+type TopItemInTimeRange {
   id: String!
   pid: Float!
   name: String!
@@ -54,6 +54,17 @@ type TopItemInTimeRangeItem {
   refundDamagesAmount: Float!
   returnedRentingOrderCount: Float!
   sku: String
+}
+
+type TopCategoryInTimeRange {
+  id: String!
+  name: String!
+  slug: String!
+  newRentingOrderCount: Float!
+  cancelledRentingOrderCount: Float!
+  viewCount: Float!
+  amount: Float!
+  returnedRentingOrderCount: Float!
 }
 
 type Query {
@@ -81,5 +92,10 @@ type Query {
     fromDate: Float!
     toDate: Float!
     orderByField: String!
-  ): [TopItemInTimeRangeItem]
+  ): [TopItemInTimeRange]
+  feedTopTenCategories(
+    fromDate: Float!
+    toDate: Float!
+    orderByField: String!
+  ): [TopCategoryInTimeRange]
 }
