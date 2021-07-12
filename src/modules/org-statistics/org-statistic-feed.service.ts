@@ -289,7 +289,7 @@ export class OrgStatisticFeedService {
   }): Promise<TopItemInTimeRangeModel[]> {
     const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
     return this.prismaService.$queryRaw(`
-      SELECT item_list."id", item_list."pid", item_list."name", item_list."images", item_list."slug", "newRentingOrderCount",
+      SELECT item_list."id", item_list."pid", item_list."name", item_list."images", item_list."slug", item_list."sku", "newRentingOrderCount",
         "cancelledRentingOrderCount", "viewCount", "amount", "payDamagesAmount", "refundDamagesAmount", "returnedRentingOrderCount"
         FROM (SELECT "itemId",
           SUM("newRentingOrderCount") as "newRentingOrderCount",	

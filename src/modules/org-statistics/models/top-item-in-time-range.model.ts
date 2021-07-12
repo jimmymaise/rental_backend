@@ -13,6 +13,7 @@ export interface TopItemInTimeRangeModel {
   payDamagesAmount: number;
   refundDamagesAmount: number;
   returnedRentingOrderCount: number;
+  sku?: string;
 }
 
 export default TopItemInTimeRangeModel;

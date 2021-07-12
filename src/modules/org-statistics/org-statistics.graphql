@@ -53,6 +53,7 @@ type TopItemInTimeRangeItem {
   payDamagesAmount: Float!
   refundDamagesAmount: Float!
   returnedRentingOrderCount: Float!
+  sku: String
 }
 
 type Query {
