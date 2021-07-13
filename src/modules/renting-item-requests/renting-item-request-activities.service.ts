@@ -62,12 +62,12 @@ export class RentingItemRequestActivitiesService {
         item.updatedBy,
       );
 
+      this.storageService.setCloudService('aws');
       for (let j = 0; j < newItem.files.length; j++) {
         newItem.files[
           j
-        ].signedUrl = await this.storageService.getReadSignedUrlForUrl(
+        ].signedUrl = await this.storageService.generatePublicUrl(
           newItem.files[j].url,
-          ['small', 'medium'],
         );
       }
 

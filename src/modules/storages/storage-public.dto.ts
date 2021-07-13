@@ -4,9 +4,5 @@ export interface StoragePublicDTO extends Prisma.InputJsonObject {
   id: string;
   url: string;
   imageSizes?: [string];
-  signedUrl?: {
-    url: string;
-    smallUrl: string;
-    mediumUrl: string;
-  };
+  signedUrl?: string;
 }

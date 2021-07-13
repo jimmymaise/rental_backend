@@ -16,7 +16,9 @@ export function toUserInfoDTO(
   if (!user) {
     return null;
   }
-  const orgIds = user['employeesThisUserBecome'].map((org) => org.orgId);
+  const orgIds = user['employeesThisUserBecome']
+    ? user['employeesThisUserBecome'].map((org) => org.orgId)
+    : [];
   let avatarImage = userInfo?.avatarImage;
   let coverImage = userInfo?.coverImage;
   let displayName = userInfo.displayName;

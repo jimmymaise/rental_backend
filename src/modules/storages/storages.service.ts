@@ -62,52 +62,6 @@ export class StoragesService {
     );
   }
 
-  public async getReadSignedUrlForUrl(
-    originalUrl: string,
-    includes: string[] = [],
-  ) {
-    // Extract, get signed url cho tung file
-    const splitedUrl = originalUrl.split('/');
-    const bucketName = DEFAULT_BUCKET_NAME;
-    const fileName = splitedUrl[splitedUrl.length - 1];
-    const folderName = splitedUrl[splitedUrl.length - 2];
-
-    let url;
-    let smallUrl;
-    let mediumUrl;
-
-    try {
-      url = await this.cloudStorageService.getPreSignedUrlForDownload(
-        `${folderName}/${fileName}`,
-        bucketName,
-      );
-    } catch (err) {}
-
-    if (includes.includes('small')) {
-      try {
-        smallUrl = await this.cloudStorageService.getPreSignedUrlForDownload(
-          `${folderName}/small-${fileName}`,
-          bucketName,
-        );
-      } catch (err) {}
-    }
-
-    if (includes.includes('medium')) {
-      try {
-        mediumUrl = await this.cloudStorageService.getPreSignedUrlForDownload(
-          `${folderName}/medium-${fileName}`,
-          bucketName,
-        );
-      } catch (err) {}
-    }
-
-    return {
-      url,
-      smallUrl,
-      mediumUrl,
-    };
-  }
-
   public async handleUploadImageBySignedUrlComplete(
     fileId: string,
     includes: string[] = [],
