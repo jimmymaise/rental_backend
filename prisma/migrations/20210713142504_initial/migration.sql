@@ -108,6 +108,7 @@ CREATE TABLE "User" (
     "isBlocked" BOOLEAN DEFAULT false,
     "isDeleted" BOOLEAN DEFAULT false,
     "systemNote" TEXT,
+    "isRoot" BOOLEAN DEFAULT false,
 
     PRIMARY KEY ("id")
 );
@@ -246,6 +247,8 @@ CREATE TABLE "Item" (
     "note" TEXT,
     "ownerUserId" TEXT NOT NULL,
     "isDeleted" BOOLEAN DEFAULT false,
+    "isDisabled" BOOLEAN DEFAULT false,
+    "isPublishToMarketplace" BOOLEAN DEFAULT false,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3) NOT NULL,
     "updatedBy" TEXT NOT NULL,
@@ -637,6 +640,7 @@ CREATE TABLE "OrgCategoryStatistics" (
     "orgCategoryId" TEXT NOT NULL,
     "newRentingOrderCount" INTEGER DEFAULT 0,
     "cancelledRentingOrderCount" INTEGER DEFAULT 0,
+    "returnedRentingOrderCount" INTEGER DEFAULT 0,
     "viewCount" INTEGER DEFAULT 0,
     "amount" INTEGER DEFAULT 0,
 
@@ -650,6 +654,7 @@ CREATE TABLE "OrgItemStatistics" (
     "itemId" TEXT NOT NULL,
     "newRentingOrderCount" INTEGER DEFAULT 0,
     "cancelledRentingOrderCount" INTEGER DEFAULT 0,
+    "returnedRentingOrderCount" INTEGER DEFAULT 0,
     "viewCount" INTEGER DEFAULT 0,
     "amount" INTEGER DEFAULT 0,
     "payDamagesAmount" INTEGER DEFAULT 0,
