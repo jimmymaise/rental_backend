@@ -43,6 +43,7 @@ type Item {
   updatedDate: Float
   createdBy: UserInfo
   permissions: [String]
+  orgDetail: OrgSummaryCache
 }
 
 type ItemPagination {

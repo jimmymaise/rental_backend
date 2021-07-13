@@ -23,6 +23,7 @@ import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GraphQLResolveInfo } from 'graphql';
 import { QueryWithOffsetPagingDTO } from '@modules/users/user-info.dto';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
+import { OrganizationsService } from '../organizations/organizations.service';
 
 @Resolver('Item')
 export class ItemsResolvers {
@@ -34,6 +35,7 @@ export class ItemsResolvers {
     private searchKeywordService: SearchKeywordService,
     private wishingItemService: WishingItemsService,
     private orgItemsService: OrgItemsService,
+    private organizationService: OrganizationsService,
   ) {}
 
   @Mutation()
@@ -181,6 +183,12 @@ export class ItemsResolvers {
       enhancedItem.isInMyWishList =
         (await this.wishingItemService.findUnique(user.id, enhancedItem.id)) !==
         null;
+    }
+
+    if (item.orgId) {
+      enhancedItem.orgDetail = await this.organizationService.getOrgSummaryCache(
+        item.orgId,
+      );
     }
 
     return enhancedItem;

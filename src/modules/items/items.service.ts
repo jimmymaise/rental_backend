@@ -180,6 +180,8 @@ export class ItemsService {
     const mandatoryWhere = {
       status: ItemStatus.Published,
       isDeleted: false,
+      isDisabled: false,
+      isPublishToMarketplace: true,
       isVerified: true,
     };
 

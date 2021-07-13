@@ -12,6 +12,7 @@ import { SearchKeywordModule } from '../search-keyword/search-keyword.module';
 import { WishingItemsModule } from '../wishing-items/wishing-items.module';
 import { RedisCacheModule } from '../redis-cache/redis-cache.module';
 import { OrgActivityLogModule } from '@modules/org-activity-log/org-activity-log.module';
+import { OrganizationsModule } from '../organizations/organizations.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { OrgActivityLogModule } from '@modules/org-activity-log/org-activity-log
     SearchKeywordModule,
     WishingItemsModule,
     OrgActivityLogModule,
+    OrganizationsModule,
   ],
   providers: [
     ItemsService,

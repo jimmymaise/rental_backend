@@ -5,6 +5,8 @@ import { RentingMandatoryVerifyDocumentPublicDTO } from '../renting-mandatory-ve
 import { UserInfoDTO } from '../users/user-info.dto';
 import { Permission } from './permission.enum';
 import { SystemPermission } from '@app/system-permission';
+import { OrganizationSummaryCacheDto } from '@modules/organizations/organizations.dto';
+
 export interface ItemDTO {
   id: string;
   sku?: string;
@@ -38,6 +40,7 @@ export interface ItemDTO {
   createdDate: number;
   createdBy?: UserInfoDTO;
   permissions?: Permission[];
+  orgDetail?: OrganizationSummaryCacheDto;
 }
 
 export function toItemDTO(

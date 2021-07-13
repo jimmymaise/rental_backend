@@ -147,7 +147,9 @@ export class OrganizationsService {
     };
   }
 
-  async getOrgSummaryCache(orgId: string) {
+  async getOrgSummaryCache(
+    orgId: string,
+  ): Promise<OrganizationSummaryCacheDto> {
     const cacheKey = getOrgCacheKey(orgId);
     let orgSummaryCache = await this.redisCacheService.get(cacheKey);
     if (!orgSummaryCache) {
@@ -155,6 +157,7 @@ export class OrganizationsService {
       orgSummaryCache = this.convertFullOrgDataToSummaryOrgInfo(fullOrgData);
       await this.redisCacheService.set(cacheKey, fullOrgData || {}, 3600);
     }
-    return orgSummaryCache;
+
+    return orgSummaryCache as OrganizationSummaryCacheDto;
   }
 }

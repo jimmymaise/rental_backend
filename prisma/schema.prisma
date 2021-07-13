@@ -12,32 +12,32 @@ generator client {
 }
 
 model Organization {
-  id                                           String                                         @id @default(uuid())
-  name                                         String?
-  description                                  String?
-  avatarImage                                  Json?
-  slug                                         String?                                        @unique
-  createdDate                                  DateTime?                                      @default(now())
-  updatedDate                                  DateTime?                                      @updatedAt
-  rolesThisOrgHaving                           Role[]
-  createdByUser                                User?                                          @relation("CreatedByUser", fields: [createdBy], references: [id])
-  createdBy                                    String?
-  employees                                    Employee[]
-  customers                                    Customer[]
-  items                                        Item[]                                         @relation("ItemBelongToOrg")
-  rentingOrder                                 RentingOrder[]                                 @relation("RentingOrderBelongToOrg")
-  rentingOrderItems                            RentingOrderItem[]                             @relation("RentingOrderItemBelongToOrg")
-  rentingDepositItems                          RentingDepositItem[]                           @relation("RentingDepositItemBelongToOrg")
-  commonAttributesConfigs                      CommonAttributesConfig[]                       @relation("CommonAttributesConfigBelongToOrg")
-  orgCategories                                OrgCategory[]                                  @relation("OrgCategoryBelongToOrg")
+  id                                      String                                    @id @default(uuid())
+  name                                    String?
+  description                             String?
+  avatarImage                             Json?
+  slug                                    String?                                   @unique
+  createdDate                             DateTime?                                 @default(now())
+  updatedDate                             DateTime?                                 @updatedAt
+  rolesThisOrgHaving                      Role[]
+  createdByUser                           User?                                     @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdBy                               String?
+  employees                               Employee[]
+  customers                               Customer[]
+  items                                   Item[]                                    @relation("ItemBelongToOrg")
+  rentingOrder                            RentingOrder[]                            @relation("RentingOrderBelongToOrg")
+  rentingOrderItems                       RentingOrderItem[]                        @relation("RentingOrderItemBelongToOrg")
+  rentingDepositItems                     RentingDepositItem[]                      @relation("RentingDepositItemBelongToOrg")
+  commonAttributesConfigs                 CommonAttributesConfig[]                  @relation("CommonAttributesConfigBelongToOrg")
+  orgCategories                           OrgCategory[]                             @relation("OrgCategoryBelongToOrg")
   orgOrderStatistics                      OrgOrderStatistics[]                      @relation("OrgOrderStatisticsBelongToOrg")
   orgCategoryStatistics                   OrgCategoryStatistics[]                   @relation("OrgCategoryStatisticsBelongToOrg")
   orgItemStatistics                       OrgItemStatistics[]                       @relation("OrgItemStatisticsBelongToOrg")
   orgCustomerTradeTrackingCountStatistics OrgCustomerTradeTrackingCountStatistics[] @relation("OrgCustomerTradeTrackingCountStatisticsBelongToOrg")
-  orgOrgTransactionHistories                   OrgTransactionHistory[]                        @relation("OrgTransactionHistoryBelongToOrg")
-  userReviews                                  UserReview[]                                   @relation("UserReviewCreatedByOrg")
-  orgActivityLogs                              OrgActivityLog[]                               @relation("OrgActivityLogBelongToOrg")
-  orgCustomerStatistics          OrgCustomerStatistics[]      @relation("OrgCustomerStatisticsBelongToOrg")
+  orgOrgTransactionHistories              OrgTransactionHistory[]                   @relation("OrgTransactionHistoryBelongToOrg")
+  userReviews                             UserReview[]                              @relation("UserReviewCreatedByOrg")
+  orgActivityLogs                         OrgActivityLog[]                          @relation("OrgActivityLogBelongToOrg")
+  orgCustomerStatistics                   OrgCustomerStatistics[]                   @relation("OrgCustomerStatisticsBelongToOrg")
 }
 
 model Employee {
@@ -285,6 +285,8 @@ model Item {
   ownerUser                 User                 @relation(fields: [ownerUserId], references: [id])
   ownerUserId               String
   isDeleted                 Boolean?             @default(false)
+  isDisabled                Boolean?             @default(false)
+  isPublishToMarketplace    Boolean?             @default(false)
   createdDate               DateTime             @default(now())
   updatedDate               DateTime             @updatedAt
   updatedBy                 String
@@ -293,7 +295,7 @@ model Item {
   ItemReview  ItemReview[]
   WishingItem WishingItem[]
 
-  rentingOrderItems      RentingOrderItem[]       @relation("RentingOrderItemBelongToItem")
+  rentingOrderItems RentingOrderItem[]  @relation("RentingOrderItemBelongToItem")
   orgItemStatistics OrgItemStatistics[] @relation("OrgItemStatisticsBelongToItem")
 
   orgRentingOrderItemTransactionHistories OrgRentingOrderItemTransactionHistory[] @relation("OrgRentingOrderItemTransactionBelongToItem")
@@ -836,14 +838,14 @@ model OrgOrderStatistics {
   org   Organization @relation("OrgOrderStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
-  rentingOrderAmount          Int? @default(0) // After Approved
-  rentingOrderPayAmount       Int? @default(0) // After Approved
-  rentingOrderRefundAmount    Int? @default(0) // After Approved
-  rentingNewOrderCount        Int? @default(0)
-  rentingReservedOrderCount   Int? @default(0)
-  rentingPickedUpOrderCount   Int? @default(0)
-  rentingReturnedOrderCount Int? @default(0)
-  rentingCancelledOrderCount  Int? @default(0)
+  rentingOrderAmount         Int? @default(0) // After Approved
+  rentingOrderPayAmount      Int? @default(0) // After Approved
+  rentingOrderRefundAmount   Int? @default(0) // After Approved
+  rentingNewOrderCount       Int? @default(0)
+  rentingReservedOrderCount  Int? @default(0)
+  rentingPickedUpOrderCount  Int? @default(0)
+  rentingReturnedOrderCount  Int? @default(0)
+  rentingCancelledOrderCount Int? @default(0)
 
   @@id([orgId, entryDateTime])
 }
@@ -859,7 +861,7 @@ model OrgCategoryStatistics {
 
   newRentingOrderCount       Int? @default(0)
   cancelledRentingOrderCount Int? @default(0)
-  returnedRentingOrderCount Int? @default(0)
+  returnedRentingOrderCount  Int? @default(0)
   viewCount                  Int? @default(0)
   amount                     Int? @default(0)
 
@@ -877,7 +879,7 @@ model OrgItemStatistics {
 
   newRentingOrderCount       Int? @default(0)
   cancelledRentingOrderCount Int? @default(0)
-  returnedRentingOrderCount Int? @default(0)
+  returnedRentingOrderCount  Int? @default(0)
   viewCount                  Int? @default(0)
   amount                     Int? @default(0) // Amount after Approved
   payDamagesAmount           Int? @default(0)
@@ -903,12 +905,11 @@ model OrgCustomerStatistics {
   org   Organization @relation("OrgCustomerStatisticsBelongToOrg", fields: [orgId], references: [id])
   orgId String
 
-  newCount Int? @default(0)
+  newCount    Int? @default(0)
   returnCount Int? @default(0)
 
   @@id([orgId, entryDateTime])
 }
-
 
 // Item Reviews?
 // Renting Request Comments? with attach files
