@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { GoogleCloudStorageService } from './google-cloud-storage.service';
 import { S3StorageService } from './aws-s3-storage.service';
 
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,25 +10,13 @@ const DEFAULT_BUCKET_NAME =
 
 @Injectable()
 export class StoragesService {
-  private cloudStorageService: GoogleCloudStorageService | S3StorageService;
+  private cloudStorageService: S3StorageService;
 
   constructor(
     private prismaService: PrismaService,
-    private googleStorageService: GoogleCloudStorageService,
     private s3StorageService: S3StorageService,
-  ) {}
-
-  public setCloudService(cloudName) {
-    switch (cloudName) {
-      case 'gc':
-        this.cloudStorageService = this.googleStorageService;
-        return this;
-      case 'aws':
-        this.cloudStorageService = this.s3StorageService;
-        return this;
-      default:
-        throw Error('invalid cloud name');
-    }
+  ) {
+    this.cloudStorageService = this.s3StorageService;
   }
 
   public getPublicUrl = (

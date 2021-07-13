@@ -88,9 +88,6 @@ export class StoragesResolvers {
     @Args('imageData')
     imageData: ImagePreSignedUploadInput,
   ): Promise<PreSignedImageUrlData> {
-    const cloudName = imageData['cloudName'] || 'gc';
-    this.storagesService.setCloudService(cloudName);
-
     const contentType = imageData.contentType;
     const fileSizeMap = imageData.fileSizeMap;
 
@@ -195,8 +192,6 @@ export class StoragesResolvers {
     @Args('fileData')
     fileData: FilePreSignedUploadRequestModel,
   ): Promise<FilePreSignedUploadResultModel> {
-    this.storagesService.setCloudService('aws');
-
     const contentType = fileData.contentType;
     const fileSize = fileData.size;
 
@@ -247,8 +242,6 @@ export class StoragesResolvers {
     @Args('url')
     url: string,
   ): Promise<string> {
-    this.storagesService.setCloudService('aws');
-
     return this.storagesService.generatePublicUrl(url);
   }
 }

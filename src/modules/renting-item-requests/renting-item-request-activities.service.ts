@@ -62,7 +62,6 @@ export class RentingItemRequestActivitiesService {
         item.updatedBy,
       );
 
-      this.storageService.setCloudService('aws');
       for (let j = 0; j < newItem.files.length; j++) {
         newItem.files[
           j

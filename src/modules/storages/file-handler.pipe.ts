@@ -10,7 +10,6 @@ export class UploadFilePipe implements PipeTransform {
   transform(value: any): any {
     for (const [field, field_value] of Object.entries(value)) {
       if (field_value && field_value['isUploadField'] == true) {
-        this.storagesService.setCloudService('aws');
         this.storagesService.handleUploadImageBySignedUrlComplete(
           field_value['id'],
           field_value['imageSizes'],
