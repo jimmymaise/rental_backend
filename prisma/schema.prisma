@@ -87,25 +87,27 @@ model Customer {
 }
 
 model User {
-  id                           String               @id @default(uuid())
-  email                        String?              @unique
-  currentOrgId                 String?
-  phoneNumber                  String?              @unique
-  passwordHash                 String?
-  currentHashedRefreshToken    String?              @unique
-  facebookId                   String?              @unique
-  facebookAccessToken          String?
-  googleId                     String?              @unique
-  googleAccessToken            String?
-  isEmailVerified              Boolean              @default(false)
-  resetPasswordToken           String?
-  verifyEmailToken             String?
-  verifyPhoneToken             String?
-  userInfo                     UserInfo?
-  lastSignedIn                 DateTime             @default(now())
-  isBlocked                    Boolean?             @default(false)
-  isDeleted                    Boolean?             @default(false)
-  systemNote                   String?
+  id                        String    @id @default(uuid())
+  email                     String?   @unique
+  currentOrgId              String?
+  phoneNumber               String?   @unique
+  passwordHash              String?
+  currentHashedRefreshToken String?   @unique
+  facebookId                String?   @unique
+  facebookAccessToken       String?
+  googleId                  String?   @unique
+  googleAccessToken         String?
+  isEmailVerified           Boolean   @default(false)
+  resetPasswordToken        String?
+  verifyEmailToken          String?
+  verifyPhoneToken          String?
+  userInfo                  UserInfo?
+  lastSignedIn              DateTime  @default(now())
+  isBlocked                 Boolean?  @default(false)
+  isDeleted                 Boolean?  @default(false)
+  systemNote                String?
+  isRoot                    Boolean?  @default(false)
+
   orgsThisUserCreate           Organization[]       @relation("CreatedByUser")
   employeesThisUserBecome      Employee[]
   customersThisUserBecome      Customer[]

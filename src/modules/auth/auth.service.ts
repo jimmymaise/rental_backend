@@ -190,6 +190,7 @@ export class AuthService {
       userId: user.id,
       email: user.email,
       isCurrentOrgOwner: isOwner,
+      isRoot: user.isRoot,
       currentOrgPermissionNames,
       currentOrgId: orgId,
       orgIds: orgIds,
