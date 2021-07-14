@@ -493,7 +493,7 @@ export class ItemsResolvers {
     const items = [];
 
     for (let i = 0; i < result.items.length; i++) {
-      const newItem = toItemDTO(result.items[i], user.id, user.permissions);
+      const newItem = toItemDTO(result.items[i], user.id, true);
 
       if (result.items[i].ownerUserId) {
         newItem.createdBy = await this.usersService.getUserDetailData(

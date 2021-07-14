@@ -4,7 +4,6 @@ import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { RentingMandatoryVerifyDocumentPublicDTO } from '../renting-mandatory-verify-documents/renting-mandatory-verify-document-public.dto';
 import { UserInfoDTO } from '../users/user-info.dto';
 import { Permission } from './permission.enum';
-import { SystemPermission } from '@app/system-permission';
 import { OrganizationSummaryCacheDto } from '@modules/organizations/organizations.dto';
 
 export interface ItemDTO {
@@ -46,7 +45,7 @@ export interface ItemDTO {
 export function toItemDTO(
   item: Item,
   userId: string = null,
-  userSystemPermissions: SystemPermission[] = [],
+  isRoot = false,
 ): ItemDTO {
   if (!item) {
     return null;
@@ -69,26 +68,24 @@ export function toItemDTO(
     permissions.push(Permission.VIEW_CHAT_WITH_SHOP_OWNER_BOX);
   }
 
-  if (userSystemPermissions) {
-    if (userSystemPermissions.includes(SystemPermission.ROOT)) {
-      permissions.push(Permission.EDIT_ITEM);
+  if (isRoot) {
+    permissions.push(Permission.EDIT_ITEM);
 
-      if (item.status === ItemStatus.Draft) {
-        permissions.push(Permission.CHANGE_TO_BLOCKED);
-        permissions.push(Permission.CHANGE_TO_PUBLISHED);
-      } else if (item.status === ItemStatus.Blocked) {
-        permissions.push(Permission.CHANGE_TO_DRAFT);
-        permissions.push(Permission.CHANGE_TO_PUBLISHED);
-      } else if (item.status === ItemStatus.Published) {
-        permissions.push(Permission.CHANGE_TO_DRAFT);
-        permissions.push(Permission.CHANGE_TO_BLOCKED);
-      }
+    if (item.status === ItemStatus.Draft) {
+      permissions.push(Permission.CHANGE_TO_BLOCKED);
+      permissions.push(Permission.CHANGE_TO_PUBLISHED);
+    } else if (item.status === ItemStatus.Blocked) {
+      permissions.push(Permission.CHANGE_TO_DRAFT);
+      permissions.push(Permission.CHANGE_TO_PUBLISHED);
+    } else if (item.status === ItemStatus.Published) {
+      permissions.push(Permission.CHANGE_TO_DRAFT);
+      permissions.push(Permission.CHANGE_TO_BLOCKED);
+    }
 
-      if (item.isVerified) {
-        permissions.push(Permission.REJECT_ITEM);
-      } else {
-        permissions.push(Permission.APPROVE_ITEM);
-      }
+    if (item.isVerified) {
+      permissions.push(Permission.REJECT_ITEM);
+    } else {
+      permissions.push(Permission.APPROVE_ITEM);
     }
   }
 

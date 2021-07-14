@@ -1,5 +1,3 @@
-import { SystemPermission } from '@app/system-permission';
-
 export interface AuthDTO {
   accessToken?: string;
   refreshToken?: string;
@@ -19,6 +17,5 @@ export interface GuardUserPayload {
   orgIds?: string[];
   currentOrgId?: string;
   isCurrentOrgOwner: boolean;
-  permissions?: SystemPermission[];
   currentOrgPermissionNames?: string[];
 }
