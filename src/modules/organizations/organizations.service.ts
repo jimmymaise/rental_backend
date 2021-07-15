@@ -111,6 +111,8 @@ export class OrganizationsService {
       };
     }
 
+    const areaIds = updateMyOrganizationData.areaIds;
+    delete updateMyOrganizationData['areaIds'];
     const result = await this.prismaService.organization.update({
       include: include,
       where: { id: orgId },
@@ -118,6 +120,11 @@ export class OrganizationsService {
         ...updateMyOrganizationData,
         employees: {
           ...employeeUpdateCommand,
+        },
+        areas: {
+          set: areaIds.map((areaId: string) => ({
+            id: areaId,
+          })),
         },
       },
     });

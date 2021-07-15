@@ -26,6 +26,7 @@ export class UpdateMyOrganizationDto {
   @Transform(sanitize)
   description: string;
   slug: string;
+  areaIds?: string[];
   addEmployeesToOrgByUserId: string[];
   removeEmployeesFromOrgByUserId: string[];
   setOwner: SetOwner;

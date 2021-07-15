@@ -8,6 +8,7 @@ type OrganizationInfo {
   updatedDate: Float
   createdBy: String
   employees: [EmployeeInfo]
+  areas: [Area]
 }
 
 type OrgSummaryCache {
@@ -38,6 +39,7 @@ input UpdateMyOrganizationInput {
   avatarImage: PublicStorageFileInput
   slug: String
   users: [String]
+  areaIds: [String]
   addEmployeesToOrgByUserId: [String]
   removeEmployeesFromOrgByUserId: [String]
   setOwner: SetOwner

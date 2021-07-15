@@ -38,6 +38,7 @@ export class OrganizationsResolvers {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForRelationalFields([
       'employees',
+      'areas',
     ]);
     return this.organizationsService.getOrganization(
       user.currentOrgId,
