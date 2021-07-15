@@ -207,7 +207,7 @@ export class UserItemsService {
       'sku',
       'name',
       'description',
-      'areas',
+      'areaIds',
       'categories',
       'orgCategories',
       'termAndCondition',
@@ -263,6 +263,14 @@ export class UserItemsService {
               updateData['isVerified'] = isVerified;
             }
           }
+          break;
+        case 'areaIds':
+          const newAreaIds = data['areaIds'] || [];
+          updateData['areas'] = {
+            set: newAreaIds.map((areaId) => ({
+              id: areaId,
+            })),
+          };
           break;
         case 'images':
           if (data[field] && Array.isArray(data[field])) {

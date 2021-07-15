@@ -331,6 +331,7 @@ export class ItemsResolvers {
     const graphQLFieldHandler = new GraphQLFieldHandler(info);
     const include = graphQLFieldHandler.getIncludeForNestedRelationalFields([
       { fieldName: 'orgCategories' },
+      { fieldName: 'areas' },
     ]);
 
     const item = await this.orgItemsService.findDetailForOrg(

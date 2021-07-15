@@ -57,7 +57,7 @@ export class OrgItemsService {
       'sku',
       'name',
       'description',
-      'areas',
+      'areaIds',
       'categories',
       'termAndCondition',
       'images',
@@ -109,6 +109,14 @@ export class OrgItemsService {
           updateData['orgCategories'] = {
             set: newCategoryIds.map((orgCategoryId) => ({
               id: orgCategoryId,
+            })),
+          };
+          break;
+        case 'areaIds':
+          const newAreaIds = data['areaIds'] || [];
+          updateData['areas'] = {
+            set: newAreaIds.map((areaId) => ({
+              id: areaId,
             })),
           };
           break;
