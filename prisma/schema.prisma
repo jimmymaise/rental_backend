@@ -24,6 +24,7 @@ model Organization {
   createdBy                               String?
   employees                               Employee[]
   customers                               Customer[]
+  areas                     Area[]               @relation(references: [id])
   items                                   Item[]                                    @relation("ItemBelongToOrg")
   rentingOrder                            RentingOrder[]                            @relation("RentingOrderBelongToOrg")
   rentingOrderItems                       RentingOrderItem[]                        @relation("RentingOrderItemBelongToOrg")
@@ -195,6 +196,7 @@ model Area {
   isDisabled   Boolean? @default(false)
   isDeleted    Boolean? @default(false)
   items        Item[]   @relation(references: [id])
+  organizations        Organization[]   @relation(references: [id])
 }
 
 model Category {
@@ -283,6 +285,7 @@ model Item {
   totalQuantity             Int                  @default(1)
   isVerified                Boolean?             @default(false)
   status                    ItemStatus
+  rentingStatus             String?
   note                      String?
   ownerUser                 User                 @relation(fields: [ownerUserId], references: [id])
   ownerUserId               String
