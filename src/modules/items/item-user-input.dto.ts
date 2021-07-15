@@ -22,4 +22,6 @@ export interface ItemUserInputDTO {
   rentPricePerMonth?: number;
   note?: string;
   status?: string;
+  isDisabled?: boolean;
+  isPublishToMarketplace?: boolean;
 }

@@ -73,6 +73,8 @@ export class OrgItemsService {
       'totalQuantity',
       'status',
       'orgCategoryIds',
+      'isDisabled',
+      'isPublishToMarketplace',
     ];
     const updateData: any = {};
     const where = {

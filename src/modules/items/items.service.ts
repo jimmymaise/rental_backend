@@ -59,6 +59,8 @@ export class ItemsService {
       rentPricePerMonth,
       rentPricePerWeek,
       note,
+      isDisabled,
+      isPublishToMarketplace,
     } = itemData;
 
     for (let i = 0; i < images.length; i++) {
@@ -107,6 +109,8 @@ export class ItemsService {
         updatedBy: userId,
         isVerified: process.env.NODE_ENV === 'production' ? false : true,
         keyword: `${actualName} ${slug}`,
+        isDisabled,
+        isPublishToMarketplace: orgId ? isPublishToMarketplace : true,
       },
       include: include,
     };
