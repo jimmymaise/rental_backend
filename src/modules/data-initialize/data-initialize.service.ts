@@ -53,12 +53,20 @@ export class DataInitilizeService {
 
     const defaultOrderStatuses: CommonAttributesConfig[] = [
       RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
+        label: 'Trong giỏ hàng',
+        description: 'Sản phẩm đang trong giỏ hàng của khách',
+        color: '#17b7ff',
+        value: 'IN_BAG',
+        mapWithSystemStatus: 'InBag',
+        order: 0,
+      }),
+      RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
         label: 'Đơn hàng mới',
         description: 'Đơn hàng mới được tạo',
         color: '#17b7ff',
         value: 'NEW',
         mapWithSystemStatus: 'New',
-        order: 0,
+        order: 1,
       }),
       RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
         label: 'Đặt giữ',
@@ -68,7 +76,7 @@ export class DataInitilizeService {
         value: 'RESERVED',
         mapWithSystemStatus: 'Reserved',
         parentAttributeValue: 'NEW',
-        order: 1,
+        order: 2,
       }),
       RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
         label: 'Đã nhận hàng',
@@ -78,7 +86,7 @@ export class DataInitilizeService {
         value: 'PICKED_UP',
         mapWithSystemStatus: 'PickedUp',
         parentAttributeValue: 'RESERVED',
-        order: 2,
+        order: 3,
       }),
       RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
         label: 'Đã trả hàng',
@@ -88,7 +96,7 @@ export class DataInitilizeService {
         value: 'RETURNED',
         parentAttributeValue: 'PICKED_UP',
         mapWithSystemStatus: 'Returned',
-        order: 3,
+        order: 4,
       }),
       RentingOrderStatusCreateModel.toCommonAttributesConfig(orgId, userId, {
         label: 'Huỷ đơn',
@@ -97,7 +105,7 @@ export class DataInitilizeService {
         value: 'CANCELLED',
         parentAttributeValue: 'RESERVED',
         mapWithSystemStatus: 'Cancelled',
-        order: 4,
+        order: 5,
       }),
     ];
 

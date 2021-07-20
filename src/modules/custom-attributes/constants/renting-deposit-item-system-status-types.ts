@@ -1,4 +1,4 @@
-import { RentingDepositItemSystemStatusType } from '@prisma/client';
+import { RentingDepositItemSystemStatusType } from '@app/models';
 
 export const RentingDepositItemSystemStatusTypesMap = {
   [RentingDepositItemSystemStatusType.New]: {

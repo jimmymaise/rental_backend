@@ -1,9 +1,10 @@
-import { Category, Area, Item, ItemStatus } from '@prisma/client';
+import { Category, Area, Item } from '@prisma/client';
 
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { RentingMandatoryVerifyDocumentPublicDTO } from '../renting-mandatory-verify-documents/renting-mandatory-verify-document-public.dto';
 import { UserInfoDTO } from '../users/user-info.dto';
 import { Permission } from './permission.enum';
+import { ItemStatus } from '@app/models';
 import { OrganizationSummaryCacheDto } from '@modules/organizations/organizations.dto';
 
 export interface ItemDTO {

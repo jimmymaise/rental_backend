@@ -3,19 +3,18 @@ import { Injectable } from '@nestjs/common';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 import { OffsetPaginationDTO } from '@app/models';
 import { PrismaService } from '../prisma/prisma.service';
-import isEmpty from 'lodash/isEmpty';
 
-import {
-  RentingOrderSystemStatusType,
-  RentingDepositItemSystemType,
-  RentingDepositItemSystemStatusType,
-  RentingOrder,
-} from '@prisma/client';
+import { RentingOrder } from '@prisma/client';
 import { RentingOrderModel } from './models/renting-order.model';
 import { RentingOrderCreateModel } from './models/renting-order-create.model';
 import { RentingOrderItemModel } from './models/renting-order-item.model';
 import { StoragesService } from '@modules/storages/storages.service';
 import { OrgStatisticLogService } from '@modules/org-statistics';
+import {
+  RentingOrderSystemStatusType,
+  RentingDepositItemSystemType,
+  RentingDepositItemSystemStatusType,
+} from '@app/models';
 
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
 

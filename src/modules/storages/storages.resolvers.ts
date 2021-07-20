@@ -2,8 +2,8 @@ import { UseGuards, BadRequestException } from '@nestjs/common';
 import { Args, Info, Mutation, Resolver, Query } from '@nestjs/graphql';
 // import * as sharp from 'sharp'
 import * as mime from 'mime-types';
-import { FileUsingLocate } from '@prisma/client';
 
+import { FileUsingLocate } from '@app/models';
 import { StoragesService } from './storages.service';
 import { GoogleCloudStorageService } from './google-cloud-storage.service';
 import { GqlAuthGuard } from '../auth/gpl-auth.guard';

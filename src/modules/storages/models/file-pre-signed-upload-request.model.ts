@@ -1,4 +1,4 @@
-import { FileUsingLocate } from '@prisma/client';
+import { FileUsingLocate } from '@app/models';
 
 export class FilePreSignedUploadRequestModel {
   name: string;

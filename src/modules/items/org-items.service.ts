@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import sanitizeHtml from 'sanitize-html';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { Item, ItemStatus } from '@prisma/client';
+import { Item } from '@prisma/client';
 import { StoragesService } from '../storages/storages.service';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers/common';
 import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
+import { ItemStatus } from '@app/models';
 
 @Injectable()
 export class OrgItemsService {

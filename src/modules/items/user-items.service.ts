@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import sanitizeHtml from 'sanitize-html';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { Item, ItemStatus } from '@prisma/client';
-import { OffsetPaginationDTO } from '../../models';
+import { Item } from '@prisma/client';
+import { OffsetPaginationDTO, ItemStatus } from '../../models';
 import { StoragesService } from '../storages/storages.service';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers/common';

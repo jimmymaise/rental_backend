@@ -1,4 +1,4 @@
-import { UserNotificationType } from '@prisma/client';
+import { UserNotificationType } from '@app/models';
 
 export interface NotificationDTO {
   id?: string;

@@ -1,5 +1,5 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { ItemStatus } from '@prisma/client';
+import { ItemStatus } from '@app/models';
 import { Request } from 'express';
 import { AppService } from './app.service';
 import { RedisCacheService } from '@modules/redis-cache/redis-cache.service';
@@ -7,7 +7,6 @@ import { PrismaService } from '@modules/prisma/prisma.service';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class AppController {

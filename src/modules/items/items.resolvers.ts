@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, Info } from '@nestjs/graphql';
-import { ItemStatus } from '@prisma/client';
 
 import { ItemsService } from './items.service';
 import { UserItemsService } from './user-items.service';
@@ -14,7 +13,7 @@ import {
   GqlAuthGuard,
   EveryoneGqlAuthGuard,
 } from '../auth';
-import { OffsetPaginationDTO } from '../../models';
+import { ItemStatus, OffsetPaginationDTO } from '@app/models';
 import { UsersService } from '../users/users.service';
 import { SearchKeywordService } from '../search-keyword/search-keyword.service';
 import { WishingItemsService } from '../wishing-items/wishing-items.service';

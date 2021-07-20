@@ -17,6 +17,7 @@ model Organization {
   description                             String?
   avatarImage                             Json?
   slug                                    String?                                   @unique
+  domain                                  String?                                   @unique
   createdDate                             DateTime?                                 @default(now())
   updatedDate                             DateTime?                                 @updatedAt
   rolesThisOrgHaving                      Role[]
@@ -24,7 +25,7 @@ model Organization {
   createdBy                               String?
   employees                               Employee[]
   customers                               Customer[]
-  areas                     Area[]               @relation(references: [id])
+  areas                                   Area[]                                    @relation(references: [id])
   items                                   Item[]                                    @relation("ItemBelongToOrg")
   rentingOrder                            RentingOrder[]                            @relation("RentingOrderBelongToOrg")
   rentingOrderItems                       RentingOrderItem[]                        @relation("RentingOrderItemBelongToOrg")
@@ -39,6 +40,16 @@ model Organization {
   userReviews                             UserReview[]                              @relation("UserReviewCreatedByOrg")
   orgActivityLogs                         OrgActivityLog[]                          @relation("OrgActivityLogBelongToOrg")
   orgCustomerStatistics                   OrgCustomerStatistics[]                   @relation("OrgCustomerStatisticsBelongToOrg")
+
+}
+
+model OrganizationSlugBooking {
+  id          String    @id @default(uuid())
+  orgId       String
+  status      String
+  createdBy   String?
+  createdDate DateTime? @default(now())
+  isDeleted   Boolean?  @default(false)
 }
 
 model Employee {
@@ -167,36 +178,20 @@ model UserInfo {
   userId      String   @id
 }
 
-enum UserVerifyDocumentType {
-  Facebook
-  Email
-  PhoneNumber
-}
-
-model UserIdentifyDocument {
-  id        String                 @id @default(uuid())
-  userId    String
-  type      UserVerifyDocumentType
-  value     String
-  isVerfied Boolean?
-
-  @@index(fields: [userId], name: "user_identify_document_index")
-}
-
 model Area {
-  id           String   @id @default(uuid())
-  region       String
-  name         String
-  slug         String   @unique
-  parentAreaId String?
-  latitude     Float
-  longitude    Float
-  order        Int?     @default(0)
-  isDefault    Boolean? @default(false)
-  isDisabled   Boolean? @default(false)
-  isDeleted    Boolean? @default(false)
-  items        Item[]   @relation(references: [id])
-  organizations        Organization[]   @relation(references: [id])
+  id            String         @id @default(uuid())
+  region        String
+  name          String
+  slug          String         @unique
+  parentAreaId  String?
+  latitude      Float
+  longitude     Float
+  order         Int?           @default(0)
+  isDefault     Boolean?       @default(false)
+  isDisabled    Boolean?       @default(false)
+  isDeleted     Boolean?       @default(false)
+  items         Item[]         @relation(references: [id])
+  organizations Organization[] @relation(references: [id])
 }
 
 model Category {
@@ -217,41 +212,22 @@ model Category {
   isFeatured       Boolean?      @default(false)
 }
 
-enum FileUsingLocate {
-  ItemPreviewImage
-  UserAvatarImage
-  UserCoverImage
-  OrgAvatarImage
-  RentingOrderItemImage
-  RentingDepositItemImage
-  RentingOrderActivityImage
-  BookingActivityImage
-  PaymentTransactionImage
-  RefundTransactionImage
-}
-
 model FileStorage {
-  id              String           @id @default(uuid())
+  id              String   @id @default(uuid())
   url             String
   name            String
   bucketName      String
   folderName      String
   contentType     String
   sizes           String[]
-  usingLocate     FileUsingLocate?
-  isUploadSuccess Boolean?         @default(false)
+  usingLocate     String?
+  isUploadSuccess Boolean? @default(false)
   createdBy       String
-  createdDate     DateTime         @default(now())
-  isDeleted       Boolean?         @default(false)
+  createdDate     DateTime @default(now())
+  isDeleted       Boolean? @default(false)
   orgId           String?
 
   @@index(fields: [folderName, createdBy], name: "file_storage_main_index")
-}
-
-enum ItemStatus {
-  Draft
-  Blocked
-  Published
 }
 
 // areas, FE will use the last area, it's smallest unit
@@ -284,7 +260,7 @@ model Item {
   summaryReviewCount        Float?
   totalQuantity             Int                  @default(1)
   isVerified                Boolean?             @default(false)
-  status                    ItemStatus
+  status                    String
   rentingStatus             String?
   note                      String?
   ownerUser                 User                 @relation(fields: [ownerUserId], references: [id])
@@ -313,27 +289,6 @@ model Item {
   @@index(fields: [ownerUserId], name: "item_owner_user_index")
 }
 
-enum RentingMandatoryVerifyDocumentDataType {
-  Label
-  Currency
-}
-
-// tien coc, bang lai xe,
-model RentingMandatoryVerifyDocument {
-  id       String                                 @id @default(uuid())
-  name     String
-  dataType RentingMandatoryVerifyDocumentDataType
-}
-
-enum RentingItemRequestStatus {
-  New
-  Declined
-  Approved
-  InProgress
-  Completed
-  Cancelled
-}
-
 model RentingItemRequest {
   id                         String                       @id @default(uuid())
   rentingItem                Item                         @relation(fields: [itemId], references: [id])
@@ -347,7 +302,7 @@ model RentingItemRequest {
   rentPricePerMonth          Int?
   fromDate                   DateTime
   toDate                     DateTime
-  status                     RentingItemRequestStatus?
+  status                     String?
   ownerUser                  User                         @relation("OwnerRequest", fields: [ownerUserId], references: [id])
   ownerUserId                String
   lenderUser                 User                         @relation("LenderOfRequest", fields: [lenderUserId], references: [id])
@@ -403,26 +358,17 @@ model UserReview {
   @@index(fields: [toUserId], name: "user_review_by_user_index")
 }
 
-enum RentingItemRequestActivityType {
-  Comment
-  Declined
-  Approved
-  InProgress
-  Completed
-  Cancelled
-}
-
 model RentingItemRequestActivity {
-  id                   String                         @id @default(uuid())
-  rentingItemRequest   RentingItemRequest             @relation(fields: [rentingItemRequestId], references: [id])
+  id                   String             @id @default(uuid())
+  rentingItemRequest   RentingItemRequest @relation(fields: [rentingItemRequestId], references: [id])
   rentingItemRequestId String
   comment              String?
-  type                 RentingItemRequestActivityType
+  type                 String
   files                Json?
-  isDisabled           Boolean?                       @default(false)
-  isDeleted            Boolean?                       @default(false)
-  createdDate          DateTime                       @default(now())
-  updatedDate          DateTime                       @updatedAt
+  isDisabled           Boolean?           @default(false)
+  isDeleted            Boolean?           @default(false)
+  createdDate          DateTime           @default(now())
+  updatedDate          DateTime           @updatedAt
   createdBy            String
   updatedBy            String
 
@@ -445,23 +391,14 @@ model UserLoginLog {
   @@index(fields: [ownerUserId], name: "login_log_owner_user_index")
 }
 
-enum UserNotificationType {
-  RentingRequestIsCreated
-  RentingRequestIsDeclined
-  RentingRequestIsApproved
-  RentingRequestIsInProgress
-  RentingRequestIsCompleted
-  RentingRequestIsCancelled
-}
-
 model UserNotification {
-  id          String               @id @default(uuid())
-  forUser     User                 @relation("ForUserNotification", fields: [forUserId], references: [id])
+  id          String   @id @default(uuid())
+  forUser     User     @relation("ForUserNotification", fields: [forUserId], references: [id])
   forUserId   String
   data        Json?
-  type        UserNotificationType
-  isRead      Boolean?             @default(false)
-  createdDate DateTime             @default(now())
+  type        String
+  isRead      Boolean? @default(false)
+  createdDate DateTime @default(now())
 
   @@index(fields: [createdDate], name: "user_notification_index")
   @@index(fields: [forUserId], name: "notification_for_user_index")
@@ -480,6 +417,7 @@ model MyUserContact {
   ownerUserId String
   user        User     @relation(fields: [userId], references: [id])
   userId      String
+  orgId       String?
   createdDate DateTime @default(now())
 
   @@id([ownerUserId, userId])
@@ -513,6 +451,7 @@ model ChatConversationMember {
   chatConversation   ChatConversation @relation(fields: [chatConversationId], references: [id])
   chatConversationId String
   userId             String
+  orgId              String?
 
   @@id([chatConversationId, userId])
 }
@@ -520,8 +459,9 @@ model ChatConversationMember {
 // https://www.prisma.io/docs/concepts/components/prisma-schema/relations#self-relations
 // https://dba.stackexchange.com/questions/97963/how-to-build-a-table-for-a-private-messaging-system-that-supports-replies/167579#167579
 model ChatMessage {
-  id      String @id @default(uuid())
-  content String
+  id         String @id @default(uuid())
+  content    String
+  attachData Json?
 
   replyBy   ChatMessage? @relation("ChatMessageReplyRelation")
   replyToId String?
@@ -531,19 +471,12 @@ model ChatMessage {
   chatConversationId String
 
   fromUserId String
+  fromOrgId  String?
   isRead     Boolean? @default(false)
 
   createdDate DateTime @default(now())
 
   @@index(fields: [replyToId, id], name: "user_chat_message_index")
-}
-
-enum RentingOrderSystemStatusType {
-  New
-  Reserved
-  PickedUp
-  Returned
-  Cancelled
 }
 
 model RentingOrder {
@@ -561,7 +494,7 @@ model RentingOrder {
   createdBy      String
   updatedBy      String
 
-  systemStatus  RentingOrderSystemStatusType
+  systemStatus  String
   status        String
   attachedFiles Json?
 
@@ -582,16 +515,16 @@ model RentingOrderItem {
   name String
   note String?
 
-  amount            Int?                         @default(0)
-  quantity          Int?                         @default(0)
+  amount            Int?      @default(0)
+  quantity          Int?      @default(0)
   pickupDateTime    DateTime?
   returningDateTime DateTime?
-  systemStatus      RentingOrderSystemStatusType
+  systemStatus      String
   status            String
-  unitPrice         Int?                         @default(0)
-  unitPricePerDay   Int?                         @default(0)
-  unitPricePerWeek  Int?                         @default(0)
-  unitPricePerMonth Int?                         @default(0)
+  unitPrice         Int?      @default(0)
+  unitPricePerDay   Int?      @default(0)
+  unitPricePerWeek  Int?      @default(0)
+  unitPricePerMonth Int?      @default(0)
   attachedFiles     Json?
 
   createdDate DateTime @default(now())
@@ -613,27 +546,14 @@ model RentingOrderItem {
   orgRentingOrderItemTransactionHistories OrgRentingOrderItemTransactionHistory[] @relation("OrgRentingOrderItemTransactionBelongToRentingOrderItem")
 }
 
-enum RentingDepositItemSystemStatusType {
-  New
-  PickedUp
-  Returned
-}
-
-enum RentingDepositItemSystemType {
-  Money
-  Document
-  Item
-  Other
-}
-
 model RentingDepositItem {
-  id            String                             @id @default(uuid())
+  id            String  @id @default(uuid())
   type          String
-  systemType    RentingDepositItemSystemType
+  systemType    String
   note          String?
-  valueAmount   Int?                               @default(0)
+  valueAmount   Int?    @default(0)
   attachedFiles Json?
-  systemStatus  RentingDepositItemSystemStatusType
+  systemStatus  String
   status        String
 
   rentingOrder   RentingOrder @relation("RentingDepositItemBelongToRentingOrder", fields: [rentingOrderId], references: [id])
@@ -650,29 +570,6 @@ model RentingDepositItem {
   isDeleted Boolean? @default(false)
 }
 
-enum CommonAttributesType {
-  RentingOrderStatus
-  RentingOrderItemStatus
-  RentingDepositItemStatus
-  RentingDepositItemType
-  PaymentMethod
-}
-
-enum PaymentMethodSystemType {
-  PromoCode
-  RewardPoints
-  BankTransfer
-  Card
-  Cash
-  MobileMoney
-  Other
-}
-
-enum TransactionType {
-  Pay
-  Refund
-}
-
 model OrgTransactionHistory {
   id    String       @id @default(uuid())
   org   Organization @relation("OrgTransactionHistoryBelongToOrg", fields: [orgId], references: [id])
@@ -685,10 +582,10 @@ model OrgTransactionHistory {
   note          String?
   attachedFiles Json?
 
-  systemMethod PaymentMethodSystemType
+  systemMethod String
   method       String
 
-  type TransactionType
+  type String
 
   createdDate DateTime @default(now())
 
@@ -792,16 +689,16 @@ model CommonAttributesConfig {
   value                String // Value khong duoc thay doi, sau khi da tao
   parentAttributeValue String? // Dung cho truong hop status, status con di theo sau 1 status khac New -> InProgress
   label                String
-  type                 CommonAttributesType
+  type                 String
   customConfigs        Json?
   mapWithSystemValue   String?
-  isDisabled           Boolean?             @default(false)
-  isDefault            Boolean?             @default(false)
-  order                Int?                 @default(0)
-  org                  Organization         @relation("CommonAttributesConfigBelongToOrg", fields: [orgId], references: [id])
+  isDisabled           Boolean?     @default(false)
+  isDefault            Boolean?     @default(false)
+  order                Int?         @default(0)
+  org                  Organization @relation("CommonAttributesConfigBelongToOrg", fields: [orgId], references: [id])
   orgId                String
-  createdDate          DateTime             @default(now())
-  updatedDate          DateTime             @updatedAt
+  createdDate          DateTime     @default(now())
+  updatedDate          DateTime     @updatedAt
 
   createdBy String
   updatedBy String

@@ -1,4 +1,5 @@
-import { CommonAttributesConfig, CommonAttributesType } from '@prisma/client';
+import { CommonAttributesConfig } from '@prisma/client';
+import { CommonAttributesType } from '@app/models';
 
 export class PaymentMethodCreateModel {
   public value: string;

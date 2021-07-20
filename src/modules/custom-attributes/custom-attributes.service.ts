@@ -1,9 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CommonAttributesType,
-  RentingDepositItemSystemStatusType,
-  RentingOrderSystemStatusType,
-} from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -18,6 +13,11 @@ import { RentingOrderSystemStatusTypes } from './constants/renting-order-system-
 import { RentingDepositItemSystemStatusTypes } from './constants/renting-deposit-item-system-status-types';
 import { RentingDepositItemSystemTypeTypes } from './constants/renting-deposit-item-system-type-types';
 import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
+import {
+  CommonAttributesType,
+  RentingDepositItemSystemStatusType,
+  RentingOrderSystemStatusType,
+} from '@app/models';
 
 @Injectable()
 export class CustomAttributesService {

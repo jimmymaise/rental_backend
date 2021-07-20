@@ -1,4 +1,4 @@
-import { PaymentMethodSystemType } from '@prisma/client';
+import { PaymentMethodSystemType } from '@app/models';
 
 export const PaymentMethodSystemTypeTypesMap = {
   [PaymentMethodSystemType.PromoCode]: {

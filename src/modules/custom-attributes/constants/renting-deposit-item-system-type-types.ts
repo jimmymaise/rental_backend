@@ -1,4 +1,4 @@
-import { RentingDepositItemSystemType } from '@prisma/client';
+import { RentingDepositItemSystemType } from '@app/models';
 
 export const RentingDepositItemSystemTypeTypesMap = {
   [RentingDepositItemSystemType.Money]: {

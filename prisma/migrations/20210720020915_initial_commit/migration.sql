@@ -1,42 +1,3 @@
--- CreateEnum
-CREATE TYPE "UserVerifyDocumentType" AS ENUM ('Facebook', 'Email', 'PhoneNumber');
-
--- CreateEnum
-CREATE TYPE "FileUsingLocate" AS ENUM ('ItemPreviewImage', 'UserAvatarImage', 'UserCoverImage', 'OrgAvatarImage', 'RentingOrderItemImage', 'RentingDepositItemImage', 'RentingOrderActivityImage', 'BookingActivityImage', 'PaymentTransactionImage', 'RefundTransactionImage');
-
--- CreateEnum
-CREATE TYPE "ItemStatus" AS ENUM ('Draft', 'Blocked', 'Published');
-
--- CreateEnum
-CREATE TYPE "RentingMandatoryVerifyDocumentDataType" AS ENUM ('Label', 'Currency');
-
--- CreateEnum
-CREATE TYPE "RentingItemRequestStatus" AS ENUM ('New', 'Declined', 'Approved', 'InProgress', 'Completed', 'Cancelled');
-
--- CreateEnum
-CREATE TYPE "RentingItemRequestActivityType" AS ENUM ('Comment', 'Declined', 'Approved', 'InProgress', 'Completed', 'Cancelled');
-
--- CreateEnum
-CREATE TYPE "UserNotificationType" AS ENUM ('RentingRequestIsCreated', 'RentingRequestIsDeclined', 'RentingRequestIsApproved', 'RentingRequestIsInProgress', 'RentingRequestIsCompleted', 'RentingRequestIsCancelled');
-
--- CreateEnum
-CREATE TYPE "RentingOrderSystemStatusType" AS ENUM ('New', 'Reserved', 'PickedUp', 'Returned', 'Cancelled');
-
--- CreateEnum
-CREATE TYPE "RentingDepositItemSystemStatusType" AS ENUM ('New', 'PickedUp', 'Returned');
-
--- CreateEnum
-CREATE TYPE "RentingDepositItemSystemType" AS ENUM ('Money', 'Document', 'Item', 'Other');
-
--- CreateEnum
-CREATE TYPE "CommonAttributesType" AS ENUM ('RentingOrderStatus', 'RentingOrderItemStatus', 'RentingDepositItemStatus', 'RentingDepositItemType', 'PaymentMethod');
-
--- CreateEnum
-CREATE TYPE "PaymentMethodSystemType" AS ENUM ('PromoCode', 'RewardPoints', 'BankTransfer', 'Card', 'Cash', 'MobileMoney', 'Other');
-
--- CreateEnum
-CREATE TYPE "TransactionType" AS ENUM ('Pay', 'Refund');
-
 -- CreateTable
 CREATE TABLE "Organization" (
     "id" TEXT NOT NULL,
@@ -44,9 +5,22 @@ CREATE TABLE "Organization" (
     "description" TEXT,
     "avatarImage" JSONB,
     "slug" TEXT,
+    "domain" TEXT,
     "createdDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedDate" TIMESTAMP(3),
     "createdBy" TEXT,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "OrganizationSlugBooking" (
+    "id" TEXT NOT NULL,
+    "orgId" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "createdBy" TEXT,
+    "createdDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "isDeleted" BOOLEAN DEFAULT false,
 
     PRIMARY KEY ("id")
 );
@@ -153,17 +127,6 @@ CREATE TABLE "UserInfo" (
 );
 
 -- CreateTable
-CREATE TABLE "UserIdentifyDocument" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "type" "UserVerifyDocumentType" NOT NULL,
-    "value" TEXT NOT NULL,
-    "isVerfied" BOOLEAN,
-
-    PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Area" (
     "id" TEXT NOT NULL,
     "region" TEXT NOT NULL,
@@ -208,7 +171,7 @@ CREATE TABLE "FileStorage" (
     "folderName" TEXT NOT NULL,
     "contentType" TEXT NOT NULL,
     "sizes" TEXT[],
-    "usingLocate" "FileUsingLocate",
+    "usingLocate" TEXT,
     "isUploadSuccess" BOOLEAN DEFAULT false,
     "createdBy" TEXT NOT NULL,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -243,7 +206,8 @@ CREATE TABLE "Item" (
     "summaryReviewCount" DOUBLE PRECISION,
     "totalQuantity" INTEGER NOT NULL DEFAULT 1,
     "isVerified" BOOLEAN DEFAULT false,
-    "status" "ItemStatus" NOT NULL,
+    "status" TEXT NOT NULL,
+    "rentingStatus" TEXT,
     "note" TEXT,
     "ownerUserId" TEXT NOT NULL,
     "isDeleted" BOOLEAN DEFAULT false,
@@ -253,15 +217,6 @@ CREATE TABLE "Item" (
     "updatedDate" TIMESTAMP(3) NOT NULL,
     "updatedBy" TEXT NOT NULL,
     "keyword" TEXT,
-
-    PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "RentingMandatoryVerifyDocument" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "dataType" "RentingMandatoryVerifyDocumentDataType" NOT NULL,
 
     PRIMARY KEY ("id")
 );
@@ -279,7 +234,7 @@ CREATE TABLE "RentingItemRequest" (
     "rentPricePerMonth" INTEGER,
     "fromDate" TIMESTAMP(3) NOT NULL,
     "toDate" TIMESTAMP(3) NOT NULL,
-    "status" "RentingItemRequestStatus",
+    "status" TEXT,
     "ownerUserId" TEXT NOT NULL,
     "lenderUserId" TEXT NOT NULL,
     "isDeleted" BOOLEAN DEFAULT false,
@@ -330,7 +285,7 @@ CREATE TABLE "RentingItemRequestActivity" (
     "id" TEXT NOT NULL,
     "rentingItemRequestId" TEXT NOT NULL,
     "comment" TEXT,
-    "type" "RentingItemRequestActivityType" NOT NULL,
+    "type" TEXT NOT NULL,
     "files" JSONB,
     "isDisabled" BOOLEAN DEFAULT false,
     "isDeleted" BOOLEAN DEFAULT false,
@@ -366,7 +321,7 @@ CREATE TABLE "UserNotification" (
     "id" TEXT NOT NULL,
     "forUserId" TEXT NOT NULL,
     "data" JSONB,
-    "type" "UserNotificationType" NOT NULL,
+    "type" TEXT NOT NULL,
     "isRead" BOOLEAN DEFAULT false,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -386,6 +341,7 @@ CREATE TABLE "WishingItem" (
 CREATE TABLE "MyUserContact" (
     "ownerUserId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "orgId" TEXT,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY ("ownerUserId","userId")
@@ -404,6 +360,7 @@ CREATE TABLE "ChatConversation" (
 CREATE TABLE "ChatConversationMember" (
     "chatConversationId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "orgId" TEXT,
 
     PRIMARY KEY ("chatConversationId","userId")
 );
@@ -412,9 +369,11 @@ CREATE TABLE "ChatConversationMember" (
 CREATE TABLE "ChatMessage" (
     "id" TEXT NOT NULL,
     "content" TEXT NOT NULL,
+    "attachData" JSONB,
     "replyToId" TEXT,
     "chatConversationId" TEXT NOT NULL,
     "fromUserId" TEXT NOT NULL,
+    "fromOrgId" TEXT,
     "isRead" BOOLEAN DEFAULT false,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -434,7 +393,7 @@ CREATE TABLE "RentingOrder" (
     "updatedDate" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT NOT NULL,
     "updatedBy" TEXT NOT NULL,
-    "systemStatus" "RentingOrderSystemStatusType" NOT NULL,
+    "systemStatus" TEXT NOT NULL,
     "status" TEXT NOT NULL,
     "attachedFiles" JSONB,
     "isDeleted" BOOLEAN DEFAULT false,
@@ -452,7 +411,7 @@ CREATE TABLE "RentingOrderItem" (
     "quantity" INTEGER DEFAULT 0,
     "pickupDateTime" TIMESTAMP(3),
     "returningDateTime" TIMESTAMP(3),
-    "systemStatus" "RentingOrderSystemStatusType" NOT NULL,
+    "systemStatus" TEXT NOT NULL,
     "status" TEXT NOT NULL,
     "unitPrice" INTEGER DEFAULT 0,
     "unitPricePerDay" INTEGER DEFAULT 0,
@@ -477,11 +436,11 @@ CREATE TABLE "RentingOrderItem" (
 CREATE TABLE "RentingDepositItem" (
     "id" TEXT NOT NULL,
     "type" TEXT NOT NULL,
-    "systemType" "RentingDepositItemSystemType" NOT NULL,
+    "systemType" TEXT NOT NULL,
     "note" TEXT,
     "valueAmount" INTEGER DEFAULT 0,
     "attachedFiles" JSONB,
-    "systemStatus" "RentingDepositItemSystemStatusType" NOT NULL,
+    "systemStatus" TEXT NOT NULL,
     "status" TEXT NOT NULL,
     "rentingOrderId" TEXT NOT NULL,
     "orgId" TEXT NOT NULL,
@@ -503,9 +462,9 @@ CREATE TABLE "OrgTransactionHistory" (
     "refId" TEXT,
     "note" TEXT,
     "attachedFiles" JSONB,
-    "systemMethod" "PaymentMethodSystemType" NOT NULL,
+    "systemMethod" TEXT NOT NULL,
     "method" TEXT NOT NULL,
-    "type" "TransactionType" NOT NULL,
+    "type" TEXT NOT NULL,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdBy" TEXT,
     "transactionOwner" TEXT,
@@ -582,7 +541,7 @@ CREATE TABLE "CommonAttributesConfig" (
     "value" TEXT NOT NULL,
     "parentAttributeValue" TEXT,
     "label" TEXT NOT NULL,
-    "type" "CommonAttributesType" NOT NULL,
+    "type" TEXT NOT NULL,
     "customConfigs" JSONB,
     "mapWithSystemValue" TEXT,
     "isDisabled" BOOLEAN DEFAULT false,
@@ -683,6 +642,12 @@ CREATE TABLE "OrgCustomerStatistics" (
 );
 
 -- CreateTable
+CREATE TABLE "_AreaToOrganization" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "_EmployeeToRole" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
@@ -716,6 +681,9 @@ CREATE TABLE "_ItemToOrgCategory" (
 CREATE UNIQUE INDEX "Organization.slug_unique" ON "Organization"("slug");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Organization.domain_unique" ON "Organization"("domain");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Employee.userId_orgId_unique" ON "Employee"("userId", "orgId");
 
 -- CreateIndex
@@ -741,9 +709,6 @@ CREATE UNIQUE INDEX "User.googleId_unique" ON "User"("googleId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Role.orgId_id_unique" ON "Role"("orgId", "id");
-
--- CreateIndex
-CREATE INDEX "user_identify_document_index" ON "UserIdentifyDocument"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Area.slug_unique" ON "Area"("slug");
@@ -831,6 +796,12 @@ CREATE INDEX "common_attributes_map_system_value_index" ON "CommonAttributesConf
 
 -- CreateIndex
 CREATE UNIQUE INDEX "OrgCategory.orgId_slug_unique" ON "OrgCategory"("orgId", "slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_AreaToOrganization_AB_unique" ON "_AreaToOrganization"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_AreaToOrganization_B_index" ON "_AreaToOrganization"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_EmployeeToRole_AB_unique" ON "_EmployeeToRole"("A", "B");
@@ -1047,6 +1018,12 @@ ALTER TABLE "OrgCustomerTradeTrackingCountStatistics" ADD FOREIGN KEY ("orgId") 
 
 -- AddForeignKey
 ALTER TABLE "OrgCustomerStatistics" ADD FOREIGN KEY ("orgId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AreaToOrganization" ADD FOREIGN KEY ("A") REFERENCES "Area"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AreaToOrganization" ADD FOREIGN KEY ("B") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_EmployeeToRole" ADD FOREIGN KEY ("A") REFERENCES "Employee"("id") ON DELETE CASCADE ON UPDATE CASCADE;

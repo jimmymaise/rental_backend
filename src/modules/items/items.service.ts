@@ -3,10 +3,10 @@ import sanitizeHtml from 'sanitize-html';
 import { Base64 } from 'js-base64';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { Item, ItemStatus } from '@prisma/client';
+import { Item } from '@prisma/client';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers/common';
-import { OffsetPaginationDTO } from '../../models';
+import { OffsetPaginationDTO, ItemStatus } from '../../models';
 import { StoragesService } from '../storages/storages.service';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';

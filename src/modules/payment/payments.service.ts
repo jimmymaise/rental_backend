@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CommonAttributesType, PaymentMethodSystemType } from '@prisma/client';
 
+import { CommonAttributesType, PaymentMethodSystemType } from '@app/models';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   PaymentMethodModel,

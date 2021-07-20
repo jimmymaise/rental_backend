@@ -3,7 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { S3StorageService } from './aws-s3-storage.service';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { FileStorage, FileUsingLocate } from '@prisma/client';
+import { FileStorage } from '@prisma/client';
+import { FileUsingLocate } from '@app/models';
 
 const DEFAULT_BUCKET_NAME =
   process.env.DEFAULT_BUCKET_NAME || 'asia-item-images';

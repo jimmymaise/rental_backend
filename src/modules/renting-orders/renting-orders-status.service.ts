@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import isEmpty from 'lodash/isEmpty';
-import { RentingOrderSystemStatusType } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { RentingOrderModel } from './models/renting-order.model';
+import { RentingOrderSystemStatusType } from '@app/models';
 
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
 import { OrgStatisticLogService } from '@modules/org-statistics';

@@ -1,5 +1,6 @@
-import { CommonAttributesConfig, CommonAttributesType } from '@prisma/client';
+import { CommonAttributesConfig } from '@prisma/client';
 
+import { CommonAttributesType } from '@app/models';
 import { BaseCustomAttributeCreateModel } from './base-custom-attribute-create.model';
 
 export class RentingDepositItemTypeCreateModel extends BaseCustomAttributeCreateModel {

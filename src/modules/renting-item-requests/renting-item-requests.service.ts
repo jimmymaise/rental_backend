@@ -6,13 +6,14 @@ import {
   Item,
   RentingItemRequest,
   RentingItemRequestActivity,
-  RentingItemRequestStatus,
-  RentingItemRequestActivityType,
-  User,
 } from '@prisma/client';
 import { RentingItemRequestInputDTO } from './renting-item-request-input.dto';
 import { RentingItemRequestDTO } from './renting-item-request.dto';
-import { OffsetPaginationDTO } from '../../models';
+import {
+  OffsetPaginationDTO,
+  RentingItemRequestStatus,
+  RentingItemRequestActivityType,
+} from '@app/models';
 import { UsersService } from '../users/users.service';
 import { Permission } from './permission.enum';
 import { StoragePublicDTO } from '../storages/storage-public.dto';

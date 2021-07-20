@@ -1,5 +1,5 @@
 import { StoragePublicDTO } from '../../storages/storage-public.dto';
-import { TransactionType } from '@prisma/client';
+import { TransactionType } from '@app/models';
 import { PaymentCreateModel } from './payment-create.model';
 import { RefundCreateModel } from './refund-create.model';
 import { RentingOrderPayTransactionCreateModel } from './renting-order-pay-transaction-create.model';

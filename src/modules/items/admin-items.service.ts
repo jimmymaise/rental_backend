@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { Item, ItemStatus } from '@prisma/client';
-import { OffsetPaginationDTO } from '@app/models';
+import { Item } from '@prisma/client';
+import { OffsetPaginationDTO, ItemStatus } from '@app/models';
 
 @Injectable()
 export class AdminItemsService {

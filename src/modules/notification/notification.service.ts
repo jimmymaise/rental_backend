@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserNotification, UserNotificationType } from '@prisma/client';
+import { UserNotification } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { OffsetPaginationDTO } from '../../models';
@@ -9,13 +9,14 @@ import { NotificationInfoModel } from './models/notication-info.model';
 import { UsersService } from '../users/users.service';
 import { RENTING_REQUEST_TYPE_SET } from './constants';
 import { MessageGateway } from '../message/message.gateway';
+import { UserNotificationType } from '@app/models';
 
 export function toNotificationDTO(data: UserNotification): NotificationDTO {
   return {
     id: data.id,
     forUserId: data.forUserId,
     data: data.data ? data.data : null,
-    type: data.type,
+    type: data.type as UserNotificationType,
     isRead: data.isRead,
     createdDate: data.createdDate.getTime(),
   };
@@ -110,7 +111,7 @@ export class NotificationService {
       },
     });
 
-    if (RENTING_REQUEST_TYPE_SET.has(newItem.type)) {
+    if (RENTING_REQUEST_TYPE_SET.has(newItem.type as UserNotificationType)) {
       const data = await this.convertToRentingRequestNotificationItem(newItem);
       this.messageGateway.sendNotificationMessage(newItem.forUserId, data);
     }
@@ -123,7 +124,7 @@ export class NotificationService {
   ): Promise<NotificationDTO> {
     const newItem = toNotificationDTO(item);
 
-    if (RENTING_REQUEST_TYPE_SET.has(item.type)) {
+    if (RENTING_REQUEST_TYPE_SET.has(item.type as UserNotificationType)) {
       const userInfo = await this.usersService.getUserDetailData(
         newItem.data.ownerRequestId,
       );
