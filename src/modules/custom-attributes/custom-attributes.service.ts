@@ -40,6 +40,9 @@ export class CustomAttributesService {
           orgId,
           type: CommonAttributesType.RentingOrderStatus,
         },
+        orderBy: {
+          order: 'asc',
+        },
       },
     );
 
@@ -156,6 +159,9 @@ export class CustomAttributesService {
           orgId,
           type: CommonAttributesType.RentingDepositItemStatus,
         },
+        orderBy: {
+          order: 'asc',
+        },
       },
     );
 
@@ -271,6 +277,9 @@ export class CustomAttributesService {
         where: {
           orgId,
           type: CommonAttributesType.RentingDepositItemType,
+        },
+        orderBy: {
+          order: 'asc',
         },
       },
     );

@@ -27,6 +27,7 @@ export class BaseCustomAttributeCreateModel {
         },
       },
       updatedBy: userId,
+      order: data.order,
     } as any;
   }
 }
