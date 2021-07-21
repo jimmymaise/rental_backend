@@ -38,6 +38,7 @@ export class OrgStatisticFeedService {
           key = `${item.entryDateTime.getFullYear()}_${item.entryDateTime.getMonth()}_${item.entryDateTime.getDay()}`;
           break;
         case StatisticEntryGroupByTypes.Time:
+          // TODO: convert to hours. Log each hours instead of each minutes
           const seconds =
             item.entryDateTime.getHours() * 3600 +
             item.entryDateTime.getMinutes() * 60;

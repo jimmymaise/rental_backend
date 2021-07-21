@@ -15,6 +15,7 @@ export class OrgStatisticLogService {
   private startOfToday(): Date {
     const date = new Date();
 
+    date.setMinutes(0);
     date.setSeconds(0);
     date.setMilliseconds(0);
 
