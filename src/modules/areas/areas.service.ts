@@ -11,7 +11,7 @@ export class AreasService {
     private redisCacheService: RedisCacheService,
   ) {}
 
-  async findAll(isDisabled: boolean = false): Promise<any> {
+  async findAll(isDisabled = false): Promise<any> {
     let key = 'AREA_LIST';
 
     if (isDisabled) {

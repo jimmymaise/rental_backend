@@ -24,4 +24,5 @@ export interface ItemUserInputDTO {
   status?: string;
   isDisabled?: boolean;
   isPublishToMarketplace?: boolean;
+  isFromOrg?: boolean;
 }

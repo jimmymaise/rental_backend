@@ -302,6 +302,7 @@ export class RentingItemRequetsService {
           result[cur] = {
             select: {
               id: true,
+              pid: true,
               name: true,
               slug: true,
               categories: true,

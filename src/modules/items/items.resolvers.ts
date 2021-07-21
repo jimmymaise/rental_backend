@@ -56,7 +56,7 @@ export class ItemsResolvers {
       itemData,
       user.id,
       include,
-      user.currentOrgId,
+      itemData.isFromOrg ? user.currentOrgId : null,
     );
     return toItemDTO(item, null);
   }

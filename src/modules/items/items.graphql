@@ -78,6 +78,7 @@ input ItemUserInput {
   hidePrice: Boolean
   isDisabled: Boolean
   isPublishToMarketplace: Boolean
+  isFromOrg: Boolean
 }
 
 input ItemQuery {

@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Req, UseGuards, Body } from '@nestjs/common';
 import { ItemStatus } from '@app/models';
 import { Request } from 'express';
 import { AppService } from './app.service';
@@ -7,6 +7,7 @@ import { PrismaService } from '@modules/prisma/prisma.service';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { GqlPermissionsGuard } from '@modules/auth/permission/gql-permissions.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class AppController {
@@ -110,5 +111,18 @@ export class AppController {
     );
 
     return siteMapData;
+  }
+
+  @Post('clear-cache')
+  @Permissions(Permission.ROOT)
+  @UseGuards(AuthGuard('jwt'))
+  async clearCache(@Body() { key }: { key: string }): Promise<any> {
+    if (!key) {
+      await this.redisCacheService.reset();
+    } else {
+      await this.redisCacheService.del(key);
+    }
+
+    return 'success';
   }
 }

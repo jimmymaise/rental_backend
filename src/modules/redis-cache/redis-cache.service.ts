@@ -35,4 +35,8 @@ export class RedisCacheService {
       return false;
     }
   }
+
+  async reset() {
+    return await this.cache.reset();
+  }
 }

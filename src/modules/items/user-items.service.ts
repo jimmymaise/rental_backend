@@ -24,6 +24,7 @@ export class UserItemsService {
   }): Promise<OffsetPaginationDTO<Item>> {
     const mandatoryWhere = {
       isDeleted: false,
+      orgId: null,
       status: {
         not: ItemStatus.Blocked,
       },
@@ -95,6 +96,7 @@ export class UserItemsService {
   }): Promise<OffsetPaginationDTO<Item>> {
     const mandatoryWhere = {
       isDeleted: false,
+      orgId: null,
       status: ItemStatus.Published,
       ownerUserId: createdBy,
       isVerified: true,
