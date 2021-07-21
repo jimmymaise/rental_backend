@@ -5,8 +5,8 @@ enum FileUsingLocate {
   UserAvatarImage
   UserCoverImage
   OrgAvatarImage
-  RentingOrderItemImage
-  RentingDepositItemImage
+  RentingOrderItemAttachFile
+  RentingDepositItemAttachFile
   RentingOrderActivityImage
   BookingActivityImage
 }
