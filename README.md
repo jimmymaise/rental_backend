@@ -125,7 +125,7 @@ docker-compose up -d
 tsconfig.json esModuleInterop -> import default and don't need to * as
 
 set all file in folder public GCP
-gsutil acl -r ch -u AllUsers:R gs://asia-fast-storage.thuedo.vn/default-avatars/*
+gsutil acl -r ch -u AllUsers:R gs://storage.thuedo.vn/default-avatars/*
 
 docker exec -ti 59aca58159b4 sh
 redis-cli FLUSHALL
