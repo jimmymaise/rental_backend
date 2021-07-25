@@ -3,9 +3,9 @@ import { EmployeeDto } from './employee.dto';
 import { Organization } from '@prisma/client';
 
 const DEFAULT_AVATAR_URL =
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default-avatar.png';
+  'https://storage.thuedo.vn/default-avatars/default-avatar.png';
 const DEFAULT_COVER_URL =
-  'https://asia-fast-storage.thuedo.vn/default-covers/nature-landscape-hot-air-balloons-festival-sky.jpg';
+  'https://storage.thuedo.vn/default-covers/nature-landscape-hot-air-balloons-festival-sky.jpg';
 const DEFAULT_EMAIL = 'former_user@thuedo.vn';
 const DEFAULT_DISPLAY_NAME = 'Former User';
 

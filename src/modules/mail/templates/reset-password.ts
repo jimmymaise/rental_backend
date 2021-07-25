@@ -145,7 +145,7 @@ export function GenerateHTMLResetPasswordEmail({
                         <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                           <tbody>
                             <tr>
-                              <td style="width:600px;"> <img alt="Header image" height="auto" src="https://asia-fast-storage.thuedo.vn/mail-template/mail-header.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="600">                              </td>
+                              <td style="width:600px;"> <img alt="Header image" height="auto" src="https://storage.thuedo.vn/mail-template/mail-header.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="600">                              </td>
                             </tr>
                           </tbody>
                         </table>
@@ -386,7 +386,7 @@ export function GenerateHTMLResetPasswordEmail({
                               <tr>
                                 <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                                   <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:14px;line-height:22px;text-align:center;color:#000000;"><a href="https://www.facebook.com/Thue-Do-105363268055385" style="text-decoration: none; color: inherit;">
-              <img width="20px" src="https://asia-fast-storage.thuedo.vn/mail-template/facebook-icon.png" alt="Facebook icon">
+              <img width="20px" src="https://storage.thuedo.vn/mail-template/facebook-icon.png" alt="Facebook icon">
             </a></div>
                                 </td>
                               </tr>

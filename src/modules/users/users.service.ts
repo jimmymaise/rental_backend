@@ -26,23 +26,23 @@ import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 import { OffsetPaginationDTO } from '@app/models';
 
 const DEFAULT_AVATARS = [
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0008_avatar-1.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0007_avatar-2.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0006_avatar-3.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0005_avatar-4.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0004_avatar-5.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0003_avatar-6.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0002_avatar-7.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0001_avatar-8.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-avatars/default_0000_avatar-9.jpg',
+  'https://storage.thuedo.vn/default-avatars/default_0008_avatar-1.jpg',
+  'https://storage.thuedo.vn/default-avatars/default_0007_avatar-2.jpg',
+  'https://storage.thuedo.vn/default-avatars/default_0006_avatar-3.jpg',
+  'https://storage.thuedo.vn/default-avatars/default_0005_avatar-4.jpg',
+  'https://storage.thuedo.vn/default-avatars/default_0004_avatar-5.jpg',
+  'https://storage.thuedo.vn/default-avatars/default_0003_avatar-6.jpg',
+  'https://storage.thuedo.vn/default-avatars/default_0002_avatar-7.jpg',
+  'https://storage.thuedo.vn/default-avatars/default_0001_avatar-8.jpg',
+  'https://storage.thuedo.vn/default-avatars/default_0000_avatar-9.jpg',
 ];
 
 const DEFAULT_COVERS = [
-  'https://asia-fast-storage.thuedo.vn/default-covers/Wavy_Tsp-02_Single-09.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-covers/mount-fuji-lake-kawaguchiko-sunrise-vintage.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-covers/nature-landscape-hot-air-balloons-festival-sky.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-covers/panorama-rice-fields-terraced-sunset-mu-cang-chai.jpg',
-  'https://asia-fast-storage.thuedo.vn/default-covers/scenery-sunburst-lake-mount-assiniboine-reflections-pine-tree-sunrise.jpg',
+  'https://storage.thuedo.vn/default-covers/Wavy_Tsp-02_Single-09.jpg',
+  'https://storage.thuedo.vn/default-covers/mount-fuji-lake-kawaguchiko-sunrise-vintage.jpg',
+  'https://storage.thuedo.vn/default-covers/nature-landscape-hot-air-balloons-festival-sky.jpg',
+  'https://storage.thuedo.vn/default-covers/panorama-rice-fields-terraced-sunset-mu-cang-chai.jpg',
+  'https://storage.thuedo.vn/default-covers/scenery-sunburst-lake-mount-assiniboine-reflections-pine-tree-sunrise.jpg',
 ];
 
 function encryptPhoneNumber(userInfo: UserInfoDTO): UserInfoDTO {
