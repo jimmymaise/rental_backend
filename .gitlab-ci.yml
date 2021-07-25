@@ -1,10 +1,8 @@
 image: docker:19.03.12
 
 variables:
-  REPOSITORY_URL: 332832652621.dkr.ecr.us-west-2.amazonaws.com/rentalapp_web_api
   CLUSTER_NAME: rentalapp
   TASK_DEFINITION_NAME: rentalapp-web-api
-  SERVICE_NAME: rentalapp-web
   DOCKER_TLS_CERTDIR: "/certs"
 
 
@@ -57,3 +55,40 @@ Deploy-Staging:
     - aws ecs update-service --region "${AWS_DEFAULT_REGION}" --cluster "${CLUSTER_NAME}" --service "${SERVICE_NAME}"  --task-definition "${TASK_DEFINITION_NAME}"
   only:
     - /^release-v\d+\.\d+\.\d+$/
+
+Build-Production:
+  stage: build
+  environment: production
+  tags:
+    - ecs_ecr
+  script:
+    # Deploy to Docker Registry
+    - echo "Building image..."
+    - docker build -t $REPOSITORY_URL:latest .
+    - echo "Tagging image..."
+    - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$IMAGE_TAG
+    - echo "Pushing image..."
+    - docker push $REPOSITORY_URL:latest
+    - docker push $REPOSITORY_URL:$IMAGE_TAG
+  only:
+    - /^v\d+\.\d+\.\d+$/
+
+
+Deploy-Production:
+  stage: deploy
+  environment: production
+  tags:
+    - ecs_ecr
+  script:
+    - echo $PROD_ENV_FILE | base64 --decode > .env;
+    - ENV_TO_JSON=$(python3 -c 'import json, os; content=open(".env").readlines();content=[x.strip().split("=",1) for x in content if "=" in x];print(json.dumps(dict(content)))')
+    - ENV_JSON_BY_NAME_VALUE=$(echo $ENV_TO_JSON | jq 'to_entries|map({name:.key,value:.value})')
+    - echo $REPOSITORY_URL:$IMAGE_TAG
+    - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "${TASK_DEFINITION_NAME}" --region "${AWS_DEFAULT_REGION}")
+    - NEW_TASK_DEFINTIION=$(echo $TASK_DEFINITION |  jq   --argjson ENV_JSON_BY_NAME_VALUE "$ENV_JSON_BY_NAME_VALUE" --arg IMAGE "$REPOSITORY_URL:$IMAGE_TAG" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.requiresAttributes) | del(.registeredAt) | del(.registeredBy) | del(.taskDefinitionArn) | del(.revision) | del(.status) | .+{"requiresCompatibilities":.compatibilities} | del(.compatibilities) |.containerDefinitions[0].environment = $ENV_JSON_BY_NAME_VALUE')
+    - echo "Registering new task definition..."
+    - aws ecs register-task-definition --region "${AWS_DEFAULT_REGION}" --cli-input-json "${NEW_TASK_DEFINTIION}"
+    - echo "Updating the service..."
+    - aws ecs update-service --region "${AWS_DEFAULT_REGION}" --cluster "${CLUSTER_NAME}" --service "${SERVICE_NAME}"  --task-definition "${TASK_DEFINITION_NAME}"
+  only:
+    - /^v\d+\.\d+\.\d+$/
