@@ -6,7 +6,6 @@ import { Permission } from '@modules/auth/permission/permission.enum';
 
 import { AuthService } from '../auth.service';
 
-// TODO: NOT COMPLETED YET
 @Injectable()
 export class GqlPermissionsGuard implements CanActivate {
   constructor(private reflector: Reflector, private authService: AuthService) {}
@@ -29,8 +28,15 @@ export class GqlPermissionsGuard implements CanActivate {
     }
 
     try {
-      const ctx = GqlExecutionContext.create(context);
-      const request = ctx.getContext().req;
+      let request;
+
+      // Support for both HTTP and GraphQL
+      if ((context as any).contextType === 'http') {
+        request = context.switchToHttp().getRequest();
+      } else {
+        const ctx = GqlExecutionContext.create(context);
+        request = ctx.getContext().req;
+      }
 
       const token = ExtractJwt.fromExtractors([
         (request: any) => {
