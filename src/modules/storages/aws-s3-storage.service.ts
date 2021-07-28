@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import isEmpty from 'lodash/isEmpty';
 import {
   S3Client,
   PutObjectCommand,
@@ -60,7 +61,9 @@ export class S3StorageService implements IStorageService {
     folderPath: string,
     fileName: string,
   ) =>
-    `https://${bucketName}.${process.env.AWS_S3_HOST}/${folderPath}/${fileName}`;
+    process.env.AWS_S3_HOST === '-'
+      ? `https://${bucketName}/${folderPath}/${fileName}`
+      : `https://${bucketName}.${process.env.AWS_S3_HOST}/${folderPath}/${fileName}`;
 
   public sendFileToCloudByStream = (
     stream: any,
