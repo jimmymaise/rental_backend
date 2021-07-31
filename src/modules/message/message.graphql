@@ -39,6 +39,7 @@ input ConversationQuery {
 type Mutation {
   generateChatConversationWith(chatWithUserId: String!): ChatConversation
   markMessageAsRead(messageId: String!): Boolean
+  generateChatConversationWithOrg(chatWithOrgId: String!): ChatConversation
 }
 
 type Query {

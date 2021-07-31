@@ -1,7 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Resolver, Mutation, Query } from '@nestjs/graphql';
 
-import { MessageService, MessageInfoModel } from './message.service';
+import { MessageService } from './message.service';
 import { ChatConversationDTO } from './chat-conversation.dto';
 import { OffsetPaginationDTO } from '../../models';
 import { GqlAuthGuard } from '../auth/gpl-auth.guard';
@@ -10,12 +10,14 @@ import { GuardUserPayload } from '../auth/auth.dto';
 import { UsersService } from '../users/users.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
+import { OrganizationsService } from '../organizations/organizations.service';
 
 @Resolver('Message')
 export class MessageResolvers {
   constructor(
     private messageService: MessageService,
     private userService: UsersService,
+    private organizationService: OrganizationsService,
   ) {}
 
   @Mutation()
@@ -45,6 +47,64 @@ export class MessageResolvers {
         displayName: userInfo.displayName,
         avatarImage: userInfo.avatarImage,
         coverImage: userInfo.coverImage,
+      });
+    }
+
+    return {
+      id: existingSession.id,
+      members: memberDetails,
+    };
+  }
+
+  @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
+  async generateChatConversationWithOrg(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('chatWithOrgId') chatWithOrgId: string,
+  ): Promise<ChatConversationDTO> {
+    const orgDetail = await this.organizationService.getOrganization(
+      chatWithOrgId,
+      null,
+    );
+
+    if (!orgDetail) {
+      throw new Error('Org not existed');
+    }
+
+    let existingSession = await this.messageService.findConversationBetweenUserAndOrg(
+      user.id,
+      chatWithOrgId,
+      orgDetail.createdBy,
+    );
+
+    if (!existingSession) {
+      existingSession = await this.messageService.createNewConversationBetweenUserAndOrg(
+        user.id,
+        {
+          orgId: chatWithOrgId,
+          userId: orgDetail.createdBy, // Default get the CreatedByOrg, because in the first time user chat with Org, We don't know
+        },
+        user.id,
+      );
+    }
+
+    const memberDetails = [];
+    const members = (existingSession as any).chatConversationMembers;
+    for (let i = 0; i < members.length; i++) {
+      const userInfo = await this.userService.getUserDetailData(
+        members[i].userId,
+      );
+      const currentOrgDetail = members[i].orgId
+        ? await this.organizationService.getOrgSummaryCache(members[i].orgId)
+        : null;
+
+      memberDetails.push({
+        id: userInfo.id,
+        displayName: userInfo.displayName,
+        avatarImage: userInfo.avatarImage,
+        coverImage: userInfo.coverImage,
+        currentOrgDetail,
       });
     }
 
@@ -90,15 +150,22 @@ export class MessageResolvers {
       const lastMessages = [];
       for (let j = 0; j < currentItem.chatMessages.length; j++) {
         const message = currentItem.chatMessages[j];
+        const fromUserDetailData = await this.userService.getUserDetailData(
+          message.fromUserId,
+        );
+        const fromOrgDetail = message.fromOrgId
+          ? await this.organizationService.getOrgSummaryCache(message.fromOrgId)
+          : null;
         lastMessages.push({
           id: message.id,
           content: message.content,
           replyToId: message.replyToId,
           chatConversationId: message.chatConversationId,
           fromUserId: message.fromUserId,
-          fromUserInfo: await this.userService.getUserDetailData(
-            message.fromUserId,
-          ),
+          fromUserInfo: {
+            ...fromUserDetailData,
+            currentOrgDetail: fromOrgDetail,
+          },
           isRead: message.isRead,
           createdDate: message.createdDate.getTime(),
         });
@@ -111,11 +178,17 @@ export class MessageResolvers {
         const userInfo = await this.userService.getUserDetailData(
           conversationMembers[i].userId,
         );
+        const orgDetail = conversationMembers[i].orgId
+          ? await this.organizationService.getOrgSummaryCache(
+              conversationMembers[i].orgId,
+            )
+          : null;
         memberDetails.push({
           id: userInfo.id,
           displayName: userInfo.displayName,
           avatarImage: userInfo.avatarImage,
           coverImage: userInfo.coverImage,
+          currentOrgDetail: orgDetail,
         });
       }
 

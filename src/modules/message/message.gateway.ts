@@ -16,6 +16,7 @@ import { WebsocketAuthGuard } from '../auth/ws-auth.guard';
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from '../users/users.service';
 import { MessageService } from './message.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 
 // import { GatewayMetadata } from '@nestjs/websockets';
 // export interface GatewayMetadataExtended extends GatewayMetadata {
@@ -53,6 +54,7 @@ export class MessageGateway
     private authService: AuthService,
     private userService: UsersService,
     private messageService: MessageService,
+    private organizationSevice: OrganizationsService,
   ) {}
 
   // @SubscribeMessage('msgToServer')
@@ -85,11 +87,15 @@ export class MessageGateway
         const userInfo = await this.userService.getUserDetailData(
           members[i].userId,
         );
+        const currentOrgDetail = members[i].orgId
+          ? await this.organizationSevice.getOrgSummaryCache(members[i].orgId)
+          : null;
         memberDetails.push({
           id: userInfo.id,
           displayName: userInfo.displayName,
           avatarImage: userInfo.avatarImage,
           coverImage: userInfo.coverImage,
+          currentOrgDetail,
         });
       }
     }
@@ -132,12 +138,16 @@ export class MessageGateway
 
     const newMessage = await this.messageService.addMessage({
       fromUserId: user.userId,
+      fromOrgId: user.orgId,
       content: secureContent,
       chatConversationId: conversationId,
       replyToId,
     });
 
     const userInfo = await this.userService.getUserDetailData(user.userId);
+    const fromOrgDetail = user.orgId
+      ? await this.organizationSevice.getOrgSummaryCache(user.orgId)
+      : null;
     const newMessageToClient = {
       chatConversationId: conversationId,
       id: newMessage.id,
@@ -145,6 +155,7 @@ export class MessageGateway
       replyToId,
       fromUserId: user.userId,
       fromUserInfo: userInfo,
+      fromOrgDetail,
       createdDate: newMessage.createdDate.getTime(),
     };
 

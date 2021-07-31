@@ -9,10 +9,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { OffsetPaginationDTO } from '../../models';
 import { UserInfoDTO } from '../users/user-info.dto';
 import { UsersService } from '../users/users.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 
 interface MessageData {
   id?: string;
   fromUserId: string;
+  fromOrgId?: string;
   fromUserInfo?: UserInfoDTO;
   replyToId?: string;
   chatConversationId: string;
@@ -28,6 +30,7 @@ export class MessageService {
   constructor(
     private prismaService: PrismaService,
     private userService: UsersService,
+    private organizationService: OrganizationsService,
   ) {}
 
   createNewConversation(
@@ -62,19 +65,85 @@ export class MessageService {
     );
   }
 
-  findConversationUniqueByMembers(
+  async findConversationUniqueByMembers(
     memberIds: string[],
   ): Promise<ChatConversation> {
-    const orConditional = memberIds.map((userId) => ({
-      userId,
-    }));
-    return this.prismaService.chatConversation.findFirst({
+    const conversationMembersResultTmp = await this.prismaService.$queryRaw(
+      `
+        SELECT "chatConversationId", COUNT("chatConversationId") as "memberCount" FROM public."ChatConversationMember"
+        WHERE (${memberIds
+          .map((id) => `"userId"='${id}'`)
+          .join(' OR ')}) AND "orgId" IS NULL
+        GROUP BY "chatConversationId"
+        HAVING COUNT("chatConversationId") = ${memberIds.length}
+      `,
+    );
+
+    const conversationMembersResult = conversationMembersResultTmp[0];
+
+    if (!conversationMembersResult?.chatConversationId) {
+      return null;
+    }
+
+    return this.prismaService.chatConversation.findUnique({
       where: {
+        id: conversationMembersResult.chatConversationId,
+      },
+    });
+  }
+
+  createNewConversationBetweenUserAndOrg(
+    userId: string,
+    toOrg: {
+      userId: string;
+      orgId: string;
+    },
+    createdBy: string,
+  ): Promise<ChatConversation> {
+    return this.prismaService.chatConversation.create({
+      data: {
+        createdBy,
         chatConversationMembers: {
-          every: {
-            OR: orConditional,
-          },
+          create: [
+            {
+              userId,
+            },
+            {
+              userId: toOrg.userId,
+              orgId: toOrg.orgId,
+            },
+          ],
         },
+      },
+      include: {
+        chatConversationMembers: true,
+      },
+    });
+  }
+
+  async findConversationBetweenUserAndOrg(
+    userId: string,
+    orgId: string,
+    orgCreatedBy: string,
+  ): Promise<ChatConversation> {
+    const conversationMembersResultTmp = await this.prismaService.$queryRaw(
+      `
+        SELECT "chatConversationId", COUNT("chatConversationId") as "memberCount" FROM public."ChatConversationMember"
+        WHERE ("userId"='${userId}' AND "userId" != '${orgCreatedBy}' AND "orgId" IS NULL) OR ("userId"='${orgCreatedBy}' AND "orgId"='${orgId}')
+        GROUP BY "chatConversationId"
+        HAVING COUNT("chatConversationId") = 2
+      `,
+    );
+
+    const conversationMembersResult = conversationMembersResultTmp[0];
+    console.log('conversationMembersResult', conversationMembersResult);
+    if (!conversationMembersResult?.chatConversationId) {
+      return null;
+    }
+
+    return this.prismaService.chatConversation.findUnique({
+      where: {
+        id: conversationMembersResult.chatConversationId,
       },
       include: {
         chatConversationMembers: true,
@@ -125,6 +194,7 @@ export class MessageService {
         chatConversationMembers: {
           some: {
             userId,
+            orgId: null,
           },
         },
       },
@@ -161,12 +231,14 @@ export class MessageService {
 
   addMessage({
     fromUserId,
+    fromOrgId,
     replyToId,
     chatConversationId,
     content,
   }: MessageData): Promise<ChatMessage> {
     const data: any = {
       fromUserId,
+      fromOrgId,
       content,
       chatConversation: {
         connect: {
