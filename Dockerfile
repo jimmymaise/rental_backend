@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install
+RUN yarn install
 
 # RUN /bin/bash -c "source .env"
 

@@ -14,7 +14,9 @@ export class ApolloServerLoggingPlugin implements ApolloServerPlugin {
 
     return {
       willSendResponse() {
-        const logger: Logger = new Logger('ApolloServerLogging', true);
+        const logger: Logger = new Logger('ApolloServerLogging', {
+          timestamp: true,
+        });
         logger.log('Will send response');
       },
     };
