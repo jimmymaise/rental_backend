@@ -136,7 +136,6 @@ export class MessageService {
     );
 
     const conversationMembersResult = conversationMembersResultTmp[0];
-    console.log('conversationMembersResult', conversationMembersResult);
     if (!conversationMembersResult?.chatConversationId) {
       return null;
     }

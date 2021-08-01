@@ -44,5 +44,6 @@ type Mutation {
 
 type Query {
   feedMyConversations(query: ConversationQuery): ConversationPagination
+  feedMyOrgConversations(query: ConversationQuery): ConversationPagination
   # feedChatMessageInfo: ChatMessageInfo
 }
