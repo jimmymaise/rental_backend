@@ -216,6 +216,51 @@ export class MessageService {
         chatConversationMembers: {
           some: {
             userId,
+            orgId: null,
+          },
+        },
+      },
+    });
+
+    return {
+      items,
+      total: count,
+      offset,
+      limit,
+    };
+  }
+
+  async findAllMyOrgConversations({
+    offset = 0,
+    limit = 10,
+    orgId,
+  }): Promise<OffsetPaginationDTO<ChatConversation>> {
+    const items = await this.prismaService.chatConversation.findMany({
+      where: {
+        chatConversationMembers: {
+          some: {
+            orgId,
+          },
+        },
+      },
+      include: {
+        chatConversationMembers: true,
+        chatMessages: {
+          where: {
+            replyBy: {
+              is: null,
+            },
+          },
+        },
+      },
+      skip: offset,
+      take: limit,
+    });
+    const count = await this.prismaService.chatConversation.count({
+      where: {
+        chatConversationMembers: {
+          some: {
+            orgId,
           },
         },
       },
