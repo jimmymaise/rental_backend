@@ -45,7 +45,8 @@ function getUserRoom(userId: string) {
 
 @WebSocketGateway({ namespace: '/messenger' })
 export class MessageGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() server: Server;
 
   private logger: Logger = new Logger('MessageGateway');
@@ -128,7 +129,7 @@ export class MessageGateway
     client: Socket,
     { conversationId, content, user, replyToId, members },
   ): Promise<void> {
-    if (!client.rooms[conversationId]) {
+    if (!client.rooms.has(conversationId)) {
       throw new WsException({
         errorMessage: "You're not allow to send message this conversation",
       });
