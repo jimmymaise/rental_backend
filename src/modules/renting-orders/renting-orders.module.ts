@@ -4,6 +4,7 @@ import { StoragesModule } from '../storages/storages.module';
 
 import { RentingOrdersService } from './renting-orders.service';
 import { RentingOrdersStatusService } from './renting-orders-status.service';
+import { CustomerRentingOrdersService } from './customer-renting-orders.service';
 import { RentingOrderResolvers } from './renting-orders.resolvers';
 
 import { CustomAttributesModule } from '@modules/custom-attributes/custom-attributes.module';
@@ -20,6 +21,7 @@ import { OrgStatisticsModule } from '@modules/org-statistics';
   providers: [
     RentingOrdersService,
     RentingOrdersStatusService,
+    CustomerRentingOrdersService,
     RentingOrderResolvers,
   ],
 })
