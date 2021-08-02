@@ -8,6 +8,8 @@ import { RentingOrderSystemStatusType } from '@app/models';
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
 import { calcAmount } from '@app/helpers/order-amount-calc';
 import { RentingOrderItemModel } from './models/renting-order-item.model';
+import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
+import { OffsetPaginationDTO } from '@app/models';
 
 interface AddItemToOrderBagModel {
   itemId: string;
@@ -131,7 +133,113 @@ export class CustomerRentingOrdersService {
     };
   }
 
-  // Get List Bag
-  // Convert Bag to New order
-  // Remove Item from Bag
+  async getListBagItems({
+    userId,
+    offset = 0,
+    pageSize = 10,
+  }): Promise<OffsetPaginationDTO<RentingOrderModel>> {
+    const pagingHandler = new OffsetPagingHandler(
+      {
+        customerUserId: userId,
+        systemStatus: RentingOrderSystemStatusType.InBag,
+        isDeleted: false,
+      },
+      pageSize,
+      {
+        updatedDate: 'desc',
+      },
+      this.prismaService,
+      'rentingOrder',
+      {
+        rentingOrderItems: true,
+      },
+    );
+    const result = await pagingHandler.getPage(offset);
+
+    const items = [];
+
+    for (let i = 0; i < result.items.length; i++) {
+      const item = result.items[i];
+      const newRentingOrderItem = RentingOrderModel.fromDatabase({
+        data: item,
+        rentingOrderItems: item.rentingOrderItems || [],
+        rentingDepositItems: item.rentingDepositItems || [],
+      });
+
+      newRentingOrderItem.statusDetail =
+        await this.customAttributeService.getRentingOrderStatusCustomAttributeDetail(
+          newRentingOrderItem.orgId,
+          newRentingOrderItem.status,
+        );
+
+      items.push(newRentingOrderItem);
+    }
+
+    return {
+      ...result,
+      items,
+    };
+  }
+
+  async convertBagToNew({
+    userId,
+    rentingOrderId,
+  }): Promise<RentingOrderModel> {
+    const rentingOrder = await this.prismaService.rentingOrder.findUnique({
+      where: {
+        id: rentingOrderId,
+      },
+    });
+
+    if (rentingOrder.customerUserId !== userId) {
+      throw new Error('Renting order not existed');
+    }
+
+    const rentingOrderNewStatuses =
+      await this.customAttributeService.getListCustomRentingOrderStatus(
+        rentingOrder.orgId,
+        RentingOrderSystemStatusType.New,
+      );
+    const newStatus = rentingOrderNewStatuses[0];
+
+    const updatedRentingOrder = await this.prismaService.rentingOrder.update({
+      where: {
+        id: rentingOrderId,
+      },
+      data: {
+        status: newStatus.value,
+        systemStatus: RentingOrderSystemStatusType.New,
+      },
+    });
+
+    return RentingOrderModel.fromDatabase({ data: updatedRentingOrder });
+  }
+
+  async removeItemFromBag({
+    userId,
+    rentingOrderItemId,
+  }): Promise<RentingOrderItemModel> {
+    const rentingOrderItemDetail =
+      await this.prismaService.rentingOrderItem.findUnique({
+        where: {
+          id: rentingOrderItemId,
+        },
+      });
+
+    if (
+      rentingOrderItemDetail.customerUserId !== userId ||
+      rentingOrderItemDetail.systemStatus !== RentingOrderSystemStatusType.InBag
+    ) {
+      throw new Error('Renting order item not existed');
+    }
+
+    const deletedRentingOrderItem =
+      await this.prismaService.rentingOrderItem.delete({
+        where: {
+          id: rentingOrderItemId,
+        },
+      });
+
+    return RentingOrderItemModel.fromDatabase(rentingOrderItemDetail);
+  }
 }

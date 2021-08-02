@@ -15,6 +15,7 @@ import { RentingDepositItemStatusModel } from '../../custom-attributes/models/re
 
 export class RentingOrderModel {
   public id: string;
+  public orgId: string;
   public orderCustomId: string;
   public totalAmount?: number;
   public note?: string;
@@ -60,6 +61,7 @@ export class RentingOrderModel {
 
     return {
       id: data.id,
+      orgId: data.orgId,
       orderCustomId: data.orderCustomId,
       totalAmount: data.totalAmount,
       note: data.note,

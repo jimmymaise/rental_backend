@@ -34,8 +34,8 @@ export class CustomAttributesService {
   async getAllRentingOrderStatusCustomAttributes(
     orgId: string,
   ): Promise<RentingOrderStatusModel[]> {
-    const queryResult = await this.prismaService.commonAttributesConfig.findMany(
-      {
+    const queryResult =
+      await this.prismaService.commonAttributesConfig.findMany({
         where: {
           orgId,
           type: CommonAttributesType.RentingOrderStatus,
@@ -43,12 +43,28 @@ export class CustomAttributesService {
         orderBy: {
           order: 'asc',
         },
-      },
-    );
+      });
 
     return queryResult.map((record) =>
       RentingOrderStatusModel.fromCommonAttributesConfig(record),
     );
+  }
+
+  async getRentingOrderStatusCustomAttributeDetail(
+    orgId: string,
+    value: string,
+  ): Promise<RentingOrderStatusModel> {
+    const record = await this.prismaService.commonAttributesConfig.findUnique({
+      where: {
+        orgId_type_value: {
+          value,
+          type: CommonAttributesType.RentingOrderStatus,
+          orgId,
+        },
+      },
+    });
+
+    return RentingOrderStatusModel.fromCommonAttributesConfig(record);
   }
 
   async createRentingOrderStatusCustomAttribute(
@@ -153,8 +169,8 @@ export class CustomAttributesService {
   async getAllRentingDepositItemStatusCustomAttributes(
     orgId: string,
   ): Promise<RentingDepositItemStatusModel[]> {
-    const queryResult = await this.prismaService.commonAttributesConfig.findMany(
-      {
+    const queryResult =
+      await this.prismaService.commonAttributesConfig.findMany({
         where: {
           orgId,
           type: CommonAttributesType.RentingDepositItemStatus,
@@ -162,8 +178,7 @@ export class CustomAttributesService {
         orderBy: {
           order: 'asc',
         },
-      },
-    );
+      });
 
     return queryResult.map((record) =>
       RentingDepositItemStatusModel.fromCommonAttributesConfig(record),
@@ -204,11 +219,12 @@ export class CustomAttributesService {
     userId: string,
     data: RentingDepositItemStatusCreateModel,
   ): Promise<RentingDepositItemStatusModel> {
-    const updatedData = RentingDepositItemStatusCreateModel.toCommonAttributesConfig(
-      orgId,
-      userId,
-      data,
-    );
+    const updatedData =
+      RentingDepositItemStatusCreateModel.toCommonAttributesConfig(
+        orgId,
+        userId,
+        data,
+      );
     const result = await this.prismaService.commonAttributesConfig.update({
       where: {
         orgId_type_value: {
@@ -272,8 +288,8 @@ export class CustomAttributesService {
   async getAllRentingDepositItemTypeCustomAttributes(
     orgId: string,
   ): Promise<RentingDepositItemTypeModel[]> {
-    const queryResult = await this.prismaService.commonAttributesConfig.findMany(
-      {
+    const queryResult =
+      await this.prismaService.commonAttributesConfig.findMany({
         where: {
           orgId,
           type: CommonAttributesType.RentingDepositItemType,
@@ -281,8 +297,7 @@ export class CustomAttributesService {
         orderBy: {
           order: 'asc',
         },
-      },
-    );
+      });
 
     return queryResult.map((record) =>
       RentingDepositItemTypeModel.fromCommonAttributesConfig(record),
@@ -323,11 +338,12 @@ export class CustomAttributesService {
     userId: string,
     data: RentingDepositItemTypeCreateModel,
   ): Promise<RentingDepositItemTypeModel> {
-    const updatedData = RentingDepositItemTypeCreateModel.toCommonAttributesConfig(
-      orgId,
-      userId,
-      data,
-    );
+    const updatedData =
+      RentingDepositItemTypeCreateModel.toCommonAttributesConfig(
+        orgId,
+        userId,
+        data,
+      );
     const result = await this.prismaService.commonAttributesConfig.update({
       where: {
         orgId_type_value: {
