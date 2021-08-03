@@ -27,7 +27,19 @@ export class CustomerRentingOrdersService {
     bagData: AddItemToOrderBagModel,
   ): Promise<AddItemToBagResult> {
     const DEFAULT_ITEM_QUANTITY = 1;
-    let rentingOrderId = bagData.rentingOrderId;
+    // 1 user only have 1 bag per Org
+    const foundRentingOrder = await this.prismaService.rentingOrder.findFirst({
+      where: {
+        orgId: bagData.orgId,
+        customerUserId: userId,
+        systemStatus: RentingOrderSystemStatusType.InBag,
+        isDeleted: false,
+      },
+      select: {
+        id: true,
+      },
+    });
+    let rentingOrderId = foundRentingOrder.id;
     const itemDetail = await this.prismaService.item.findUnique({
       where: {
         id: bagData.itemId,

@@ -96,7 +96,6 @@ type RentingOrderPagination {
 input AddItemToBagInput {
   itemId: String!
   orgId: String!
-  rentingOrderId: String
   quantity: Int
   pickupDateTime: Float!
   returningDateTime: Float!
