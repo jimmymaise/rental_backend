@@ -93,6 +93,21 @@ type RentingOrderPagination {
   offset: Int
 }
 
+input AddItemToBagInput {
+  itemId: String!
+  orgId: String!
+  rentingOrderId: String
+  quantity: Int
+  pickupDateTime: Float!
+  returningDateTime: Float!
+  note: String
+}
+
+type CustomerAddItemToRentingOrderResult {
+  isSuccess: Boolean
+  rentingOrderItemData: RentingOrderItem
+}
+
 type Query {
   getMyOrgRentingOrdersWithPaging(
     paginationData: BaseOffsetPagingInput
@@ -102,6 +117,9 @@ type Query {
     itemId: ID!
     fromDate: Float!
   ): [RentingOrderItem]
+  customerGetMyRentingOrder(
+    paginationData: BaseOffsetPagingInput!
+  ): RentingOrderPagination
 }
 
 type Mutation {
@@ -112,4 +130,9 @@ type Mutation {
     id: ID!
     data: ChangeRentingOrderStatusInput!
   ): RentingOrder
+  customerAddItemToRentingOrder(
+    data: AddItemToBagInput!
+  ): CustomerAddItemToRentingOrderResult
+  customerConvertBagToNewOrder(rentingOrderId: ID!): RentingOrder
+  customerRemoveItemFromBag(rentingOrderItemId: ID!): RentingOrderItem
 }

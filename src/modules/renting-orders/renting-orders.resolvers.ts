@@ -8,13 +8,14 @@ import { RentingOrdersStatusService } from './renting-orders-status.service';
 import { Permission } from '@modules/auth/permission/permission.enum';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
 import { GuardUserPayload, CurrentUser, GqlAuthGuard } from '../auth';
-import { RentingOrderCreateModel } from './models/renting-order-create.model';
+import { RentingOrderCreateModel, AddItemToOrderBagModel } from './models';
 import { RentingOrderUpdateStatusModel } from './models/renting-order-update-status.model';
 import { RentingOrderModel } from './models/renting-order.model';
 import { RentingOrderItemModel } from './models/renting-order-item.model';
 import { OffsetPaginationDTO } from '../../models';
 import { GraphQLFieldHandler } from '@helpers/handlers/graphql-field-handler';
 import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
+import { CustomerRentingOrdersService } from './customer-renting-orders.service';
 
 @Resolver('RentingOrder')
 export class RentingOrderResolvers {
@@ -22,6 +23,7 @@ export class RentingOrderResolvers {
     private readonly rentingOrdersService: RentingOrdersService,
     private rentingOrdersStatusService: RentingOrdersStatusService,
     private orgActivityLogService: OrgActivityLogService,
+    private customerRentingOrdersService: CustomerRentingOrdersService,
   ) {}
 
   @Mutation()
@@ -130,43 +132,40 @@ export class RentingOrderResolvers {
       },
     ]);
 
-    include[
-      'rentingDepositItem'
-    ] = graphQLFieldHandler.getIncludeForNestedRelationalFields([
-      {
-        fieldName: 'statusDetail',
-        fieldPath: 'rentingDepositItems.RentingDepositItem',
-      },
-      {
-        fieldName: 'typeDetail',
-        fieldPath: 'rentingDepositItems.RentingDepositItem',
-      },
-    ]);
+    include['rentingDepositItem'] =
+      graphQLFieldHandler.getIncludeForNestedRelationalFields([
+        {
+          fieldName: 'statusDetail',
+          fieldPath: 'rentingDepositItems.RentingDepositItem',
+        },
+        {
+          fieldName: 'typeDetail',
+          fieldPath: 'rentingDepositItems.RentingDepositItem',
+        },
+      ]);
 
-    include[
-      'rentingOrderItem'
-    ] = graphQLFieldHandler.getIncludeForNestedRelationalFields([
-      {
-        fieldName: 'statusDetail',
-        fieldPath: 'rentingOrderItems.RentingOrderItem',
-      },
-    ]);
+    include['rentingOrderItem'] =
+      graphQLFieldHandler.getIncludeForNestedRelationalFields([
+        {
+          fieldName: 'statusDetail',
+          fieldPath: 'rentingOrderItems.RentingOrderItem',
+        },
+      ]);
 
     const currentItem = await this.rentingOrdersService.getOrderDetail(
       id,
       user.currentOrgId,
       { statusDetail: true },
     );
-    const result = await this.rentingOrdersStatusService.changeRentingOrderStatus(
-      {
+    const result =
+      await this.rentingOrdersStatusService.changeRentingOrderStatus({
         id,
         newStatus: data.newStatus,
         orgId: user.currentOrgId,
         include: {
           statusDetail: true,
         },
-      },
-    );
+      });
 
     await this.orgActivityLogService.logChangeRentingOrderStatus({
       createdBy: user.id,
@@ -252,27 +251,25 @@ export class RentingOrderResolvers {
       },
     ]);
 
-    include[
-      'rentingDepositItem'
-    ] = graphQLFieldHandler.getIncludeForNestedRelationalFields([
-      {
-        fieldName: 'statusDetail',
-        fieldPath: 'rentingDepositItems.RentingDepositItem',
-      },
-      {
-        fieldName: 'typeDetail',
-        fieldPath: 'rentingDepositItems.RentingDepositItem',
-      },
-    ]);
+    include['rentingDepositItem'] =
+      graphQLFieldHandler.getIncludeForNestedRelationalFields([
+        {
+          fieldName: 'statusDetail',
+          fieldPath: 'rentingDepositItems.RentingDepositItem',
+        },
+        {
+          fieldName: 'typeDetail',
+          fieldPath: 'rentingDepositItems.RentingDepositItem',
+        },
+      ]);
 
-    include[
-      'rentingOrderItem'
-    ] = graphQLFieldHandler.getIncludeForNestedRelationalFields([
-      {
-        fieldName: 'statusDetail',
-        fieldPath: 'rentingOrderItems.RentingOrderItem',
-      },
-    ]);
+    include['rentingOrderItem'] =
+      graphQLFieldHandler.getIncludeForNestedRelationalFields([
+        {
+          fieldName: 'statusDetail',
+          fieldPath: 'rentingOrderItems.RentingOrderItem',
+        },
+      ]);
 
     return this.rentingOrdersService.getOrderDetail(
       id,
@@ -305,5 +302,66 @@ export class RentingOrderResolvers {
       },
       include,
     );
+  }
+
+  // Customer Only
+  @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
+  async customerAddItemToRentingOrder(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('data') data: AddItemToOrderBagModel,
+  ): Promise<{
+    isSuccess: boolean;
+    rentingOrderItemData: RentingOrderItemModel;
+  }> {
+    const result = this.customerRentingOrdersService.addItemToRentingOrder(
+      user.id,
+      data,
+    );
+
+    return result;
+  }
+
+  @Query()
+  @Permissions(Permission.NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
+  async customerGetMyRentingOrder(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('paginationData')
+    paginationData: QueryWithOffsetPagingDTO,
+  ): Promise<OffsetPaginationDTO<RentingOrderModel>> {
+    return this.customerRentingOrdersService.getListBagItems({
+      userId: user.currentOrgId,
+      offset: paginationData.offset,
+      pageSize: paginationData.pageSize,
+    });
+  }
+
+  @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
+  async customerConvertBagToNewOrder(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('rentingOrderId') rentingOrderId: String,
+  ): Promise<RentingOrderModel> {
+    const result = this.customerRentingOrdersService.convertBagToNew({
+      userId: user.id,
+      rentingOrderId,
+    });
+
+    return result;
+  }
+
+  @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
+  async customerRemoveItemFromBag(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('rentingOrderItemId') rentingOrderItemId: String,
+  ): Promise<RentingOrderItemModel> {
+    const result = this.customerRentingOrdersService.removeItemFromBag({
+      userId: user.id,
+      rentingOrderItemId,
+    });
+
+    return result;
   }
 }

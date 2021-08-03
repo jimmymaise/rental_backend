@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
-import { StoragesService } from '@modules/storages/storages.service';
-import { RentingOrderModel } from './models/renting-order.model';
+import { RentingOrderModel, AddItemToOrderBagModel } from './models';
 import { RentingOrderSystemStatusType } from '@app/models';
 import { CustomAttributesService } from '@modules/custom-attributes/custom-attributes.service';
 import { calcAmount } from '@app/helpers/order-amount-calc';
@@ -11,19 +10,9 @@ import { RentingOrderItemModel } from './models/renting-order-item.model';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 import { OffsetPaginationDTO } from '@app/models';
 
-interface AddItemToOrderBagModel {
-  itemId: string;
-  orgId: string;
-  rentingOrderId?: string;
-  pickupDateTime: number;
-  returningDateTime: number;
-  quantity?: number;
-  note?: string;
-}
-
 interface AddItemToBagResult {
   isSuccess: boolean; // Mo rong them khi check duoc co lich dat thue trung. Lock san pham trong Bag khoang 15'
-  rentingOrderData: RentingOrderItemModel;
+  rentingOrderItemData: RentingOrderItemModel;
 }
 
 @Injectable()
@@ -31,10 +20,9 @@ export class CustomerRentingOrdersService {
   constructor(
     private prismaService: PrismaService,
     private customAttributeService: CustomAttributesService,
-    private storagesService: StoragesService,
   ) {}
 
-  async customerAddItemToRentingOrder(
+  async addItemToRentingOrder(
     userId: string,
     bagData: AddItemToOrderBagModel,
   ): Promise<AddItemToBagResult> {
@@ -129,7 +117,8 @@ export class CustomerRentingOrdersService {
 
     return {
       isSuccess: true,
-      rentingOrderData: RentingOrderItemModel.fromDatabase(newRentingOrderItem),
+      rentingOrderItemData:
+        RentingOrderItemModel.fromDatabase(newRentingOrderItem),
     };
   }
 
@@ -233,12 +222,11 @@ export class CustomerRentingOrdersService {
       throw new Error('Renting order item not existed');
     }
 
-    const deletedRentingOrderItem =
-      await this.prismaService.rentingOrderItem.delete({
-        where: {
-          id: rentingOrderItemId,
-        },
-      });
+    await this.prismaService.rentingOrderItem.delete({
+      where: {
+        id: rentingOrderItemId,
+      },
+    });
 
     return RentingOrderItemModel.fromDatabase(rentingOrderItemDetail);
   }
