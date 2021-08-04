@@ -307,6 +307,7 @@ export class RentingOrderResolvers {
   // Customer Only
   @Mutation()
   @Permissions(Permission.NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
   async customerAddItemToRentingOrder(
     @CurrentUser() user: GuardUserPayload,
     @Args('data') data: AddItemToOrderBagModel,
@@ -339,6 +340,7 @@ export class RentingOrderResolvers {
 
   @Mutation()
   @Permissions(Permission.NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
   async customerConvertBagToNewOrder(
     @CurrentUser() user: GuardUserPayload,
     @Args('rentingOrderId') rentingOrderId: String,
@@ -353,6 +355,7 @@ export class RentingOrderResolvers {
 
   @Mutation()
   @Permissions(Permission.NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
   async customerRemoveItemFromBag(
     @CurrentUser() user: GuardUserPayload,
     @Args('rentingOrderItemId') rentingOrderItemId: String,

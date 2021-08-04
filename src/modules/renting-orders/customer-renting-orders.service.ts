@@ -39,7 +39,7 @@ export class CustomerRentingOrdersService {
         id: true,
       },
     });
-    let rentingOrderId = foundRentingOrder.id;
+    let rentingOrderId = foundRentingOrder?.id;
     const itemDetail = await this.prismaService.item.findUnique({
       where: {
         id: bagData.itemId,
