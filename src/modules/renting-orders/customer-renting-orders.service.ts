@@ -9,6 +9,7 @@ import { calcAmount } from '@app/helpers/order-amount-calc';
 import { RentingOrderItemModel } from './models/renting-order-item.model';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
 import { OffsetPaginationDTO } from '@app/models';
+import { OrganizationsService } from '@modules/organizations/organizations.service';
 
 interface AddItemToBagResult {
   isSuccess: boolean; // Mo rong them khi check duoc co lich dat thue trung. Lock san pham trong Bag khoang 15'
@@ -20,6 +21,7 @@ export class CustomerRentingOrdersService {
   constructor(
     private prismaService: PrismaService,
     private customAttributeService: CustomAttributesService,
+    private organizationService: OrganizationsService,
   ) {}
 
   async addItemToRentingOrder(
@@ -167,6 +169,10 @@ export class CustomerRentingOrdersService {
         rentingDepositItems: item.rentingDepositItems || [],
       });
 
+      newRentingOrderItem.orgDetail =
+        await this.organizationService.getOrgSummaryCache(
+          newRentingOrderItem.orgId,
+        );
       newRentingOrderItem.statusDetail =
         await this.customAttributeService.getRentingOrderStatusCustomAttributeDetail(
           newRentingOrderItem.orgId,

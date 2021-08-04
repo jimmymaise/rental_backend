@@ -84,6 +84,7 @@ type RentingOrder {
   statusDetail: RentingOrderStatus
   systemStatus: String
   allowChangeToStatuses: [RentingOrderStatus]
+  orgDetail: OrgSummaryCache
 }
 
 type RentingOrderPagination {

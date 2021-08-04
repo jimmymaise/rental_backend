@@ -10,6 +10,7 @@ import { RentingOrderResolvers } from './renting-orders.resolvers';
 import { CustomAttributesModule } from '@modules/custom-attributes/custom-attributes.module';
 import { OrgActivityLogModule } from '@modules/org-activity-log';
 import { OrgStatisticsModule } from '@modules/org-statistics';
+import { OrganizationsModule } from '@modules/organizations';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { OrgStatisticsModule } from '@modules/org-statistics';
     StoragesModule,
     OrgActivityLogModule,
     OrgStatisticsModule,
+    OrganizationsModule,
   ],
   providers: [
     RentingOrdersService,

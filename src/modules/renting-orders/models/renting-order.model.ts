@@ -12,6 +12,7 @@ import { CustomerModel } from '../../customers/models/customer.model';
 import { RentingOrderStatusModel } from '../../custom-attributes/models/renting-order-status.model';
 import { RentingDepositItemTypeModel } from '../../custom-attributes/models/renting-deposit-item-type.model';
 import { RentingDepositItemStatusModel } from '../../custom-attributes/models/renting-deposit-item-status.model';
+import { OrganizationSummaryCacheDto } from '@modules/organizations/organizations.dto';
 
 export class RentingOrderModel {
   public id: string;
@@ -25,6 +26,7 @@ export class RentingOrderModel {
   public status: string;
   public systemStatus: string;
   public statusDetail?: RentingOrderStatusModel;
+  public orgDetail?: OrganizationSummaryCacheDto;
 
   public rentingOrderItems?: RentingOrderItemModel[];
   public rentingDepositItems?: RentingDepositItemModel[];
