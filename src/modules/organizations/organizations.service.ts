@@ -30,14 +30,24 @@ export class OrganizationsService {
     });
   }
 
+  async getOrganizationBySlug(
+    slug: string,
+    include: any,
+  ): Promise<Organization> {
+    return this.prismaService.organization.findUnique({
+      where: { slug },
+      include: include,
+    });
+  }
+
   async createOrganization(
     createOrganizationData: CreateOrganizationDto,
     userId?: string,
     include?: any,
   ): Promise<Organization> {
     createOrganizationData['createdBy'] = userId;
-    const organizationCreatedResult = await this.prismaService.organization.create(
-      {
+    const organizationCreatedResult =
+      await this.prismaService.organization.create({
         include: include,
         data: {
           ...createOrganizationData,
@@ -46,8 +56,7 @@ export class OrganizationsService {
             create: [{ userId: userId, isOwner: true }],
           },
         },
-      },
-    );
+      });
 
     // Create default Data
     await this.dataInitilizeService.initDefaultDataForNewOrg(

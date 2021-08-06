@@ -59,6 +59,8 @@ input OrganizationQuery {
 type Query {
   getMyOrg: OrganizationInfo
   searchOrg(query: OrganizationQuery): OrganizationPagination
+  getPublicOrgDetail(orgId: String!): OrganizationInfo
+  getPublicOrgDetailBySlug(slug: String!): OrganizationInfo
 }
 
 type Mutation {

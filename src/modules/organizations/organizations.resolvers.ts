@@ -29,7 +29,7 @@ export class OrganizationsResolvers {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
   @Query()
-  @UseGuards(EveryoneGqlAuthGuard)
+  @UseGuards(GqlAuthGuard)
   @Permissions(Permission.ORG_MASTER, Permission.GET_MY_ORG_DETAIL)
   async getMyOrg(
     @Info() info: GraphQLResolveInfo,
@@ -44,6 +44,26 @@ export class OrganizationsResolvers {
       user.currentOrgId,
       include,
     );
+  }
+
+  @Query()
+  @UseGuards(EveryoneGqlAuthGuard)
+  @Permissions(Permission.NO_NEED_LOGIN)
+  async getPublicOrgDetail(
+    @Args('orgId')
+    orgId: string,
+  ): Promise<Organization> {
+    return this.organizationsService.getOrganization(orgId, null);
+  }
+
+  @Query()
+  @UseGuards(EveryoneGqlAuthGuard)
+  @Permissions(Permission.NO_NEED_LOGIN)
+  async getPublicOrgDetailBySlug(
+    @Args('slug')
+    slug: string,
+  ): Promise<Organization> {
+    return this.organizationsService.getOrganizationBySlug(slug, null);
   }
 
   @Mutation()

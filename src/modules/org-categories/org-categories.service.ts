@@ -55,7 +55,9 @@ export class OrgCategoriesService {
     const cachedKey = this.getCategoryListCacheKey(orgId);
     this.redisCacheService.del(cachedKey);
 
-    const slug = data.slug || stringToSlug(data.name);
+    const slug = data.slug
+      ? data.slug.replace(' ', '-')
+      : stringToSlug(data.name).replace(' ', '-');
     const result = await this.prismaService.orgCategory.create({
       data: {
         ...data,
