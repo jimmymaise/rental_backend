@@ -185,9 +185,8 @@ export class ItemsResolvers {
     }
 
     if (item.orgId) {
-      enhancedItem.orgDetail = await this.organizationService.getOrgSummaryCache(
-        item.orgId,
-      );
+      enhancedItem.orgDetail =
+        await this.organizationService.getOrgSummaryCache(item.orgId);
     }
 
     return enhancedItem;
@@ -319,6 +318,8 @@ export class ItemsResolvers {
     return enhancedItem;
   }
 
+  // #### FOR ORG ONLY
+
   @Query()
   @Permissions(Permission.ORG_MASTER, Permission.GET_ITEM)
   @UseGuards(GqlAuthGuard)
@@ -381,6 +382,58 @@ export class ItemsResolvers {
         })
         .catch(reject);
     });
+  }
+
+  @Query()
+  @Permissions(Permission.NO_NEED_LOGIN)
+  @UseGuards(EveryoneGqlAuthGuard)
+  async feedOrgPublicItems(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('orgId') orgId: string,
+    @Args('query')
+    query: {
+      search: string;
+      offset: number;
+      limit: number;
+      includes: string[];
+      checkWishList?: boolean;
+    },
+  ): Promise<OffsetPaginationDTO<ItemDTO>> {
+    const { search, offset, limit, includes, checkWishList } = query || {};
+    const actualLimit = limit && limit > 100 ? 100 : limit;
+    const result = await this.orgItemsService.findAllPublicItemsCreatedByOrg({
+      orgId,
+      searchValue: search,
+      offset,
+      limit: actualLimit,
+      includes,
+    });
+
+    const items = [];
+    for (let i = 0; i < result.items.length; i++) {
+      const newItem = toItemDTO(result.items[i], user?.id);
+
+      if (result.items[i].ownerUserId) {
+        newItem.createdBy = await this.usersService.getUserDetailData(
+          result.items[i].ownerUserId,
+        );
+      }
+
+      if (user && checkWishList) {
+        newItem.isInMyWishList =
+          (await this.wishingItemService.findUnique(user.id, newItem.id)) !==
+          null;
+      }
+
+      items.push(newItem);
+    }
+
+    return {
+      items,
+      total: result.total,
+      offset: offset || 0,
+      limit: actualLimit,
+    };
   }
 
   @Mutation()
