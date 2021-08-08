@@ -36,4 +36,5 @@ type Query {
   getAllAvailableOrgCategories: [OrgCategory]
   getAllOrgCategories: [OrgCategory]
   getOrgCategoryDetail(id: ID!): OrgCategory
+  getOrgCategoryDetailBySlug(orgId: String!, slug: String!): OrgCategory
 }

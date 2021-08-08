@@ -92,6 +92,17 @@ export class OrgCategoriesService {
     });
   }
 
+  async getDetailBySlug(orgId: string, slug: string): Promise<OrgCategory> {
+    return await this.prismaService.orgCategory.findUnique({
+      where: {
+        orgId_slug: {
+          orgId,
+          slug,
+        },
+      },
+    });
+  }
+
   async update({
     data,
     id,

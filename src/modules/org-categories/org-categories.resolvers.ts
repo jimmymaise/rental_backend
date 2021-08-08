@@ -45,6 +45,16 @@ export class OrgCategoriesResolvers {
     return this.categoriesService.getDetail(id);
   }
 
+  @Query()
+  @Permissions(Permission.NO_NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
+  async getOrgCategoryDetailBySlug(
+    @Args('orgId') orgId: string,
+    @Args('slug') slug: string,
+  ): Promise<OrgCategory> {
+    return this.categoriesService.getDetailBySlug(orgId, slug);
+  }
+
   @Mutation()
   @Permissions(Permission.ORG_MASTER, Permission.CREATE_ORG_CATEGORY)
   @UseGuards(GqlAuthGuard)
