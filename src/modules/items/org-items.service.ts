@@ -249,18 +249,27 @@ export class OrgItemsService {
 
   async findAllPublicItemsCreatedByOrg({
     orgId,
+    categoryId = null,
     searchValue = '',
     offset = 0,
     limit = 10,
     includes,
   }): Promise<OffsetPaginationDTO<Item>> {
-    const mandatoryWhere = {
+    const mandatoryWhere: any = {
       isDeleted: false,
       orgId,
       status: ItemStatus.Published,
       isPublishToMarketplace: true,
       isVerified: true,
     };
+
+    if (categoryId) {
+      mandatoryWhere.orgCategories = {
+        some: {
+          id: categoryId,
+        },
+      };
+    }
 
     const validIncludeMap = {
       orgCategories: true,

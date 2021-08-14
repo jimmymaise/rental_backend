@@ -1,6 +1,8 @@
-import { Injectable, HttpService } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { lastValueFrom } from 'rxjs';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisCacheService } from '@modules/redis-cache/redis-cache.service';
@@ -32,9 +34,10 @@ export class AuthService {
     });
   }
 
-  public validateTokenFromHeaders(
-    headers: any,
-  ): { userId: string; email: string } {
+  public validateTokenFromHeaders(headers: any): {
+    userId: string;
+    email: string;
+  } {
     if (headers['authorization']) {
       const bearerToken = headers.authorization.split(' ')[1];
 
@@ -123,9 +126,9 @@ export class AuthService {
     )}&response=${responseStr}`;
 
     try {
-      const response: any = await this.httpService
-        .get(verificationUrl)
-        .toPromise();
+      const response: any = await lastValueFrom(
+        this.httpService.get(verificationUrl),
+      );
 
       if (!response?.data?.success) {
         return false;

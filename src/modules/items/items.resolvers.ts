@@ -395,15 +395,18 @@ export class ItemsResolvers {
       search: string;
       offset: number;
       limit: number;
+      categoryId?: string;
       includes: string[];
       checkWishList?: boolean;
     },
   ): Promise<OffsetPaginationDTO<ItemDTO>> {
-    const { search, offset, limit, includes, checkWishList } = query || {};
+    const { search, offset, limit, includes, checkWishList, categoryId } =
+      query || {};
     const actualLimit = limit && limit > 100 ? 100 : limit;
     const result = await this.orgItemsService.findAllPublicItemsCreatedByOrg({
       orgId,
       searchValue: search,
+      categoryId,
       offset,
       limit: actualLimit,
       includes,
