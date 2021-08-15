@@ -128,7 +128,6 @@ model User {
   reviewFromUser               UserReview[]         @relation("OwnerUserReview")
   reviewToUser                 UserReview[]         @relation("ToUserReview")
   item                         Item[]
-  myUserContact                MyUserContact[]
   userNotifications            UserNotification[]   @relation("ForUserNotification")
   rentingOrders                RentingOrder[]       @relation("RentingOrderBelongToCustomer")
   rentingOrderItems            RentingOrderItem[]   @relation("RentingOrderItemBelongToCustomer")
@@ -413,14 +412,13 @@ model WishingItem {
   @@id([ownerUserId, itemId])
 }
 
-model MyUserContact {
+model MyContactBook {
   ownerUserId String
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
-  orgId       String?
+  contactId   String
+  type        String
   createdDate DateTime @default(now())
 
-  @@id([ownerUserId, userId])
+  @@id([ownerUserId, type, contactId])
 }
 
 //

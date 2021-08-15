@@ -1,0 +1,29 @@
+type MyContactBook {
+  userId: String
+  createdDate: Float
+  userInfo: UserInfo
+  organizationInfo: OrganizationInfo
+}
+
+type MyContactBookPagination {
+  items: [MyContactBook]
+  total: Int
+  limit: Int
+  offset: Int
+}
+
+input MyContactBookQuery {
+  offset: Int
+  limit: Int
+}
+
+type Mutation {
+  addUserToMyContactBook(userId: String!): MyContactBook
+  deleteUserFromMyContactBook(userId: String!): MyContactBook
+  addOrgToMyContactBook(orgId: String!): MyContactBook
+  deleteOrgFromMyContactBook(orgId: String!): MyContactBook
+}
+
+type Query {
+  feedMyContacts(query: MyContactBookQuery): MyContactBookPagination
+}

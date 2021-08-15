@@ -19,6 +19,7 @@ import { EncryptByAesCBCPassword } from '@helpers/encrypt';
 import { getUserCacheKey, toUserInfoDTO } from './helpers';
 import { AuthService } from '@modules/auth/auth.service';
 import { OrganizationSummaryCacheDto } from '../organizations/organizations.dto';
+import { MyContactBookType } from '@modules/my-contact-book/constants';
 
 import { AuthDTO } from '@modules/auth/auth.dto';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
@@ -71,16 +72,17 @@ export class UsersService {
     private authService: AuthService,
   ) {}
 
-  async isUserInMyContactList(
+  async isUserInMyContactBook(
     userId: string,
     otherUserId: string,
   ): Promise<boolean> {
     return (
-      (await this.prismaService.myUserContact.findUnique({
+      (await this.prismaService.myContactBook.findUnique({
         where: {
-          ownerUserId_userId: {
-            userId: otherUserId,
+          ownerUserId_type_contactId: {
+            contactId: otherUserId,
             ownerUserId: userId,
+            type: MyContactBookType.User,
           },
         },
       })) !== null

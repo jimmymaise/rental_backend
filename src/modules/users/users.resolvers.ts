@@ -71,7 +71,7 @@ export class UsersResolvers {
       if (user.id !== allData.id) {
         permissions.push(UserPermission.SEND_MESSAGE);
 
-        if (await this.userService.isUserInMyContactList(user.id, allData.id)) {
+        if (await this.userService.isUserInMyContactBook(user.id, allData.id)) {
           permissions.push(UserPermission.REMOVE_CONNECT);
         } else {
           permissions.push(UserPermission.CONNECT);
@@ -129,12 +129,10 @@ export class UsersResolvers {
       restProps.user.id,
     );
 
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
-      accessToken,
-    );
-    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(
-      refreshToken,
-    );
+    const accessTokenCookie =
+      this.authService.getCookieWithJwtAccessToken(accessToken);
+    const refreshTokenCookie =
+      this.authService.getCookieWithJwtRefreshToken(refreshToken);
 
     context.res.setHeader('Set-Cookie', [
       accessTokenCookie,
@@ -170,12 +168,10 @@ export class UsersResolvers {
       restProps.user.id,
     );
 
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
-      accessToken,
-    );
-    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(
-      refreshToken,
-    );
+    const accessTokenCookie =
+      this.authService.getCookieWithJwtAccessToken(accessToken);
+    const refreshTokenCookie =
+      this.authService.getCookieWithJwtRefreshToken(refreshToken);
     context.res.setHeader('Set-Cookie', [
       accessTokenCookie,
       refreshTokenCookie,
@@ -200,9 +196,8 @@ export class UsersResolvers {
     const token = await this.authService.generateNewToken(null, user.id);
 
     const accessToken = token.accessToken;
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
-      accessToken,
-    );
+    const accessTokenCookie =
+      this.authService.getCookieWithJwtAccessToken(accessToken);
     context.res.setHeader('Set-Cookie', accessTokenCookie);
 
     return {
@@ -234,19 +229,16 @@ export class UsersResolvers {
     @Args('email') email: string,
     @Args('recaptchaKey') recaptchaKey: string,
   ): Promise<string> {
-    const isRecaptchaKeyVerified = await this.authService.verifyRecaptchaResponse(
-      recaptchaKey,
-    );
+    const isRecaptchaKeyVerified =
+      await this.authService.verifyRecaptchaResponse(recaptchaKey);
 
     if (!isRecaptchaKeyVerified) {
       throw new BadRequestException(ErrorMap.RECAPTCHA_RESPONSE_KEY_INVALID);
     }
 
     try {
-      const {
-        token,
-        displayName,
-      } = await this.userService.generateResetPasswordToken(email);
+      const { token, displayName } =
+        await this.userService.generateResetPasswordToken(email);
       await this.emailService.sendResetPasswordEmail(displayName, email, token);
       return email;
     } catch (err) {
@@ -281,22 +273,17 @@ export class UsersResolvers {
     @Args('currentPassword') currentPassword: string,
     @Args('newPassword') newPassword: string,
   ): Promise<AuthDTO> {
-    const {
-      accessToken,
-      refreshToken,
-      ...restProps
-    } = await this.userService.changeUserPassword(
-      currentUser.id,
-      currentPassword,
-      newPassword,
-    );
+    const { accessToken, refreshToken, ...restProps } =
+      await this.userService.changeUserPassword(
+        currentUser.id,
+        currentPassword,
+        newPassword,
+      );
 
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
-      accessToken,
-    );
-    const refreshTokenCookie = this.authService.getCookieWithJwtRefreshToken(
-      refreshToken,
-    );
+    const accessTokenCookie =
+      this.authService.getCookieWithJwtAccessToken(accessToken);
+    const refreshTokenCookie =
+      this.authService.getCookieWithJwtRefreshToken(refreshToken);
     context.res.setHeader('Set-Cookie', [
       accessTokenCookie,
       refreshTokenCookie,
@@ -317,9 +304,8 @@ export class UsersResolvers {
     @Args('reason') reason: string,
     @Args('recaptchaKey') recaptchaKey: string,
   ): Promise<boolean> {
-    const isRecaptchaKeyVerified = await this.authService.verifyRecaptchaResponse(
-      recaptchaKey,
-    );
+    const isRecaptchaKeyVerified =
+      await this.authService.verifyRecaptchaResponse(recaptchaKey);
 
     if (!isRecaptchaKeyVerified) {
       throw new BadRequestException(ErrorMap.RECAPTCHA_RESPONSE_KEY_INVALID);
