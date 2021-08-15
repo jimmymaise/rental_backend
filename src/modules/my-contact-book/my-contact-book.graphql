@@ -1,5 +1,5 @@
 type MyContactBook {
-  userId: String
+  contactId: String
   createdDate: Float
   userInfo: UserInfo
   organizationInfo: OrganizationInfo
