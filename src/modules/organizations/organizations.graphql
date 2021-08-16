@@ -11,6 +11,19 @@ type OrganizationInfo {
   areas: [Area]
 }
 
+type PublicOrganizationInfo {
+  id: ID!
+  name: String
+  avatarImage: PublicStorageFile
+  description: String
+  slug: String
+  createdDate: Float
+  updatedDate: Float
+  createdBy: String
+  areas: [Area]
+  isOrgInMyContactBook: String
+}
+
 type OrgSummaryCache {
   id: ID!
   name: String
@@ -59,8 +72,8 @@ input OrganizationQuery {
 type Query {
   getMyOrg: OrganizationInfo
   searchOrg(query: OrganizationQuery): OrganizationPagination
-  getPublicOrgDetail(orgId: String!): OrganizationInfo
-  getPublicOrgDetailBySlug(slug: String!): OrganizationInfo
+  getPublicOrgDetail(orgId: String!): PublicOrganizationInfo
+  getPublicOrgDetailBySlug(slug: String!): PublicOrganizationInfo
 }
 
 type Mutation {

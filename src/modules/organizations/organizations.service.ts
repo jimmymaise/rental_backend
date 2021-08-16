@@ -12,6 +12,7 @@ import {
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { DataInitilizeService } from '@modules/data-initialize/data-initialize.service';
 import { OrgActivityLogService } from '@modules/org-activity-log/org-activity-log.service';
+import { MyContactBookType } from '@modules/my-contact-book/constants';
 
 @Injectable()
 export class OrganizationsService {
@@ -22,6 +23,20 @@ export class OrganizationsService {
     public dataInitilizeService: DataInitilizeService,
     private orgActivityLogService: OrgActivityLogService,
   ) {}
+
+  async isOrgInMyContactBook(userId: string, orgId: string): Promise<boolean> {
+    return (
+      (await this.prismaService.myContactBook.findUnique({
+        where: {
+          ownerUserId_type_contactId: {
+            contactId: orgId,
+            ownerUserId: userId,
+            type: MyContactBookType.Organization,
+          },
+        },
+      })) !== null
+    );
+  }
 
   async getOrganization(orgId: string, include: any): Promise<Organization> {
     return this.prismaService.organization.findUnique({

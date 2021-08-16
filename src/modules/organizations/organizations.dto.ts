@@ -1,6 +1,5 @@
 import { StoragePublicDTO } from '../storages/storage-public.dto';
 import { sanitize } from './helpers';
-import { Prisma } from '@prisma/client';
 import { Transform } from 'class-transformer';
 
 export class OrganizationSummaryCacheDto {

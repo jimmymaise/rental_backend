@@ -23,6 +23,7 @@ import { Permission } from '@modules/auth/permission/permission.enum';
 import { Organization } from '@prisma/client';
 import { UploadFilePipe } from '@modules/storages/file-handler.pipe';
 import { Permissions } from '@modules/auth/permission/permissions.decorator';
+import { OrganizationPublicInfoModel } from './models';
 
 @Resolver('Organization')
 export class OrganizationsResolvers {
@@ -50,20 +51,69 @@ export class OrganizationsResolvers {
   @UseGuards(EveryoneGqlAuthGuard)
   @Permissions(Permission.NO_NEED_LOGIN)
   async getPublicOrgDetail(
+    @Info() info: GraphQLResolveInfo,
+    @CurrentUser() user: GuardUserPayload,
     @Args('orgId')
     orgId: string,
-  ): Promise<Organization> {
-    return this.organizationsService.getOrganization(orgId, null);
+  ): Promise<OrganizationPublicInfoModel> {
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include: any = graphQLFieldHandler.getIncludeForRelationalFields([
+      'areas',
+      'isOrgInMyContactBook',
+    ]);
+
+    const dbOrg = await this.organizationsService.getOrganization(orgId, {
+      areas: include.areas,
+    });
+
+    if (!dbOrg) {
+      throw new Error('this org is not existed');
+    }
+
+    const result = OrganizationPublicInfoModel.fromDbOrganization(dbOrg);
+
+    if (include.isOrgInMyContactBook) {
+      const isOrgInMyContactBook =
+        await this.organizationsService.isOrgInMyContactBook(user.id, dbOrg.id);
+
+      result.isOrgInMyContactBook = isOrgInMyContactBook;
+    }
+
+    return result;
   }
 
   @Query()
   @UseGuards(EveryoneGqlAuthGuard)
   @Permissions(Permission.NO_NEED_LOGIN)
   async getPublicOrgDetailBySlug(
+    @Info() info: GraphQLResolveInfo,
+    @CurrentUser() user: GuardUserPayload,
     @Args('slug')
     slug: string,
-  ): Promise<Organization> {
-    return this.organizationsService.getOrganizationBySlug(slug, null);
+  ): Promise<OrganizationPublicInfoModel> {
+    const graphQLFieldHandler = new GraphQLFieldHandler(info);
+    const include: any = graphQLFieldHandler.getIncludeForRelationalFields([
+      'areas',
+      'isOrgInMyContactBook',
+    ]);
+    const dbOrg = await this.organizationsService.getOrganizationBySlug(slug, {
+      areas: include.areas,
+    });
+
+    if (!dbOrg) {
+      throw new Error('this org is not existed');
+    }
+
+    const result = OrganizationPublicInfoModel.fromDbOrganization(dbOrg);
+
+    if (include.isOrgInMyContactBook) {
+      const isOrgInMyContactBook =
+        await this.organizationsService.isOrgInMyContactBook(user.id, dbOrg.id);
+
+      result.isOrgInMyContactBook = isOrgInMyContactBook;
+    }
+
+    return result;
   }
 
   @Mutation()
