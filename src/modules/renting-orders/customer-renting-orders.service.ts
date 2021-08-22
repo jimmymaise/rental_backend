@@ -67,6 +67,7 @@ export class CustomerRentingOrdersService {
         data: {
           createdBy: userId,
           status: defaultRentingOrderBag.value,
+          images: itemDetail.images,
           systemStatus: RentingOrderSystemStatusType.InBag,
           updatedBy: userId,
           customerUser: {
@@ -93,6 +94,7 @@ export class CustomerRentingOrdersService {
         data: {
           createdBy: userId,
           name: itemDetail.name,
+          images: itemDetail.images,
           status: defaultRentingOrderBag.value,
           systemStatus: RentingOrderSystemStatusType.InBag,
           updatedBy: userId,

@@ -261,6 +261,7 @@ model Item {
   isVerified                Boolean?             @default(false)
   status                    String
   rentingStatus             String?
+  systemRentingStatus       String?
   note                      String?
   ownerUser                 User                 @relation(fields: [ownerUserId], references: [id])
   ownerUserId               String
