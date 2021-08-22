@@ -478,17 +478,19 @@ model ChatMessage {
 }
 
 model RentingOrder {
-  id             String       @id @default(uuid())
-  orderCustomId  String?
-  org            Organization @relation("RentingOrderBelongToOrg", fields: [orgId], references: [id])
-  orgId          String
-  payAmount      Int?         @default(0)
-  totalAmount    Int?         @default(0)
+  id            String       @id @default(uuid())
+  orderCustomId String?
+  org           Organization @relation("RentingOrderBelongToOrg", fields: [orgId], references: [id])
+  orgId         String
+
+  images         Json?
+  payAmount      Int?     @default(0)
+  totalAmount    Int?     @default(0)
   note           String?
-  customerUser   User         @relation("RentingOrderBelongToCustomer", fields: [customerUserId], references: [id])
+  customerUser   User     @relation("RentingOrderBelongToCustomer", fields: [customerUserId], references: [id])
   customerUserId String
-  createdDate    DateTime     @default(now())
-  updatedDate    DateTime     @updatedAt
+  createdDate    DateTime @default(now())
+  updatedDate    DateTime @updatedAt
   createdBy      String
   updatedBy      String
 
@@ -513,6 +515,7 @@ model RentingOrderItem {
   name String
   note String?
 
+  images            Json?
   amount            Int?      @default(0)
   quantity          Int?      @default(0)
   pickupDateTime    DateTime?
@@ -811,8 +814,6 @@ model OrgCustomerStatistics {
   @@id([orgId, entryDateTime])
 }
 
-// Item Reviews?
-// Renting Request Comments? with attach files
 // Cho phep khoa comment, do chu shop khoa, thi comment ko the chinh sua hoac xoa nua
 // Renting Request Review
 

@@ -22,6 +22,7 @@ export class RentingOrderModel {
   public note?: string;
   public customerUserId?: string;
   public customerUser?: CustomerModel;
+  public images?: StoragePublicDTO[];
   public attachedFiles?: StoragePublicDTO[];
   public status: string;
   public systemStatus: string;
@@ -68,6 +69,7 @@ export class RentingOrderModel {
       totalAmount: data.totalAmount,
       note: data.note,
       status: data.status,
+      images: data.images as StoragePublicDTO[],
       attachedFiles: data.attachedFiles as StoragePublicDTO[],
       customerUserId: data.customerUserId,
       rentingDepositItems: (rentingDepositItems || []).map((depositItem) =>

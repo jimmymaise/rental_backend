@@ -17,6 +17,7 @@ export class RentingOrderItemModel {
   public unitPricePerDay?: number;
   public unitPricePerWeek?: number;
   public unitPricePerMonth?: number;
+  public images?: StoragePublicDTO[];
   public attachedFiles?: StoragePublicDTO[];
   public itemId: string;
   public item?: ItemDTO;
@@ -44,6 +45,7 @@ export class RentingOrderItemModel {
       id: data.id,
       itemId: data.itemId,
       amount: data.amount,
+      images: data.images as StoragePublicDTO[],
       attachedFiles: data.attachedFiles as StoragePublicDTO[],
       name: data.name,
       note: data.note,

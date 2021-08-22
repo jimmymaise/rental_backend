@@ -48,6 +48,7 @@ type RentingOrderItem {
   unitPricePerWeek: Float
   unitPricePerMonth: Float
   attachedFiles: [PublicStorageFile]
+  images: [PublicStorageFile]
   itemId: String!
   statusDetail: RentingOrderItemStatus
   systemStatus: String
@@ -76,6 +77,7 @@ type RentingOrder {
   customerUserId: String
   customerUser: Customer
   attachedFiles: [PublicStorageFile]
+  images: [PublicStorageFile]
   rentingOrderItems: [RentingOrderItem]
   rentingDepositItems: [RentingDepositItem]
   createdDate: Float

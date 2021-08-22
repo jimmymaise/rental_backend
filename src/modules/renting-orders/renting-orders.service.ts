@@ -40,18 +40,46 @@ export class RentingOrdersService {
 
     // ----> Create Selling Order
     // GET Order new status
-    const rentingOrderNewStatuses = await this.customAttributeService.getListCustomRentingOrderStatus(
-      orgId,
-      RentingOrderSystemStatusType.New,
-    );
+    const rentingOrderNewStatuses =
+      await this.customAttributeService.getListCustomRentingOrderStatus(
+        orgId,
+        RentingOrderSystemStatusType.New,
+      );
     const defaultRentingOrderNew = rentingOrderNewStatuses[0];
 
+    // Get List Item Detail
+    const itemDetails = await this.prismaService.item.findMany({
+      where: {
+        id: {
+          in: data.rentingOrderItems.map(
+            (rentingOrderItem) => rentingOrderItem.itemId,
+          ),
+        },
+      },
+      select: {
+        id: true,
+        images: true,
+      },
+    });
+
+    // generate renting order images
+    const rentingOrderImages = [];
+    itemDetails.forEach(({ images }) => {
+      if (images && (images as Array<{ id: string; url: string }>).length) {
+        rentingOrderImages.push({
+          id: images[0].id,
+          url: images[0].url,
+        });
+      }
+    });
+
     // Create Selling Order
-    const createRentingOrderResult = await this.prismaService.rentingOrder.create(
-      {
+    const createRentingOrderResult =
+      await this.prismaService.rentingOrder.create({
         data: {
           status: defaultRentingOrderNew.value,
           systemStatus: RentingOrderSystemStatusType.New,
+          images: rentingOrderImages,
           updatedBy: creatorId,
           createdBy: creatorId,
           orderCustomId: data.orderCustomId,
@@ -69,12 +97,17 @@ export class RentingOrdersService {
           },
           totalAmount: data.totalAmount,
         },
-      },
-    );
+      });
 
     // ----> Create Renting Order Item
     // GET Renting Item new status
     const createManyRentingOrderItemData = [];
+    const itemDetailToMap = itemDetails.reduce((result, itemDetail) => {
+      result[itemDetail.id] = {
+        images: itemDetail.images,
+      };
+      return result;
+    }, {});
     data.rentingOrderItems.forEach((rentingOrderItem) => {
       (rentingOrderItem.attachedFiles || []).forEach((file) => {
         this.storagesService.handleUploadImageBySignedUrlComplete(
@@ -84,9 +117,21 @@ export class RentingOrdersService {
         );
       });
 
+      const rentingOrderItemImages = [];
+      const itemDetail = itemDetailToMap[rentingOrderItem.itemId];
+      if (itemDetail) {
+        itemDetail.images.forEach((image) => {
+          rentingOrderItemImages.push({
+            id: image.id,
+            url: image.url,
+          });
+        });
+      }
+
       createManyRentingOrderItemData.push({
         customerUserId: data.customerUserId,
         name: rentingOrderItem.name,
+        images: rentingOrderItemImages,
         sku: rentingOrderItem.sku,
         note: rentingOrderItem.note,
         amount: rentingOrderItem.amount,
@@ -117,14 +162,16 @@ export class RentingOrdersService {
     });
 
     // Create Deposit Item
-    const depositItemStatuses = await this.customAttributeService.getListCustomRentingDepositItemStatus(
-      orgId,
-      RentingDepositItemSystemStatusType.New,
-    );
+    const depositItemStatuses =
+      await this.customAttributeService.getListCustomRentingDepositItemStatus(
+        orgId,
+        RentingDepositItemSystemStatusType.New,
+      );
     const defaultDepositItemStatus = depositItemStatuses[0];
-    const depositItemTypes = await this.customAttributeService.getListCustomRentingDepositItemType(
-      orgId,
-    );
+    const depositItemTypes =
+      await this.customAttributeService.getListCustomRentingDepositItemType(
+        orgId,
+      );
 
     const createRentingDepositItemsManyData = [];
     data.rentingDepositItems.forEach((depositItem) => {
@@ -163,14 +210,13 @@ export class RentingOrdersService {
     await this.orgStatisticLogService.increaseNowNewOrderCount(orgId);
 
     // Log Statistic Category New Count
-    const createdRentingOrderItems = await this.prismaService.rentingOrderItem.findMany(
-      {
+    const createdRentingOrderItems =
+      await this.prismaService.rentingOrderItem.findMany({
         where: {
           rentingOrderId: createRentingOrderResult.id,
           isDeleted: false,
         },
-      },
-    );
+      });
     for (let i = 0; i < createdRentingOrderItems.length; i++) {
       const currentItem = createdRentingOrderItems[i];
       const itemDetail = await this.prismaService.item.findUnique({
@@ -204,9 +250,10 @@ export class RentingOrdersService {
     let statuses;
 
     if (include.statusDetail) {
-      statuses = await this.customAttributeService.getAllRentingOrderStatusCustomAttributes(
-        whereQuery.orgId,
-      );
+      statuses =
+        await this.customAttributeService.getAllRentingOrderStatusCustomAttributes(
+          whereQuery.orgId,
+        );
     }
     delete include['statusDetail'];
 
@@ -293,9 +340,10 @@ export class RentingOrdersService {
       include.allowChangeToStatuses ||
       include.rentingOrderItem?.statusDetail
     ) {
-      statuses = await this.customAttributeService.getAllRentingOrderStatusCustomAttributes(
-        orgId,
-      );
+      statuses =
+        await this.customAttributeService.getAllRentingOrderStatusCustomAttributes(
+          orgId,
+        );
     }
 
     if (include) {
@@ -306,15 +354,17 @@ export class RentingOrdersService {
 
     if (include.rentingDepositItem) {
       if (include.rentingDepositItem.statusDetail) {
-        rentingDepositItemStatuses = await this.customAttributeService.getAllRentingDepositItemStatusCustomAttributes(
-          orgId,
-        );
+        rentingDepositItemStatuses =
+          await this.customAttributeService.getAllRentingDepositItemStatusCustomAttributes(
+            orgId,
+          );
       }
 
       if (include.rentingDepositItem.typeDetail) {
-        rentingDepositItemTypes = await this.customAttributeService.getAllRentingDepositItemTypeCustomAttributes(
-          orgId,
-        );
+        rentingDepositItemTypes =
+          await this.customAttributeService.getAllRentingDepositItemTypeCustomAttributes(
+            orgId,
+          );
       }
     }
     delete include['rentingDepositItem'];
@@ -404,17 +454,45 @@ export class RentingOrdersService {
     }
 
     // TODO: use redis cache for caching custom renting order status
-    const rentingOrderNewStatuses = await this.customAttributeService.getListCustomRentingOrderStatus(
-      orgId,
-      RentingOrderSystemStatusType.New,
-    );
+    const rentingOrderNewStatuses =
+      await this.customAttributeService.getListCustomRentingOrderStatus(
+        orgId,
+        RentingOrderSystemStatusType.New,
+      );
     const defaultRentingOrderNew = rentingOrderNewStatuses[0];
 
+    // Get List Item Detail
+    const itemDetails = await this.prismaService.item.findMany({
+      where: {
+        id: {
+          in: data.rentingOrderItems.map(
+            (rentingOrderItem) => rentingOrderItem.itemId,
+          ),
+        },
+      },
+      select: {
+        id: true,
+        images: true,
+      },
+    });
+
+    // generate renting order images
+    const rentingOrderImages = [];
+    itemDetails.forEach(({ images }) => {
+      if (images && (images as Array<{ id: string; url: string }>).length) {
+        rentingOrderImages.push({
+          id: images[0].id,
+          url: images[0].url,
+        });
+      }
+    });
+
     // Update Renting Order
-    const updateRentingOrderResult = await this.prismaService.rentingOrder.update(
-      {
+    const updateRentingOrderResult =
+      await this.prismaService.rentingOrder.update({
         data: {
           updatedBy: creatorId,
+          images: rentingOrderImages,
           orderCustomId: data.orderCustomId,
           attachedFiles: data.attachedFiles,
           customerUserId: {
@@ -430,8 +508,14 @@ export class RentingOrdersService {
           rentingOrderItems: true,
           rentingDepositItems: true,
         },
-      },
-    );
+      });
+
+    const itemDetailToMap = itemDetails.reduce((result, itemDetail) => {
+      result[itemDetail.id] = {
+        images: itemDetail.images,
+      };
+      return result;
+    }, {});
 
     // Update Renting Order Item
     const createManyRentingOrderItemData = [];
@@ -473,9 +557,21 @@ export class RentingOrdersService {
           updatedBy: creatorId,
         });
       } else {
+        const rentingOrderItemImages = [];
+        const itemDetail = itemDetailToMap[updatingRentingOrderItem.itemId];
+        if (itemDetail) {
+          itemDetail.images.forEach((image) => {
+            rentingOrderItemImages.push({
+              id: image.id,
+              url: image.url,
+            });
+          });
+        }
+
         createManyRentingOrderItemData.push({
           customerUserId: data.customerUserId,
           name: updatingRentingOrderItem.name,
+          images: rentingOrderItemImages,
           sku: updatingRentingOrderItem.sku,
           note: updatingRentingOrderItem.note,
           amount: updatingRentingOrderItem.amount,
@@ -521,14 +617,13 @@ export class RentingOrdersService {
     });
 
     // Log Statistic Category New Count
-    const createdRentingOrderItems = await this.prismaService.rentingOrderItem.findMany(
-      {
+    const createdRentingOrderItems =
+      await this.prismaService.rentingOrderItem.findMany({
         where: {
           rentingOrderId: updateRentingOrderResult.id,
           isDeleted: false,
         },
-      },
-    );
+      });
     for (let i = 0; i < createdRentingOrderItems.length; i++) {
       const currentItem = createdRentingOrderItems[i];
       const isFound = createManyRentingOrderItemData.find(
@@ -567,14 +662,16 @@ export class RentingOrdersService {
     });
 
     // Update Renting Deposit Item
-    const depositItemStatuses = await this.customAttributeService.getListCustomRentingDepositItemStatus(
-      orgId,
-      RentingDepositItemSystemStatusType.New,
-    );
+    const depositItemStatuses =
+      await this.customAttributeService.getListCustomRentingDepositItemStatus(
+        orgId,
+        RentingDepositItemSystemStatusType.New,
+      );
     const defaultDepositItemStatus = depositItemStatuses[0];
-    const depositItemTypes = await this.customAttributeService.getListCustomRentingDepositItemType(
-      orgId,
-    );
+    const depositItemTypes =
+      await this.customAttributeService.getListCustomRentingDepositItemType(
+        orgId,
+      );
     const createManyRentingDepositItemData = [];
     const updateManyRentingDepositItemData = [];
     const existingUpdateRentingDepositItemIds = [];
@@ -715,14 +812,15 @@ export class RentingOrdersService {
   ): Promise<RentingOrderItemModel[]> {
     let statuses;
     if (include.statusDetail) {
-      statuses = await this.customAttributeService.getAllRentingOrderStatusCustomAttributes(
-        orgId,
-      );
+      statuses =
+        await this.customAttributeService.getAllRentingOrderStatusCustomAttributes(
+          orgId,
+        );
     }
     delete include['statusDetail'];
 
-    const rentingOrderItems = await this.prismaService.rentingOrderItem.findMany(
-      {
+    const rentingOrderItems =
+      await this.prismaService.rentingOrderItem.findMany({
         where: {
           isDeleted: false,
           itemId,
@@ -742,8 +840,7 @@ export class RentingOrdersService {
             },
           ],
         },
-      },
-    );
+      });
 
     return rentingOrderItems.map((orderItem) =>
       RentingOrderItemModel.fromDatabase(orderItem, {
