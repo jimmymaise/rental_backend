@@ -331,7 +331,7 @@ export class RentingOrderResolvers {
     @Args('paginationData')
     paginationData: QueryWithOffsetPagingDTO,
   ): Promise<OffsetPaginationDTO<RentingOrderModel>> {
-    return this.customerRentingOrdersService.getListBagItems({
+    return this.customerRentingOrdersService.getCustomerOrderItems({
       userId: user.currentOrgId,
       offset: paginationData.offset,
       pageSize: paginationData.pageSize,

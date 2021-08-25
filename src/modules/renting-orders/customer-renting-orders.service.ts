@@ -138,7 +138,7 @@ export class CustomerRentingOrdersService {
     };
   }
 
-  async getListBagItems({
+  async getCustomerOrderItems({
     userId,
     offset = 0,
     pageSize = 10,
@@ -146,7 +146,6 @@ export class CustomerRentingOrdersService {
     const pagingHandler = new OffsetPagingHandler(
       {
         customerUserId: userId,
-        systemStatus: RentingOrderSystemStatusType.InBag,
         isDeleted: false,
       },
       pageSize,
