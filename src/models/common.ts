@@ -4,6 +4,12 @@ export enum ItemStatus {
   Published = 'Published',
 }
 
+export enum RentingStatus {
+  Renting = 'Renting',
+  NotAvailable = 'NotAvailable',
+  Available = 'Available',
+}
+
 export enum FileUsingLocate {
   ItemPreviewImage = 'ItemPreviewImage',
   UserAvatarImage = 'UserAvatarImage',
