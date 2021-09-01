@@ -6,6 +6,12 @@ enum ItemStatus {
   Published
 }
 
+enum RentingStatus {
+  Renting
+  NotAvailable
+  Available
+}
+
 type Item {
   id: ID!
   pid: Int!
@@ -37,6 +43,7 @@ type Item {
   totalQuantity: Int
   isVerified: Boolean
   status: ItemStatus
+  systemRentingStatus: RentingStatus
   note: String
   isInMyWishList: Boolean
   createdDate: Float
@@ -110,6 +117,8 @@ type Mutation {
 
   updateItemStatus(id: String!, status: ItemStatus!): Item
   changeVerifyStatus(id: String!, isVerified: Boolean!): Item
+
+  setItemSystemRentingStatus(id: String!, status: RentingStatus!): Item
 }
 
 type Query {

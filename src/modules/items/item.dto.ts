@@ -35,6 +35,7 @@ export interface ItemDTO {
   totalQuantity?: number;
   isVerified?: boolean;
   status: string;
+  systemRentingStatus: string;
   isInMyWishList?: boolean;
   updatedDate: number;
   createdDate: number;

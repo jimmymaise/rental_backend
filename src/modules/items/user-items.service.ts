@@ -3,7 +3,7 @@ import sanitizeHtml from 'sanitize-html';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { Item } from '@prisma/client';
-import { OffsetPaginationDTO, ItemStatus } from '../../models';
+import { OffsetPaginationDTO, ItemStatus, RentingStatus } from '../../models';
 import { StoragesService } from '../storages/storages.service';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers/common';
@@ -350,6 +350,38 @@ export class UserItemsService {
       where,
       data: {
         isDeleted: true,
+      },
+    });
+  }
+
+  async setSystemItemRentingStatus({
+    id,
+    userId,
+    status,
+  }: {
+    id: string;
+    userId: string;
+    status: RentingStatus;
+  }): Promise<Item> {
+    const itemDetail = await this.prismaService.item.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        ownerUserId: true,
+      },
+    });
+    if (!itemDetail || itemDetail.ownerUserId !== userId) {
+      throw new Error(
+        `this item is not existing or you don't have the permission to perform`,
+      );
+    }
+
+    return this.prismaService.item.update({
+      data: {
+        systemRentingStatus: status,
+      },
+      where: {
+        id,
       },
     });
   }

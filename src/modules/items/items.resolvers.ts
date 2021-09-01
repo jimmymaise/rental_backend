@@ -13,7 +13,7 @@ import {
   GqlAuthGuard,
   EveryoneGqlAuthGuard,
 } from '../auth';
-import { ItemStatus, OffsetPaginationDTO } from '@app/models';
+import { ItemStatus, OffsetPaginationDTO, RentingStatus } from '@app/models';
 import { UsersService } from '../users/users.service';
 import { SearchKeywordService } from '../search-keyword/search-keyword.service';
 import { WishingItemsService } from '../wishing-items/wishing-items.service';
@@ -472,6 +472,28 @@ export class ItemsResolvers {
             throw new Error('Item is not existing!');
           }
 
+          resolve(toItemDTO(item, user.id));
+        })
+        .catch(reject);
+    });
+  }
+
+  @Mutation()
+  @Permissions(Permission.NEED_LOGIN)
+  @UseGuards(GqlAuthGuard)
+  async setItemSystemRentingStatus(
+    @CurrentUser() user: GuardUserPayload,
+    @Args('id') id: string,
+    @Args('status') status: RentingStatus,
+  ): Promise<ItemDTO> {
+    return new Promise((resolve, reject) => {
+      this.userItemService
+        .setSystemItemRentingStatus({
+          id,
+          userId: user.id,
+          status,
+        })
+        .then((item) => {
           resolve(toItemDTO(item, user.id));
         })
         .catch(reject);
