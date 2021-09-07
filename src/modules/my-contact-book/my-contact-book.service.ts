@@ -106,6 +106,8 @@ export class MyContactBooksService {
 
     const items = await this.prismaService.myContactBook.findMany({
       where,
+      skip: offset,
+      take: limit,
     });
     const count = await this.prismaService.myContactBook.count({
       where,
