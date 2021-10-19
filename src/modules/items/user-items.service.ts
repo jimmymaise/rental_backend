@@ -358,31 +358,37 @@ export class UserItemsService {
     id,
     userId,
     status,
+    orgId,
   }: {
     id: string;
     userId: string;
+    orgId: string;
     status: RentingStatus;
   }): Promise<Item> {
     const itemDetail = await this.prismaService.item.findUnique({
       where: { id },
       select: {
         id: true,
+        orgId: true,
         ownerUserId: true,
       },
     });
-    if (!itemDetail || itemDetail.ownerUserId !== userId) {
-      throw new Error(
-        `this item is not existing or you don't have the permission to perform`,
-      );
+    if (
+      itemDetail &&
+      (itemDetail.ownerUserId === userId || itemDetail.orgId === orgId)
+    ) {
+      return this.prismaService.item.update({
+        data: {
+          systemRentingStatus: status,
+        },
+        where: {
+          id,
+        },
+      });
     }
 
-    return this.prismaService.item.update({
-      data: {
-        systemRentingStatus: status,
-      },
-      where: {
-        id,
-      },
-    });
+    throw new Error(
+      `this item is not existing or you don't have the permission to perform`,
+    );
   }
 }

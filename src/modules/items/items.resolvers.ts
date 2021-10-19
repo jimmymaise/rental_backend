@@ -491,6 +491,7 @@ export class ItemsResolvers {
         .setSystemItemRentingStatus({
           id,
           userId: user.id,
+          orgId: user.currentOrgId,
           status,
         })
         .then((item) => {
