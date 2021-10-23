@@ -7,6 +7,7 @@ import {
   PutObjectAclCommand,
   GetObjectCommand,
   GetObjectCommandInput,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { IStorageService } from '@modules/storages/storage.service.interface';
@@ -32,6 +33,7 @@ export class S3StorageService implements IStorageService {
       Key: filePath,
       ContentType: contentType,
       Body: undefined,
+      CacheControl: 'max-age=15552000',
     };
     const command = new PutObjectCommand(params);
     return await getSignedUrl(this.s3Client, command, {
@@ -88,6 +90,22 @@ export class S3StorageService implements IStorageService {
     };
 
     const command = new PutObjectAclCommand(params);
+    await this.s3Client.send(command);
+  }
+
+  public async deleteFile(
+    folderPath: string,
+    fileName: string,
+    bucketName: string,
+  ): Promise<void> {
+    const filePath = `${folderPath}/${fileName}`;
+
+    const params = {
+      Bucket: bucketName,
+      Key: filePath,
+    };
+
+    const command = new DeleteObjectCommand(params);
     await this.s3Client.send(command);
   }
 }

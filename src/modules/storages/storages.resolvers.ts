@@ -121,13 +121,12 @@ export class StoragesResolvers {
     });
     const imagePreSignedUrl = {};
     for (const type of imageData['includes']) {
-      imagePreSignedUrl[
-        type
-      ] = await this.storagesService.generateUploadImageSignedUrl(
-        `${folderName}/${type}-${fileName}`,
-        contentType,
-        fileSizeMap[type],
-      );
+      imagePreSignedUrl[type] =
+        await this.storagesService.generateUploadImageSignedUrl(
+          `${folderName}/${type}-${fileName}`,
+          contentType,
+          fileSizeMap[type],
+        );
     }
 
     return {
@@ -155,7 +154,7 @@ export class StoragesResolvers {
       throw new Error('File does not exist');
     }
 
-    this.storagesService.hardDeleteFile(fileId);
+    this.storagesService.hardDeleteFile(fileId, fileData);
     try {
       this.googleStorageService.deleteFile(
         fileData.folderName,
@@ -222,11 +221,12 @@ export class StoragesResolvers {
       usingLocate: fileData.usingLocate,
     });
 
-    const preSignedUrl = await this.storagesService.generateUploadImageSignedUrl(
-      `${folderName}/${fileName}`,
-      contentType,
-      fileSize,
-    );
+    const preSignedUrl =
+      await this.storagesService.generateUploadImageSignedUrl(
+        `${folderName}/${fileName}`,
+        contentType,
+        fileSize,
+      );
 
     return {
       id: storageInfo.id,

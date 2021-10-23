@@ -124,7 +124,15 @@ export class StoragesService {
     return this.prismaService.fileStorage.findUnique({ where: { id: fileId } });
   }
 
-  async hardDeleteFile(fileId: string): Promise<FileStorage> {
+  async hardDeleteFile(
+    fileId: string,
+    fileData: FileStorage,
+  ): Promise<FileStorage> {
+    await this.cloudStorageService.deleteFile(
+      fileData.folderName,
+      fileData.name,
+      fileData.bucketName,
+    );
     return this.prismaService.fileStorage.delete({ where: { id: fileId } });
   }
 
