@@ -121,12 +121,13 @@ export class StoragesResolvers {
     });
     const imagePreSignedUrl = {};
     for (const type of imageData['includes']) {
-      imagePreSignedUrl[type] =
-        await this.storagesService.generateUploadImageSignedUrl(
-          `${folderName}/${type}-${fileName}`,
-          contentType,
-          fileSizeMap[type],
-        );
+      imagePreSignedUrl[
+        type
+      ] = await this.storagesService.generateUploadImageSignedUrl(
+        `${folderName}/${type}-${fileName}`,
+        contentType,
+        fileSizeMap[type],
+      );
     }
 
     return {
@@ -194,8 +195,8 @@ export class StoragesResolvers {
     const contentType = fileData.contentType;
     const fileSize = fileData.size;
 
-    const OneMb = 1000000;
-    if (fileSize > OneMb) {
+    const FiveMb = 5000000;
+    if (fileSize > FiveMb) {
       throw new BadRequestException(ErrorMap.FILE_TOO_BIG);
     }
 
@@ -221,12 +222,11 @@ export class StoragesResolvers {
       usingLocate: fileData.usingLocate,
     });
 
-    const preSignedUrl =
-      await this.storagesService.generateUploadImageSignedUrl(
-        `${folderName}/${fileName}`,
-        contentType,
-        fileSize,
-      );
+    const preSignedUrl = await this.storagesService.generateUploadImageSignedUrl(
+      `${folderName}/${fileName}`,
+      contentType,
+      fileSize,
+    );
 
     return {
       id: storageInfo.id,
