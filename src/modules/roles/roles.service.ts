@@ -79,7 +79,7 @@ export class RolesService {
     include?: any;
     updatedBy: string;
   }): Promise<Role> {
-    const addedCommand = { users: {}, permissions: {} };
+    const addedCommand = { permissions: {} };
 
     const permissionsAdded = (updateRoleData['addPermissionsToRole'] || []).map(
       (permission) => {
