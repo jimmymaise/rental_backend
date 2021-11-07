@@ -13,7 +13,12 @@ import {
   GqlAuthGuard,
   EveryoneGqlAuthGuard,
 } from '../auth';
-import { ItemStatus, OffsetPaginationDTO, RentingStatus } from '@app/models';
+import {
+  ItemStatus,
+  OffsetPaginationDTO,
+  RentingStatus,
+  DataFilterResponseModel,
+} from '@app/models';
 import { UsersService } from '../users/users.service';
 import { SearchKeywordService } from '../search-keyword/search-keyword.service';
 import { WishingItemsService } from '../wishing-items/wishing-items.service';
@@ -499,6 +504,15 @@ export class ItemsResolvers {
         })
         .catch(reject);
     });
+  }
+
+  @Query()
+  @Permissions(Permission.ORG_MASTER, Permission.GET_ITEM)
+  @UseGuards(GqlAuthGuard)
+  async feedItemFilters(): Promise<DataFilterResponseModel> {
+    return {
+      filters: this.itemService.getFilters(),
+    };
   }
 
   // FOR ADMIN ONLY

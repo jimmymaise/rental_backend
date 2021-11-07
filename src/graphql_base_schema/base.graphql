@@ -12,8 +12,20 @@ input BaseOffsetPagingInput {
   pageSize: Int
   offset: Int
   orderBy: JSON
+  filterBy: JSON
 }
+
 input BaseCursorPagingInput {
   pageSize: Int
   cursor: String
+}
+
+type DataFilter {
+  key: String
+  label: String
+  source: JSON
+}
+
+type DataFilterResponse {
+  filters: [DataFilter]
 }

@@ -139,4 +139,5 @@ type Query {
     paging: BaseOffsetPagingInput
   ): ItemPagination
   feedOrgItemDetail(id: String!): Item
+  feedItemFilters: DataFilterResponse
 }

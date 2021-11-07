@@ -6,7 +6,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Item } from '@prisma/client';
 import { ItemUserInputDTO } from './item-user-input.dto';
 import { stringToSlug } from '../../helpers/common';
-import { OffsetPaginationDTO, ItemStatus, RentingStatus } from '../../models';
+import {
+  OffsetPaginationDTO,
+  ItemStatus,
+  RentingStatus,
+  DataFilterModel,
+} from '../../models';
 import { StoragesService } from '../storages/storages.service';
 import { RedisCacheService } from '../redis-cache/redis-cache.service';
 import { OffsetPagingHandler } from '@helpers/handlers/offset-paging-handler';
@@ -408,5 +413,28 @@ export class ItemsService {
       include,
     );
     return pagingHandler.getPage(offset);
+  }
+
+  getFilters(): DataFilterModel[] {
+    return [
+      {
+        key: 'status',
+        label: 'ITEM_STATUS',
+        source: [
+          {
+            value: 'Renting',
+            label: 'STATUS_RENTING',
+          },
+          {
+            value: 'NotAvailable',
+            label: 'STATUS_NOT_AVAILABLE',
+          },
+          {
+            value: 'Available',
+            label: 'AVAILABLE',
+          },
+        ],
+      },
+    ];
   }
 }

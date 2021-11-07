@@ -53,6 +53,9 @@ export interface QueryWithOffsetPagingDTO {
   pageSize: number;
   offset: number;
   orderBy: any;
+  filterBy?: {
+    [key: string]: any;
+  };
 }
 
 export interface QueryWithCursorPagingDTO {
