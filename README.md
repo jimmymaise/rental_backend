@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a backend service for a rental business, built using the [Nest](https://nestjs.com/) framework and TypeScript. This repository provides all the functionalities needed to manage rentals, users, and other related services.
+This is a backend service for a rental business, built in 2021 by myself and one frontend developer. Due to certain reasons, we have not been able to release it to production. The project is built using the Nest framework and TypeScript and is hosted on GitLab. This repository provides all the functionalities needed to manage rentals, users, and other related services. GitLab CI is employed for continuous integration and deployment.
 
 ## Technologies Used
 
@@ -13,6 +13,7 @@ This is a backend service for a rental business, built using the [Nest](https://
 - **Redis**: An in-memory data store used for caching.
 - **Docker**: Platform to develop, ship, and run applications in containers.
 - **PostgreSQL**: Open-source relational database.
+- **GitLab CI**: A continuous integration and deployment platform integrated into GitLab.
   
 ## Installation
 
