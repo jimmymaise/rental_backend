@@ -1,169 +1,69 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
-
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Rental Business Backend Service
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a backend service for a rental business, built using the [Nest](https://nestjs.com/) framework and TypeScript. This repository provides all the functionalities needed to manage rentals, users, and other related services.
 
+## Technologies Used
+
+- **Nest Framework**: A progressive Node.js framework for building scalable server-side applications.
+- **TypeScript**: A superset of JavaScript that adds strong types.
+- **Prisma**: An open-source database toolkit.
+- **Apollo Server**: A GraphQL server for more efficient, powerful and flexible APIs.
+- **Redis**: An in-memory data store used for caching.
+- **Docker**: Platform to develop, ship, and run applications in containers.
+- **PostgreSQL**: Open-source relational database.
+  
 ## Installation
 
-```bash
-$ npm install
-```
+To install the project, follow these steps:
 
-## Running the app
+1. Clone the repository
+2. Navigate to the project folder
+3. Run `npm install`
 
-```bash
-# development
-$ npm run start
+## Running the App
 
-# watch mode
-$ npm run start:dev
+### Development
 
-# production mode
-$ npm run start:prod
-```
+Run `npm run start`
 
-## Test
+### Watch Mode
 
-```bash
-# unit tests
-$ npm run test
+Run `npm run start:dev`
 
-# e2e tests
-$ npm run test:e2e
+### Production Mode
 
-# test coverage
-$ npm run test:cov
-```
+Run `npm run start:prod`
 
-## Support
+## Testing
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Unit Tests
 
-## Stay in touch
+Run `npm run test`
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### E2E Tests
+
+Run `npm run test:e2e`
+
+### Test Coverage
+
+Run `npm run test:cov`
+
+## Database Migration
+
+### Update Table Changes
+
+1. Run `npm run prisma:migration-save`
+2. Run `npm run prisma:migration-up`
+3. Run `npm run prisma:generate`
+
+## Notes
+
+- If `graphql.schema.ts` does not exist, run `ts-node generate-typings` and refer to [this issue](https://github.com/apollographql/apollo-server/issues/4463) for more details.
+- Docker build must use `host.docker.internal` instead of `localhost` in `.env`.
+- To drop all connection sessions to a database, run the provided SQL commands.
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
-
-## Note
-
-if graphql.schema.ts NOT exist
-
-```
-ts-node generate-typings
-```
-
-```
-https://github.com/apollographql/apollo-server/issues/4463
-upgrade to apollo-server-fastify@3.0.0-alpha.3
-```
-
-## Update Table Changed
-
-```
-npm run prisma:mirgation-save
-npm run prisma:mirgation-up
-npm run prisma:generate
-```
-
-## Upload file Graphql PostMan
-
-```
-curl --location --request POST 'http://localhost:3000/graphql' \
---header 'Connection: keep-alive' \
---header 'accept: */*' \
---header 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36' \
---header 'content-type: application/json' \
---header 'Origin: http://localhost:3000' \
---header 'Sec-Fetch-Site: same-origin' \
---header 'Sec-Fetch-Mode: cors' \
---header 'Sec-Fetch-Dest: empty' \
---header 'Referer: http://localhost:3000/graphql' \
---header 'Accept-Language: en-US,en;q=0.9' \
---form 'operations={"query":"mutation uploadItemImage($file:Upload!) {\n uploadItemImage(file:$file)\n}", "variables": { "file": null }}' \
---form 'map={ "0": ["variables.file"] }' \
---form '0=@/C:/Users/trank/Desktop/_home_black_bib-server_data_2020_VJM2020_On Course_lmk (1475).jpg'
-```
-
-```
-cd scripts
-docker-compose up -d
-```
-
-## NOTE
-
-```
-tsconfig.json esModuleInterop -> import default and don't need to * as
-
-set all file in folder public GCP
-gsutil acl -r ch -u AllUsers:R gs://storage.thuedo.vn/default-avatars/*
-
-docker exec -ti 59aca58159b4 sh
-redis-cli FLUSHALL
-```
-
-```
-A database index is automatically created on the ForeignKey. You can disable this by setting db_index to False. You may want to avoid the overhead of an index if you are creating a foreign key for consistency rather than joins, or if you will be creating an alternative index like a partial or multiple column index.
-
-Almost all real-life cases require having these indexes. But Postgres doesn’t create them automatically as MySQL (innodb) does. It’s a significant difference
-So, all migration tools or/and ORM systems except of Django require to do these indexes for Postgres in addition. I mean SQLAlchemy, Knex-migrations etc.
-
-@@index(fields: [userId], name: "file_storage_main_index")
-```
-
-## NOTE:
-
-```
-DOCKER BUILD must use
-
-host.docker.internal insteal localhost in .env
-```
-
-```
-Drop all connection sessions to a Database
-
-SELECT pg_terminate_backend(pg_stat_activity.pid)
-FROM pg_stat_activity
-WHERE pg_stat_activity.datname = 'thuedo-dev-2' -- ← change this to your DB
-  AND pid <> pg_backend_pid();
-```
-
-## TODO:
-
-[] Request Activities
-[] Item Review
-[] Lender Review
-[] Renter Review
-[] Log Search Keyword
-[x] Wishing Item List
-[x] User Contact List
-[] User Notification
+This project is licensed under the MIT License.
